@@ -1,0 +1,105 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="SkillEditor.uss" />
+
+    <!-- Main Container -->
+    <ui:VisualElement name="skill-editor-root" class="skill-editor-root">
+
+        <!-- Toolbar -->
+        <ui:VisualElement name="toolbar" class="toolbar">
+            <ui:Button text="New" name="new-button" class="toolbar-button" />
+            <ui:Button text="Load" name="load-button" class="toolbar-button" />
+            <ui:Button text="Save" name="save-button" class="toolbar-button" />
+            <ui:Button text="Save As" name="save-as-button" class="toolbar-button" />
+
+            <ui:VisualElement class="toolbar-separator" />
+
+            <ui:Button text="Play" name="play-button" class="toolbar-button play-button" />
+
+            <!-- Frame Controls -->
+            <ui:VisualElement name="frame-controls" class="frame-controls">
+                <ui:Label text="Frame" class="control-label" />
+                <ui:IntegerField name="current-frame" value="0" class="frame-field" />
+                <ui:SliderInt name="frame-slider" low-value="0" high-value="59" value="0" direction="Horizontal" class="frame-slider" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="toolbar-separator" />
+
+            <!-- Duration Controls -->
+            <ui:VisualElement name="duration-controls" class="duration-controls">
+                <ui:Label text="Duration" class="control-label" />
+                <ui:IntegerField name="total-duration" value="60" class="duration-field" />
+                <ui:Button text="Set" name="set-duration-button" class="set-duration-button" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="toolbar-separator" />
+
+            <!-- Zoom Controls -->
+            <ui:VisualElement name="zoom-controls" class="zoom-controls">
+                <ui:Label text="Zoom" class="control-label" />
+                <ui:Slider name="zoom-slider" low-value="0.1" high-value="10.0" value="1.0" direction="Horizontal" class="zoom-slider" />
+                <ui:Button text="Fit" name="fit-button" class="fit-button" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="toolbar-spacer" />
+
+            <ui:Label name="frame-info" text="Frame: 0/59" class="frame-info" />
+        </ui:VisualElement>
+
+        <!-- Main Content Area (Left-Right Split) -->
+        <ui:VisualElement name="main-content" class="main-content">
+
+            <!-- Timeline Container (Left Side) -->
+            <ui:VisualElement name="timeline-container" class="timeline-container">
+                <!-- Full-height cursor ruler spanning entire timeline -->
+                <ui:VisualElement name="cursor-ruler" class="cursor-ruler" />
+
+                <!-- Timeline Header -->
+                <ui:VisualElement name="timeline-header" class="timeline-header">
+                    <ui:VisualElement name="track-header-space" class="track-header-space">
+                        <ui:Button text="Add Track" name="add-track-button" class="add-track-button" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="timeline-ruler-container" class="timeline-ruler-container">
+                        <ui:VisualElement name="timeline-ruler" class="timeline-ruler" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Timeline Body -->
+                <ui:VisualElement name="timeline-body" class="timeline-body">
+
+                    <!-- Track Headers with ScrollView -->
+                    <ui:ScrollView name="track-headers-scroll" class="track-headers-scroll" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden">
+                        <ui:VisualElement name="track-headers" class="track-headers">
+                        </ui:VisualElement>
+                    </ui:ScrollView>
+
+                    <!-- Timeline Tracks Container with Synchronized ScrollView -->
+                    <ui:VisualElement name="timeline-tracks-wrapper" class="timeline-tracks-wrapper">
+                        <ui:ScrollView name="timeline-tracks-scroll" class="timeline-tracks-scroll" horizontal-scroller-visibility="Auto" vertical-scroller-visibility="Auto">
+                            <ui:VisualElement name="timeline-tracks-container" class="timeline-tracks-container">
+                                <ui:VisualElement name="timeline-tracks" class="timeline-tracks">
+                                    <!-- Playhead -->
+                                    <ui:VisualElement name="playhead" class="playhead" />
+                                    <!-- Frame lines will be added dynamically -->
+                                    <ui:VisualElement name="frame-lines" class="frame-lines" />
+                                    <!-- Tracks will be added dynamically -->
+                                </ui:VisualElement>
+                            </ui:VisualElement>
+                        </ui:ScrollView>
+                    </ui:VisualElement>
+
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+
+            <!-- Inspector (Right Side) -->
+            <ui:VisualElement name="inspector" class="inspector">
+                <ui:Label text="Inspector" class="inspector-title" />
+                <ui:ScrollView name="inspector-content" class="inspector-content">
+                    <!-- Inspector content will be added dynamically -->
+                </ui:ScrollView>
+            </ui:VisualElement>
+
+        </ui:VisualElement>
+
+    </ui:VisualElement>
+</ui:UXML>

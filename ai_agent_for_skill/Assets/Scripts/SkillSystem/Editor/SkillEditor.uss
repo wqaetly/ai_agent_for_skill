@@ -1,0 +1,552 @@
+/* Skill Editor Root */
+.skill-editor-root {
+    flex-direction: column;
+    height: 100%;
+    background-color: rgb(56, 56, 56);
+}
+
+/* Toolbar */
+.toolbar {
+    flex-direction: row;
+    height: 30px;
+    background-color: rgb(72, 72, 72);
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(35, 35, 35);
+    padding: 2px 5px;
+    align-items: center;
+}
+
+.toolbar-button {
+    height: 20px;
+    margin: 0 2px;
+    padding: 0 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    background-color: rgb(83, 83, 83);
+    border-color: rgb(35, 35, 35);
+}
+
+.toolbar-button:hover {
+    background-color: rgb(108, 108, 108);
+}
+
+.play-button.playing {
+    background-color: rgb(255, 87, 87);
+    color: white;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 16px;
+    background-color: rgb(35, 35, 35);
+    margin: 0 8px;
+}
+
+.toolbar-spacer {
+    flex-grow: 1;
+}
+
+/* Frame and Duration Controls */
+.frame-controls {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 8px;
+    background-color: rgb(65, 65, 65);
+    border-radius: 4px;
+    padding: 4px;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+}
+
+.duration-controls {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 8px;
+    background-color: rgb(65, 65, 65);
+    border-radius: 4px;
+    padding: 4px;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+}
+
+.control-label {
+    font-size: 9px;
+    color: rgb(200, 200, 200);
+    margin-right: 4px;
+    min-width: 40px;
+    text-align: middle-center;
+}
+
+.frame-field {
+    width: 60px;
+    margin: 0 4px 0 0;
+    height: 16px;
+}
+
+.frame-slider {
+    width: 120px;
+    margin: 0;
+    height: 12px;
+}
+
+.duration-field {
+    width: 60px;
+    margin: 0 2px;
+    height: 16px;
+}
+
+.set-duration-button {
+    height: 16px;
+    width: 25px;
+    padding: 0;
+    font-size: 8px;
+    margin-left: 2px;
+    background-color: rgb(83, 83, 83);
+    border-color: rgb(35, 35, 35);
+    border-radius: 2px;
+}
+
+.set-duration-button:hover {
+    background-color: rgb(108, 108, 108);
+}
+
+.frame-info {
+    font-size: 10px;
+    color: rgb(180, 180, 180);
+}
+
+/* Main Content Layout */
+.main-content {
+    flex-direction: row;
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+    height: 100%; /* Ensure full height */
+    min-height: 0; /* Allow children to shrink */
+}
+
+/* Timeline Container */
+.timeline-container {
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+    position: relative; /* Enable absolute positioning for cursor-ruler */
+    min-width: 400px; /* Prevent timeline from being too small */
+}
+
+/* Timeline Header */
+.timeline-header {
+    flex-direction: row;
+    height: 25px;
+    background-color: rgb(60, 60, 60);
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(35, 35, 35);
+}
+
+.track-header-space {
+    width: 150px;
+    background-color: rgb(60, 60, 60);
+}
+
+.timeline-ruler-container {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.timeline-ruler {
+    flex-direction: row;
+    height: 25px;
+    min-width: 1200px; /* Will be calculated dynamically */
+    background-color: rgb(60, 60, 60);
+}
+
+/* Timeline Ruler Markers - Inspired by Unity Timeline */
+.frame-marker {
+    position: absolute;
+    height: 22px;
+    align-items: flex-end;
+    justify-content: center;
+    font-size: 9px;
+    color: rgb(180, 180, 180);
+    width: 40px;
+    padding-bottom: 2px;
+    border-left-width: 1px;
+    border-left-color: rgba(150, 150, 150, 0.3);
+}
+
+.frame-marker.major {
+    border-left-color: rgba(200, 200, 200, 0.6);
+    border-left-width: 2px;
+    color: rgb(200, 200, 200);
+    font-weight: bold;
+}
+
+.frame-marker.minor {
+    border-left-color: rgba(120, 120, 120, 0.2);
+    border-left-width: 1px;
+}
+
+/* Timeline Body */
+.timeline-body {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+/* Track Headers ScrollView */
+.track-headers-scroll {
+    width: 150px;
+    background-color: rgb(65, 65, 65);
+    border-right-width: 1px;
+    border-right-color: rgb(35, 35, 35);
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Track Headers Container */
+.track-headers {
+    padding: 2px;
+    flex-direction: column;
+}
+
+.add-track-button {
+    height: 25px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    background-color: rgb(83, 83, 83);
+    border-color: rgb(35, 35, 35);
+}
+
+.add-track-button:hover {
+    background-color: rgb(108, 108, 108);
+}
+
+.track-header {
+    height: 30px;
+    margin-bottom: 2px;
+    padding: 2px;
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    background-color: rgb(70, 70, 70);
+    flex-direction: row;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.track-header.selected {
+    background-color: rgb(68, 92, 124);
+    border-color: rgb(91, 133, 191);
+}
+
+.track-name-field {
+    flex-grow: 1;
+    margin-right: 3px;
+    font-size: 9px;
+    height: 16px;
+}
+
+.track-color-field {
+    width: 12px;
+    height: 12px;
+    margin-right: 3px;
+    border-radius: 2px;
+}
+
+.track-enabled-toggle {
+    margin-right: 3px;
+    scale: 0.8;
+}
+
+.track-delete-button {
+    width: 14px;
+    height: 14px;
+    padding: 0;
+    background-color: rgb(150, 50, 50);
+    border-color: rgb(100, 30, 30);
+    border-radius: 2px;
+    font-size: 8px;
+}
+
+.track-delete-button:hover {
+    background-color: rgb(180, 60, 60);
+}
+
+/* Timeline Tracks Wrapper */
+.timeline-tracks-wrapper {
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+    position: relative;
+}
+
+/* Timeline Tracks ScrollView */
+.timeline-tracks-scroll {
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+}
+
+/* Timeline Tracks Container */
+.timeline-tracks-container {
+    background-color: rgb(48, 48, 48);
+    position: relative;
+}
+
+.timeline-tracks {
+    min-width: 1200px; /* Will be calculated dynamically */
+    min-height: 300px;
+    position: relative;
+}
+
+/* Frame Lines */
+.frame-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.frame-line {
+    position: absolute;
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(120, 120, 120, 0.3);
+}
+
+.frame-line.major {
+    background-color: rgba(150, 150, 150, 0.5);
+}
+
+/* Playhead */
+.playhead {
+    position: absolute;
+    width: 2px;
+    top: 0;
+    bottom: 0;
+    background-color: rgb(255, 80, 80);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* Cursor Ruler - Full Timeline Height */
+.cursor-ruler {
+    position: absolute;
+    width: 2px;
+    top: 0;
+    bottom: 0;
+    height: 100%; /* Restore full height */
+    background-color: rgb(80, 150, 255);
+    cursor: ew-resize;
+    z-index: 9999; /* Keep highest layer to prevent being covered */
+    pointer-events: auto;
+    /* Ensure visibility */
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+    /* 只在hover状态下拦截事件，其他时候让事件穿透 */
+}
+
+.cursor-ruler:hover {
+    background-color: rgb(120, 180, 255);
+    width: 3px;
+}
+
+/* Track Rows */
+.track-row {
+    height: 30px;
+    margin-bottom: 2px;
+    position: absolute;
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+    pointer-events: auto; /* 确保能接收鼠标事件 */
+    z-index: 100; /* 确保在frame lines之上但在cursor-ruler之下 */
+}
+
+.track-row.selected {
+    border-color: rgb(91, 133, 191);
+}
+
+/* Actions */
+.skill-action {
+    position: absolute;
+    height: 26px;
+    top: 2px;
+    border-radius: 2px;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    cursor: move;
+    overflow: hidden;
+    min-width: 20px;
+}
+
+.skill-action.selected {
+    border-color: rgb(200, 200, 200);
+    border-width: 2px;
+}
+
+.skill-action.disabled {
+    opacity: 0.5;
+}
+
+.skill-action:hover {
+    border-color: rgb(150, 150, 150);
+}
+
+.action-label {
+    position: absolute;
+    left: 2px;
+    top: 1px;
+    font-size: 8px;
+    color: white;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.action-duration-label {
+    position: absolute;
+    right: 2px;
+    bottom: 1px;
+    font-size: 7px;
+    color: rgba(255, 255, 255, 0.7);
+    pointer-events: none;
+}
+
+/* Action Resize Handles */
+.action-resize-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: ew-resize;
+    background-color: transparent;
+}
+
+.action-resize-handle:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.action-resize-handle.left {
+    left: 0;
+}
+
+.action-resize-handle.right {
+    right: 0;
+}
+
+/* Zoom Controls in Toolbar */
+.zoom-controls {
+    flex-direction: row;
+    align-items: center;
+    height: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.zoom-slider {
+    width: 80px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.fit-button {
+    height: 18px;
+    width: 30px;
+    padding: 0;
+    font-size: 9px;
+    background-color: rgb(83, 83, 83);
+    border-color: rgb(35, 35, 35);
+    border-radius: 2px;
+}
+
+.fit-button:hover {
+    background-color: rgb(108, 108, 108);
+}
+
+/* Inspector - Right Side Panel */
+.inspector {
+    width: 250px;
+    background-color: rgb(56, 56, 56);
+    border-left-width: 1px;
+    border-left-color: rgb(35, 35, 35);
+    padding: 5px;
+    flex-shrink: 0; /* Prevent shrinking */
+    flex-direction: column;
+    height: 100%; /* Ensure inspector fills full height */
+    align-self: stretch; /* Stretch to parent height */
+}
+
+.inspector-title {
+    font-size: 12px;
+    font-style: bold;
+    color: rgb(210, 210, 210);
+    margin-bottom: 5px;
+}
+
+.inspector-content {
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    padding: 5px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+/* Animation */
+.skill-action {
+    transition-property: left, width;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-out;
+}
+
+/* Context Menu */
+.context-menu {
+    position: absolute;
+    background-color: rgb(70, 70, 70);
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    border-radius: 3px;
+    padding: 2px;
+    min-width: 120px;
+    z-index: 2000;
+}
+
+.context-menu-item {
+    height: 20px;
+    padding: 2px 8px;
+    align-items: center;
+    font-size: 10px;
+    color: rgb(210, 210, 210);
+    border-radius: 2px;
+}
+
+.context-menu-item:hover {
+    background-color: rgb(91, 133, 191);
+}
+
+.context-menu-separator {
+    height: 1px;
+    background-color: rgb(35, 35, 35);
+    margin: 2px 0;
+}
