@@ -113,6 +113,13 @@ namespace SkillSystem.Editor
             if (isPlaying)
             {
                 lastPlayTime = Time.realtimeSinceStartup;
+                // Start skill execution when playback starts
+                editor.StartSkillExecution();
+            }
+            else
+            {
+                // Stop skill execution when playback stops
+                editor.StopSkillExecution();
             }
             UpdatePlayButton();
         }
@@ -142,6 +149,8 @@ namespace SkillSystem.Editor
             if (isPlaying)
             {
                 isPlaying = false;
+                // Stop skill execution when playback stops
+                editor.StopSkillExecution();
                 UpdatePlayButton();
             }
         }

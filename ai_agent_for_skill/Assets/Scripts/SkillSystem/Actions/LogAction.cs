@@ -26,5 +26,24 @@ namespace SkillSystem.Actions
             Debug.unityLogger.Log(logType, message);
         }
 
+        public override void OnEnter()
+        {
+            Debug.unityLogger.Log(logType, $"[OnEnter] {message}");
+        }
+
+        public override void OnTick(int relativeFrame)
+        {
+            // Log actions typically only execute on enter, but can provide tick feedback
+            if (relativeFrame % 10 == 0) // Log every 10 frames during duration
+            {
+                Debug.unityLogger.Log(LogType.Log, $"[OnTick] {message} (Frame: {relativeFrame})");
+            }
+        }
+
+        public override void OnExit()
+        {
+            Debug.unityLogger.Log(LogType.Log, $"[OnExit] {message} - Action completed");
+        }
+
     }
 }

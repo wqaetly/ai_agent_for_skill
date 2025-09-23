@@ -44,5 +44,38 @@ namespace SkillSystem.Actions
                 Debug.LogWarning("No Animator found in scene for AnimationAction");
             }
         }
+
+        public override void OnEnter()
+        {
+            var animator = UnityEngine.Object.FindFirstObjectByType<Animator>();
+            if (animator != null)
+            {
+                animator.CrossFade(animationClipName, crossFadeDuration, animationLayer, normalizedTime);
+                Debug.Log($"[AnimationAction] Started animation: {animationClipName}");
+            }
+            else
+            {
+                Debug.LogWarning("[AnimationAction] No Animator found in scene");
+            }
+        }
+
+        public override void OnTick(int relativeFrame)
+        {
+            // Monitor animation state during execution
+            var animator = UnityEngine.Object.FindFirstObjectByType<Animator>();
+            if (animator != null)
+            {
+                var currentState = animator.GetCurrentAnimatorStateInfo(animationLayer);
+                if (relativeFrame % 5 == 0) // Log every 5 frames
+                {
+                    Debug.Log($"[AnimationAction] {animationClipName} progress: {currentState.normalizedTime:F2}");
+                }
+            }
+        }
+
+        public override void OnExit()
+        {
+            Debug.Log($"[AnimationAction] Finished animation action: {animationClipName}");
+        }
     }
 }

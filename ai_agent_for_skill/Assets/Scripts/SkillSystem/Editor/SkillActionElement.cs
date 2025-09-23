@@ -261,5 +261,50 @@ namespace SkillSystem.Editor
             trackIndex = newTrackIndex;
             actionIndex = newActionIndex;
         }
+
+        /// <summary>
+        /// Sets the execution state for visual feedback during skill execution
+        /// </summary>
+        /// <param name="isExecuting">Whether the action is currently being executed</param>
+        /// <param name="isTicking">Whether the action is in its ticking phase</param>
+        public void SetExecutionState(bool isExecuting, bool isTicking)
+        {
+            // Remove all execution state classes first
+            RemoveFromClassList("executing");
+            RemoveFromClassList("ticking");
+            RemoveFromClassList("entered");
+
+            if (isExecuting)
+            {
+                AddToClassList("executing");
+
+                if (isTicking)
+                {
+                    AddToClassList("ticking");
+                }
+                else
+                {
+                    AddToClassList("entered");
+                }
+
+                // Add visual glow effect for executing actions
+                this.style.borderTopWidth = 2;
+                this.style.borderRightWidth = 2;
+                this.style.borderBottomWidth = 2;
+                this.style.borderLeftWidth = 2;
+                this.style.borderTopColor = Color.yellow;
+                this.style.borderRightColor = Color.yellow;
+                this.style.borderBottomColor = Color.yellow;
+                this.style.borderLeftColor = Color.yellow;
+            }
+            else
+            {
+                // Reset border when not executing
+                this.style.borderTopWidth = 0;
+                this.style.borderRightWidth = 0;
+                this.style.borderBottomWidth = 0;
+                this.style.borderLeftWidth = 0;
+            }
+        }
     }
 }

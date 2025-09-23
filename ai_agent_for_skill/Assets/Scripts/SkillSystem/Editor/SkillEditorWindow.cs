@@ -35,6 +35,7 @@ namespace SkillSystem.Editor
         private TimelineController timelineController;
         private ActionInspector actionInspector;
         private PlaybackController playbackController;
+        private EditorSkillExecutor skillExecutor;
 
         // Track and action management
         private readonly List<TrackElement> trackElements = new List<TrackElement>();
@@ -76,6 +77,9 @@ namespace SkillSystem.Editor
             {
                 playbackController.UpdatePlayback(currentSkillData, currentFrame);
             }
+
+            // Update skill executor for real-time execution
+            skillExecutor?.UpdateExecution();
         }
 
         private void InitializeComponents()
@@ -119,6 +123,27 @@ namespace SkillSystem.Editor
 
             playbackController = new PlaybackController(this);
             playbackController.Initialize(rootElement);
+
+            skillExecutor = new EditorSkillExecutor();
+            InitializeSkillExecutor();
+        }
+
+        private void InitializeSkillExecutor()
+        {
+            // Bind events for execution feedback
+            skillExecutor.OnFrameChanged += OnExecutorFrameChanged;
+            skillExecutor.OnActionEntered += OnActionEntered;
+            skillExecutor.OnActionTicked += OnActionTicked;
+            skillExecutor.OnActionExited += OnActionExited;
+            skillExecutor.OnSkillStarted += OnSkillExecutionStarted;
+            skillExecutor.OnSkillStopped += OnSkillExecutionStopped;
+            skillExecutor.OnExecutionError += OnExecutionError;
+
+            // Set initial skill data
+            if (currentSkillData != null)
+            {
+                skillExecutor.SetSkillData(currentSkillData);
+            }
         }
 
         private void BindEvents()
@@ -268,6 +293,12 @@ namespace SkillSystem.Editor
             // Allow frame range from 0 to totalDuration (inclusive) to match ruler display
             currentFrame = Mathf.Clamp(newFrame, 0, currentSkillData.totalDuration);
 
+            // Sync with skill executor if it's running
+            if (skillExecutor != null && skillExecutor.IsExecuting)
+            {
+                skillExecutor.SetFrame(currentFrame);
+            }
+
             playbackController?.UpdateFrameControls(currentSkillData, currentFrame);
             timelineController?.UpdatePlayhead(currentFrame);
             timelineController?.UpdateCursorRuler(currentFrame);
@@ -382,7 +413,10 @@ namespace SkillSystem.Editor
             selectedTrackIndex = -1;
             selectedActionIndex = -1;
             currentFrame = 0;
-            
+
+            // Update skill executor with new data
+            skillExecutor?.SetSkillData(currentSkillData);
+
             if (rootElement != null)
             {
                 RefreshUI();
@@ -423,6 +457,10 @@ namespace SkillSystem.Editor
                     selectedTrackIndex = -1;
                     selectedActionIndex = -1;
                     currentFrame = 0;
+
+                    // Update skill executor with loaded data
+                    skillExecutor?.SetSkillData(currentSkillData);
+
                     RefreshUI();
                 }
             }
@@ -517,6 +555,322 @@ namespace SkillSystem.Editor
 
             // Update cursor ruler position to account for scrolling
             timelineController?.UpdateCursorRuler(currentFrame);
+        }
+
+        // Skill Executor Event Handlers
+        private void OnExecutorFrameChanged(int frame)
+        {
+            // Sync the editor frame with the executor frame
+            if (currentFrame != frame)
+            {
+                currentFrame = frame;
+                playbackController?.UpdateFrameControls(currentSkillData, currentFrame);
+                timelineController?.UpdatePlayhead(currentFrame);
+                timelineController?.UpdateCursorRuler(currentFrame);
+            }
+        }
+
+        private void OnActionEntered(ISkillAction action)
+        {
+            // Visual feedback for action entry
+            if (actionElements.ContainsKey(action))
+            {
+                actionElements[action].SetExecutionState(true, false);
+            }
+            Debug.Log($"[Editor] Action Entered: {action.GetActionName()} at frame {action.frame}");
+        }
+
+        private void OnActionTicked(ISkillAction action, int relativeFrame)
+        {
+            // Visual feedback for action ticking
+            if (actionElements.ContainsKey(action))
+            {
+                actionElements[action].SetExecutionState(true, true);
+            }
+        }
+
+        private void OnActionExited(ISkillAction action)
+        {
+            // Visual feedback for action exit
+            if (actionElements.ContainsKey(action))
+            {
+                actionElements[action].SetExecutionState(false, false);
+            }
+            Debug.Log($"[Editor] Action Exited: {action.GetActionName()} at frame {currentFrame}");
+        }
+
+        private void OnSkillExecutionStarted(SkillData skillData)
+        {
+            Debug.Log($"[Editor] Skill execution started: {skillData.skillName}");
+        }
+
+        private void OnSkillExecutionStopped(SkillData skillData)
+        {
+            Debug.Log($"[Editor] Skill execution stopped: {skillData.skillName}");
+
+            // Clear all action execution states
+            foreach (var actionElement in actionElements.Values)
+            {
+                actionElement.SetExecutionState(false, false);
+            }
+        }
+
+        private void OnExecutionError(string error)
+        {
+            Debug.LogError($"[Editor] Skill execution error: {error}");
+        }
+
+        // Public methods for controlling execution
+        public void StartSkillExecution()
+        {
+            if (skillExecutor != null && currentSkillData != null)
+            {
+                skillExecutor.SetSkillData(currentSkillData);
+                skillExecutor.StartExecution();
+            }
+        }
+
+        public void StopSkillExecution()
+        {
+            skillExecutor?.StopExecution();
+        }
+
+        public bool IsSkillExecuting => skillExecutor?.IsExecuting ?? false;
+    }
+
+    /// <summary>
+    /// 编辑器技能执行器 - 在编辑器中实时执行技能逻辑
+    /// </summary>
+    public class EditorSkillExecutor
+    {
+        // Events
+        public System.Action<int> OnFrameChanged;
+        public System.Action<ISkillAction> OnActionEntered;
+        public System.Action<ISkillAction, int> OnActionTicked;
+        public System.Action<ISkillAction> OnActionExited;
+        public System.Action<SkillData> OnSkillStarted;
+        public System.Action<SkillData> OnSkillStopped;
+        public System.Action<string> OnExecutionError;
+
+        // Core state
+        private SkillData currentSkillData;
+        private int currentFrame;
+        private bool isExecuting;
+        private float frameTimer;
+
+        // Action tracking
+        private readonly HashSet<ISkillAction> activeActions = new HashSet<ISkillAction>();
+
+        public SkillData CurrentSkillData => currentSkillData;
+        public int CurrentFrame => currentFrame;
+        public bool IsExecuting => isExecuting;
+
+        public void SetSkillData(SkillData skillData)
+        {
+            if (isExecuting)
+            {
+                StopExecution();
+            }
+
+            currentSkillData = skillData;
+            currentFrame = 0;
+            frameTimer = 0f;
+
+            if (skillData != null)
+            {
+                ResetAllActionStates();
+            }
+        }
+
+        public void StartExecution()
+        {
+            if (currentSkillData == null)
+            {
+                OnExecutionError?.Invoke("No skill data to execute");
+                return;
+            }
+
+            isExecuting = true;
+            currentFrame = 0;
+            frameTimer = 0f;
+
+            ResetAllActionStates();
+            OnSkillStarted?.Invoke(currentSkillData);
+            Debug.Log($"[EditorSkillExecutor] Started executing skill: {currentSkillData.skillName}");
+        }
+
+        public void StopExecution()
+        {
+            if (!isExecuting) return;
+
+            foreach (var action in activeActions)
+            {
+                try
+                {
+                    action.ForceExit();
+                    OnActionExited?.Invoke(action);
+                }
+                catch (System.Exception e)
+                {
+                    OnExecutionError?.Invoke($"Error exiting action {action.GetActionName()}: {e.Message}");
+                }
+            }
+
+            activeActions.Clear();
+            isExecuting = false;
+            OnSkillStopped?.Invoke(currentSkillData);
+            Debug.Log($"[EditorSkillExecutor] Stopped executing skill: {currentSkillData?.skillName}");
+        }
+
+        public void SetFrame(int targetFrame)
+        {
+            if (currentSkillData == null) return;
+
+            int clampedFrame = Mathf.Clamp(targetFrame, 0, currentSkillData.totalDuration);
+            if (clampedFrame == currentFrame && isExecuting) return;
+
+            currentFrame = clampedFrame;
+            ProcessFrame();
+            OnFrameChanged?.Invoke(currentFrame);
+        }
+
+        public void UpdateExecution()
+        {
+            if (!isExecuting || currentSkillData == null) return;
+
+            frameTimer += Time.deltaTime;
+            float frameInterval = 1f / currentSkillData.frameRate;
+
+            while (frameTimer >= frameInterval)
+            {
+                frameTimer -= frameInterval;
+                AdvanceFrame();
+            }
+        }
+
+        private void AdvanceFrame()
+        {
+            currentFrame++;
+
+            if (currentFrame >= currentSkillData.totalDuration)
+            {
+                currentFrame = 0;
+                ResetAllActionStates();
+            }
+
+            ProcessFrame();
+            OnFrameChanged?.Invoke(currentFrame);
+        }
+
+        private void ProcessFrame()
+        {
+            if (currentSkillData == null) return;
+
+            var allActiveActionsThisFrame = new HashSet<ISkillAction>();
+
+            foreach (var track in currentSkillData.tracks)
+            {
+                if (!track.enabled) continue;
+
+                foreach (var action in track.actions)
+                {
+                    if (action.IsActiveAtFrame(currentFrame))
+                    {
+                        allActiveActionsThisFrame.Add(action);
+                    }
+                }
+            }
+
+            // Process exits
+            var actionsToExit = new List<ISkillAction>();
+            foreach (var activeAction in activeActions)
+            {
+                if (!allActiveActionsThisFrame.Contains(activeAction))
+                {
+                    actionsToExit.Add(activeAction);
+                }
+            }
+
+            foreach (var action in actionsToExit)
+            {
+                try
+                {
+                    action.OnExit();
+                    activeActions.Remove(action);
+                    OnActionExited?.Invoke(action);
+                }
+                catch (System.Exception e)
+                {
+                    OnExecutionError?.Invoke($"Error in OnExit for {action.GetActionName()}: {e.Message}");
+                }
+            }
+
+            // Process enters
+            var actionsToEnter = new List<ISkillAction>();
+            foreach (var newActiveAction in allActiveActionsThisFrame)
+            {
+                if (!activeActions.Contains(newActiveAction))
+                {
+                    actionsToEnter.Add(newActiveAction);
+                }
+            }
+
+            foreach (var action in actionsToEnter)
+            {
+                try
+                {
+                    action.OnEnter();
+                    activeActions.Add(action);
+                    OnActionEntered?.Invoke(action);
+                }
+                catch (System.Exception e)
+                {
+                    OnExecutionError?.Invoke($"Error in OnEnter for {action.GetActionName()}: {e.Message}");
+                }
+            }
+
+            // Process ticks
+            foreach (var action in activeActions)
+            {
+                try
+                {
+                    int relativeFrame = currentFrame - action.frame;
+                    action.OnTick(relativeFrame);
+                    OnActionTicked?.Invoke(action, relativeFrame);
+                }
+                catch (System.Exception e)
+                {
+                    OnExecutionError?.Invoke($"Error in OnTick for {action.GetActionName()}: {e.Message}");
+                }
+            }
+        }
+
+        private void ResetAllActionStates()
+        {
+            foreach (var action in activeActions)
+            {
+                try
+                {
+                    action.ForceExit();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Error force exiting action {action.GetActionName()}: {e.Message}");
+                }
+            }
+
+            activeActions.Clear();
+
+            if (currentSkillData != null)
+            {
+                foreach (var track in currentSkillData.tracks)
+                {
+                    foreach (var action in track.actions)
+                    {
+                        action.ResetLifecycleState();
+                    }
+                }
+            }
         }
     }
 }

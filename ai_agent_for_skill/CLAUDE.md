@@ -165,3 +165,4 @@
 - [Timeline Scroller Removal and Zoom Layout](.claude/docs/timeline-scroller-optimization.md) - 移除问题滚动条，将Zoom控件重新布局到toolbar，简化UI设计
 - [Skill Editor Layout Improvements](.claude/docs/skill-editor-layout-improvements.md) - 技能编辑器布局重大改进：Inspector面板移至右侧，添加ScrollView支持和水平滚动条
 - [Action Inspector Custom Fields Fix](.claude/docs/action-inspector-custom-fields-fix.md) - Action Inspector自定义字段显示修复，解决只显示基础字段而不显示Action子类自定义字段的问题
+- [Skill Editor Execution System](.claude/docs/skill-editor-execution-system.md) - 技能编辑器执行系统，实现完整的生命周期管理（OnEnter/OnTick/OnExit）和实时技能执行功能
