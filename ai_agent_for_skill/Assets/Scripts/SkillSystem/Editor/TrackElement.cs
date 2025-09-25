@@ -96,25 +96,15 @@ namespace SkillSystem.Editor
 
         private void SetupTrackRowContextMenu(VisualElement trackRow)
         {
-            trackRow.AddManipulator(new ContextualMenuManipulator((evt)=>
+            trackRow.RegisterCallback<MouseDownEvent>(evt =>
             {
-                int targetFrame = GetFrameFromPosition(evt.localMousePosition.x);
-
-                evt.menu.AppendAction($"Add Log Action at frame {targetFrame}",
-                    _ => editorWindow.AddActionToTrack<SkillSystem.Actions.LogAction>(this.trackIndex, targetFrame));
-
-                evt.menu.AppendAction($"Add Collision Action at frame {targetFrame}",
-                    _ => editorWindow.AddActionToTrack<SkillSystem.Actions.CollisionAction>(this.trackIndex, targetFrame));
-
-                evt.menu.AppendAction($"Add Animation Action at frame {targetFrame}",
-                    _ => editorWindow.AddActionToTrack<SkillSystem.Actions.AnimationAction>(this.trackIndex, targetFrame));
-
-                evt.menu.AppendSeparator();
-
-                evt.menu.AppendAction("Delete Track",
-                    _ => editorWindow.DeleteTrack(this.trackIndex),
-                    this.trackIndex > 0 ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled);
-            }));
+                if (evt.button == 1) // 右键
+                {
+                    int targetFrame = GetFrameFromPosition(evt.localMousePosition.x);
+                    editorWindow.ShowActionSelectorAndAdd(this.trackIndex, targetFrame);
+                    evt.StopPropagation();
+                }
+            });
         }
 
         private int GetFrameFromPosition(float xPosition)

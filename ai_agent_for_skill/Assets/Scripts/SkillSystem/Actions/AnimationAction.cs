@@ -5,6 +5,8 @@ using Sirenix.OdinInspector;
 namespace SkillSystem.Actions
 {
     [Serializable]
+    [ActionDisplayName("Play Animation")]
+    [ActionCategory("Visual & Audio")]
     public class AnimationAction : ISkillAction
     {
         [SerializeField]
