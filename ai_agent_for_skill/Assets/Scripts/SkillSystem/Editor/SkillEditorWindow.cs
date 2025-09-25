@@ -400,7 +400,7 @@ namespace SkillSystem.Editor
 
         private void CreateNewSkill()
         {
-            currentSkillData = ScriptableObject.CreateInstance<SkillData>();
+            currentSkillData = new SkillData();
             currentSkillData.skillName = "New Skill";
             currentSkillData.totalDuration = 60;
             currentSkillData.frameRate = 30;

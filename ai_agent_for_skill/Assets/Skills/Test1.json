@@ -1,0 +1,108 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "New Skill",
+    "skillDescription": "",
+    "totalDuration": 60,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 5,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Default Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.LogAction, Assembly-CSharp",
+                            "frame": 17,
+                            "duration": 1,
+                            "enabled": true,
+                            "message": "Skill Action Executed",
+                            "logType": 3
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 5,
+                "$type": 2,
+                "trackName": "Track 2",
+                "enabled": true,
+                "actions": {
+                    "$id": 6,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            },
+            {
+                "$id": 7,
+                "$type": 2,
+                "trackName": "Track 3",
+                "enabled": true,
+                "actions": {
+                    "$id": 8,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 9,
+                            "$type": 4,
+                            "frame": 29,
+                            "duration": 1,
+                            "enabled": true,
+                            "message": "Skill Action Executed",
+                            "logType": 3
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 10,
+                "$type": 2,
+                "trackName": "Track 4",
+                "enabled": true,
+                "actions": {
+                    "$id": 11,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            },
+            {
+                "$id": 12,
+                "$type": 2,
+                "trackName": "Track 5",
+                "enabled": true,
+                "actions": {
+                    "$id": 13,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 14,
+                            "$type": 4,
+                            "frame": 30,
+                            "duration": 1,
+                            "enabled": true,
+                            "message": "Skill Action Executed",
+                            "logType": 3
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "a463c6cc-54c6-49c7-a2e5-7b568dbbe3d3"
+}

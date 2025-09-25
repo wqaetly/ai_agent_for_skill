@@ -20,7 +20,7 @@ namespace SkillSystem.Data
 
         [SerializeReference]
         [LabelText("Actions")]
-        [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "GetActionDisplayName")]
+        [ListDrawerSettings(ShowIndexLabels = true)]
         public List<ISkillAction> actions = new List<ISkillAction>();
 
         public void AddAction(ISkillAction action)
@@ -56,12 +56,6 @@ namespace SkillSystem.Data
                 }
             }
             return result;
-        }
-
-        private string GetActionDisplayName(ISkillAction action, int index)
-        {
-            if (action == null) return $"Action {index}";
-            return $"{action.GetActionName()} (Frame {action.frame})";
         }
     }
 }

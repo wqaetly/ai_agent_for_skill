@@ -1,0 +1,143 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "New Skill",
+    "skillDescription": "",
+    "totalDuration": 60,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 7,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Default Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 12,
+                            "duration": 1,
+                            "enabled": true,
+                            "animationClipName": "Attack01",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 5,
+                "$type": 2,
+                "trackName": "Track 2",
+                "enabled": true,
+                "actions": {
+                    "$id": 6,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            },
+            {
+                "$id": 7,
+                "$type": 2,
+                "trackName": "Track 3",
+                "enabled": true,
+                "actions": {
+                    "$id": 8,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            },
+            {
+                "$id": 9,
+                "$type": 2,
+                "trackName": "Track 4",
+                "enabled": true,
+                "actions": {
+                    "$id": 10,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            },
+            {
+                "$id": 11,
+                "$type": 2,
+                "trackName": "Track 5",
+                "enabled": true,
+                "actions": {
+                    "$id": 12,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            },
+            {
+                "$id": 13,
+                "$type": 2,
+                "trackName": "Track 6",
+                "enabled": true,
+                "actions": {
+                    "$id": 14,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 15,
+                            "$type": "5|SkillSystem.Actions.CollisionAction, Assembly-CSharp",
+                            "frame": 34,
+                            "duration": 1,
+                            "enabled": true,
+                            "shape": 0,
+                            "position": {
+                                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "size": {
+                                "$type": 6,
+                                1,
+                                1,
+                                1
+                            },
+                            "layerMask": {
+                                "$type": "7|UnityEngine.LayerMask, UnityEngine.CoreModule",
+                                55
+                            },
+                            "damage": 10
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 16,
+                "$type": 2,
+                "trackName": "Track 7",
+                "enabled": true,
+                "actions": {
+                    "$id": 17,
+                    "$type": 3,
+                    "$rlength": 0,
+                    "$rcontent": [
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "5b839c5f-3df3-44c1-aecb-2a957f11d7cb"
+}

@@ -7,7 +7,7 @@ using Sirenix.Serialization;
 namespace SkillSystem.Data
 {
     [Serializable]
-    public class SkillData : SerializedScriptableObject
+    public class SkillData
     {
         [SerializeField]
         [LabelText("Skill Name")]
