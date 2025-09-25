@@ -220,15 +220,22 @@
     background-color: rgba(150, 150, 150, 0.9);
 }
 
+.track-headers-scroll .unity-base-slider__tracker {
+    background-color: rgba(40, 40, 40, 0.8);
+    border-radius: 8px;
+}
+
 .track-headers-scroll .unity-base-slider__dragger {
-    background-color: rgba(180, 180, 180, 0.8);
+    background-color: rgba(100, 100, 100, 0.7);
     border-radius: 6px;
     border-width: 0;
     margin: 1px;
+    min-width: 20px;
+    min-height: 12px;
 }
 
 .track-headers-scroll .unity-base-slider__dragger:hover {
-    background-color: rgba(220, 220, 220, 1.0);
+    background-color: rgba(130, 130, 130, 0.9);
 }
 
 /* Track Headers Container */
@@ -340,15 +347,22 @@
 }
 
 /* 确保滚动条拖拽手柄可见 */
+.timeline-tracks-scroll .unity-base-slider__tracker {
+    background-color: rgba(40, 40, 40, 0.8);
+    border-radius: 8px;
+}
+
 .timeline-tracks-scroll .unity-base-slider__dragger {
-    background-color: rgba(180, 180, 180, 0.8);
+    background-color: rgba(100, 100, 100, 0.7);
     border-radius: 6px;
     border-width: 0;
     margin: 1px;
+    min-width: 20px;
+    min-height: 12px;
 }
 
 .timeline-tracks-scroll .unity-base-slider__dragger:hover {
-    background-color: rgba(220, 220, 220, 1.0);
+    background-color: rgba(130, 130, 130, 0.9);
 }
 
 /* Timeline Tracks Container */

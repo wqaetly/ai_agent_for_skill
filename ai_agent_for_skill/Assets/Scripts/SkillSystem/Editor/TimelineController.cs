@@ -37,6 +37,7 @@ namespace SkillSystem.Editor
         // State
         private bool isUpdatingZoom = false;
         private bool isDraggingCursorRuler = false;
+        private bool isDraggingFromRuler = false;
 
         public float FrameWidth => frameWidth;
         public float TrackHeight => trackHeight;
@@ -90,9 +91,13 @@ namespace SkillSystem.Editor
             if (fitButton != null)
                 fitButton.clicked += FitTimelineToWindow;
 
-            // Timeline ruler click event
+            // Timeline ruler drag events - 让整个标尺区域支持拖拽
             if (timelineRuler != null)
+            {
                 timelineRuler.RegisterCallback<MouseDownEvent>(OnTimelineRulerMouseDown);
+                timelineRuler.RegisterCallback<MouseMoveEvent>(OnTimelineRulerMouseMove);
+                timelineRuler.RegisterCallback<MouseUpEvent>(OnTimelineRulerMouseUp);
+            }
 
             // Cursor ruler drag events
             if (cursorRuler != null)
@@ -167,6 +172,11 @@ namespace SkillSystem.Editor
 
             marker.style.left = frame * frameWidth;
             marker.style.position = Position.Absolute;
+
+            // 为刻度标记添加拖拽支持
+            marker.RegisterCallback<MouseDownEvent>(evt => OnFrameMarkerMouseDown(evt, frame));
+            marker.RegisterCallback<MouseMoveEvent>(OnFrameMarkerMouseMove);
+            marker.RegisterCallback<MouseUpEvent>(OnFrameMarkerMouseUp);
 
             return marker;
         }
@@ -339,9 +349,13 @@ namespace SkillSystem.Editor
                 // 防止与cursor-ruler拖拽冲突
                 if (isDraggingCursorRuler) return;
 
-                // Since Timeline Ruler now moves with scroll (style.left = -scrollOffset),
-                // we should use the mouse position directly without adding scrollOffset again
-                int clickedFrame = Mathf.RoundToInt(evt.localMousePosition.x / frameWidth);
+                // 开始从标尺拖拽，不立即定位到帧
+                isDraggingFromRuler = true;
+                timelineRuler.CaptureMouse();
+
+                // 计算精确的帧位置（支持小数），用于流畅拖拽
+                float exactFrame = evt.localMousePosition.x / frameWidth;
+                int clickedFrame = Mathf.RoundToInt(exactFrame);
 
                 // Clamp to valid frame range
                 clickedFrame = Mathf.Clamp(clickedFrame, 0, editor.CurrentSkillData?.totalDuration ?? 0);
@@ -395,6 +409,84 @@ namespace SkillSystem.Editor
             {
                 isDraggingCursorRuler = false;
                 cursorRuler.ReleaseMouse();
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnTimelineRulerMouseMove(MouseMoveEvent evt)
+        {
+            if (isDraggingFromRuler)
+            {
+                // 精确计算帧位置，支持流畅拖拽
+                float exactFrame = evt.localMousePosition.x / frameWidth;
+                int targetFrame = Mathf.RoundToInt(exactFrame);
+
+                // Clamp to valid range
+                targetFrame = Mathf.Clamp(targetFrame, 0, editor.CurrentSkillData?.totalDuration ?? 0);
+
+                editor.SetCurrentFrame(targetFrame);
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnTimelineRulerMouseUp(MouseUpEvent evt)
+        {
+            if (evt.button == 0 && isDraggingFromRuler)
+            {
+                isDraggingFromRuler = false;
+                timelineRuler.ReleaseMouse();
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnFrameMarkerMouseDown(MouseDownEvent evt, int markerFrame)
+        {
+            if (evt.button == 0) // Left click only
+            {
+                // 防止与其他拖拽冲突
+                if (isDraggingCursorRuler || isDraggingFromRuler) return;
+
+                // 直接设置到该帧，然后开始拖拽
+                editor.SetCurrentFrame(markerFrame);
+
+                // 开始从刻度标记拖拽
+                isDraggingFromRuler = true;
+                ((VisualElement)evt.target).CaptureMouse();
+
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnFrameMarkerMouseMove(MouseMoveEvent evt)
+        {
+            if (isDraggingFromRuler)
+            {
+                // 获取标尺容器，用于坐标转换
+                var ruler = timelineRuler;
+                if (ruler != null)
+                {
+                    // 将鼠标位置转换到标尺坐标系
+                    Vector2 localPos = ruler.WorldToLocal(evt.mousePosition);
+
+                    // 精确计算帧位置
+                    float exactFrame = localPos.x / frameWidth;
+                    int targetFrame = Mathf.RoundToInt(exactFrame);
+
+                    // Clamp to valid range
+                    targetFrame = Mathf.Clamp(targetFrame, 0, editor.CurrentSkillData?.totalDuration ?? 0);
+
+                    editor.SetCurrentFrame(targetFrame);
+                }
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnFrameMarkerMouseUp(MouseUpEvent evt)
+        {
+            if (evt.button == 0 && isDraggingFromRuler)
+            {
+                isDraggingFromRuler = false;
+                ((VisualElement)evt.target).ReleaseMouse();
                 evt.StopPropagation();
             }
         }
@@ -484,16 +576,26 @@ namespace SkillSystem.Editor
                 // 延迟执行，让Unity有时间完成布局计算
                 timelineTracksScroll.schedule.Execute(() =>
                 {
-                    // 轻柔地触发滚动条范围重新计算
+                    // 强制显示滚动条dragger，防止被隐藏
                     if (timelineTracksScroll.horizontalScroller != null)
                     {
-                        timelineTracksScroll.horizontalScroller.Adjust(1.0f);
+                        var horizontalDragger = timelineTracksScroll.horizontalScroller.Q(className: "unity-base-slider__dragger");
+                        if (horizontalDragger != null)
+                        {
+                            horizontalDragger.style.display = DisplayStyle.Flex;
+                            horizontalDragger.style.visibility = Visibility.Visible;
+                        }
                     }
                     if (timelineTracksScroll.verticalScroller != null)
                     {
-                        timelineTracksScroll.verticalScroller.Adjust(1.0f);
+                        var verticalDragger = timelineTracksScroll.verticalScroller.Q(className: "unity-base-slider__dragger");
+                        if (verticalDragger != null)
+                        {
+                            verticalDragger.style.display = DisplayStyle.Flex;
+                            verticalDragger.style.visibility = Visibility.Visible;
+                        }
                     }
-                }).ExecuteLater(5); // 短延迟
+                }).ExecuteLater(10); // 稍长延迟确保布局完成
             }
         }
     }
