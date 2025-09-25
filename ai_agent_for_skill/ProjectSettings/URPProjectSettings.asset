@@ -1,5 +1,5 @@
 %YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
+%TAG !u! tag:yousandi.cn,2023:
 --- !u!114 &1
 MonoBehaviour:
   m_ObjectHideFlags: 61
@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 247994e1f5a72c2419c26a37e9334c01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LastMaterialVersion: 10
+  m_LastMaterialVersion: 7

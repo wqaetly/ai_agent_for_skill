@@ -15,7 +15,6 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/34965f9dd2524b9fabed0cb9ab9483b99e4c00/a9/545f82b1/TimeArea.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/a603b63156ce4018a647a922bdfa88af1ffe00/d5/817c06de/ContextualMenuPopulateEvent.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.claude/settings.local.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.timeline@c58b4ee65782/Editor/Window/TimelineWindow_TimeArea.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -36,7 +35,7 @@
 }</component>
   <component name="RunManager" selected="附加到 Unity 编辑器.附加到 Unity 编辑器">
     <configuration name="启动 Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="I:\UnityHub\6000.1.11f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="I:\Unity\TuanJieUnity\2022.3.61t6\Editor\Tuanjie.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath H:\GameProject\ai_agent_for_skill\ai_agent_for_skill -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -48,7 +47,7 @@
       <method v="2" />
     </configuration>
     <configuration name="单元测试(批处理模式)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="I:\UnityHub\6000.1.11f1\Editor\Unity.exe" />
+      <option name="EXE_PATH" value="I:\Unity\TuanJieUnity\2022.3.61t6\Editor\Tuanjie.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath H:\GameProject\ai_agent_for_skill\ai_agent_for_skill -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill" />
       <option name="PASS_PARENT_ENVS" value="1" />
