@@ -68,16 +68,9 @@ namespace SkillSystem.Editor
 
         private void ValidateCursorRuler(VisualElement rootElement)
         {
-            Debug.Log($"CursorRuler found: {cursorRuler != null}");
-            if (cursorRuler != null)
-            {
-                Debug.Log($"CursorRuler parent: {cursorRuler.parent?.name}");
-                Debug.Log($"CursorRuler layout: {cursorRuler.layout}");
-            }
-            else
+            if (cursorRuler == null)
             {
                 // Fallback: Create cursor-ruler programmatically if not found
-                Debug.LogWarning("Creating cursor-ruler programmatically!");
                 var timelineContainer = rootElement.Q<VisualElement>("timeline-container");
                 if (timelineContainer != null)
                 {
@@ -85,7 +78,6 @@ namespace SkillSystem.Editor
                     cursorRuler.name = "cursor-ruler-fallback";
                     cursorRuler.AddToClassList("cursor-ruler");
                     timelineContainer.Insert(0, cursorRuler); // Insert at beginning
-                    Debug.Log($"Created fallback cursor-ruler in {timelineContainer.name}");
                 }
             }
         }
@@ -354,7 +346,6 @@ namespace SkillSystem.Editor
                 // Clamp to valid frame range
                 clickedFrame = Mathf.Clamp(clickedFrame, 0, editor.CurrentSkillData?.totalDuration ?? 0);
 
-                Debug.Log($"Ruler click: x={evt.localMousePosition.x}, frameWidth={frameWidth}, clickedFrame={clickedFrame}");
                 editor.SetCurrentFrame(clickedFrame);
 
                 // 停止事件传播，防止触发其他元素的点击事件
@@ -392,7 +383,6 @@ namespace SkillSystem.Editor
                     // Use RoundToInt instead of FloorToInt to allow reaching the last frame
                     int targetFrame = Mathf.RoundToInt((adjustedX + scrollOffset) / frameWidth);
 
-                    Debug.Log($"Drag to frame: calculated={targetFrame}, totalDuration={editor.CurrentSkillData?.totalDuration}, maxAllowed={(editor.CurrentSkillData?.totalDuration ?? 1) - 1}");
                     editor.SetCurrentFrame(targetFrame);
                 }
                 evt.StopPropagation();
@@ -415,8 +405,6 @@ namespace SkillSystem.Editor
 
             float totalWidth = skillData.totalDuration * frameWidth;
             float totalHeight = skillData.tracks.Count * (trackHeight + 2);
-
-            Debug.Log($"[TimelineController] UpdateTimelineSize: totalWidth={totalWidth}, totalHeight={totalHeight}, frameWidth={frameWidth}");
 
             // Update both timeline tracks and its container
             timelineTracks.style.minWidth = totalWidth;
@@ -505,8 +493,6 @@ namespace SkillSystem.Editor
                     {
                         timelineTracksScroll.verticalScroller.Adjust(1.0f);
                     }
-
-                    Debug.Log($"[TimelineController] ScrollView refreshed - H:{timelineTracksScroll.horizontalScroller?.value}, V:{timelineTracksScroll.verticalScroller?.value}");
                 }).ExecuteLater(5); // 短延迟
             }
         }
