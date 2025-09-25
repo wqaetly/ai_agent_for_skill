@@ -129,10 +129,22 @@ namespace SkillSystem.Editor
             // 计算刻度密度，避免标记过密
             int displayInterval = CalculateDisplayInterval(frameWidth);
 
+            // 确保最后一帧总是显示
+            var displayedFrames = new HashSet<int>();
+
+            // 按间隔显示刻度
             for (int frame = 0; frame <= skillData.totalDuration; frame += displayInterval)
             {
                 var marker = CreateFrameMarker(frame, frame % 5 == 0);
                 timelineRuler.Add(marker);
+                displayedFrames.Add(frame);
+            }
+
+            // 特殊处理：确保最后一帧总是显示（如果还没有显示的话）
+            if (!displayedFrames.Contains(skillData.totalDuration))
+            {
+                var lastFrameMarker = CreateFrameMarker(skillData.totalDuration, skillData.totalDuration % 5 == 0);
+                timelineRuler.Add(lastFrameMarker);
             }
         }
 
@@ -241,19 +253,30 @@ namespace SkillSystem.Editor
 
         private void FitTimelineToWindow()
         {
-            // 智能缩放算法，参考Unity Timeline实现
-            if (timelineTracksContainer != null && editor.CurrentSkillData != null)
+            // 真正的Fit功能：让所有内容都能在当前窗口中可见
+            if (timelineTracksScroll != null && editor.CurrentSkillData != null)
             {
-                float availableWidth = timelineTracksContainer.resolvedStyle.width;
+                var skillData = editor.CurrentSkillData;
 
-                // 计算最佳缩放级别
-                float optimalZoom = CalculateFitZoomLevel(availableWidth, baseFrameWidth, editor.CurrentSkillData.totalDuration);
+                // 获取ScrollView的可用空间（减去滚动条空间）
+                float availableWidth = timelineTracksScroll.resolvedStyle.width - 20f; // 减去垂直滚动条宽度
+                float availableHeight = timelineTracksScroll.resolvedStyle.height - 20f; // 减去水平滚动条高度
 
+                // 计算水平缩放：让整个技能时长适配宽度
+                float optimalZoom = CalculateFitZoomLevel(availableWidth, baseFrameWidth, skillData.totalDuration);
+
+                // 应用缩放
                 if (zoomSlider != null)
                 {
                     zoomSlider.value = optimalZoom;
                 }
                 SetZoomLevel(optimalZoom);
+
+                // 垂直适配：确保所有轨道都可见
+                FitTracksToHeight(availableHeight, skillData.tracks.Count);
+
+                // 重置滚动位置到0，确保显示完整内容
+                ResetScrollersToZero();
             }
         }
 
@@ -265,6 +288,45 @@ namespace SkillSystem.Editor
             if (requiredWidth <= availableWidth) return 1.0f;
 
             return Mathf.Clamp(availableWidth / requiredWidth, 0.1f, 1.0f);
+        }
+
+        private void FitTracksToHeight(float availableHeight, int trackCount)
+        {
+            if (trackCount <= 0) return;
+
+            float requiredHeight = trackCount * trackHeight;
+
+            // 如果所有轨道的总高度小于等于可用高度，不需要调整
+            if (requiredHeight <= availableHeight) return;
+
+            // 如果轨道太多，计算合适的轨道高度来适配
+            float fitTrackHeight = availableHeight / trackCount;
+
+            // 设定最小轨道高度，避免轨道太扁
+            const float minTrackHeight = 20f;
+            if (fitTrackHeight < minTrackHeight)
+            {
+                // 如果计算出的高度太小，保持最小高度，允许出现垂直滚动条
+                return;
+            }
+
+            // 应用新的轨道高度
+            trackHeight = fitTrackHeight;
+
+            // 更新所有轨道的显示高度
+            UpdateAllTrackHeights();
+        }
+
+        private void UpdateAllTrackHeights()
+        {
+            // 更新轨道容器的高度
+            if (editor.CurrentSkillData != null)
+            {
+                UpdateTimelineSize(editor.CurrentSkillData);
+            }
+
+            // 通知编辑器更新轨道显示
+            editor.UpdateTracks();
         }
 
 
@@ -354,6 +416,8 @@ namespace SkillSystem.Editor
             float totalWidth = skillData.totalDuration * frameWidth;
             float totalHeight = skillData.tracks.Count * (trackHeight + 2);
 
+            Debug.Log($"[TimelineController] UpdateTimelineSize: totalWidth={totalWidth}, totalHeight={totalHeight}, frameWidth={frameWidth}");
+
             // Update both timeline tracks and its container
             timelineTracks.style.minWidth = totalWidth;
             timelineTracks.style.minHeight = totalHeight;
@@ -369,23 +433,81 @@ namespace SkillSystem.Editor
                 timelineTracksContainer.style.height = totalHeight;
             }
 
+            // 关键修复：直接更新ScrollView的content container
+            if (timelineTracksScroll != null)
+            {
+                // 强制更新content container - 这是ScrollView内容大小的关键
+                var contentContainer = timelineTracksScroll.contentContainer;
+                if (contentContainer != null)
+                {
+                    contentContainer.style.width = totalWidth;
+                    contentContainer.style.height = totalHeight;
+                    contentContainer.MarkDirtyRepaint();
+                }
+
+                // 确保ScrollView本身也知道新的内容大小
+                timelineTracksScroll.MarkDirtyRepaint();
+            }
+
             // Force scroll view to refresh its scrolling range
             RefreshScrollView();
         }
 
-        private void RefreshScrollView()
+        private void ResetScrollersToZero()
         {
-            // Force the ScrollView to recalculate its content size and scrolling range
+            // 正确地将滚动条重置到0位置
             if (timelineTracksScroll != null)
             {
-                // This forces a layout update and scroll range recalculation
-                timelineTracksScroll.MarkDirtyRepaint();
-
-                // Schedule a callback to ensure the scroll view updates
+                // 使用延迟执行确保布局更新完成后再重置滚动条
                 timelineTracksScroll.schedule.Execute(() =>
                 {
-                    timelineTracksScroll.ScrollTo(timelineTracksScroll.contentContainer.Children().FirstOrDefault());
+                    if (timelineTracksScroll.horizontalScroller != null)
+                    {
+                        timelineTracksScroll.horizontalScroller.value = 0f;
+                    }
+                    if (timelineTracksScroll.verticalScroller != null)
+                    {
+                        timelineTracksScroll.verticalScroller.value = 0f;
+                    }
                 });
+            }
+
+            // 同步重置track headers的垂直滚动
+            if (trackHeadersScroll != null)
+            {
+                trackHeadersScroll.schedule.Execute(() =>
+                {
+                    if (trackHeadersScroll.verticalScroller != null)
+                    {
+                        trackHeadersScroll.verticalScroller.value = 0f;
+                    }
+                });
+            }
+        }
+
+        private void RefreshScrollView()
+        {
+            // 简化的ScrollView刷新逻辑，避免过度操作导致滚动条消失
+            if (timelineTracksScroll != null)
+            {
+                // 标记需要重新计算布局
+                timelineTracksScroll.MarkDirtyRepaint();
+
+                // 延迟执行，让Unity有时间完成布局计算
+                timelineTracksScroll.schedule.Execute(() =>
+                {
+                    // 轻柔地触发滚动条范围重新计算
+                    if (timelineTracksScroll.horizontalScroller != null)
+                    {
+                        timelineTracksScroll.horizontalScroller.Adjust(1.0f);
+                    }
+                    if (timelineTracksScroll.verticalScroller != null)
+                    {
+                        timelineTracksScroll.verticalScroller.Adjust(1.0f);
+                    }
+
+                    Debug.Log($"[TimelineController] ScrollView refreshed - H:{timelineTracksScroll.horizontalScroller?.value}, V:{timelineTracksScroll.verticalScroller?.value}");
+                }).ExecuteLater(5); // 短延迟
             }
         }
     }

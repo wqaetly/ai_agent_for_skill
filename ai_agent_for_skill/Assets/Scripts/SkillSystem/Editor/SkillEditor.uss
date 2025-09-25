@@ -200,6 +200,37 @@
     flex-shrink: 0; /* Prevent shrinking */
 }
 
+/* Track Headers ScrollView样式 - 确保滚动条可见 */
+.track-headers-scroll .unity-scroller {
+    background-color: rgba(80, 80, 80, 0.8);
+}
+
+.track-headers-scroll .unity-scroller--vertical {
+    width: 16px;
+    background-color: rgba(60, 60, 60, 0.9);
+}
+
+.track-headers-scroll .unity-scroller__slider {
+    background-color: rgba(120, 120, 120, 0.7);
+    border-radius: 8px;
+    margin: 2px;
+}
+
+.track-headers-scroll .unity-scroller__slider:hover {
+    background-color: rgba(150, 150, 150, 0.9);
+}
+
+.track-headers-scroll .unity-base-slider__dragger {
+    background-color: rgba(180, 180, 180, 0.8);
+    border-radius: 6px;
+    border-width: 0;
+    margin: 1px;
+}
+
+.track-headers-scroll .unity-base-slider__dragger:hover {
+    background-color: rgba(220, 220, 220, 1.0);
+}
+
 /* Track Headers Container */
 .track-headers {
     padding: 2px;
@@ -282,6 +313,44 @@
     background-color: rgb(48, 48, 48);
 }
 
+/* ScrollView Scroller Styles - 确保滚动条可见 */
+.timeline-tracks-scroll .unity-scroller {
+    background-color: rgba(80, 80, 80, 0.8);
+}
+
+.timeline-tracks-scroll .unity-scroller--horizontal {
+    height: 16px;
+    background-color: rgba(60, 60, 60, 0.9);
+}
+
+.timeline-tracks-scroll .unity-scroller--vertical {
+    width: 16px;
+    background-color: rgba(60, 60, 60, 0.9);
+}
+
+/* ScrollView滚动条滑块样式 */
+.timeline-tracks-scroll .unity-scroller__slider {
+    background-color: rgba(120, 120, 120, 0.7);
+    border-radius: 8px;
+    margin: 2px;
+}
+
+.timeline-tracks-scroll .unity-scroller__slider:hover {
+    background-color: rgba(150, 150, 150, 0.9);
+}
+
+/* 确保滚动条拖拽手柄可见 */
+.timeline-tracks-scroll .unity-base-slider__dragger {
+    background-color: rgba(180, 180, 180, 0.8);
+    border-radius: 6px;
+    border-width: 0;
+    margin: 1px;
+}
+
+.timeline-tracks-scroll .unity-base-slider__dragger:hover {
+    background-color: rgba(220, 220, 220, 1.0);
+}
+
 /* Timeline Tracks Container */
 .timeline-tracks-container {
     background-color: rgb(48, 48, 48);
@@ -359,7 +428,7 @@
     border-width: 1px;
     border-color: rgb(35, 35, 35);
     left: 0;
-    right: 0;
+    width: 100%; /* 超大宽度确保背景永远铺满 */
     box-sizing: border-box;
     pointer-events: auto; /* 确保能接收鼠标事件 */
     z-index: 100; /* 确保在frame lines之上但在cursor-ruler之下 */

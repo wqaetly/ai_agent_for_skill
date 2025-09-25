@@ -75,5 +75,10 @@ namespace SkillSystem.Actions
         {
             // 镜头效果结束逻辑 - 恢复镜头到默认状态
         }
+
+        public override string GetActionName()
+        {
+            return this.ToString();
+        }
     }
 }

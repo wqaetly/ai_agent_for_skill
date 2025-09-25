@@ -95,5 +95,10 @@ namespace SkillSystem.Actions
         {
             // 音频播放结束逻辑 - 停止播放或淡出结束
         }
+
+        public override string GetActionName()
+        {
+            return this.ToString();
+        }
     }
 }

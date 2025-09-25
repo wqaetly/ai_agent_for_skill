@@ -175,7 +175,7 @@ namespace SkillSystem.Editor
             actionInspector?.RefreshInspector(currentSkillData, selectedTrackIndex, selectedActionIndex, currentFrame);
         }
 
-        private void UpdateTracks()
+        public void UpdateTracks()
         {
             // Clear existing track elements
             trackHeaders.Clear();

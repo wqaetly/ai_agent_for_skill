@@ -85,7 +85,7 @@ namespace SkillSystem.Editor
 
             // 确保track row有合适的尺寸和交互能力
             trackRow.style.minHeight = 30;
-            trackRow.style.width = Length.Percent(100);
+            // 宽度由CSS控制，确保无限长背景
             trackRow.pickingMode = PickingMode.Position; // 确保能接收鼠标事件
 
             // 直接为track row设置右键菜单
