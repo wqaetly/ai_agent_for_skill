@@ -298,6 +298,12 @@ namespace SkillSystem.Editor
             {
                 skillExecutor.SetFrame(currentFrame);
             }
+            else
+            {
+                // When not in playback mode, manually trigger frame processing for drag preview
+                // This ensures OnEnter/OnTick/OnExit are called during timeline dragging
+                skillExecutor?.SetFrame(currentFrame);
+            }
 
             playbackController?.UpdateFrameControls(currentSkillData, currentFrame);
             timelineController?.UpdatePlayhead(currentFrame);
