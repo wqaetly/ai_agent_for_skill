@@ -1,0 +1,320 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "Flame Shockwave",
+    "skillDescription": "释放一道火焰冲击波，造成大范围伤害并施加燃烧效果",
+    "totalDuration": 150,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 6,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Animation Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 2,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "animationClipName": "CastSpell",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.2,
+                            "animationLayer": 0
+                        },
+                        {
+                            "$id": 5,
+                            "$type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 30,
+                            "duration": 60,
+                            "enabled": true,
+                            "animationClipName": "ChannelSpell",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 6,
+                "$type": 2,
+                "trackName": "Movement Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 7,
+                    "$type": 3,
+                    "$rlength": 2,
+                    "$rcontent": [
+                        {
+                            "$id": 8,
+                            "$type": "5|SkillSystem.Actions.ControlAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 45,
+                            "enabled": true,
+                            "controlType": 0,
+                            "intensity": 1.0,
+                            "affectedControls": 15
+                        },
+                        {
+                            "$id": 9,
+                            "$type": "6|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+                            "frame": 45,
+                            "duration": 30,
+                            "enabled": true,
+                            "movementType": 2,
+                            "direction": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                1
+                            },
+                            "speed": 8.0,
+                            "distance": 4.0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 10,
+                "$type": 2,
+                "trackName": "Effect Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 11,
+                    "$type": 3,
+                    "$rlength": 3,
+                    "$rcontent": [
+                        {
+                            "$id": 12,
+                            "$type": "8|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+                            "frame": 45,
+                            "duration": 1,
+                            "enabled": true,
+                            "projectileType": 1,
+                            "speed": 15.0,
+                            "maxDistance": 12.0,
+                            "piercing": true,
+                            "damage": 80,
+                            "effectName": "FlameProjectile"
+                        },
+                        {
+                            "$id": 13,
+                            "$type": "9|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+                            "frame": 75,
+                            "duration": 30,
+                            "enabled": true,
+                            "shape": 1,
+                            "radius": 6.0,
+                            "position": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                8
+                            },
+                            "damage": 120,
+                            "tickInterval": 5,
+                            "effectName": "FlameExplosion"
+                        },
+                        {
+                            "$id": 14,
+                            "$type": "10|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+                            "frame": 75,
+                            "duration": 90,
+                            "enabled": true,
+                            "buffType": 2,
+                            "damagePerTick": 15,
+                            "tickInterval": 30,
+                            "stackable": true,
+                            "maxStacks": 3,
+                            "effectName": "BurnDebuff"
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 15,
+                "$type": 2,
+                "trackName": "Audio Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 16,
+                    "$type": 3,
+                    "$rlength": 3,
+                    "$rcontent": [
+                        {
+                            "$id": 17,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "audioClipName": "flame_cast",
+                            "volume": 0.8,
+                            "pitch": 1.0,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 5.0,
+                            "maxDistance": 20.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.1,
+                            "fadeOutTime": 0.2,
+                            "priority": 200
+                        },
+                        {
+                            "$id": 18,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 45,
+                            "duration": 30,
+                            "enabled": true,
+                            "audioClipName": "flame_whoosh",
+                            "volume": 0.9,
+                            "pitch": 1.2,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                2
+                            },
+                            "minDistance": 3.0,
+                            "maxDistance": 15.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.05,
+                            "fadeOutTime": 0.3,
+                            "priority": 180
+                        },
+                        {
+                            "$id": 19,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 75,
+                            "duration": 45,
+                            "enabled": true,
+                            "audioClipName": "flame_explosion",
+                            "volume": 1.0,
+                            "pitch": 0.9,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                8
+                            },
+                            "minDistance": 8.0,
+                            "maxDistance": 30.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.5,
+                            "priority": 220
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 20,
+                "$type": 2,
+                "trackName": "Camera Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 21,
+                    "$type": 3,
+                    "$rlength": 2,
+                    "$rcontent": [
+                        {
+                            "$id": 22,
+                            "$type": "13|SkillSystem.Actions.CameraAction, Assembly-CSharp",
+                            "frame": 45,
+                            "duration": 30,
+                            "enabled": true,
+                            "shakeIntensity": 0.5,
+                            "zoomScale": 1.0,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "rotationOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "fadeInTime": 0.1,
+                            "fadeOutTime": 0.3,
+                            "shakeFrequency": 15.0,
+                            "followCaster": true,
+                            "affectMainCamera": true
+                        },
+                        {
+                            "$id": 23,
+                            "$type": "13|SkillSystem.Actions.CameraAction, Assembly-CSharp",
+                            "frame": 75,
+                            "duration": 15,
+                            "enabled": true,
+                            "shakeIntensity": 0.8,
+                            "zoomScale": 1.2,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0.5
+                            },
+                            "rotationOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.5,
+                            "shakeFrequency": 20.0,
+                            "followCaster": false,
+                            "affectMainCamera": true
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 24,
+                "$type": 2,
+                "trackName": "Resource Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 25,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 26,
+                            "$type": "11|SkillSystem.Actions.ResourceAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 1,
+                            "enabled": true,
+                            "resourceType": 0,
+                            "amount": -100,
+                            "percentage": false
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "flame-shockwave-001"
+}

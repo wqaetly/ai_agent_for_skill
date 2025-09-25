@@ -1,13 +1,38 @@
 ## Project Overview
 
-这是一个Unity项目，基于C#编写，生成C#代码时必须遵守 .codebuddy/docs/project-management/csharp.md 中的规范
-
-这个项目是对AI生成，检查技能配置的一个尝试，其中技能的Action脚本只有占位用的字段，比如相机参数，碰撞参数等，而无需编写具体逻辑，因为我们项目的重点不在此。只要需要让AI知道这个脚本具体的逻辑是干什么的，具体的参数有什么作用即可
-技能风格参考ARPG类型
-
+这是一个Unity项目，基于C#编写
+这个项目是对AI生成，检查Timeline形式技能配置的一个尝试
+技能类型为DOTA2的形式
 每次完成一个需求，就对代码所在的csproj进行dotnet build编译，并根据编译报错进行修复代码，然后再次编译，直至没有任何报错
 每完成一个功能保存为md文件到`.claude/docs`目录，请使用中文编写文档，并在CLAUDE.md中维护一份索引，索引格式可参考现有内容
 如无特殊说明，不需要为功能创建测试脚本
+
+## Action脚本生成规范
+
+**🚨 强制执行规则 - 任何任务开始前必须检查 🚨**
+
+### 规则1: Action存在性检查 (MANDATORY)
+```
+每次创建技能或使用Action前，必须执行以下步骤：
+1. 列出所需的Action类型
+2. 检查Assets/Scripts/SkillSystem/Actions/目录
+3. 如果Action不存在 → 立即创建通用Action
+4. 绝对禁止：使用LogAction、其他Action占位，或任何绕过方案
+```
+
+### 规则2: Action设计标准
+- 设计Action脚本的时候要保证功能最小性，不和其他脚本Action重叠，从而可以在Timeline的技能编辑器中进行配置非常复杂的技能
+- 无需添加SerializeField, Serializable等Attribute，只要Odin相关的绘制Attribute即可
+- Action脚本只有占位用的字段，比如相机参数，碰撞参数等，而无需编写具体逻辑，因为我们项目的重点不在此。只要需要让AI知道这个脚本具体的逻辑是干什么的，具体的参数有什么作用即可
+- 在创建每个Action脚本类的时候，你都需要为每个字段编写注释，并在脚本类前添加脚本功能概述
+
+### 规则3: 违规后果
+**如果违反规则1 - 立即停止所有工作，承认错误，按正确流程重新执行**
+
+## 创建技能时注意点
+
+- 严格区分Action范围，如果两个Action时间范围将会重叠，则将新的Action生成在别的轨道中，如果已没有轨道可以放置，则新建轨道
+- 严格遵循Action职责创建技能，如果当前所有Action都无法满足当前技能设计需求，则新建Action，但要保证Action的通用性
 
 ## 角色定义
 
@@ -158,6 +183,7 @@
 ## 文档索引 (Documentation Index)
 
 ### 技能系统 (Skill System)
+- [Action创建强制检查清单](.claude/docs/ACTION_CHECKLIST.md) - 🚨强制检查清单，确保Action规范严格执行
 - [Timeline-Based Skill Editor](.claude/docs/timeline-skill-editor.md) - 基于时间轴的技能编辑器系统，支持JSON序列化和运行时播放
 - [Skill Editor UI Elements Refactor](.claude/docs/skill-editor-ui-elements-refactor.md) - 技能编辑器UI Elements重构，解决拖动、美观度和功能缺失问题
 - [Skill Editor UI Fixes](.claude/docs/skill-editor-ui-fixes.md) - 技能编辑器UI修复，解决Track高度对齐、滚动条、缩放和Action管理问题
