@@ -260,9 +260,8 @@ namespace SkillSystem.Editor
             {
                 var skillData = editor.CurrentSkillData;
 
-                // 获取ScrollView的可用空间（减去滚动条空间）
+                // 获取ScrollView的可用宽度用于水平缩放
                 float availableWidth = timelineTracksScroll.resolvedStyle.width - 20f; // 减去垂直滚动条宽度
-                float availableHeight = timelineTracksScroll.resolvedStyle.height - 20f; // 减去水平滚动条高度
 
                 // 计算水平缩放：让整个技能时长适配宽度
                 float optimalZoom = CalculateFitZoomLevel(availableWidth, baseFrameWidth, skillData.totalDuration);
@@ -274,12 +273,17 @@ namespace SkillSystem.Editor
                 }
                 SetZoomLevel(optimalZoom);
 
-                // 垂直适配：确保所有轨道都可见
-                FitTracksToHeight(availableHeight, skillData.tracks.Count);
-
                 // 重置滚动位置到0，确保显示完整内容
                 ResetScrollersToZero();
             }
+        }
+
+        /// <summary>
+        /// 公共方法：调用fit功能展示完整时间轴
+        /// </summary>
+        public void FitToWindow()
+        {
+            FitTimelineToWindow();
         }
 
         private float CalculateFitZoomLevel(float availableWidth, float baseFrameWidth, int totalFrames)
@@ -292,32 +296,6 @@ namespace SkillSystem.Editor
             return Mathf.Clamp(availableWidth / requiredWidth, 0.1f, 1.0f);
         }
 
-        private void FitTracksToHeight(float availableHeight, int trackCount)
-        {
-            if (trackCount <= 0) return;
-
-            float requiredHeight = trackCount * trackHeight;
-
-            // 如果所有轨道的总高度小于等于可用高度，不需要调整
-            if (requiredHeight <= availableHeight) return;
-
-            // 如果轨道太多，计算合适的轨道高度来适配
-            float fitTrackHeight = availableHeight / trackCount;
-
-            // 设定最小轨道高度，避免轨道太扁
-            const float minTrackHeight = 20f;
-            if (fitTrackHeight < minTrackHeight)
-            {
-                // 如果计算出的高度太小，保持最小高度，允许出现垂直滚动条
-                return;
-            }
-
-            // 应用新的轨道高度
-            trackHeight = fitTrackHeight;
-
-            // 更新所有轨道的显示高度
-            UpdateAllTrackHeights();
-        }
 
         private void UpdateAllTrackHeights()
         {

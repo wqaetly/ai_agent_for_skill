@@ -41,6 +41,13 @@ namespace SkillSystem.Editor
         private readonly List<TrackElement> trackElements = new List<TrackElement>();
         private readonly Dictionary<ISkillAction, SkillActionElement> actionElements = new Dictionary<ISkillAction, SkillActionElement>();
 
+        // Inspector resize functionality
+        private VisualElement resizeHandle;
+        private VisualElement inspector;
+        private bool isResizing = false;
+        private float minInspectorWidth = 200f;
+        private float maxInspectorWidth = 500f;
+
         public SkillData CurrentSkillData => currentSkillData;
         public int CurrentFrame => currentFrame;
         public float FrameWidth => timelineController?.FrameWidth ?? 20f;
@@ -53,14 +60,20 @@ namespace SkillSystem.Editor
             }
         }
 
+        private void OnDisable()
+        {
+            // Clean up resources when window is disabled
+            actionInspector?.Dispose();
+        }
+
         private void CreateGUI()
         {
             // Load UXML
             var visualTree = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(
                 "Assets/Scripts/SkillSystem/Editor/SkillEditor.uxml");
-            rootElement = visualTree.Instantiate();
-            rootVisualElement.Add(rootElement);
-
+            visualTree.CloneTree(rootVisualElement);
+            rootElement = rootVisualElement; 
+            
             // Load USS
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(
                 "Assets/Scripts/SkillSystem/Editor/SkillEditor.uss");
@@ -87,6 +100,10 @@ namespace SkillSystem.Editor
             // Get key UI elements with new ScrollView structure
             timelineTracks = rootElement.Q<VisualElement>("timeline-tracks");
             trackHeaders = rootElement.Q<VisualElement>("track-headers");
+
+            // Get resize elements
+            resizeHandle = rootElement.Q<VisualElement>("resize-handle");
+            inspector = rootElement.Q<VisualElement>("inspector");
 
             // Get new ScrollView elements
             var trackHeadersScroll = rootElement.Q<ScrollView>("track-headers-scroll");
@@ -158,6 +175,9 @@ namespace SkillSystem.Editor
 
             // Timeline click event
             timelineTracks?.RegisterCallback<MouseDownEvent>(OnTimelineMouseDown);
+
+            // Inspector resize handle events
+            InitializeResizeHandle();
         }
 
         private void RefreshUI()
@@ -324,6 +344,54 @@ namespace SkillSystem.Editor
             }
         }
 
+        private void InitializeResizeHandle()
+        {
+            if (resizeHandle == null) return;
+
+            resizeHandle.RegisterCallback<MouseDownEvent>(OnResizeStart);
+            resizeHandle.RegisterCallback<MouseMoveEvent>(OnResizeMove);
+            resizeHandle.RegisterCallback<MouseUpEvent>(OnResizeEnd);
+            rootElement.RegisterCallback<MouseUpEvent>(OnResizeEnd);
+            rootElement.RegisterCallback<MouseMoveEvent>(OnResizeMove);
+        }
+
+        private void OnResizeStart(MouseDownEvent evt)
+        {
+            if (evt.button == 0) // Left mouse button
+            {
+                isResizing = true;
+                resizeHandle.CaptureMouse();
+                evt.StopPropagation();
+            }
+        }
+
+        private void OnResizeMove(MouseMoveEvent evt)
+        {
+            if (!isResizing) return;
+
+            // Calculate new inspector width based on mouse position
+            var containerWidth = rootElement.resolvedStyle.width;
+            var mouseX = evt.mousePosition.x;
+            var newInspectorWidth = containerWidth - mouseX - 4; // Account for handle width
+
+            // Clamp to min/max values
+            newInspectorWidth = Mathf.Clamp(newInspectorWidth, minInspectorWidth, maxInspectorWidth);
+
+            // Apply new width
+            inspector.style.width = newInspectorWidth;
+            evt.StopPropagation();
+        }
+
+        private void OnResizeEnd(MouseUpEvent evt)
+        {
+            if (isResizing)
+            {
+                isResizing = false;
+                resizeHandle.ReleaseMouse();
+                evt.StopPropagation();
+            }
+        }
+
 
         public Vector2 GetTimelineScrollOffset()
         {
@@ -426,6 +494,9 @@ namespace SkillSystem.Editor
             if (rootElement != null)
             {
                 RefreshUI();
+
+                // Auto-fit timeline to show complete skill configuration
+                AutoFitTimelineAfterLoad();
             }
         }
 
@@ -468,6 +539,9 @@ namespace SkillSystem.Editor
                     skillExecutor?.SetSkillData(currentSkillData);
 
                     RefreshUI();
+
+                    // Auto-fit timeline to show complete skill configuration
+                    AutoFitTimelineAfterLoad();
                 }
             }
         }
@@ -638,6 +712,34 @@ namespace SkillSystem.Editor
         }
 
         public bool IsSkillExecuting => skillExecutor?.IsExecuting ?? false;
+
+        /// <summary>
+        /// 在技能加载后自动调用fit功能，展示完整技能配置全貌
+        /// 使用延迟执行确保UI完全渲染后再进行fit操作
+        /// </summary>
+        private void AutoFitTimelineAfterLoad()
+        {
+            if (timelineController != null)
+            {
+                // 使用schedule.Execute延迟执行，确保RefreshUI完成后再fit
+                // 这样可以确保timeline尺寸和布局都已经正确更新
+                rootElement.schedule.Execute(() =>
+                {
+                    // 直接调用TimelineController的FitTimelineToWindow方法
+                    // 这会自动计算最佳缩放比例并重置滚动位置
+                    FitTimelineToWindow();
+                }).ExecuteLater(50); // 50ms延迟，确保UI完全刷新后执行
+            }
+        }
+
+        /// <summary>
+        /// 调用TimelineController的fit功能
+        /// </summary>
+        private void FitTimelineToWindow()
+        {
+            // 调用TimelineController的公共fit方法
+            timelineController?.FitToWindow();
+        }
     }
 
     /// <summary>

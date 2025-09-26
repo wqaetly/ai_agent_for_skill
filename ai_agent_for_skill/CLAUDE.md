@@ -197,3 +197,7 @@
 - [Skill Editor Layout Improvements](.claude/docs/skill-editor-layout-improvements.md) - 技能编辑器布局重大改进：Inspector面板移至右侧，添加ScrollView支持和水平滚动条
 - [Action Inspector Custom Fields Fix](.claude/docs/action-inspector-custom-fields-fix.md) - Action Inspector自定义字段显示修复，解决只显示基础字段而不显示Action子类自定义字段的问题
 - [Skill Editor Execution System](.claude/docs/skill-editor-execution-system.md) - 技能编辑器执行系统，实现完整的生命周期管理（OnEnter/OnTick/OnExit）和实时技能执行功能
+- [锐雯三段技能配置](.claude/docs/riven-broken-wings-skill.md) - 锐雯折断之翼技能的完整Timeline配置，三段式冲刺+跳劈+击飞组合技能
+- [Action Inspector GUI布局修复](.claude/docs/action-inspector-gui-layout-fix.md) - 修复Action选择时GUILayout错误和Inspector无法编辑的问题，完善PropertyTree生命周期管理
+- [Inspector面板可拖拽调整大小功能](.claude/docs/inspector-resizable-panel.md) - 实现Inspector面板左右拖拽调整大小，添加拖拽分隔条和Timeline自适应布局
+- [技能加载后自动Fit功能](.claude/docs/auto-fit-after-load.md) - 技能加载或创建新技能后自动调用fit功能，展示完整技能配置全貌，提升用户体验

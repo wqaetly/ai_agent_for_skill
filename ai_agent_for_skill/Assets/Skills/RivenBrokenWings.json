@@ -1,0 +1,323 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "Broken Wings",
+    "skillDescription": "锐雯向前冲刺，造成物理伤害。可再次施放两次，第三次会跃起猛劈并击飞敌人。",
+    "totalDuration": 300,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 6,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Animation Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 3,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "animationClipName": "RivenQ1",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        },
+                        {
+                            "$id": 5,
+                            "$type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 100,
+                            "duration": 30,
+                            "enabled": true,
+                            "animationClipName": "RivenQ2",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        },
+                        {
+                            "$id": 6,
+                            "$type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 200,
+                            "duration": 40,
+                            "enabled": true,
+                            "animationClipName": "RivenQ3",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 7,
+                "$type": 2,
+                "trackName": "Movement Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 8,
+                    "$type": 3,
+                    "$rlength": 3,
+                    "$rcontent": [
+                        {
+                            "$id": 9,
+                            "$type": "6|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+                            "frame": 5,
+                            "duration": 20,
+                            "enabled": true,
+                            "movementType": 1,
+                            "direction": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                1
+                            },
+                            "speed": 8.0,
+                            "distance": 3.5
+                        },
+                        {
+                            "$id": 10,
+                            "$type": "6|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+                            "frame": 105,
+                            "duration": 20,
+                            "enabled": true,
+                            "movementType": 1,
+                            "direction": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                1
+                            },
+                            "speed": 8.0,
+                            "distance": 3.5
+                        },
+                        {
+                            "$id": 11,
+                            "$type": "6|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+                            "frame": 205,
+                            "duration": 25,
+                            "enabled": true,
+                            "movementType": 3,
+                            "direction": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0.5,
+                                1
+                            },
+                            "speed": 10.0,
+                            "distance": 4.0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 12,
+                "$type": 2,
+                "trackName": "Damage Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 13,
+                    "$type": 3,
+                    "$rlength": 3,
+                    "$rcontent": [
+                        {
+                            "$id": 14,
+                            "$type": "14|SkillSystem.Actions.DamageAction, Assembly-CSharp",
+                            "frame": 15,
+                            "duration": 5,
+                            "enabled": true,
+                            "baseDamage": 45,
+                            "damageType": 0,
+                            "scalingFactor": 0.65,
+                            "criticalChance": 0.0,
+                            "criticalMultiplier": 1.0,
+                            "penetration": 0,
+                            "range": 2.0,
+                            "targetType": 1,
+                            "ignoreArmor": false
+                        },
+                        {
+                            "$id": 15,
+                            "$type": "14|SkillSystem.Actions.DamageAction, Assembly-CSharp",
+                            "frame": 115,
+                            "duration": 5,
+                            "enabled": true,
+                            "baseDamage": 45,
+                            "damageType": 0,
+                            "scalingFactor": 0.65,
+                            "targetType": 1,
+                            "criticalChance": 0.0,
+                            "criticalMultiplier": 1.0,
+                            "penetration": 0,
+                            "range": 2.0,
+                            "ignoreArmor": false
+                        },
+                        {
+                            "$id": 16,
+                            "$type": "14|SkillSystem.Actions.DamageAction, Assembly-CSharp",
+                            "frame": 220,
+                            "duration": 5,
+                            "enabled": true,
+                            "baseDamage": 45,
+                            "damageType": 0,
+                            "scalingFactor": 0.65,
+                            "targetType": 2,
+                            "criticalChance": 0.0,
+                            "criticalMultiplier": 1.0,
+                            "penetration": 0,
+                            "range": 3.0,
+                            "ignoreArmor": false
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 17,
+                "$type": 2,
+                "trackName": "Area Effect Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 18,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 19,
+                            "$type": "9|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+                            "frame": 220,
+                            "duration": 10,
+                            "enabled": true,
+                            "shape": 0,
+                            "radius": 3.0,
+                            "position": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                4
+                            },
+                            "damage": 0,
+                            "tickInterval": 1,
+                            "effectName": "RivenQ3Area"
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 20,
+                "$type": 2,
+                "trackName": "Control Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 21,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 22,
+                            "$type": "5|SkillSystem.Actions.ControlAction, Assembly-CSharp",
+                            "frame": 220,
+                            "duration": 23,
+                            "enabled": true,
+                            "controlType": 2,
+                            "intensity": 1.0,
+                            "affectedControls": 15
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 23,
+                "$type": 2,
+                "trackName": "Audio Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 24,
+                    "$type": 3,
+                    "$rlength": 3,
+                    "$rcontent": [
+                        {
+                            "$id": 25,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 5,
+                            "duration": 20,
+                            "enabled": true,
+                            "audioClipName": "riven_q1",
+                            "volume": 0.8,
+                            "pitch": 1.0,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 3.0,
+                            "maxDistance": 15.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.05,
+                            "fadeOutTime": 0.1,
+                            "priority": 180
+                        },
+                        {
+                            "$id": 26,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 105,
+                            "duration": 20,
+                            "enabled": true,
+                            "audioClipName": "riven_q2",
+                            "volume": 0.8,
+                            "pitch": 1.1,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 3.0,
+                            "maxDistance": 15.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.05,
+                            "fadeOutTime": 0.1,
+                            "priority": 180
+                        },
+                        {
+                            "$id": 27,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 205,
+                            "duration": 35,
+                            "enabled": true,
+                            "audioClipName": "riven_q3",
+                            "volume": 1.0,
+                            "pitch": 0.9,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 5.0,
+                            "maxDistance": 20.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.3,
+                            "priority": 200
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "riven-broken-wings-001"
+}

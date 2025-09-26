@@ -29,10 +29,26 @@ namespace SkillSystem.Editor
             inspectorContent = rootElement.Q<ScrollView>("inspector-content");
         }
 
+        private void Cleanup()
+        {
+            if (currentPropertyTree != null)
+            {
+                currentPropertyTree.Dispose();
+                currentPropertyTree = null;
+            }
+        }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+
         public void RefreshInspector(SkillData skillData, int selectedTrackIndex, int selectedActionIndex, int currentFrame)
         {
             if (inspectorContent == null) return;
 
+            // Clear previous content and dispose any existing property tree
+            Cleanup();
             inspectorContent.Clear();
 
             if (selectedTrackIndex >= 0 && selectedTrackIndex < skillData.tracks.Count)
@@ -64,16 +80,39 @@ namespace SkillSystem.Editor
             CreateActionProperties(action, skillData);
         }
 
+        private PropertyTree currentPropertyTree;
+
         private void CreateActionProperties(ISkillAction action, SkillData skillData)
         {
             // Add a separator
             AddSeparator();
 
-            // Use Odin for all additional properties
+            // Dispose previous property tree to prevent layout issues
+            if (currentPropertyTree != null)
+            {
+                currentPropertyTree.Dispose();
+                currentPropertyTree = null;
+            }
+
+            // Create new property tree and ensure proper lifecycle management
+            currentPropertyTree = PropertyTree.Create(action);
+
+            // Use Odin for all additional properties with proper error handling
             var odinContainer = new IMGUIContainer(() =>
             {
-                var propertyTree = PropertyTree.Create(action);
-                propertyTree.Draw(false);
+                try
+                {
+                    if (currentPropertyTree != null)
+                    {
+                        GUILayout.BeginVertical();
+                        currentPropertyTree.Draw(false);
+                        GUILayout.EndVertical();
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    GUILayout.Label($"Error drawing properties: {e.Message}");
+                }
             });
             inspectorContent.Add(odinContainer);
         }
@@ -135,13 +174,23 @@ namespace SkillSystem.Editor
             // List existing actions
             CreateActionsList(track, trackIndex);
 
-            // Use Odin for additional properties
-            var odinContainer = new IMGUIContainer(() =>
+            // Use Odin for additional properties with proper error handling
+            var trackOdinContainer = new IMGUIContainer(() =>
             {
-                var propertyTree = PropertyTree.Create(track);
-                propertyTree.Draw(false);
+                try
+                {
+                    var propertyTree = PropertyTree.Create(track);
+                    GUILayout.BeginVertical();
+                    propertyTree.Draw(false);
+                    GUILayout.EndVertical();
+                    propertyTree.Dispose();
+                }
+                catch (System.Exception e)
+                {
+                    GUILayout.Label($"Error drawing track properties: {e.Message}");
+                }
             });
-            inspectorContent.Add(odinContainer);
+            inspectorContent.Add(trackOdinContainer);
         }
 
         private void CreateActionButtons(int trackIndex, int currentFrame)
@@ -269,13 +318,23 @@ namespace SkillSystem.Editor
             });
             inspectorContent.Add(frameRateField);
 
-            // Use Odin for additional properties
-            var odinContainer = new IMGUIContainer(() =>
+            // Use Odin for additional properties with proper error handling
+            var skillOdinContainer = new IMGUIContainer(() =>
             {
-                var propertyTree = PropertyTree.Create(skillData);
-                propertyTree.Draw(false);
+                try
+                {
+                    var propertyTree = PropertyTree.Create(skillData);
+                    GUILayout.BeginVertical();
+                    propertyTree.Draw(false);
+                    GUILayout.EndVertical();
+                    propertyTree.Dispose();
+                }
+                catch (System.Exception e)
+                {
+                    GUILayout.Label($"Error drawing skill properties: {e.Message}");
+                }
             });
-            inspectorContent.Add(odinContainer);
+            inspectorContent.Add(skillOdinContainer);
         }
 
         private void AddSeparator()

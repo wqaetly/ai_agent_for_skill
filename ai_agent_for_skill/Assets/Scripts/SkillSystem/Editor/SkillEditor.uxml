@@ -15,29 +15,32 @@
 
             <ui:Button text="Play" name="play-button" class="toolbar-button play-button" />
 
-            <!-- Frame Controls -->
-            <ui:VisualElement name="frame-controls" class="frame-controls">
-                <ui:Label text="Frame" class="control-label" />
-                <ui:IntegerField name="current-frame" value="0" class="frame-field" />
-                <ui:SliderInt name="frame-slider" low-value="0" high-value="59" value="0" direction="Horizontal" class="frame-slider" />
-            </ui:VisualElement>
+            <!-- Unified Controls Box -->
+            <ui:VisualElement name="unified-controls-box" class="unified-controls-box">
+                <!-- Frame Controls -->
+                <ui:VisualElement name="frame-controls" class="control-section">
+                    <ui:Label text="Frame" class="control-label" />
+                    <ui:IntegerField name="current-frame" value="0" class="frame-field" />
+                    <ui:SliderInt name="frame-slider" low-value="0" high-value="59" value="0" direction="Horizontal" class="frame-slider" />
+                </ui:VisualElement>
 
-            <ui:VisualElement class="toolbar-separator" />
+                <ui:VisualElement class="control-separator" />
 
-            <!-- Duration Controls -->
-            <ui:VisualElement name="duration-controls" class="duration-controls">
-                <ui:Label text="Duration" class="control-label" />
-                <ui:IntegerField name="total-duration" value="60" class="duration-field" />
-                <ui:Button text="Set" name="set-duration-button" class="set-duration-button" />
-            </ui:VisualElement>
+                <!-- Duration Controls -->
+                <ui:VisualElement name="duration-controls" class="control-section">
+                    <ui:Label text="Duration" class="control-label" />
+                    <ui:IntegerField name="total-duration" value="60" class="duration-field" />
+                    <ui:Button text="Set" name="set-duration-button" class="set-duration-button" />
+                </ui:VisualElement>
 
-            <ui:VisualElement class="toolbar-separator" />
+                <ui:VisualElement class="control-separator" />
 
-            <!-- Zoom Controls -->
-            <ui:VisualElement name="zoom-controls" class="zoom-controls">
-                <ui:Label text="Zoom" class="control-label" />
-                <ui:Slider name="zoom-slider" low-value="0.1" high-value="10.0" value="1.0" direction="Horizontal" class="zoom-slider" />
-                <ui:Button text="Fit" name="fit-button" class="fit-button" />
+                <!-- Zoom Controls -->
+                <ui:VisualElement name="zoom-controls" class="control-section">
+                    <ui:Label text="Zoom" class="control-label" />
+                    <ui:Slider name="zoom-slider" low-value="0.1" high-value="10.0" value="1.0" direction="Horizontal" class="zoom-slider" />
+                    <ui:Button text="Fit" name="fit-button" class="fit-button" />
+                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="toolbar-spacer" />
@@ -90,6 +93,9 @@
                 </ui:VisualElement>
 
             </ui:VisualElement>
+
+            <!-- Resize Handle -->
+            <ui:VisualElement name="resize-handle" class="resize-handle" />
 
             <!-- Inspector (Right Side) -->
             <ui:VisualElement name="inspector" class="inspector">
