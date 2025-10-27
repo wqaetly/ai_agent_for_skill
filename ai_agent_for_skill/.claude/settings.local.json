@@ -6,7 +6,8 @@
       "Bash(find:*)",
       "Read(//c/Users/developli/AppData/Roaming/JetBrains/Rider2025.2/resharper-host/DecompilerCache/decompiler/34965f9dd2524b9fabed0cb9ab9483b99e4c00/a9/545f82b1/**)",
       "Read(//c/Users/developli/AppData/Roaming/JetBrains/Rider2025.2/resharper-host/DecompilerCache/**)",
-      "Bash(xargs dotnet:*)"
+      "Bash(xargs dotnet:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

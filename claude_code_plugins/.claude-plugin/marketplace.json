@@ -1,0 +1,22 @@
+{
+  "name": "game-dev-plugins",
+  "owner": {
+    "name": "Game Development Team"
+  },
+  "description": "Claude Code plugins for game development workflows",
+  "plugins": [
+    {
+      "name": "game-skill-config",
+      "source": "./game-skill-config-plugin",
+      "description": "Complete toolkit for game skill configuration - generate, modify, analyze, and debug Unity-based skill JSON configs",
+      "version": "1.0.0",
+      "keywords": [
+        "game-development",
+        "skill-system",
+        "unity",
+        "json-config",
+        "game-mechanics"
+      ]
+    }
+  ]
+}

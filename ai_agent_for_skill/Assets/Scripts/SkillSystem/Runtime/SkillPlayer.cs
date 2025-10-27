@@ -82,6 +82,9 @@ namespace SkillSystem.Runtime
             frameTimer = 0f;
             activeActions.Clear();
 
+            // Subscribe to skill system events
+            SubscribeToSkillSystemEvents();
+
             InitializeAllActions();
             OnSkillStarted?.Invoke(currentSkillData);
             Debug.Log($"Started playing skill: {currentSkillData.skillName}");
@@ -92,6 +95,10 @@ namespace SkillSystem.Runtime
             if (!isPlaying) return;
 
             isPlaying = false;
+
+            // Unsubscribe from skill system events
+            UnsubscribeFromSkillSystemEvents();
+
             CleanupAllActions();
             OnSkillFinished?.Invoke(currentSkillData);
             Debug.Log($"Stopped playing skill: {currentSkillData.skillName}");
@@ -286,6 +293,41 @@ namespace SkillSystem.Runtime
             Debug.Log($"Frame: {currentFrame}/{currentSkillData.totalDuration}");
             Debug.Log($"Playing: {isPlaying}");
             Debug.Log($"Active Actions: {activeActions.Count}");
+        }
+
+        // Skill System Events Integration
+        private void SubscribeToSkillSystemEvents()
+        {
+            SkillSystemEvents.OnRequestFrameJump += HandleFrameJump;
+            SkillSystemEvents.OnRequestSkillStop += HandleSkillStop;
+        }
+
+        private void UnsubscribeFromSkillSystemEvents()
+        {
+            SkillSystemEvents.OnRequestFrameJump -= HandleFrameJump;
+            SkillSystemEvents.OnRequestSkillStop -= HandleSkillStop;
+        }
+
+        private void HandleFrameJump(int targetFrame)
+        {
+            if (!isPlaying) return;
+
+            Debug.Log($"[SkillPlayer] Jumping from frame {currentFrame} to frame {targetFrame}");
+            SetFrame(targetFrame);
+        }
+
+        private void HandleSkillStop()
+        {
+            if (!isPlaying) return;
+
+            Debug.Log($"[SkillPlayer] Stopping skill via event");
+            StopSkill();
+        }
+
+        void OnDestroy()
+        {
+            // Ensure events are unsubscribed when the object is destroyed
+            UnsubscribeFromSkillSystemEvents();
         }
     }
 }

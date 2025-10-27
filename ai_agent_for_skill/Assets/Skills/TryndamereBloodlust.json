@@ -1,0 +1,120 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "Bloodlust",
+    "skillDescription": "泰达米尔消耗他的怒气，回复生命值。回复量基于消耗的怒气值和法术强度。",
+    "totalDuration": 60,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 3,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Resource Heal Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.ResourceDependentHealAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 15,
+                            "enabled": true,
+                            "resourceType": 2,
+                            "consumeMode": 0,
+                            "fixedConsumeAmount": 50.0,
+                            "healType": 0,
+                            "baseHeal": 30.0,
+                            "perResourceHeal": 0.5,
+                            "scaleWithLevel": true,
+                            "baseHealPerLevel": 10.0,
+                            "perResourceHealPerLevel": 0.45,
+                            "baseSpellPowerRatio": 0.3,
+                            "perResourceSpellPowerRatio": 0.012,
+                            "healEffect": null,
+                            "resourceConsumeEffect": null,
+                            "effectColor": {
+                                "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                                1,
+                                0.3,
+                                0.3,
+                                1
+                            },
+                            "healSound": null,
+                            "resourceConsumeSound": null,
+                            "targetFilter": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 6,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Animation Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 7,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 8,
+                            "$type": "8|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "animationClipName": "TryndamereBloodlust",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 9,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Audio Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 10,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 11,
+                            "$type": "12|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "audioClipName": "tryndamere_bloodlust",
+                            "volume": 0.9,
+                            "pitch": 1.0,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "13|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 3.0,
+                            "maxDistance": 15.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.2,
+                            "priority": 180
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "tryndamere-bloodlust-001"
+}

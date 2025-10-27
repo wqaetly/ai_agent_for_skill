@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "name": "Validate Skill JSON",
+        "description": "Automatically validate skill JSON files after Write or Edit operations",
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-skill.sh \"${FILE_PATH}\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "name": "Detect Skill Config Requests",
+        "description": "Automatically suggest using skill commands when user mentions skill configuration",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/detect-skill-intent.sh \"${USER_PROMPT}\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "name": "Load Skill System Context",
+        "description": "Load skill system documentation at session start",
+        "hooks": [
+          {
+            "type": "notification",
+            "message": "Game Skill Configuration Plugin loaded. Use /skill-generate, /skill-analyze, or /skill-debug for skill configuration tasks."
+          }
+        ]
+      }
+    ]
+  }
+}

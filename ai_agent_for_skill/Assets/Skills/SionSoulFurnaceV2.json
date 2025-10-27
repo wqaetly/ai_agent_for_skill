@@ -1,0 +1,241 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "Soul Furnace V2 (Input Controlled)",
+    "skillDescription": "赛恩获得护盾，持续6秒。3秒后可按W键引爆护盾造成范围魔法伤害。此版本支持玩家手动控制引爆时机。",
+    "totalDuration": 180,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 5,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Shield Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.AttributeScaledShieldAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 180,
+                            "enabled": true,
+                            "baseShieldAmount": 60.0,
+                            "shieldDuration": 6.0,
+                            "scaleWithLevel": true,
+                            "shieldPerLevel": 15.0,
+                            "spellPowerRatio": 0.4,
+                            "healthRatio": 0.08,
+                            "healthRatioPerLevel": 0.02,
+                            "useCurrentHealth": true,
+                            "shieldType": 0,
+                            "blockPhysicalDamage": true,
+                            "blockMagicalDamage": true,
+                            "blockPureDamage": false,
+                            "refreshable": true,
+                            "breakOnSpellCast": false,
+                            "breakOnAttack": false,
+                            "breakOnMovement": false,
+                            "shieldEffect": null,
+                            "breakEffect": null,
+                            "effectColor": {
+                                "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                                0.5,
+                                0.8,
+                                1.0,
+                                0.6
+                            },
+                            "shieldApplySound": null,
+                            "shieldBreakSound": null,
+                            "targetFilter": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 6,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Input Detection Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 7,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 8,
+                            "$type": "8|SkillSystem.Actions.InputDetectionAction, Assembly-CSharp",
+                            "frame": 90,
+                            "duration": 90,
+                            "enabled": true,
+                            "inputKey": 87,
+                            "detectionType": 0,
+                            "alternativeKeys": [],
+                            "actionMode": 0,
+                            "targetFrame": 180,
+                            "stopSkill": false,
+                            "conditionName": "SionWExplosion",
+                            "consumeInput": true,
+                            "cooldownFrames": 0,
+                            "showInputPrompt": true,
+                            "promptText": "Press W to explode",
+                            "inputEffect": null,
+                            "inputSound": null,
+                            "debugMode": true
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 9,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Explosion Damage Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 10,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 11,
+                            "$type": "11|SkillSystem.Actions.UnitTypeCappedDamageAction, Assembly-CSharp",
+                            "frame": 180,
+                            "duration": 1,
+                            "enabled": true,
+                            "baseDamage": 40.0,
+                            "damageType": 1,
+                            "scaleWithLevel": true,
+                            "damagePerLevel": 25.0,
+                            "spellPowerRatio": 0.4,
+                            "maxHealthRatio": 0.14,
+                            "useTargetMaxHealth": false,
+                            "damageCaps": {
+                                "$id": 12,
+                                "$type": "12|SkillSystem.Actions.UnitTypeDamageCap[], Assembly-CSharp",
+                                "$rlength": 2,
+                                "$rcontent": [
+                                    {
+                                        "$type": "13|SkillSystem.Actions.UnitTypeDamageCap, Assembly-CSharp",
+                                        "unitType": 1,
+                                        "damageCap": 400.0
+                                    },
+                                    {
+                                        "$type": "13|SkillSystem.Actions.UnitTypeDamageCap, Assembly-CSharp",
+                                        "unitType": 2,
+                                        "damageCap": 400.0
+                                    }
+                                ]
+                            },
+                            "targetFilter": 1,
+                            "maxTargets": 10,
+                            "damageRadius": 5.0,
+                            "damageEffect": null,
+                            "cappedDamageEffect": null,
+                            "effectColor": {
+                                "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                                1.0,
+                                0.3,
+                                0.0,
+                                1.0
+                            },
+                            "hitSound": null,
+                            "cappedHitSound": null
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 14,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Animation Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 15,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 16,
+                            "$type": "16|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "animationClipName": "SionSoulFurnace",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 17,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Audio Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 18,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 2,
+                    "$rcontent": [
+                        {
+                            "$id": 19,
+                            "$type": "19|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "audioClipName": "sion_soul_furnace_cast",
+                            "volume": 0.9,
+                            "pitch": 1.0,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "20|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 3.0,
+                            "maxDistance": 15.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.2,
+                            "priority": 180
+                        },
+                        {
+                            "$id": 21,
+                            "$type": "19|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 180,
+                            "duration": 15,
+                            "enabled": true,
+                            "audioClipName": "sion_soul_furnace_explosion",
+                            "volume": 1.0,
+                            "pitch": 1.0,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "20|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 5.0,
+                            "maxDistance": 20.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.3,
+                            "priority": 200
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "sion-soul-furnace-v2-input-001"
+}

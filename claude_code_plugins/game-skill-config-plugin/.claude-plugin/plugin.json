@@ -1,0 +1,17 @@
+{
+  "name": "game-skill-config",
+  "version": "1.0.0",
+  "description": "Complete toolkit for game skill configuration - generate, modify, analyze, and debug Unity-based skill JSON configs",
+  "author": {
+    "name": "Game Developer"
+  },
+  "keywords": [
+    "game-development",
+    "skill-system",
+    "unity",
+    "json-config",
+    "game-mechanics"
+  ],
+  "homepage": "https://github.com/your-org/game-skill-config-plugin",
+  "license": "MIT"
+}

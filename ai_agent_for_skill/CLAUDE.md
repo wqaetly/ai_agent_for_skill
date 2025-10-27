@@ -3,8 +3,6 @@
 这是一个Unity项目，基于C#编写
 这个项目是对AI生成，检查Timeline形式技能配置的一个尝试
 技能类型为DOTA2的形式
-每次完成一个需求，就对代码所在的csproj进行dotnet build编译，并根据编译报错进行修复代码，然后再次编译，直至没有任何报错
-每完成一个功能保存为md文件到`.claude/docs`目录，请使用中文编写文档，并在CLAUDE.md中维护一份索引，索引格式可参考现有内容
 如无特殊说明，不需要为功能创建测试脚本
 
 ## Action脚本生成规范
@@ -201,3 +199,5 @@
 - [Action Inspector GUI布局修复](.claude/docs/action-inspector-gui-layout-fix.md) - 修复Action选择时GUILayout错误和Inspector无法编辑的问题，完善PropertyTree生命周期管理
 - [Inspector面板可拖拽调整大小功能](.claude/docs/inspector-resizable-panel.md) - 实现Inspector面板左右拖拽调整大小，添加拖拽分隔条和Timeline自适应布局
 - [技能加载后自动Fit功能](.claude/docs/auto-fit-after-load.md) - 技能加载或创建新技能后自动调用fit功能，展示完整技能配置全貌，提升用户体验
+- [ResourceDependentHealAction](.claude/docs/resource-dependent-heal-action.md) - 基于资源消耗的治疗Action，支持怒气/法力等资源消耗并根据消耗量计算治疗量，含技能等级和法强缩放
+- [泰达米尔嗜血杀戮技能配置](.claude/docs/tryndamere-bloodlust-skill.md) - 泰达米尔Q技能Timeline配置，消耗怒气回复生命的资源依赖型治疗技能

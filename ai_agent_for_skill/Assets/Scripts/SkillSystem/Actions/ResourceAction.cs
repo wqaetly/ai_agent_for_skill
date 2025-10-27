@@ -483,6 +483,7 @@ namespace SkillSystem.Actions
             {
                 case ResourceType.Health: return 750f;
                 case ResourceType.Mana: return 400f;
+                case ResourceType.Rage: return 85f;
                 case ResourceType.Gold: return 1250f;
                 case ResourceType.Experience: return 2800f;
                 default: return 100f;
@@ -498,6 +499,7 @@ namespace SkillSystem.Actions
             {
                 case ResourceType.Health: return 1000f;
                 case ResourceType.Mana: return 500f;
+                case ResourceType.Rage: return 100f;
                 case ResourceType.Gold: return 999999f;
                 case ResourceType.Experience: return 999999f;
                 default: return 100f;
@@ -532,6 +534,7 @@ namespace SkillSystem.Actions
     {
         Health,     // 生命值
         Mana,       // 法力值
+        Rage,       // 怒气值
         Gold,       // 金币
         Experience  // 经验值
     }

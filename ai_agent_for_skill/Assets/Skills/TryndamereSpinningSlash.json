@@ -1,0 +1,218 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+    "skillName": "Spinning Slash",
+    "skillDescription": "泰达米尔旋转并穿过他的敌人，造成物理伤害并生成怒气。",
+    "totalDuration": 45,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+        "$rlength": 5,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Movement Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "movementType": 1,
+                            "direction": {
+                                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                1
+                            },
+                            "speed": 12.0,
+                            "distance": 6.0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 6,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Damage Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 7,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 8,
+                            "$type": "8|SkillSystem.Actions.AttributeScaledDamageAction, Assembly-CSharp",
+                            "frame": 5,
+                            "duration": 30,
+                            "enabled": true,
+                            "baseDamage": 75.0,
+                            "damageType": 0,
+                            "damageVariance": 0.0,
+                            "scaleWithLevel": true,
+                            "damagePerLevel": 30.0,
+                            "attributeScalings": {
+                                "$id": 9,
+                                "$type": "9|SkillSystem.Actions.AttributeScaling[], Assembly-CSharp",
+                                "$rlength": 2,
+                                "$rcontent": [
+                                    {
+                                        "$type": "10|SkillSystem.Actions.AttributeScaling, Assembly-CSharp",
+                                        "attributeType": 1,
+                                        "scalingRatio": 1.3
+                                    },
+                                    {
+                                        "$type": "10|SkillSystem.Actions.AttributeScaling, Assembly-CSharp",
+                                        "attributeType": 2,
+                                        "scalingRatio": 0.8
+                                    }
+                                ]
+                            },
+                            "canCritical": true,
+                            "useCasterCritChance": true,
+                            "fixedCriticalChance": 0.0,
+                            "criticalMultiplier": 2.0,
+                            "targetFilter": 0,
+                            "maxTargets": 10,
+                            "damageRadius": 3.0,
+                            "damageEffect": null,
+                            "criticalEffect": null,
+                            "effectColor": {
+                                "$type": "11|UnityEngine.Color, UnityEngine.CoreModule",
+                                1,
+                                0.5,
+                                0,
+                                1
+                            },
+                            "hitSound": null,
+                            "criticalSound": null
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 12,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Resource Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 13,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 14,
+                            "$type": "14|SkillSystem.Actions.ResourceAction, Assembly-CSharp",
+                            "frame": 10,
+                            "duration": 5,
+                            "enabled": true,
+                            "resourceType": 2,
+                            "operationType": 0,
+                            "baseAmount": 10.0,
+                            "amountType": 0,
+                            "percentage": 0.0,
+                            "scaleWithLevel": false,
+                            "levelScaling": 0.0,
+                            "scaleWithAttribute": false,
+                            "scalingAttribute": 0,
+                            "attributeRatio": 0.0,
+                            "transferMode": 0,
+                            "transferEfficiency": 1.0,
+                            "respectMaximum": true,
+                            "allowOverdraft": false,
+                            "overdraftPenalty": 0,
+                            "applyOverTime": false,
+                            "applicationInterval": 1.0,
+                            "resourceEffect": null,
+                            "continuousEffect": null,
+                            "effectColor": {
+                                "$type": "11|UnityEngine.Color, UnityEngine.CoreModule",
+                                1,
+                                0.2,
+                                0.2,
+                                1
+                            },
+                            "operationSound": null,
+                            "successSound": null,
+                            "failureSound": null,
+                            "targetFilter": 0,
+                            "maxTargets": 1,
+                            "requireLineOfSight": false
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 15,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Animation Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 16,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 17,
+                            "$type": "17|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 45,
+                            "enabled": true,
+                            "animationClipName": "TryndamereSpinningSlash",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.05,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 18,
+                "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+                "trackName": "Audio Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 19,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 20,
+                            "$type": "20|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "audioClipName": "tryndamere_spinning_slash",
+                            "volume": 0.85,
+                            "pitch": 1.1,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 4.0,
+                            "maxDistance": 18.0,
+                            "delayTime": 0.0,
+                            "fadeInTime": 0.0,
+                            "fadeOutTime": 0.15,
+                            "priority": 190
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "tryndamere-spinning-slash-001"
+}
