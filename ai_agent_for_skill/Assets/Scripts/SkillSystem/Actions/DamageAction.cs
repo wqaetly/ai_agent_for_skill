@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的各种攻击技能，如普通攻击、技能伤害等。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("伤害")]
     public class DamageAction : ISkillAction
     {
         [BoxGroup("Damage Settings")]

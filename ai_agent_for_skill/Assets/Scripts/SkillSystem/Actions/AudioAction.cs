@@ -8,6 +8,7 @@ namespace SkillSystem.Actions
     /// 可配置音量、音调、空间音效等参数，用于增强技能的听觉反馈
     /// </summary>
     [System.Serializable]
+    [ActionDisplayName("音频效果")]
     public class AudioAction : ISkillAction
     {
         [Title("基础设置")]

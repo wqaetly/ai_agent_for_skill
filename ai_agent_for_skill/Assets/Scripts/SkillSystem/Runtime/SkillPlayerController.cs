@@ -176,7 +176,7 @@ namespace SkillSystem.Runtime
 
         private void OnActionExecuted(ISkillAction action)
         {
-            Debug.Log($"Action executed: {action.GetActionName()} at frame {action.frame}");
+            Debug.Log($"Action executed: {action.GetDisplayName()} at frame {action.frame}");
         }
     }
 }

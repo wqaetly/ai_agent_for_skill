@@ -190,11 +190,11 @@ namespace SkillSystem.Runtime
                         {
                             action.Execute();
                             OnActionExecuted?.Invoke(action);
-                            Debug.Log($"Executed action: {action.GetActionName()} at frame {frame}");
+                            Debug.Log($"Executed action: {action.GetDisplayName()} at frame {frame}");
                         }
                         catch (System.Exception e)
                         {
-                            Debug.LogError($"Error executing action {action.GetActionName()}: {e.Message}");
+                            Debug.LogError($"Error executing action {action.GetDisplayName()}: {e.Message}");
                         }
                     }
                 }
@@ -235,7 +235,7 @@ namespace SkillSystem.Runtime
                     }
                     catch (System.Exception e)
                     {
-                        Debug.LogError($"Error initializing action {action.GetActionName()}: {e.Message}");
+                        Debug.LogError($"Error initializing action {action.GetDisplayName()}: {e.Message}");
                     }
                 }
             }
@@ -257,7 +257,7 @@ namespace SkillSystem.Runtime
                     }
                     catch (System.Exception e)
                     {
-                        Debug.LogError($"Error cleaning up action {action.GetActionName()}: {e.Message}");
+                        Debug.LogError($"Error cleaning up action {action.GetDisplayName()}: {e.Message}");
                     }
                 }
             }

@@ -73,7 +73,7 @@ namespace SkillSystem.Editor
 
         private void CreateActionInspector(ISkillAction action, SkillData skillData)
         {
-            var titleLabel = new Label($"Selected Action: {action.GetActionName()}");
+            var titleLabel = new Label($"Selected Action: {action.GetDisplayName()}");
             titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             inspectorContent.Add(titleLabel);
 
@@ -233,7 +233,7 @@ namespace SkillSystem.Editor
                 actionContainer.style.alignItems = Align.Center;
                 actionContainer.style.marginTop = 2;
 
-                var actionLabel = new Label($"{action.GetActionName()} (Frame {action.frame})");
+                var actionLabel = new Label($"{action.GetDisplayName()} (Frame {action.frame})");
                 actionLabel.style.flexGrow = 1;
                 actionContainer.Add(actionLabel);
 

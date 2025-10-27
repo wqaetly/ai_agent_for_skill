@@ -5,6 +5,7 @@ using Sirenix.OdinInspector;
 namespace SkillSystem.Actions
 {
     [Serializable]
+    [ActionDisplayName("日志输出")]
     public class LogAction : ISkillAction
     {
         [SerializeField]

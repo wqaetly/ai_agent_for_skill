@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的召唤类技能，如召唤狼、先知树人、影魔分身、守卫等召唤物技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("召唤")]
     public class SummonAction : ISkillAction
     {
         [BoxGroup("Summon Settings")]

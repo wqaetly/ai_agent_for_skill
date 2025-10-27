@@ -815,7 +815,7 @@ namespace SkillSystem.Editor
                 }
                 catch (System.Exception e)
                 {
-                    OnExecutionError?.Invoke($"Error exiting action {action.GetActionName()}: {e.Message}");
+                    OnExecutionError?.Invoke($"Error exiting action {action.GetDisplayName()}: {e.Message}");
                 }
             }
 
@@ -903,7 +903,7 @@ namespace SkillSystem.Editor
                 }
                 catch (System.Exception e)
                 {
-                    OnExecutionError?.Invoke($"Error in OnExit for {action.GetActionName()}: {e.Message}");
+                    OnExecutionError?.Invoke($"Error in OnExit for {action.GetDisplayName()}: {e.Message}");
                 }
             }
 
@@ -927,7 +927,7 @@ namespace SkillSystem.Editor
                 }
                 catch (System.Exception e)
                 {
-                    OnExecutionError?.Invoke($"Error in OnEnter for {action.GetActionName()}: {e.Message}");
+                    OnExecutionError?.Invoke($"Error in OnEnter for {action.GetDisplayName()}: {e.Message}");
                 }
             }
 
@@ -942,7 +942,7 @@ namespace SkillSystem.Editor
                 }
                 catch (System.Exception e)
                 {
-                    OnExecutionError?.Invoke($"Error in OnTick for {action.GetActionName()}: {e.Message}");
+                    OnExecutionError?.Invoke($"Error in OnTick for {action.GetDisplayName()}: {e.Message}");
                 }
             }
         }

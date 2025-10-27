@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的防护技能，如魔法护盾、骨骼护甲、困兽之斗、林肯法球等护盾类技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("护盾")]
     public class ShieldAction : ISkillAction
     {
         [BoxGroup("Shield Settings")]

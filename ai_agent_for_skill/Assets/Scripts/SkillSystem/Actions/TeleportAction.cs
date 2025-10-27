@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的传送技能，如闪烁、传送卷轴、自然之怒、时空断裂等传送类技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("传送")]
     public class TeleportAction : ISkillAction
     {
         [BoxGroup("Teleport Settings")]

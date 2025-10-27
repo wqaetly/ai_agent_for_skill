@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的位移技能，如闪烁、跳跃攻击、冲刺等技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("位移")]
     public class MovementAction : ISkillAction
     {
         [BoxGroup("Movement Settings")]

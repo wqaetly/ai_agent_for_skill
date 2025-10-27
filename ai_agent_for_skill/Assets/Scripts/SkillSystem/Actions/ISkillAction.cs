@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Sirenix.OdinInspector;
 
 namespace SkillSystem.Actions
@@ -24,6 +25,16 @@ namespace SkillSystem.Actions
         private bool hasExecuted = false;
 
         public abstract string GetActionName();
+
+        /// <summary>
+        /// 获取Action的显示名称（中文）
+        /// 优先使用ActionDisplayName特性，如果没有则使用GetActionName()
+        /// </summary>
+        public virtual string GetDisplayName()
+        {
+            var attr = this.GetType().GetCustomAttribute<ActionDisplayNameAttribute>();
+            return attr?.DisplayName ?? GetActionName();
+        }
 
         // Core lifecycle methods - must be implemented by derived classes
         /// <summary>

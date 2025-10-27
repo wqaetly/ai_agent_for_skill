@@ -4,11 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="" />
+    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/indexLayout.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/indexLayout.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="mock:///Immediate 窗口" root0="FORCE_HIGHLIGHTING" />
@@ -43,14 +51,22 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "XThreadsFramesViewSplitterKey": "0.5674157",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true",
     "附加到 Unity 编辑器.附加到 Unity 编辑器.executor": "Debug"
   }
 }]]></component>
   <component name="RunManager" selected="附加到 Unity 编辑器.附加到 Unity 编辑器">
     <configuration name="启动 Unity" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="I:\Unity\TuanJieUnity\2022.3.61t6\Editor\Tuanjie.exe" />
+      <option name="EXE_PATH" value="E:\Work\Tuanjie\2022.3.61t8\Editor\Tuanjie.exe" />
       <option name="PROGRAM_PARAMETERS" value="-projectPath H:\GameProject\ai_agent_for_skill\ai_agent_for_skill -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -62,7 +78,7 @@
       <method v="2" />
     </configuration>
     <configuration name="单元测试(批处理模式)" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="I:\Unity\TuanJieUnity\2022.3.61t6\Editor\Tuanjie.exe" />
+      <option name="EXE_PATH" value="E:\Work\Tuanjie\2022.3.61t8\Editor\Tuanjie.exe" />
       <option name="PROGRAM_PARAMETERS" value="-runTests -batchmode -projectPath H:\GameProject\ai_agent_for_skill\ai_agent_for_skill -testResults Logs/results.xml -logFile Logs/Editor.log -testPlatform EditMode -debugCodeOptimization" />
       <option name="WORKING_DIRECTORY" value="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill" />
       <option name="PASS_PARENT_ENVS" value="1" />
@@ -73,16 +89,13 @@
       <option name="MIXED_MODE_DEBUG" value="0" />
       <method v="2" />
     </configuration>
-    <configuration name="附加到 Unity 编辑器" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="38156">
+    <configuration name="附加到 Unity 编辑器" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="38156" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="runtimes">
-        <list>
-          <DesktopClrRuntime />
-          <MonoRuntime />
-        </list>
+        <list />
       </option>
       <option name="selectedOptions">
         <list />
@@ -115,8 +128,14 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1758531846044</updated>
+      <workItem from="1761556296984" duration="557000" />
+      <workItem from="1761556905054" duration="27000" />
+      <workItem from="1761556947437" duration="438000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="true" />
   <component name="UnityProjectDiscoverer">

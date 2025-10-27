@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的AOE技能，如地震、暴雪、火墙、光环效果等区域性技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("区域效果")]
     public class AreaOfEffectAction : ISkillAction
     {
         [BoxGroup("Area Settings")]

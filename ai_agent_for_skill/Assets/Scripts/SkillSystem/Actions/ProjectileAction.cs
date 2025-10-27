@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的远程攻击和技能，如普通攻击弹道、魔法球、导弹等投射物技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("投射物")]
     public class ProjectileAction : ISkillAction
     {
         [BoxGroup("Projectile Settings")]

@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的控制技能，如雷击、石化凝视、寒冬诅咒、恶魔赦免等控制类技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("控制效果")]
     public class ControlAction : ISkillAction
     {
         [BoxGroup("Control Settings")]

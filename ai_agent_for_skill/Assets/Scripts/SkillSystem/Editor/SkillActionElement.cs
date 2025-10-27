@@ -56,7 +56,7 @@ namespace SkillSystem.Editor
             AddToClassList("skill-action");
 
             // Action label
-            actionLabel = new Label(action.GetActionName());
+            actionLabel = new Label(action.GetDisplayName());
             actionLabel.AddToClassList("action-label");
             this.Add(actionLabel);
 
@@ -214,7 +214,7 @@ namespace SkillSystem.Editor
             this.style.backgroundColor = action.enabled ? actionColor : Color.gray;
 
             // Update labels
-            actionLabel.text = action.GetActionName();
+            actionLabel.text = action.GetDisplayName();
             durationLabel.text = $"{action.duration}f";
 
             // Update enabled state

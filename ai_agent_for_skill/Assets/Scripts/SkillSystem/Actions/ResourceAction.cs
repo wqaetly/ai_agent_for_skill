@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的资源相关技能，如法力燃烧、吸血光环、黄金法则、经验汲取等资源操作技能。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("资源操作")]
     public class ResourceAction : ISkillAction
     {
         [BoxGroup("Resource Settings")]

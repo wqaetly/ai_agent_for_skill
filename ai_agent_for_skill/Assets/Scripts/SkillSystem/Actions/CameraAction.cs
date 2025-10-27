@@ -8,6 +8,7 @@ namespace SkillSystem.Actions
     /// 支持多种镜头效果组合，可用于技能释放时的视觉冲击
     /// </summary>
     [System.Serializable]
+    [ActionDisplayName("镜头效果")]
     public class CameraAction : ISkillAction
     {
         [Title("基础设置")]

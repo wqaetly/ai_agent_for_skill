@@ -11,7 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的各种恢复技能，如治疗术、回血药剂、生命汲取、魔法恢复等。
     /// </summary>
     [Serializable]
-    [ActionDisplayName("Heal Target")]
+    [ActionDisplayName("治疗")]
     [ActionCategory("Support")]
     public class HealAction : ISkillAction
     {

@@ -11,6 +11,7 @@ namespace SkillSystem.Actions
     /// 适用于DOTA2中的各种Buff和Debuff，如力量加成、减速、眩晕、隐身等状态。
     /// </summary>
     [Serializable]
+    [ActionDisplayName("增益效果")]
     public class BuffAction : ISkillAction
     {
         [BoxGroup("Buff Settings")]
