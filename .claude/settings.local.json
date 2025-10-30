@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(setup.bat)",
+      "Bash(cmd /c setup.bat)",
+      "Bash(python -m pip install:*)",
+      "Bash(py --list:*)",
+      "Bash(python:*)",
+      "Bash(dir)",
+      "Bash(if not exist \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Data\" mkdir \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Data\")",
+      "Bash(python setup_dirs.py:*)",
+      "Bash(py setup_dirs.py)",
+      "Bash(dir:*)",
+      "Bash(rd /s /q \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Data\\embeddings_cache\")",
+      "Bash(py clear_cache.py:*)",
+      "Bash(cmd /c:*)",
+      "Bash(rd /s /q \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Data\\vector_db\")",
+      "Bash(pip install:*)",
+      "Bash(taskkill:*)",
+      "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\download_model_direct.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\setup_local_model.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\setup_model_configs.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\fix_model.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\auto_fix_model.py\")",
+      "Bash(powershell:*)",
+      "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\download_qwen3.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\force_download_qwen3.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\check_and_upgrade.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\download_qwen3_model.bat\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\fix_download.bat\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\force_fix.bat\")",
+      "Bash(py check_paths.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

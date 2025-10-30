@@ -1,0 +1,75 @@
+# SkillRAG Configuration File
+
+# 服务器配置
+server:
+  host: "127.0.0.1"
+  port: 8765
+  reload: false  # 生产环境设为false
+  debug: false
+
+# 嵌入模型配置 - 使用本地模型
+embedding:
+  # 本地模型路径（相对于config.yaml的路径）
+  model_name: "../Data/models/Qwen3-Embedding-0.6B"  # 本地Qwen3模型路径
+  device: "cpu"  # 或 "cuda" 如果有GPU
+  batch_size: 32
+  max_length: 8192  # Qwen3支持32K，设为8192以提高长文本处理能力
+  cache_dir: null  # null表示使用系统默认缓存位置，避免Windows路径问题
+  use_flash_attention: false  # 仅在GPU上启用，CPU不支持
+
+# 向量数据库配置
+vector_store:
+  type: "chroma"  # 可选: chroma, faiss
+  persist_directory: "../Data/vector_db"  # 相对于config.yaml的路径
+  collection_name: "skill_collection"
+  distance_metric: "cosine"  # cosine, l2, ip
+
+# 技能索引配置
+skill_indexer:
+  skills_directory: "../../ai_agent_for_skill/Assets/Skills"  # 相对于config.yaml的路径
+  watch_enabled: true  # 是否启用文件监听
+  index_cache: "../Data/skill_index.json"  # 相对于config.yaml的路径
+
+  # 索引内容配置
+  index_fields:
+    - "skillName"
+    - "skillDescription"
+    - "skillId"
+    - "actions"  # Action类型和参数
+
+  # 是否索引Action详细信息
+  index_action_details: true
+
+  # 自动重建索引间隔（秒），0表示仅在启动和文件变化时
+  auto_reindex_interval: 0
+
+# Action脚本索引配置
+action_indexer:
+  # Unity导出的Action JSON文件目录（每个Action一个文件）
+  actions_directory: "../Data/Actions"  # 相对于config.yaml的路径
+
+  # Action索引缓存路径
+  action_index_cache: "../Data/action_index.json"  # 相对于config.yaml的路径
+
+  # Action向量数据库collection名称（独立于技能collection）
+  collection_name: "action_collection"
+
+# RAG配置
+rag:
+  # 检索参数
+  top_k: 5  # 返回最相似的K个结果
+  similarity_threshold: 0.05  # 相似度阈值（0-1），设为0.05以支持跨语言搜索
+
+  # 重排序
+  rerank_enabled: false  # 暂不启用，可扩展
+
+  # 缓存配置
+  cache_enabled: true
+  cache_ttl: 3600  # 缓存生存时间（秒）
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "../Data/rag_server.log"  # 相对于config.yaml的路径
+  max_bytes: 10485760  # 10MB
+  backup_count: 3

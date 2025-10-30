@@ -1,0 +1,344 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7275906+08:00",
+    "action": {
+        "typeName": "AudioAction",
+        "fullTypeName": "SkillSystem.Actions.AudioAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "音频效果",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: AudioAction\n显示名称: 音频效果\n分类: Other\n参数: frame, duration, enabled, audioClipName, volume, pitch, loop, is3D, positionOffset, minDistance, maxDistance, rolloffMode, delayTime, fadeInTime, fadeOutTime, priority, bypassListenerEffects, bypassReverbZones\nframe(frame)\nduration(duration)\nenabled(enabled)\naudioClipName(audioClipName)\nvolume(volume)",
+        "parameters": [
+            {
+                "name": "frame",
+                "type": "int",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "enabled",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "audioClipName",
+                "type": "string",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "\"\"",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "volume",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "pitch",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0.1",
+                    "max": "3"
+                }
+            },
+            {
+                "name": "loop",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "is3D",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "positionOffset",
+                "type": "Vector3",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "(0, 0, 0)",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "minDistance",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "1",
+                    "max": "50"
+                }
+            },
+            {
+                "name": "maxDistance",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "50",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "5",
+                    "max": "500"
+                }
+            },
+            {
+                "name": "rolloffMode",
+                "type": "AudioRolloffMode",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Logarithmic",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Logarithmic",
+                    "Linear",
+                    "Custom"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "delayTime",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "fadeInTime",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "fadeOutTime",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "priority",
+                "type": "int",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "128",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "256"
+                }
+            },
+            {
+                "name": "bypassListenerEffects",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "bypassReverbZones",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

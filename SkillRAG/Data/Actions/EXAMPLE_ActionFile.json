@@ -1,0 +1,56 @@
+{
+  "version": "1.0",
+  "exportTime": "2025-10-30T10:00:00.0000000+08:00",
+  "action": {
+    "typeName": "DamageAction",
+    "fullTypeName": "SkillSystem.Actions.DamageAction",
+    "namespaceName": "SkillSystem.Actions",
+    "assemblyName": "Assembly-CSharp",
+    "displayName": "伤害",
+    "category": "Damage",
+    "description": "伤害行为脚本，对目标造成指定类型和数值的伤害",
+    "searchText": "Action类型: DamageAction\n显示名称: 伤害\n分类: Damage\n参数: baseDamage, damageType, damageVariance...",
+    "parameters": [
+      {
+        "name": "baseDamage",
+        "type": "float",
+        "label": "Base Damage",
+        "group": "Damage Settings",
+        "description": "基础伤害值，技能造成的原始伤害数值",
+        "infoBox": "伤害浮动范围，0.2表示±20%的伤害浮动",
+        "defaultValue": "100",
+        "isEnum": false,
+        "isArray": false,
+        "elementType": "",
+        "enumValues": [],
+        "constraints": {
+          "minValue": "0",
+          "min": "",
+          "max": ""
+        }
+      },
+      {
+        "name": "damageType",
+        "type": "DamageType",
+        "label": "Damage Type",
+        "group": "Damage Settings",
+        "description": "伤害类型，决定伤害如何被防御属性减免",
+        "infoBox": "",
+        "defaultValue": "Physical",
+        "isEnum": true,
+        "isArray": false,
+        "elementType": "",
+        "enumValues": [
+          "Physical",
+          "Magical",
+          "Pure"
+        ],
+        "constraints": {
+          "minValue": "",
+          "min": "",
+          "max": ""
+        }
+      }
+    ]
+  }
+}

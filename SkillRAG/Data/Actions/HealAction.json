@@ -1,0 +1,334 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7312819+08:00",
+    "action": {
+        "typeName": "HealAction",
+        "fullTypeName": "SkillSystem.Actions.HealAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "治疗",
+        "category": "Support",
+        "description": "",
+        "searchText": "Action类型: HealAction\n显示名称: 治疗\n分类: Support\n参数: healType, baseHealAmount, healMode, healPerSecond, scaleWithCasterLevel, levelScalingFactor, scaleWithSpellPower, spellPowerRatio, allowOverheal, overhealShieldDuration, overhealConversionRate, healEffect, continuousEffect, healSound, targetFilter, maxTargets, prioritizeLowHealth\nHeal Type(healType)\nBase Heal Amount(baseHealAmount)\nHeal Mode(healMode)\nHeal Per Second(healPerSecond)\nScale with Caster Level(scaleWithCasterLevel)",
+        "parameters": [
+            {
+                "name": "healType",
+                "type": "HealType",
+                "label": "Heal Type",
+                "group": "Heal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Health",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Health",
+                    "Mana",
+                    "Both"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "baseHealAmount",
+                "type": "float",
+                "label": "Base Heal Amount",
+                "group": "Heal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "150",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healMode",
+                "type": "HealMode",
+                "label": "Heal Mode",
+                "group": "Heal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Instant",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Instant",
+                    "OverTime"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healPerSecond",
+                "type": "float",
+                "label": "Heal Per Second",
+                "group": "Heal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "25",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "scaleWithCasterLevel",
+                "type": "bool",
+                "label": "Scale with Caster Level",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "levelScalingFactor",
+                "type": "float",
+                "label": "Level Scaling Factor",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "scaleWithSpellPower",
+                "type": "bool",
+                "label": "Scale with Spell Power",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "spellPowerRatio",
+                "type": "float",
+                "label": "Spell Power Ratio",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "allowOverheal",
+                "type": "bool",
+                "label": "Allow Overheal",
+                "group": "Overheal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "overhealShieldDuration",
+                "type": "float",
+                "label": "Overheal Shield Duration",
+                "group": "Overheal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "10",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "overhealConversionRate",
+                "type": "float",
+                "label": "Overheal Conversion Rate",
+                "group": "Overheal Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.5",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "healEffect",
+                "type": "GameObject",
+                "label": "Heal Effect",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "continuousEffect",
+                "type": "GameObject",
+                "label": "Continuous Effect",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healSound",
+                "type": "AudioClip",
+                "label": "Heal Sound",
+                "group": "Audio Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Ally",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "prioritizeLowHealth",
+                "type": "bool",
+                "label": "Prioritize Low Health",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

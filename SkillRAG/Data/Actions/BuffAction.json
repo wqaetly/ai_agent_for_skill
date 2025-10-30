@@ -1,0 +1,289 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7281135+08:00",
+    "action": {
+        "typeName": "BuffAction",
+        "fullTypeName": "SkillSystem.Actions.BuffAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "增益效果",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: BuffAction\n显示名称: 增益效果\n分类: Other\n参数: buffType, buffId, stackType, maxStacks, buffDuration, isPermanent, buffIcon, buffName, buffDescription, attributeModifiers, specialEffects, targetFilter, applyToMultipleTargets, maxTargets\nBuff Type(buffType)\nBuff ID(buffId) - 用于识别和管理Buff的唯一标识符\nStack Type(stackType)\nMax Stacks(maxStacks)\nBuff Duration (Seconds)(buffDuration) - Buff持续时间，0表示永久效果",
+        "parameters": [
+            {
+                "name": "buffType",
+                "type": "BuffType",
+                "label": "Buff Type",
+                "group": "Buff Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Buff",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Buff",
+                    "Debuff"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "buffId",
+                "type": "string",
+                "label": "Buff ID",
+                "group": "Buff Settings",
+                "description": "",
+                "infoBox": "用于识别和管理Buff的唯一标识符",
+                "defaultValue": "\"buff_example\"",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "stackType",
+                "type": "StackType",
+                "label": "Stack Type",
+                "group": "Buff Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Refresh",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "None",
+                    "Refresh",
+                    "Stack"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxStacks",
+                "type": "int",
+                "label": "Max Stacks",
+                "group": "Buff Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "5",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "buffDuration",
+                "type": "float",
+                "label": "Buff Duration (Seconds)",
+                "group": "Duration Settings",
+                "description": "",
+                "infoBox": "Buff持续时间，0表示永久效果",
+                "defaultValue": "10",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "isPermanent",
+                "type": "bool",
+                "label": "Is Permanent",
+                "group": "Duration Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "buffIcon",
+                "type": "Sprite",
+                "label": "Buff Icon",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "buffName",
+                "type": "string",
+                "label": "Buff Name",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "\"Example Buff\"",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "buffDescription",
+                "type": "string",
+                "label": "Buff Description",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "\"This is an example buff effect.\"",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "attributeModifiers",
+                "type": "AttributeModifier[]",
+                "label": "Attribute Modifiers",
+                "group": "Effect Settings",
+                "description": "",
+                "infoBox": "属性修正值，可以修改目标的各项属性",
+                "defaultValue": "[]",
+                "isEnum": false,
+                "isArray": true,
+                "elementType": "AttributeModifier",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "specialEffects",
+                "type": "SpecialEffect",
+                "label": "Special Effects",
+                "group": "Effect Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "None",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "None",
+                    "Stun",
+                    "Silence",
+                    "Slow",
+                    "Root",
+                    "Invisibility",
+                    "MagicImmune",
+                    "Invulnerable"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Self",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "applyToMultipleTargets",
+                "type": "bool",
+                "label": "Apply to Multiple Targets",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

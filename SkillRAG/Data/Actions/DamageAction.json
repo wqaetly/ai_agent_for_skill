@@ -1,0 +1,205 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7307457+08:00",
+    "action": {
+        "typeName": "DamageAction",
+        "fullTypeName": "SkillSystem.Actions.DamageAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "伤害",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: DamageAction\n显示名称: 伤害\n分类: Other\n参数: baseDamage, damageType, damageVariance, criticalChance, criticalMultiplier, lifeStealPercentage, spellVampPercentage, targetFilter, maxTargets, damageRadius\nBase Damage(baseDamage)\nDamage Type(damageType)\nDamage Variance(damageVariance) - 伤害浮动范围，0.2表示±20%的伤害浮动\nCritical Chance(criticalChance)\nCritical Multiplier(criticalMultiplier)",
+        "parameters": [
+            {
+                "name": "baseDamage",
+                "type": "float",
+                "label": "Base Damage",
+                "group": "Damage Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "100",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageType",
+                "type": "DamageType",
+                "label": "Damage Type",
+                "group": "Damage Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Physical",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Physical",
+                    "Magical",
+                    "Pure"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageVariance",
+                "type": "float",
+                "label": "Damage Variance",
+                "group": "Damage Settings",
+                "description": "",
+                "infoBox": "伤害浮动范围，0.2表示±20%的伤害浮动",
+                "defaultValue": "0.1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "0.5"
+                }
+            },
+            {
+                "name": "criticalChance",
+                "type": "float",
+                "label": "Critical Chance",
+                "group": "Critical Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "criticalMultiplier",
+                "type": "float",
+                "label": "Critical Multiplier",
+                "group": "Critical Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "2",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "lifeStealPercentage",
+                "type": "float",
+                "label": "Life Steal Percentage",
+                "group": "Special Effects",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "spellVampPercentage",
+                "type": "float",
+                "label": "Spell Vamp Percentage",
+                "group": "Special Effects",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Enemy",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageRadius",
+                "type": "float",
+                "label": "Damage Radius",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

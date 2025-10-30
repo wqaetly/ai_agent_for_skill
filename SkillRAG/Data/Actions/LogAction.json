@@ -1,0 +1,58 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7318160+08:00",
+    "action": {
+        "typeName": "LogAction",
+        "fullTypeName": "SkillSystem.Actions.LogAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "日志输出",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: LogAction\n显示名称: 日志输出\n分类: Other\n参数: message, logType\nLog Message(message)\nLog Type(logType)",
+        "parameters": [
+            {
+                "name": "message",
+                "type": "string",
+                "label": "Log Message",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "\"Skill Action Executed\"",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "logType",
+                "type": "LogType",
+                "label": "Log Type",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Log",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Error",
+                    "Assert",
+                    "Warning",
+                    "Log",
+                    "Exception"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

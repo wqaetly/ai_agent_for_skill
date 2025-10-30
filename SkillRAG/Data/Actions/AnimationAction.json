@@ -1,0 +1,88 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7209994+08:00",
+    "action": {
+        "typeName": "AnimationAction",
+        "fullTypeName": "SkillSystem.Actions.AnimationAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "播放动画",
+        "category": "Visual & Audio",
+        "description": "",
+        "searchText": "Action类型: AnimationAction\n显示名称: 播放动画\n分类: Visual & Audio\n参数: animationClipName, normalizedTime, crossFadeDuration, animationLayer\nAnimation Clip Name(animationClipName)\nNormalized Time(normalizedTime)\nCross Fade Duration(crossFadeDuration)\nAnimation Layer(animationLayer)",
+        "parameters": [
+            {
+                "name": "animationClipName",
+                "type": "string",
+                "label": "Animation Clip Name",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "\"Attack01\"",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "normalizedTime",
+                "type": "float",
+                "label": "Normalized Time",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "crossFadeDuration",
+                "type": "float",
+                "label": "Cross Fade Duration",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "animationLayer",
+                "type": "int",
+                "label": "Animation Layer",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

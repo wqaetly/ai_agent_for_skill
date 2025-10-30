@@ -1,0 +1,250 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7291652+08:00",
+    "action": {
+        "typeName": "CameraAction",
+        "fullTypeName": "SkillSystem.Actions.CameraAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "镜头效果",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: CameraAction\n显示名称: 镜头效果\n分类: Other\n参数: frame, duration, enabled, shakeIntensity, zoomScale, positionOffset, rotationOffset, fadeInTime, fadeOutTime, shakeFrequency, shakeCurve, followCaster, affectMainCamera\nframe(frame)\nduration(duration)\nenabled(enabled)\nshakeIntensity(shakeIntensity)\nzoomScale(zoomScale)",
+        "parameters": [
+            {
+                "name": "frame",
+                "type": "int",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "duration",
+                "type": "int",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "enabled",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "shakeIntensity",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "zoomScale",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0.5",
+                    "max": "3"
+                }
+            },
+            {
+                "name": "positionOffset",
+                "type": "Vector3",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "(0, 0, 0)",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "rotationOffset",
+                "type": "Vector3",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "(0, 0, 0)",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "fadeInTime",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "fadeOutTime",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "shakeFrequency",
+                "type": "float",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "10",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "1",
+                    "max": "30"
+                }
+            },
+            {
+                "name": "shakeCurve",
+                "type": "AnimationCurve",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "UnityEngine.AnimationCurve",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "followCaster",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "affectMainCamera",
+                "type": "bool",
+                "label": "",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

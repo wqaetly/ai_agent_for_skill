@@ -1,0 +1,523 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7333508+08:00",
+    "action": {
+        "typeName": "ResourceAction",
+        "fullTypeName": "SkillSystem.Actions.ResourceAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "资源操作",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: ResourceAction\n显示名称: 资源操作\n分类: Other\n参数: resourceType, operationType, baseAmount, amountType, percentage, scaleWithLevel, levelScaling, scaleWithAttribute, scalingAttribute, attributeRatio, transferMode, transferEfficiency, respectMaximum, allowOverdraft, overdraftPenalty, applyOverTime, applicationInterval, resourceEffect, continuousEffect, effectColor, operationSound, successSound, failureSound, targetFilter, maxTargets, requireLineOfSight\nResource Type(resourceType)\nOperation Type(operationType)\nBase Amount(baseAmount)\nAmount Type(amountType)\nPercentage(percentage)",
+        "parameters": [
+            {
+                "name": "resourceType",
+                "type": "ResourceType",
+                "label": "Resource Type",
+                "group": "Resource Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Health",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Health",
+                    "Mana",
+                    "Rage",
+                    "Gold",
+                    "Experience"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "operationType",
+                "type": "OperationType",
+                "label": "Operation Type",
+                "group": "Resource Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Restore",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Restore",
+                    "Consume",
+                    "Transfer",
+                    "Steal",
+                    "Share",
+                    "Convert"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "baseAmount",
+                "type": "float",
+                "label": "Base Amount",
+                "group": "Value Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "100",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "amountType",
+                "type": "AmountType",
+                "label": "Amount Type",
+                "group": "Value Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Fixed",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Fixed",
+                    "Percentage"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "percentage",
+                "type": "float",
+                "label": "Percentage",
+                "group": "Value Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.5",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "scaleWithLevel",
+                "type": "bool",
+                "label": "Scale with Level",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "levelScaling",
+                "type": "float",
+                "label": "Level Scaling",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "0.1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "scaleWithAttribute",
+                "type": "bool",
+                "label": "Scale with Attribute",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "scalingAttribute",
+                "type": "AttributeType",
+                "label": "Scaling Attribute",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Damage",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Health",
+                    "Mana",
+                    "Damage",
+                    "Armor",
+                    "MagicResist",
+                    "MovementSpeed",
+                    "AttackSpeed",
+                    "CriticalChance"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "attributeRatio",
+                "type": "float",
+                "label": "Attribute Ratio",
+                "group": "Scaling Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "5"
+                }
+            },
+            {
+                "name": "transferMode",
+                "type": "TransferMode",
+                "label": "Transfer Mode",
+                "group": "Transfer Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Direct",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Direct",
+                    "Efficient",
+                    "Burn"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "transferEfficiency",
+                "type": "float",
+                "label": "Transfer Efficiency",
+                "group": "Transfer Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "respectMaximum",
+                "type": "bool",
+                "label": "Respect Maximum",
+                "group": "Limit Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "true",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "allowOverdraft",
+                "type": "bool",
+                "label": "Allow Overdraft",
+                "group": "Limit Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "overdraftPenalty",
+                "type": "OverdraftPenalty",
+                "label": "Overdraft Penalty",
+                "group": "Limit Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Damage",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "None",
+                    "Damage",
+                    "Stun",
+                    "Debuff"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "applyOverTime",
+                "type": "bool",
+                "label": "Apply Over Time",
+                "group": "Duration Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "applicationInterval",
+                "type": "float",
+                "label": "Application Interval",
+                "group": "Duration Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0.100000001490116",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "resourceEffect",
+                "type": "GameObject",
+                "label": "Resource Effect",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "continuousEffect",
+                "type": "GameObject",
+                "label": "Continuous Effect",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectColor",
+                "type": "Color",
+                "label": "Effect Color",
+                "group": "Visual Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "RGBA(1.00, 1.00, 1.00, 1.00)",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "operationSound",
+                "type": "AudioClip",
+                "label": "Operation Sound",
+                "group": "Audio Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "successSound",
+                "type": "AudioClip",
+                "label": "Success Sound",
+                "group": "Audio Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "failureSound",
+                "type": "AudioClip",
+                "label": "Failure Sound",
+                "group": "Audio Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "null",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Self",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "1",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "requireLineOfSight",
+                "type": "bool",
+                "label": "Require Line of Sight",
+                "group": "Target Settings",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "false",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

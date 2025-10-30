@@ -1,0 +1,110 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-10-30T21:16:18.7297034+08:00",
+    "action": {
+        "typeName": "CollisionAction",
+        "fullTypeName": "SkillSystem.Actions.CollisionAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "碰撞检测",
+        "category": "Other",
+        "description": "",
+        "searchText": "Action类型: CollisionAction\n显示名称: 碰撞检测\n分类: Other\n参数: shape, position, size, layerMask, damage\nCollision Shape(shape)\nPosition(position)\nSize(size)\nLayer Mask(layerMask)\nDamage(damage)",
+        "parameters": [
+            {
+                "name": "shape",
+                "type": "CollisionShape",
+                "label": "Collision Shape",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "Sphere",
+                "isEnum": true,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [
+                    "Sphere",
+                    "Box",
+                    "Capsule"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "position",
+                "type": "Vector3",
+                "label": "Position",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "(0, 0, 0)",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "size",
+                "type": "Vector3",
+                "label": "Size",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "(1, 1, 1)",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "layerMask",
+                "type": "LayerMask",
+                "label": "Layer Mask",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "UnityEngine.LayerMask",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damage",
+                "type": "float",
+                "label": "Damage",
+                "group": "",
+                "description": "",
+                "infoBox": "",
+                "defaultValue": "10",
+                "isEnum": false,
+                "isArray": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

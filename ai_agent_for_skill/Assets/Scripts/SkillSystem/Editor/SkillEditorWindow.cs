@@ -20,6 +20,38 @@ namespace SkillSystem.Editor
             GetWindow<SkillEditorWindow>("Skill Editor").Show();
         }
 
+        /// <summary>
+        /// Opens the skill editor window and loads the specified skill data
+        /// </summary>
+        public static void OpenSkill(SkillData skillData)
+        {
+            var window = GetWindow<SkillEditorWindow>("Skill Editor");
+            window.Show();
+            window.LoadSkillData(skillData);
+        }
+
+        /// <summary>
+        /// Loads skill data into the editor (called by OpenSkill)
+        /// </summary>
+        private void LoadSkillData(SkillData skillData)
+        {
+            if (skillData != null)
+            {
+                currentSkillData = skillData;
+                selectedTrackIndex = -1;
+                selectedActionIndex = -1;
+                currentFrame = 0;
+
+                // Update skill executor with loaded data
+                skillExecutor?.SetSkillData(currentSkillData);
+
+                RefreshUI();
+
+                // Auto-fit timeline to show complete skill configuration
+                AutoFitTimelineAfterLoad();
+            }
+        }
+
         // Core data
         private SkillData currentSkillData;
         private int selectedTrackIndex = -1;

@@ -1,0 +1,11 @@
+{
+  "__version__": {
+    "sentence_transformers": "3.0.0",
+    "transformers": "4.51.0",
+    "pytorch": "2.0.0"
+  },
+  "prompts": {
+    "query": "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
+  },
+  "default_prompt_name": null
+}
