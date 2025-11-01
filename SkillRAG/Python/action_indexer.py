@@ -250,11 +250,29 @@ class ActionIndexer:
         """
         actions = self.get_all_actions()
         prepared_actions = []
+        seen_ids = set()  # 跟踪已见过的ID，避免重复
 
         for action in actions:
             try:
+                # 使用文件名生成唯一ID（而不是typeName，因为可能有重复）
+                file_name = action.get('_file_name', '')
+                type_name = action.get('typeName', '')
+                
+                # 优先使用文件名（去掉.json后缀），如果没有则使用typeName
+                if file_name:
+                    action_id = f"action_{file_name.replace('.json', '')}"
+                else:
+                    action_id = f"action_{type_name}"
+                
+                # 检查ID是否重复
+                if action_id in seen_ids:
+                    logger.warning(f"Duplicate action ID detected: {action_id} (typeName: {type_name}, file: {file_name}), skipping...")
+                    continue
+                
+                seen_ids.add(action_id)
+                
                 prepared = {
-                    "id": f"action_{action.get('typeName', '')}",
+                    "id": action_id,
                     "search_text": self.build_action_search_text(action),
                     "metadata": self.build_action_metadata(action),
                     "original_data": action  # 保留原始数据用于详细查询

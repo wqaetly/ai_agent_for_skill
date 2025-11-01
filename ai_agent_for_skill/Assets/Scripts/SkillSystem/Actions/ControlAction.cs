@@ -12,6 +12,7 @@ namespace SkillSystem.Actions
     /// </summary>
     [Serializable]
     [ActionDisplayName("控制效果")]
+    [ActionDescription("对目标施加控制效果，支持8种控制类型：眩晕(Stun)使目标无法行动、沉默(Silence)禁止施法、定身(Root)禁止移动、减速(Slow)降低移动速度、恐惧(Fear)强制逃跑、魅惑(Charm)控制敌人、缴械(Disable)禁用攻击和技能、放逐/击飞(Banish)使目标无敌且无法行动。可配置持续时间、控制强度、免疫穿透、叠加行为等。常用于眩晕技能、击飞效果、沉默法术、减速debuff等各类控制技能。")]
     public class ControlAction : ISkillAction
     {
         [BoxGroup("Control Settings")]

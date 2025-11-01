@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7246970+08:00",
+    "exportTime": "2025-11-01T18:37:15.0265038+08:00",
     "action": {
         "typeName": "AreaOfEffectAction",
         "fullTypeName": "SkillSystem.Actions.AreaOfEffectAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "区域效果",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: AreaOfEffectAction\n显示名称: 区域效果\n分类: Other\n参数: areaShape, areaSize, innerRadius, areaAngle, centerPosition, useRelativePosition, followCaster, effectType, effectValue, effectInterval, useDistanceFalloff, falloffCurve, areaVisualEffect, ongoingEffect, targetFilter, maxTargets, ignoreCaster\nArea Shape(areaShape)\nArea Size(areaSize)\nInner Radius(innerRadius)\nArea Angle(areaAngle)\nCenter Position(centerPosition)",
+        "category": "Damage",
+        "description": "AreaOfEffectAction是一个功能强大的区域效果脚本，用于在指定几何区域内产生各种持续性效果。该Action支持四种不同的区域形状：圆形(Circle)、矩形(Rectangle)、扇形(Sector)和环形(Ring)，每种形状都有专门的参数配置，如扇形角度(Area Angle)和环形内半径(Inner Radius)。核心功能包括伤害(Damage)、治疗(Healing)、增益(Buff)和减益(Debuff)四种效果类型，支持距离衰减(Falloff)和周期性触发(Effect Interval)。典型使用场景包括DOTA2中的地震(Earthshaker余震)、暴雪(Crystal Maiden冰封禁制)、火墙(Jakiro烈焰焚身)和光环类技能。与其他Action的关键区别在于其强大的区域控制和持续作用能力，支持目标筛选(Target Filter)、最大目标限制(Max Targets)和施法者忽略(Ignore Caster)等精细化控制，同时提供完整的视觉效果系统，包括区域标记(Area Visual Effect)和持续特效(Ongoing Effect)。",
+        "searchText": "区域效果\nAreaOfEffectAction是一个功能强大的区域效果脚本，用于在指定几何区域内产生各种持续性效果。该Action支持四种不同的区域形状：圆形(Circle)、矩形(Rectangle)、扇形(Sector)和环形(Ring)，每种形状都有专门的参数配置，如扇形角度(Area Angle)和环形内半径(Inner Radius)。核心功能包括伤害(Damage)、治疗(Healing)、增益(Buff)和减益(Debuff)四种效果类型，支持距离衰减(Falloff)和周期性触发(Effect Interval)。典型使用场景包括DOTA2中的地震(Earthshaker余震)、暴雪(Crystal Maiden冰封禁制)、火墙(Jakiro烈焰焚身)和光环类技能。与其他Action的关键区别在于其强大的区域控制和持续作用能力，支持目标筛选(Target Filter)、最大目标限制(Max Targets)和施法者忽略(Ignore Caster)等精细化控制，同时提供完整的视觉效果系统，包括区域标记(Area Visual Effect)和持续特效(Ongoing Effect)。\n关键词: AOE,区域效果,范围伤害,光环,持续效果,AreaOfEffect,圆形区域,扇形区域,环形区域,距离衰减,目标筛选,视觉效果,DOTA2技能,暴雪,地震,火墙\n分类: Damage\n类型: AreaOfEffectAction",
         "parameters": [
             {
                 "name": "areaShape",
                 "type": "AreaShape",
+                "defaultValue": "Circle",
                 "label": "Area Shape",
                 "group": "Area Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Circle",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Circle",
@@ -30,6 +29,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -37,17 +37,17 @@
             {
                 "name": "areaSize",
                 "type": "float",
+                "defaultValue": "5",
                 "label": "Area Size",
                 "group": "Area Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -55,17 +55,17 @@
             {
                 "name": "innerRadius",
                 "type": "float",
+                "defaultValue": "2",
                 "label": "Inner Radius",
                 "group": "Area Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "2",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -73,17 +73,17 @@
             {
                 "name": "areaAngle",
                 "type": "float",
+                "defaultValue": "90",
                 "label": "Area Angle",
                 "group": "Area Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "90",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "360"
                 }
@@ -91,17 +91,17 @@
             {
                 "name": "centerPosition",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
                 "label": "Center Position",
                 "group": "Position Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 0)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -109,17 +109,17 @@
             {
                 "name": "useRelativePosition",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Use Relative Position",
                 "group": "Position Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -127,17 +127,17 @@
             {
                 "name": "followCaster",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Follow Caster",
                 "group": "Position Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -145,13 +145,12 @@
             {
                 "name": "effectType",
                 "type": "AOEEffectType",
+                "defaultValue": "Damage",
                 "label": "Effect Type",
                 "group": "Effect Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Damage",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Damage",
@@ -161,6 +160,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -168,17 +168,17 @@
             {
                 "name": "effectValue",
                 "type": "float",
+                "defaultValue": "100",
                 "label": "Effect Value",
                 "group": "Effect Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "100",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -186,17 +186,17 @@
             {
                 "name": "effectInterval",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "Effect Interval",
                 "group": "Effect Settings",
-                "description": "",
                 "infoBox": "效果触发间隔，0表示只触发一次",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -204,17 +204,17 @@
             {
                 "name": "useDistanceFalloff",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Use Distance Falloff",
                 "group": "Falloff Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -222,17 +222,17 @@
             {
                 "name": "falloffCurve",
                 "type": "AnimationCurve",
+                "defaultValue": "UnityEngine.AnimationCurve",
                 "label": "Falloff Curve",
                 "group": "Falloff Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "UnityEngine.AnimationCurve",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -240,17 +240,17 @@
             {
                 "name": "areaVisualEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Area Visual Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -258,17 +258,17 @@
             {
                 "name": "ongoingEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Ongoing Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -276,13 +276,12 @@
             {
                 "name": "targetFilter",
                 "type": "TargetFilter",
+                "defaultValue": "Enemy",
                 "label": "Target Filter",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Enemy",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Enemy",
@@ -292,6 +291,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -299,17 +299,17 @@
             {
                 "name": "maxTargets",
                 "type": "int",
+                "defaultValue": "0",
                 "label": "Max Targets",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "最大影响目标数，0表示无限制",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -317,17 +317,17 @@
             {
                 "name": "ignoreCaster",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Ignore Caster",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

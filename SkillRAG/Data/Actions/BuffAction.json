@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7281135+08:00",
+    "exportTime": "2025-11-01T18:37:15.0444978+08:00",
     "action": {
         "typeName": "BuffAction",
         "fullTypeName": "SkillSystem.Actions.BuffAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "增益效果",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: BuffAction\n显示名称: 增益效果\n分类: Other\n参数: buffType, buffId, stackType, maxStacks, buffDuration, isPermanent, buffIcon, buffName, buffDescription, attributeModifiers, specialEffects, targetFilter, applyToMultipleTargets, maxTargets\nBuff Type(buffType)\nBuff ID(buffId) - 用于识别和管理Buff的唯一标识符\nStack Type(stackType)\nMax Stacks(maxStacks)\nBuff Duration (Seconds)(buffDuration) - Buff持续时间，0表示永久效果",
+        "category": "Buff",
+        "description": "BuffAction是Unity技能系统中专门处理持续性状态效果的核心组件，用于为目标单位添加增益(Buff)或减益(Debuff)效果。该Action支持完整的Buff管理系统，包括属性修正、特殊状态、叠加机制和持续时间控制。主要参数包括：Buff类型(Buff/Debuff)、叠加类型(None/Refresh/Stack)、持续时间(支持永久效果)、属性修正器(可修改生命值、攻击力、移动速度等8种属性)和特殊效果(眩晕Stun、沉默Silence、减速Slow、定身Root、隐身Invisibility、魔法免疫MagicImmune、无敌Invulnerable)。典型使用场景包括：DOTA2中的力量加成Buff、减速Debuff、眩晕控制效果、隐身状态、魔法免疫护盾等。与其他Action的关键区别在于专注于持续性状态管理而非瞬时效果，提供完整的叠加、刷新和层数管理机制，支持复杂的Buff交互规则。",
+        "searchText": "增益效果\nBuffAction是Unity技能系统中专门处理持续性状态效果的核心组件，用于为目标单位添加增益(Buff)或减益(Debuff)效果。该Action支持完整的Buff管理系统，包括属性修正、特殊状态、叠加机制和持续时间控制。主要参数包括：Buff类型(Buff/Debuff)、叠加类型(None/Refresh/Stack)、持续时间(支持永久效果)、属性修正器(可修改生命值、攻击力、移动速度等8种属性)和特殊效果(眩晕Stun、沉默Silence、减速Slow、定身Root、隐身Invisibility、魔法免疫MagicImmune、无敌Invulnerable)。典型使用场景包括：DOTA2中的力量加成Buff、减速Debuff、眩晕控制效果、隐身状态、魔法免疫护盾等。与其他Action的关键区别在于专注于持续性状态管理而非瞬时效果，提供完整的叠加、刷新和层数管理机制，支持复杂的Buff交互规则。\n关键词: 增益效果,Buff,Debuff,状态效果,属性修正,叠加机制,眩晕,沉默,减速,隐身,魔法免疫,Stun,Silence,Slow,Invisibility,MagicImmune,持续效果,状态管理\n分类: Buff\n类型: BuffAction",
         "parameters": [
             {
                 "name": "buffType",
                 "type": "BuffType",
+                "defaultValue": "Buff",
                 "label": "Buff Type",
                 "group": "Buff Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Buff",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Buff",
@@ -28,6 +27,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -35,17 +35,17 @@
             {
                 "name": "buffId",
                 "type": "string",
+                "defaultValue": "\"buff_example\"",
                 "label": "Buff ID",
                 "group": "Buff Settings",
-                "description": "",
                 "infoBox": "用于识别和管理Buff的唯一标识符",
-                "defaultValue": "\"buff_example\"",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -53,13 +53,12 @@
             {
                 "name": "stackType",
                 "type": "StackType",
+                "defaultValue": "Refresh",
                 "label": "Stack Type",
                 "group": "Buff Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Refresh",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "None",
@@ -68,6 +67,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -75,17 +75,17 @@
             {
                 "name": "maxStacks",
                 "type": "int",
+                "defaultValue": "5",
                 "label": "Max Stacks",
                 "group": "Buff Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "1",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -93,17 +93,17 @@
             {
                 "name": "buffDuration",
                 "type": "float",
+                "defaultValue": "10",
                 "label": "Buff Duration (Seconds)",
                 "group": "Duration Settings",
-                "description": "",
                 "infoBox": "Buff持续时间，0表示永久效果",
-                "defaultValue": "10",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -111,17 +111,17 @@
             {
                 "name": "isPermanent",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Is Permanent",
                 "group": "Duration Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -129,17 +129,17 @@
             {
                 "name": "buffIcon",
                 "type": "Sprite",
+                "defaultValue": "null",
                 "label": "Buff Icon",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -147,17 +147,17 @@
             {
                 "name": "buffName",
                 "type": "string",
+                "defaultValue": "\"Example Buff\"",
                 "label": "Buff Name",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "\"Example Buff\"",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -165,17 +165,17 @@
             {
                 "name": "buffDescription",
                 "type": "string",
+                "defaultValue": "\"This is an example buff effect.\"",
                 "label": "Buff Description",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "\"This is an example buff effect.\"",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -183,17 +183,17 @@
             {
                 "name": "attributeModifiers",
                 "type": "AttributeModifier[]",
+                "defaultValue": "[]",
                 "label": "Attribute Modifiers",
                 "group": "Effect Settings",
-                "description": "",
                 "infoBox": "属性修正值，可以修改目标的各项属性",
-                "defaultValue": "[]",
-                "isEnum": false,
                 "isArray": true,
+                "isEnum": false,
                 "elementType": "AttributeModifier",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -201,13 +201,12 @@
             {
                 "name": "specialEffects",
                 "type": "SpecialEffect",
+                "defaultValue": "None",
                 "label": "Special Effects",
                 "group": "Effect Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "None",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "None",
@@ -221,6 +220,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -228,13 +228,12 @@
             {
                 "name": "targetFilter",
                 "type": "TargetFilter",
+                "defaultValue": "Self",
                 "label": "Target Filter",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Self",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Enemy",
@@ -244,6 +243,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -251,17 +251,17 @@
             {
                 "name": "applyToMultipleTargets",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Apply to Multiple Targets",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -269,17 +269,17 @@
             {
                 "name": "maxTargets",
                 "type": "int",
+                "defaultValue": "1",
                 "label": "Max Targets",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "1",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

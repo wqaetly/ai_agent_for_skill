@@ -1,30 +1,30 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7275906+08:00",
+    "exportTime": "2025-11-01T18:37:15.0404495+08:00",
     "action": {
         "typeName": "AudioAction",
         "fullTypeName": "SkillSystem.Actions.AudioAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "音频效果",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: AudioAction\n显示名称: 音频效果\n分类: Other\n参数: frame, duration, enabled, audioClipName, volume, pitch, loop, is3D, positionOffset, minDistance, maxDistance, rolloffMode, delayTime, fadeInTime, fadeOutTime, priority, bypassListenerEffects, bypassReverbZones\nframe(frame)\nduration(duration)\nenabled(enabled)\naudioClipName(audioClipName)\nvolume(volume)",
+        "category": "Audio",
+        "description": "AudioAction是Unity技能系统中专门用于控制音效播放的核心组件，主要负责技能相关的音频效果管理和播放控制。该Action支持2D和3D两种音效模式，可配置音量(volume)、音调(pitch)、循环播放(loop)等基础参数，以及空间音效相关的距离衰减(minDistance/maxDistance)、衰减曲线(rolloffMode)和位置偏移(positionOffset)。在播放控制方面，支持延迟播放(delayTime)、淡入淡出(fadeInTime/fadeOutTime)等高级功能，还能设置音频优先级(priority)和绕过监听器效果(bypassListenerEffects)等高级选项。典型使用场景包括：技能释放时的音效反馈、命中目标时的打击音效、持续施法时的循环背景音、环境音效的空间定位、UI交互的音频反馈等。与其他Action相比，AudioAction专注于纯粹的音频播放控制，不涉及视觉效果或游戏逻辑处理，通过丰富的参数配置可以实现从简单音效到复杂空间音频的全方位控制。",
+        "searchText": "音频效果\nAudioAction是Unity技能系统中专门用于控制音效播放的核心组件，主要负责技能相关的音频效果管理和播放控制。该Action支持2D和3D两种音效模式，可配置音量(volume)、音调(pitch)、循环播放(loop)等基础参数，以及空间音效相关的距离衰减(minDistance/maxDistance)、衰减曲线(rolloffMode)和位置偏移(positionOffset)。在播放控制方面，支持延迟播放(delayTime)、淡入淡出(fadeInTime/fadeOutTime)等高级功能，还能设置音频优先级(priority)和绕过监听器效果(bypassListenerEffects)等高级选项。典型使用场景包括：技能释放时的音效反馈、命中目标时的打击音效、持续施法时的循环背景音、环境音效的空间定位、UI交互的音频反馈等。与其他Action相比，AudioAction专注于纯粹的音频播放控制，不涉及视觉效果或游戏逻辑处理，通过丰富的参数配置可以实现从简单音效到复杂空间音频的全方位控制。\n关键词: 音频效果,音效播放,Audio,3D音效,空间音效,音量控制,音调调整,淡入淡出,音频优先级,AudioSource\n分类: Audio\n类型: AudioAction",
         "parameters": [
             {
                 "name": "frame",
                 "type": "int",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -32,17 +32,17 @@
             {
                 "name": "duration",
                 "type": "int",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -50,17 +50,17 @@
             {
                 "name": "enabled",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -68,17 +68,17 @@
             {
                 "name": "audioClipName",
                 "type": "string",
+                "defaultValue": "\"\"",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "\"\"",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -86,17 +86,17 @@
             {
                 "name": "volume",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -104,17 +104,17 @@
             {
                 "name": "pitch",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0.1",
                     "max": "3"
                 }
@@ -122,17 +122,17 @@
             {
                 "name": "loop",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -140,17 +140,17 @@
             {
                 "name": "is3D",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -158,17 +158,17 @@
             {
                 "name": "positionOffset",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 0)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -176,17 +176,17 @@
             {
                 "name": "minDistance",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "1",
                     "max": "50"
                 }
@@ -194,17 +194,17 @@
             {
                 "name": "maxDistance",
                 "type": "float",
+                "defaultValue": "50",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "50",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "5",
                     "max": "500"
                 }
@@ -212,13 +212,12 @@
             {
                 "name": "rolloffMode",
                 "type": "AudioRolloffMode",
+                "defaultValue": "Logarithmic",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Logarithmic",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Logarithmic",
@@ -227,6 +226,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -234,17 +234,17 @@
             {
                 "name": "delayTime",
                 "type": "float",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -252,17 +252,17 @@
             {
                 "name": "fadeInTime",
                 "type": "float",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -270,17 +270,17 @@
             {
                 "name": "fadeOutTime",
                 "type": "float",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -288,17 +288,17 @@
             {
                 "name": "priority",
                 "type": "int",
+                "defaultValue": "128",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "128",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "256"
                 }
@@ -306,17 +306,17 @@
             {
                 "name": "bypassListenerEffects",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -324,17 +324,17 @@
             {
                 "name": "bypassReverbZones",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

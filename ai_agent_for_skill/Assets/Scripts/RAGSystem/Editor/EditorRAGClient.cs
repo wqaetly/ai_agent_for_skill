@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace SkillSystem.RAG
 {
     /// <summary>
     /// RAG服务HTTP客户端 - Editor专用版本
-    /// 使用标准.NET HttpClient，支持async/await，可靠性更高
+    /// 使用UniTask进行异步操作，避免Unity线程问题
     /// </summary>
-    public class EditorRAGClient
+    public class EditorRAGClient: IDisposable
     {
         private readonly HttpClient httpClient;
         private readonly string baseUrl;
@@ -90,9 +90,14 @@ namespace SkillSystem.RAG
         [Serializable]
         public class ActionRecommendation
         {
-            public string action_type;
-            public int frequency;
-            public List<ActionExample> examples;
+            public string action_type;              // Action类型名（如DamageAction）
+            public string display_name;             // 显示名称（如"伤害"）
+            public string category;                 // 分类（如"Damage"）
+            public string description;              // 功能描述
+            public float combined_score;            // 综合得分（0-1）
+            public float semantic_similarity;       // 语义相似度（0-1）
+            public int frequency;                   // 在相似技能中的使用频率
+            public List<ActionExample> examples;    // 参数示例
         }
 
         [Serializable]
@@ -142,9 +147,7 @@ namespace SkillSystem.RAG
         {
             try
             {
-                var task = CheckHealthAsync();
-                task.Wait();
-                status = task.Result;
+                status = CheckHealthAsync().GetAwaiter().GetResult();
                 return true;
             }
             catch (Exception e)
@@ -166,9 +169,7 @@ namespace SkillSystem.RAG
         {
             try
             {
-                var task = SearchSkillsAsync(query, topK, returnDetails);
-                task.Wait();
-                response = task.Result;
+                response = SearchSkillsAsync(query, topK, returnDetails).GetAwaiter().GetResult();
                 error = null;
                 return true;
             }
@@ -191,9 +192,7 @@ namespace SkillSystem.RAG
         {
             try
             {
-                var task = RecommendActionsAsync(context, topK);
-                task.Wait();
-                response = task.Result;
+                response = RecommendActionsAsync(context, topK).GetAwaiter().GetResult();
                 error = null;
                 return true;
             }
@@ -215,9 +214,7 @@ namespace SkillSystem.RAG
         {
             try
             {
-                var task = TriggerIndexAsync(forceRebuild);
-                task.Wait();
-                response = task.Result;
+                response = TriggerIndexAsync(forceRebuild).GetAwaiter().GetResult();
                 error = null;
                 return true;
             }
@@ -236,9 +233,7 @@ namespace SkillSystem.RAG
         {
             try
             {
-                var task = GetStatisticsAsync();
-                task.Wait();
-                response = task.Result;
+                response = GetStatisticsAsync().GetAwaiter().GetResult();
                 error = null;
                 return true;
             }
@@ -257,8 +252,7 @@ namespace SkillSystem.RAG
         {
             try
             {
-                var task = ClearCacheAsync();
-                task.Wait();
+                ClearCacheAsync().GetAwaiter().GetResult();
                 message = "Cache cleared successfully";
                 return true;
             }
@@ -276,7 +270,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 健康检查（异步）
         /// </summary>
-        public async Task<string> CheckHealthAsync()
+        public async UniTask<string> CheckHealthAsync()
         {
             string url = $"{baseUrl}/health";
 
@@ -291,7 +285,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 搜索技能（异步）
         /// </summary>
-        public async Task<SearchResponse> SearchSkillsAsync(
+        public async UniTask<SearchResponse> SearchSkillsAsync(
             string query,
             int? topK = null,
             bool returnDetails = false)
@@ -314,7 +308,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 推荐Action（异步）
         /// </summary>
-        public async Task<RecommendResponse> RecommendActionsAsync(
+        public async UniTask<RecommendResponse> RecommendActionsAsync(
             string context,
             int topK = 3)
         {
@@ -339,7 +333,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 触发索引（异步）
         /// </summary>
-        public async Task<IndexResponse> TriggerIndexAsync(bool forceRebuild = false)
+        public async UniTask<IndexResponse> TriggerIndexAsync(bool forceRebuild = false)
         {
             string url = $"{baseUrl}/index";
 
@@ -361,7 +355,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 获取统计信息（异步）
         /// </summary>
-        public async Task<StatsResponse> GetStatisticsAsync()
+        public async UniTask<StatsResponse> GetStatisticsAsync()
         {
             string url = $"{baseUrl}/stats";
 
@@ -375,7 +369,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 清空缓存（异步）
         /// </summary>
-        public async Task ClearCacheAsync()
+        public async UniTask ClearCacheAsync()
         {
             string url = $"{baseUrl}/clear-cache";
 

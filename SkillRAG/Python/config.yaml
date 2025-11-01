@@ -58,7 +58,16 @@ action_indexer:
 rag:
   # 检索参数
   top_k: 5  # 返回最相似的K个结果
-  similarity_threshold: 0.05  # 相似度阈值（0-1），设为0.05以支持跨语言搜索
+  similarity_threshold: 0.15  # 相似度阈值（0-1），提高阈值过滤不相关结果（原0.05过低）
+
+  # Action推荐权重配置
+  recommend_semantic_weight: 0.8  # 语义相似度权重（0-1），基于Action脚本定义的匹配度（调高以优先匹配语义）
+  recommend_usage_weight: 0.2     # 使用频率权重（0-1），基于技能配置中的使用频率（降低以避免高频Action干扰）
+  recommend_min_similarity: 0.25  # 最低语义相似度阈值，低于此值的Action会被过滤（避免不相关Action因高使用频率排前面）
+  # 说明：两个权重之和应为1.0
+  # - 增加semantic_weight：更重视Action功能本身的语义匹配
+  # - 增加usage_weight：更重视Action在实际技能中的使用频率
+  # - recommend_min_similarity：过滤语义完全不相关的Action（如搜索"击飞"时过滤AudioAction）
 
   # 重排序
   rerank_enabled: false  # 暂不启用，可扩展

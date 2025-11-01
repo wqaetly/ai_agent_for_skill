@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7363839+08:00",
+    "exportTime": "2025-11-01T18:37:15.0974595+08:00",
     "action": {
         "typeName": "TeleportAction",
         "fullTypeName": "SkillSystem.Actions.TeleportAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "传送",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: TeleportAction\n显示名称: 传送\n分类: Other\n参数: teleportType, castTime, interruptible, targetSelection, targetPosition, useWorldPosition, maxRange, minRange, rangeCheckMode, checkLandingSpace, landingRadius, avoidObstacles, maxSearchDistance, affectMultipleUnits, affectedUnits, affectRadius, leavePortal, portalDuration, bidirectionalPortal, castEffect, teleportOutEffect, teleportInEffect, portalEffect, castSound, teleportSound\nTeleport Type(teleportType)\nCast Time(castTime)\nInterruptible(interruptible)\nTarget Selection(targetSelection)\nTarget Position(targetPosition)",
+        "category": "Movement",
+        "description": "TeleportAction是一个功能完整的传送位移技能系统，核心功能是实现单位在不同位置之间的瞬间或延迟传送。该Action支持三种传送类型：Instant(瞬间传送)、Delayed(延迟传送)和Channeled(引导传送)，其中引导传送可配置Interruptible(可打断)属性。目标选择方式包括Position(指定位置)、RandomInRange(范围内随机)、NearestAlly(最近友军)、NearestEnemy(最近敌人)和Global(全局传送)。系统提供完整的传送验证机制，包括MinRange(最小距离)和MaxRange(最大距离)限制、LandingSpace(落地空间)检查、AvoidObstacles(避开障碍物)功能。特殊功能支持AffectMultipleUnits(群体传送)，可传送指定半径内的友军或敌军，以及LeavePortal(留下传送门)机制，可创建单向或双向传送门持续一段时间。典型使用场景包括：DOTA2中的闪烁匕首(Blink Dagger)瞬间传送、传送卷轴(Town Portal Scroll)的延迟传送、自然之怒(Nature's Prophet)的全球传送、敌法师(Anti-Mage)的闪烁技能、以及裂魂人(Spirit Breaker)的冲锋传送。与其他位移Action的关键区别在于：纯粹的位置传送，不包含伤害和控制效果，但提供完整的传送验证和特效系统。",
+        "searchText": "传送\nTeleportAction是一个功能完整的传送位移技能系统，核心功能是实现单位在不同位置之间的瞬间或延迟传送。该Action支持三种传送类型：Instant(瞬间传送)、Delayed(延迟传送)和Channeled(引导传送)，其中引导传送可配置Interruptible(可打断)属性。目标选择方式包括Position(指定位置)、RandomInRange(范围内随机)、NearestAlly(最近友军)、NearestEnemy(最近敌人)和Global(全局传送)。系统提供完整的传送验证机制，包括MinRange(最小距离)和MaxRange(最大距离)限制、LandingSpace(落地空间)检查、AvoidObstacles(避开障碍物)功能。特殊功能支持AffectMultipleUnits(群体传送)，可传送指定半径内的友军或敌军，以及LeavePortal(留下传送门)机制，可创建单向或双向传送门持续一段时间。典型使用场景包括：DOTA2中的闪烁匕首(Blink Dagger)瞬间传送、传送卷轴(Town Portal Scroll)的延迟传送、自然之怒(Nature's Prophet)的全球传送、敌法师(Anti-Mage)的闪烁技能、以及裂魂人(Spirit Breaker)的冲锋传送。与其他位移Action的关键区别在于：纯粹的位置传送，不包含伤害和控制效果，但提供完整的传送验证和特效系统。\n关键词: 传送,位移,闪现,Teleport,Blink,Movement,闪烁,跳斩,冲锋,传送门,Portal,群体传送,Global Teleport,Channeled Teleport,Delayed Teleport,Instant Teleport,位置移动,空间传送\n分类: Movement\n类型: TeleportAction",
         "parameters": [
             {
                 "name": "teleportType",
                 "type": "TeleportType",
+                "defaultValue": "Instant",
                 "label": "Teleport Type",
                 "group": "Teleport Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Instant",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Instant",
@@ -29,6 +28,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -36,17 +36,17 @@
             {
                 "name": "castTime",
                 "type": "float",
+                "defaultValue": "3",
                 "label": "Cast Time",
                 "group": "Teleport Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "3",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -54,17 +54,17 @@
             {
                 "name": "interruptible",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Interruptible",
                 "group": "Teleport Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -72,13 +72,12 @@
             {
                 "name": "targetSelection",
                 "type": "TargetSelection",
+                "defaultValue": "Position",
                 "label": "Target Selection",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Position",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Position",
@@ -89,6 +88,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -96,17 +96,17 @@
             {
                 "name": "targetPosition",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 10)",
                 "label": "Target Position",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 10)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -114,17 +114,17 @@
             {
                 "name": "useWorldPosition",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Use World Position",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -132,17 +132,17 @@
             {
                 "name": "maxRange",
                 "type": "float",
+                "defaultValue": "1200",
                 "label": "Max Range",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1200",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -150,17 +150,17 @@
             {
                 "name": "minRange",
                 "type": "float",
+                "defaultValue": "0",
                 "label": "Min Range",
                 "group": "Range Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -168,13 +168,12 @@
             {
                 "name": "rangeCheckMode",
                 "type": "RangeCheckMode",
+                "defaultValue": "Direct",
                 "label": "Range Check Mode",
                 "group": "Range Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Direct",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Direct",
@@ -183,6 +182,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -190,17 +190,17 @@
             {
                 "name": "checkLandingSpace",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Check Landing Space",
                 "group": "Validation Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -208,17 +208,17 @@
             {
                 "name": "landingRadius",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "Landing Radius",
                 "group": "Validation Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0.100000001490116",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -226,17 +226,17 @@
             {
                 "name": "avoidObstacles",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Avoid Obstacles",
                 "group": "Validation Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -244,17 +244,17 @@
             {
                 "name": "maxSearchDistance",
                 "type": "float",
+                "defaultValue": "3",
                 "label": "Max Search Distance",
                 "group": "Validation Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "3",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -262,17 +262,17 @@
             {
                 "name": "affectMultipleUnits",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Affect Multiple Units",
                 "group": "Group Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -280,13 +280,12 @@
             {
                 "name": "affectedUnits",
                 "type": "AffectedUnits",
+                "defaultValue": "Allies",
                 "label": "Affected Units",
                 "group": "Group Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Allies",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "None",
@@ -297,6 +296,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -304,17 +304,17 @@
             {
                 "name": "affectRadius",
                 "type": "float",
+                "defaultValue": "5",
                 "label": "Affect Radius",
                 "group": "Group Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -322,17 +322,17 @@
             {
                 "name": "leavePortal",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Leave Portal",
                 "group": "Special Effects",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -340,17 +340,17 @@
             {
                 "name": "portalDuration",
                 "type": "float",
+                "defaultValue": "10",
                 "label": "Portal Duration",
                 "group": "Special Effects",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "10",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -358,17 +358,17 @@
             {
                 "name": "bidirectionalPortal",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Bidirectional Portal",
                 "group": "Special Effects",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -376,17 +376,17 @@
             {
                 "name": "castEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Cast Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -394,17 +394,17 @@
             {
                 "name": "teleportOutEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Teleport Out Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -412,17 +412,17 @@
             {
                 "name": "teleportInEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Teleport In Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -430,17 +430,17 @@
             {
                 "name": "portalEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Portal Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -448,17 +448,17 @@
             {
                 "name": "castSound",
                 "type": "AudioClip",
+                "defaultValue": "null",
                 "label": "Cast Sound",
                 "group": "Audio Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -466,17 +466,17 @@
             {
                 "name": "teleportSound",
                 "type": "AudioClip",
+                "defaultValue": "null",
                 "label": "Teleport Sound",
                 "group": "Audio Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

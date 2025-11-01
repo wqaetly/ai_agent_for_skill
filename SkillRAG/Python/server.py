@@ -397,6 +397,45 @@ async def clear_cache():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/rebuild_index", tags=["Management"])
+async def rebuild_all_indexes():
+    """
+    重建所有索引
+
+    同时重建技能索引和Action索引。
+    用于Unity描述管理器一键发布流程。
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="RAG Engine not initialized")
+
+    try:
+        logger.info("Starting rebuild of all indexes...")
+
+        # 重建技能索引
+        logger.info("Rebuilding skill index...")
+        skill_result = rag_engine.index_skills(force_rebuild=True)
+        skill_count = skill_result.get('count', 0)
+
+        # 重建Action索引
+        logger.info("Rebuilding action index...")
+        action_result = rag_engine.index_actions(force_rebuild=True)
+        action_count = action_result.get('count', 0)
+
+        logger.info(f"Rebuild complete: {action_count} actions, {skill_count} skills")
+
+        return {
+            "status": "ok",
+            "message": f"Rebuilt {action_count} actions and {skill_count} skills",
+            "action_count": action_count,
+            "skill_count": skill_count,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Error rebuilding indexes: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ Action相关API路由 ============
 
 @app.post("/index_actions", response_model=IndexResponse, tags=["Action Management"])

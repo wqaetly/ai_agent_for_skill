@@ -306,14 +306,31 @@ class RAGEngine:
     ) -> List[Dict[str, Any]]:
         """
         根据上下文推荐Action类型
+        综合考虑：1) Action脚本定义的语义匹配度  2) 技能配置中的使用频率
 
         Args:
             context: 上下文描述（如"造成伤害"、"移动角色"等）
             top_k: 推荐数量
 
         Returns:
-            推荐的Action列表
+            推荐的Action列表，按综合得分排序
         """
+        # === 第一步：基于Action定义的语义搜索 ===
+        # 搜索Action脚本定义，找到语义上最匹配的Action类型
+        semantic_matches = self.search_actions(
+            query=context,
+            top_k=top_k * 3,  # 获取更多候选，后续根据使用频率筛选
+            return_details=False
+        )
+
+        # 构建语义得分字典 {action_type: similarity_score}
+        semantic_scores = {}
+        for match in semantic_matches:
+            action_type = match.get('type_name', '')
+            similarity = match.get('similarity', 0.0)
+            semantic_scores[action_type] = similarity
+
+        # === 第二步：基于技能配置的使用频率统计 ===
         # 搜索包含相关Action的技能
         matching_skills = self.search_skills(
             query=context,
@@ -321,8 +338,9 @@ class RAGEngine:
             return_details=True
         )
 
-        # 提取Action统计
-        action_stats = {}
+        # 提取Action使用统计
+        usage_stats = {}
+        max_usage_count = 0
 
         for skill in matching_skills:
             # 获取完整技能数据
@@ -335,34 +353,77 @@ class RAGEngine:
                 for action in track.get('actions', []):
                     action_type = action.get('type', '')
                     if action_type:
-                        if action_type not in action_stats:
-                            action_stats[action_type] = {
+                        if action_type not in usage_stats:
+                            usage_stats[action_type] = {
                                 'count': 0,
                                 'examples': []
                             }
-                        action_stats[action_type]['count'] += 1
+                        usage_stats[action_type]['count'] += 1
+                        max_usage_count = max(max_usage_count, usage_stats[action_type]['count'])
 
                         # 保存参数示例
-                        if len(action_stats[action_type]['examples']) < 2:
-                            action_stats[action_type]['examples'].append({
+                        if len(usage_stats[action_type]['examples']) < 2:
+                            usage_stats[action_type]['examples'].append({
                                 'skill_name': skill_data.get('skillName', ''),
                                 'parameters': action.get('parameters', {})
                             })
 
-        # 按出现频率排序
-        recommended_actions = []
-        for action_type, stats in sorted(
-            action_stats.items(),
-            key=lambda x: x[1]['count'],
-            reverse=True
-        )[:top_k]:
-            recommended_actions.append({
-                'action_type': action_type,
-                'frequency': stats['count'],
-                'examples': stats['examples']
-            })
+        # === 第三步：综合评分 ===
+        # 合并两个维度的结果
+        combined_results = {}
 
-        logger.info(f"Recommended {len(recommended_actions)} actions for context: {context}")
+        # 权重配置（可通过配置文件调整）
+        semantic_weight = self.rag_config.get('recommend_semantic_weight', 0.6)  # 语义匹配权重
+        usage_weight = self.rag_config.get('recommend_usage_weight', 0.4)  # 使用频率权重
+        min_similarity = self.rag_config.get('recommend_min_similarity', 0.0)  # 最低语义相似度阈值
+
+        # 收集所有出现过的Action类型
+        all_action_types = set(semantic_scores.keys()) | set(usage_stats.keys())
+
+        for action_type in all_action_types:
+            # 语义得分（0-1）
+            semantic_score = semantic_scores.get(action_type, 0.0)
+
+            # 过滤语义相似度过低的Action（避免不相关Action因高使用频率排前面）
+            if semantic_score < min_similarity:
+                continue
+
+            # 使用频率得分（归一化到0-1）
+            usage_count = usage_stats.get(action_type, {}).get('count', 0)
+            usage_score = usage_count / max_usage_count if max_usage_count > 0 else 0.0
+
+            # 综合得分
+            combined_score = semantic_score * semantic_weight + usage_score * usage_weight
+
+            # 获取Action详细信息
+            action_def = self.get_action_by_type(action_type)
+            display_name = action_def.get('displayName', action_type) if action_def else action_type
+            category = action_def.get('category', 'Other') if action_def else 'Other'
+            description = action_def.get('description', '') if action_def else ''
+
+            combined_results[action_type] = {
+                'action_type': action_type,
+                'display_name': display_name,
+                'category': category,
+                'description': description,
+                'combined_score': combined_score,
+                'semantic_similarity': semantic_score,
+                'frequency': usage_count,
+                'examples': usage_stats.get(action_type, {}).get('examples', [])
+            }
+
+        # 按综合得分排序
+        recommended_actions = sorted(
+            combined_results.values(),
+            key=lambda x: x['combined_score'],
+            reverse=True
+        )[:top_k]
+
+        logger.info(
+            f"Recommended {len(recommended_actions)} actions for context: {context} "
+            f"(semantic_weight={semantic_weight}, usage_weight={usage_weight})"
+        )
+
         return recommended_actions
 
     def update_skill(self, file_path: str) -> bool:

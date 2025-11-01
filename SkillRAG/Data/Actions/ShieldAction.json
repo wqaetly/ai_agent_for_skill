@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7353765+08:00",
+    "exportTime": "2025-11-01T18:37:15.0861015+08:00",
     "action": {
         "typeName": "ShieldAction",
         "fullTypeName": "SkillSystem.Actions.ShieldAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
-        "displayName": "护盾",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: ShieldAction\n显示名称: 护盾\n分类: Other\n参数: shieldType, shieldAmount, shieldDuration, blockPhysicalDamage, blockMagicalDamage, blockPureDamage, absorptionRate, damageReduction, reflectDamage, reflectPercentage, refreshable, stackable, maxStacks, breakOnSpellCast, breakOnAttack, breakOnMovement, shieldEffect, breakEffect, reflectEffect, shieldApplySound, shieldBreakSound, targetFilter, maxTargets\nShield Type(shieldType)\nShield Amount(shieldAmount)\nShield Duration(shieldDuration) - 护盾持续时间，0表示直到被破坏为止\nBlock Physical Damage(blockPhysicalDamage)\nBlock Magical Damage(blockMagicalDamage)",
+        "assemblyName": "SkillSystem.Actions",
+        "displayName": "属性护盾",
+        "category": "Buff",
+        "description": "属性缩放护盾Action是一个基于多种角色属性动态计算护盾值的技能组件。核心功能是通过复杂的公式计算护盾值：基础护盾 + 法术强度(Spell Power) × 法强系数 + 生命值(Health) × 生命值系数，支持随技能等级(Level Scaling)自动提升护盾强度。该Action支持配置护盾类型(ShieldType)、伤害过滤(Damage Filter)机制，可阻挡物理伤害(Physical Damage)、魔法伤害(Magical Damage)和纯净伤害(Pure Damage)。具备高级破盾条件设置，包括施法破盾(Break on Spell Cast)、攻击破盾(Break on Attack)、移动破盾(Break on Movement)等特殊机制。典型应用场景包括：赛恩W技能灵魂熔炉(基于最大生命值计算)、塞拉斯W技能(法强和生命值双加成)、莫德凯撒W技能(可刷新的护盾)、塔姆肯奇E技能(厚实表皮)、布隆E技能(坚不可摧)。与其他护盾Action的关键区别在于其多属性动态缩放能力，能够根据角色当前属性实时调整护盾强度，适用于成长型英雄和混合加成的技能设计。",
+        "searchText": "属性护盾\n属性缩放护盾Action是一个基于多种角色属性动态计算护盾值的技能组件。核心功能是通过复杂的公式计算护盾值：基础护盾 + 法术强度(Spell Power) × 法强系数 + 生命值(Health) × 生命值系数，支持随技能等级(Level Scaling)自动提升护盾强度。该Action支持配置护盾类型(ShieldType)、伤害过滤(Damage Filter)机制，可阻挡物理伤害(Physical Damage)、魔法伤害(Magical Damage)和纯净伤害(Pure Damage)。具备高级破盾条件设置，包括施法破盾(Break on Spell Cast)、攻击破盾(Break on Attack)、移动破盾(Break on Movement)等特殊机制。典型应用场景包括：赛恩W技能灵魂熔炉(基于最大生命值计算)、塞拉斯W技能(法强和生命值双加成)、莫德凯撒W技能(可刷新的护盾)、塔姆肯奇E技能(厚实表皮)、布隆E技能(坚不可摧)。与其他护盾Action的关键区别在于其多属性动态缩放能力，能够根据角色当前属性实时调整护盾强度，适用于成长型英雄和混合加成的技能设计。\n关键词: 护盾,属性护盾,动态护盾,法强护盾,生命值护盾,Shield,Attribute Shield,Scaled Shield,Spell Power Shield,Health Shield,灵魂熔炉,塞拉斯W,布隆E,伤害吸收,Damage Absorption,护盾刷新,破盾条件\n分类: Buff\n类型: ShieldAction",
         "parameters": [
             {
                 "name": "shieldType",
                 "type": "ShieldType",
+                "defaultValue": "Absorption",
                 "label": "Shield Type",
                 "group": "Shield Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Absorption",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Absorption",
@@ -29,6 +28,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -36,17 +36,17 @@
             {
                 "name": "shieldAmount",
                 "type": "float",
+                "defaultValue": "200",
                 "label": "Shield Amount",
                 "group": "Shield Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "200",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -54,17 +54,17 @@
             {
                 "name": "shieldDuration",
                 "type": "float",
+                "defaultValue": "15",
                 "label": "Shield Duration",
                 "group": "Shield Settings",
-                "description": "",
                 "infoBox": "护盾持续时间，0表示直到被破坏为止",
-                "defaultValue": "15",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -72,17 +72,17 @@
             {
                 "name": "blockPhysicalDamage",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Block Physical Damage",
                 "group": "Damage Filter",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -90,17 +90,17 @@
             {
                 "name": "blockMagicalDamage",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Block Magical Damage",
                 "group": "Damage Filter",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -108,17 +108,17 @@
             {
                 "name": "blockPureDamage",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Block Pure Damage",
                 "group": "Damage Filter",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -126,17 +126,17 @@
             {
                 "name": "absorptionRate",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "Absorption Rate",
                 "group": "Advanced Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -144,17 +144,17 @@
             {
                 "name": "damageReduction",
                 "type": "float",
+                "defaultValue": "0.5",
                 "label": "Damage Reduction",
                 "group": "Advanced Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -162,17 +162,17 @@
             {
                 "name": "reflectDamage",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Reflect Damage",
                 "group": "Advanced Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -180,17 +180,17 @@
             {
                 "name": "reflectPercentage",
                 "type": "float",
+                "defaultValue": "0.3",
                 "label": "Reflect Percentage",
                 "group": "Advanced Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.3",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -198,17 +198,17 @@
             {
                 "name": "refreshable",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Refreshable",
                 "group": "Refresh Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -216,17 +216,17 @@
             {
                 "name": "stackable",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Stackable",
                 "group": "Refresh Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -234,17 +234,17 @@
             {
                 "name": "maxStacks",
                 "type": "int",
+                "defaultValue": "3",
                 "label": "Max Stacks",
                 "group": "Refresh Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "3",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "1",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -252,17 +252,17 @@
             {
                 "name": "breakOnSpellCast",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Break on Spell Cast",
                 "group": "Break Conditions",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -270,17 +270,17 @@
             {
                 "name": "breakOnAttack",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Break on Attack",
                 "group": "Break Conditions",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -288,17 +288,17 @@
             {
                 "name": "breakOnMovement",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Break on Movement",
                 "group": "Break Conditions",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -306,17 +306,17 @@
             {
                 "name": "shieldEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Shield Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -324,17 +324,17 @@
             {
                 "name": "breakEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Break Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -342,17 +342,17 @@
             {
                 "name": "reflectEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Reflect Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -360,17 +360,17 @@
             {
                 "name": "shieldApplySound",
                 "type": "AudioClip",
+                "defaultValue": "null",
                 "label": "Shield Apply Sound",
                 "group": "Audio Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -378,17 +378,17 @@
             {
                 "name": "shieldBreakSound",
                 "type": "AudioClip",
+                "defaultValue": "null",
                 "label": "Shield Break Sound",
                 "group": "Audio Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -396,13 +396,12 @@
             {
                 "name": "targetFilter",
                 "type": "TargetFilter",
+                "defaultValue": "Ally",
                 "label": "Target Filter",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Ally",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Enemy",
@@ -412,6 +411,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -419,17 +419,17 @@
             {
                 "name": "maxTargets",
                 "type": "int",
+                "defaultValue": "1",
                 "label": "Max Targets",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "1",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

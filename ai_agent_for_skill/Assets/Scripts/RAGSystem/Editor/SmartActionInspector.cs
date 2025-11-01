@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -184,7 +185,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 刷新建议
         /// </summary>
-        private static async void RefreshSuggestions(string actionType)
+        private static async UniTaskVoid RefreshSuggestions(string actionType)
         {
             if (isLoadingSuggestions)
                 return;
@@ -198,9 +199,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return ragClient.RecommendActionsAsync(context, 3).Result;
+                    return await ragClient.RecommendActionsAsync(context, 3);
                 });
 
                 paramSuggestionsCache[actionType] = response.recommendations;

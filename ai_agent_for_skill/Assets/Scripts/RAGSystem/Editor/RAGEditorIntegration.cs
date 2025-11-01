@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using SkillSystem.Actions;
@@ -89,7 +90,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 搜索相似技能（可从SkillEditor调用）
         /// </summary>
-        public static async void SearchSimilarSkills(string query, System.Action<bool, EditorRAGClient.SearchResponse> callback)
+        public static async UniTaskVoid SearchSimilarSkills(string query, System.Action<bool, EditorRAGClient.SearchResponse> callback)
         {
             if (!isInitialized)
             {
@@ -100,9 +101,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return ragClient.SearchSkillsAsync(query, 5, true).Result;
+                    return await ragClient.SearchSkillsAsync(query, 5, true);
                 });
 
                 callback?.Invoke(true, response);
@@ -227,7 +228,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 测试连接
         /// </summary>
-        private static async void TestConnection()
+        private static async UniTaskVoid TestConnection()
         {
             if (!isInitialized)
                 Initialize();
@@ -235,9 +236,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                string status = await System.Threading.Tasks.Task.Run(() =>
+                string status = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return ragClient.CheckHealthAsync().Result;
+                    return await ragClient.CheckHealthAsync();
                 });
 
                 EditorUtility.DisplayDialog(
@@ -301,7 +302,7 @@ namespace SkillSystem.RAG
         }
 
         [MenuItem("技能系统/RAG功能/重建索引", false, 110)]
-        private static async void RebuildIndex()
+        private static async UniTaskVoid RebuildIndex()
         {
             if (!EditorUtility.DisplayDialog(
                 "确认",
@@ -318,9 +319,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return ragClient.TriggerIndexAsync(true).Result;
+                    return await ragClient.TriggerIndexAsync(true);
                 });
 
                 EditorUtility.DisplayDialog(

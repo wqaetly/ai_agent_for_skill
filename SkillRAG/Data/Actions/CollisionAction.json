@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7297034+08:00",
+    "exportTime": "2025-11-01T18:37:15.0499069+08:00",
     "action": {
         "typeName": "CollisionAction",
         "fullTypeName": "SkillSystem.Actions.CollisionAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "碰撞检测",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: CollisionAction\n显示名称: 碰撞检测\n分类: Other\n参数: shape, position, size, layerMask, damage\nCollision Shape(shape)\nPosition(position)\nSize(size)\nLayer Mask(layerMask)\nDamage(damage)",
+        "category": "Damage",
+        "description": "CollisionAction是一个用于技能碰撞检测和伤害计算的核心组件，通过物理检测系统在指定区域执行碰撞检测并施加伤害效果。该Action支持三种碰撞形状：球形(Sphere)、盒形(Box)和胶囊形(Capsule)，可配置位置(Position)、尺寸(Size)、层级遮罩(LayerMask)和伤害值(Damage)等参数。使用场景包括：近战攻击的武器挥砍范围检测、爆炸技能的圆形伤害区域、角色周围的持续性伤害光环、线性投射物的碰撞检测等。与其他伤害类Action相比，CollisionAction不依赖动画事件或时间触发器，而是基于Unity物理系统的实时碰撞检测，能够精确控制检测区域和形状，支持复杂的空间关系计算。该Action通过Physics.OverlapSphere/OverlapBox/OverlapCapsule方法实现高效的空间查询，检测到的碰撞体会在控制台输出命中信息，为后续的伤害处理、特效播放等逻辑提供基础。",
+        "searchText": "碰撞检测\nCollisionAction是一个用于技能碰撞检测和伤害计算的核心组件，通过物理检测系统在指定区域执行碰撞检测并施加伤害效果。该Action支持三种碰撞形状：球形(Sphere)、盒形(Box)和胶囊形(Capsule)，可配置位置(Position)、尺寸(Size)、层级遮罩(LayerMask)和伤害值(Damage)等参数。使用场景包括：近战攻击的武器挥砍范围检测、爆炸技能的圆形伤害区域、角色周围的持续性伤害光环、线性投射物的碰撞检测等。与其他伤害类Action相比，CollisionAction不依赖动画事件或时间触发器，而是基于Unity物理系统的实时碰撞检测，能够精确控制检测区域和形状，支持复杂的空间关系计算。该Action通过Physics.OverlapSphere/OverlapBox/OverlapCapsule方法实现高效的空间查询，检测到的碰撞体会在控制台输出命中信息，为后续的伤害处理、特效播放等逻辑提供基础。\n关键词: 碰撞检测,伤害区域,物理检测,Collision Detection,Hit Box,Sphere Collider,Box Collider,Capsule Collider,Layer Mask,伤害计算,近战攻击,爆炸技能,范围伤害\n分类: Damage\n类型: CollisionAction",
         "parameters": [
             {
                 "name": "shape",
                 "type": "CollisionShape",
+                "defaultValue": "Sphere",
                 "label": "Collision Shape",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Sphere",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Sphere",
@@ -29,6 +28,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -36,17 +36,17 @@
             {
                 "name": "position",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
                 "label": "Position",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 0)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -54,17 +54,17 @@
             {
                 "name": "size",
                 "type": "Vector3",
+                "defaultValue": "(1, 1, 1)",
                 "label": "Size",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(1, 1, 1)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -72,17 +72,17 @@
             {
                 "name": "layerMask",
                 "type": "LayerMask",
+                "defaultValue": "UnityEngine.LayerMask",
                 "label": "Layer Mask",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "UnityEngine.LayerMask",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -90,17 +90,17 @@
             {
                 "name": "damage",
                 "type": "float",
+                "defaultValue": "10",
                 "label": "Damage",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "10",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

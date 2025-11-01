@@ -12,6 +12,7 @@ namespace SkillSystem.Actions
     /// </summary>
     [Serializable]
     [ActionDisplayName("伤害")]
+    [ActionDescription("对目标造成伤害。支持物理伤害、魔法伤害、纯粹伤害三种类型，可配置基础伤害值、伤害浮动、暴击率、暴击倍数、生命偷取、法术吸血等效果。支持溅射伤害、穿透护甲、真实伤害等特性。常用于攻击技能、法术伤害、dot持续伤害等各类造成伤害的技能。不包含控制效果，纯粹用于扣血。")]
     public class DamageAction : ISkillAction
     {
         [BoxGroup("Damage Settings")]

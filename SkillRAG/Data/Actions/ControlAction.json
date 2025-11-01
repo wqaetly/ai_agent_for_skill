@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7302263+08:00",
+    "exportTime": "2025-11-01T18:37:15.0519113+08:00",
     "action": {
         "typeName": "ControlAction",
         "fullTypeName": "SkillSystem.Actions.ControlAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "控制效果",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: ControlAction\n显示名称: 控制效果\n分类: Other\n参数: controlType, controlDuration, controlStrength, allowActionsDuringStun, fearDirection, fearMovementSpeed, charmBehavior, disabledAbilities, dispelResistance, dispelPriority, stackable, stackBehavior, maxStacks, bypassMagicImmunity, bypassControlImmunity, controlEffect, applyEffect, endEffect, controlApplySound, controlLoopSound, targetFilter, maxTargets, affectBuildings\nControl Type(controlType)\nControl Duration(controlDuration)\nControl Strength(controlStrength)\nAllow Actions During Stun(allowActionsDuringStun)\nFear Direction(fearDirection)",
+        "category": "Control",
+        "description": "ControlAction是Unity技能系统中的核心控制类Action，专门用于对目标单位施加8种不同类型的控制效果：眩晕(Stun)使目标无法行动、沉默(Silence)禁止施法、定身(Root)禁止移动、减速(Slow)降低移动速度、恐惧(Fear)强制逃跑、魅惑(Charm)控制敌人、缴械(Disable)禁用攻击和技能、放逐/击飞(Banish)使目标无敌且无法行动。支持配置控制持续时间、控制强度、免疫穿透、叠加行为等高级参数，每种控制类型都有专门的配置选项，如眩晕可设置是否允许部分行动、恐惧可配置移动方向和速度、魅惑可定义行为模式、缴械可选择禁用具体能力类型。具备完整的视觉效果和音效系统，包括施加特效、持续特效和结束特效，支持目标筛选、最大目标数量控制和建筑影响设置。适用于DOTA2/LOL中的各类控制技能，如雷击(眩晕)、石化凝视(定身)、寒冬诅咒(恐惧)、恶魔赦免(沉默)等，通过免疫穿透设置可应对不同免疫状态，叠加系统支持刷新持续时间、增加层数或增强效果强度等多种叠加方式。",
+        "searchText": "控制效果\nControlAction是Unity技能系统中的核心控制类Action，专门用于对目标单位施加8种不同类型的控制效果：眩晕(Stun)使目标无法行动、沉默(Silence)禁止施法、定身(Root)禁止移动、减速(Slow)降低移动速度、恐惧(Fear)强制逃跑、魅惑(Charm)控制敌人、缴械(Disable)禁用攻击和技能、放逐/击飞(Banish)使目标无敌且无法行动。支持配置控制持续时间、控制强度、免疫穿透、叠加行为等高级参数，每种控制类型都有专门的配置选项，如眩晕可设置是否允许部分行动、恐惧可配置移动方向和速度、魅惑可定义行为模式、缴械可选择禁用具体能力类型。具备完整的视觉效果和音效系统，包括施加特效、持续特效和结束特效，支持目标筛选、最大目标数量控制和建筑影响设置。适用于DOTA2/LOL中的各类控制技能，如雷击(眩晕)、石化凝视(定身)、寒冬诅咒(恐惧)、恶魔赦免(沉默)等，通过免疫穿透设置可应对不同免疫状态，叠加系统支持刷新持续时间、增加层数或增强效果强度等多种叠加方式。\n关键词: 控制效果,眩晕,沉默,定身,减速,恐惧,魅惑,缴械,放逐,ControlAction,Stun,Silence,Root,Slow,Fear,Charm,Disable,Banish,免疫穿透,叠加控制,DOTA2控制技能\n分类: Control\n类型: ControlAction",
         "parameters": [
             {
                 "name": "controlType",
                 "type": "ControlType",
+                "defaultValue": "Stun",
                 "label": "Control Type",
                 "group": "Control Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Stun",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Stun",
@@ -34,6 +33,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -41,17 +41,17 @@
             {
                 "name": "controlDuration",
                 "type": "float",
+                "defaultValue": "2",
                 "label": "Control Duration",
                 "group": "Control Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "2",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -59,17 +59,17 @@
             {
                 "name": "controlStrength",
                 "type": "float",
+                "defaultValue": "0.5",
                 "label": "Control Strength",
                 "group": "Control Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -77,17 +77,17 @@
             {
                 "name": "allowActionsDuringStun",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Allow Actions During Stun",
                 "group": "Stun Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -95,13 +95,12 @@
             {
                 "name": "fearDirection",
                 "type": "FearDirection",
+                "defaultValue": "AwayFromCaster",
                 "label": "Fear Direction",
                 "group": "Fear Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "AwayFromCaster",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "AwayFromCaster",
@@ -110,6 +109,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -117,17 +117,17 @@
             {
                 "name": "fearMovementSpeed",
                 "type": "float",
+                "defaultValue": "1.5",
                 "label": "Fear Movement Speed",
                 "group": "Fear Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1.5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -135,13 +135,12 @@
             {
                 "name": "charmBehavior",
                 "type": "CharmBehavior",
+                "defaultValue": "AttackAllies",
                 "label": "Charm Behavior",
                 "group": "Charm Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "AttackAllies",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "AttackAllies",
@@ -150,6 +149,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -157,13 +157,12 @@
             {
                 "name": "disabledAbilities",
                 "type": "DisabledAbilities",
+                "defaultValue": "Attacks, Spells",
                 "label": "Disabled Abilities",
                 "group": "Disable Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Attacks, Spells",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "None",
@@ -174,6 +173,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -181,17 +181,17 @@
             {
                 "name": "dispelResistance",
                 "type": "float",
+                "defaultValue": "0",
                 "label": "Dispel Resistance",
                 "group": "Dispel Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -199,13 +199,12 @@
             {
                 "name": "dispelPriority",
                 "type": "DispelPriority",
+                "defaultValue": "Normal",
                 "label": "Dispel Priority",
                 "group": "Dispel Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Normal",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Low",
@@ -214,6 +213,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -221,17 +221,17 @@
             {
                 "name": "stackable",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Stackable",
                 "group": "Stack Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -239,13 +239,12 @@
             {
                 "name": "stackBehavior",
                 "type": "StackBehavior",
+                "defaultValue": "RefreshDuration",
                 "label": "Stack Behavior",
                 "group": "Stack Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "RefreshDuration",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "RefreshDuration",
@@ -254,6 +253,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -261,17 +261,17 @@
             {
                 "name": "maxStacks",
                 "type": "int",
+                "defaultValue": "3",
                 "label": "Max Stacks",
                 "group": "Stack Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "3",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "1",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -279,17 +279,17 @@
             {
                 "name": "bypassMagicImmunity",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Bypass Magic Immunity",
                 "group": "Immunity Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -297,17 +297,17 @@
             {
                 "name": "bypassControlImmunity",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Bypass Control Immunity",
                 "group": "Immunity Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -315,17 +315,17 @@
             {
                 "name": "controlEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Control Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -333,17 +333,17 @@
             {
                 "name": "applyEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Apply Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -351,17 +351,17 @@
             {
                 "name": "endEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "End Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -369,17 +369,17 @@
             {
                 "name": "controlApplySound",
                 "type": "AudioClip",
+                "defaultValue": "null",
                 "label": "Control Apply Sound",
                 "group": "Audio Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -387,17 +387,17 @@
             {
                 "name": "controlLoopSound",
                 "type": "AudioClip",
+                "defaultValue": "null",
                 "label": "Control Loop Sound",
                 "group": "Audio Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -405,13 +405,12 @@
             {
                 "name": "targetFilter",
                 "type": "TargetFilter",
+                "defaultValue": "Enemy",
                 "label": "Target Filter",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Enemy",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Enemy",
@@ -421,6 +420,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -428,17 +428,17 @@
             {
                 "name": "maxTargets",
                 "type": "int",
+                "defaultValue": "1",
                 "label": "Max Targets",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "1",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -446,17 +446,17 @@
             {
                 "name": "affectBuildings",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Affect Buildings",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

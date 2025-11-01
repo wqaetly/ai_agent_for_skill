@@ -1,8 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using Cysharp.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
+using SkillSystem.Data;
+using SkillSystem.Editor;
+using Debug = UnityEngine.Debug;
 
 namespace SkillSystem.RAG
 {
@@ -18,6 +24,16 @@ namespace SkillSystem.RAG
         private string serverHost = "127.0.0.1";
         private int serverPort = 8765;
         private bool isConnected = false;
+
+        // 服务器进程管理
+        private Process serverProcess = null;
+        private bool isServerRunning = false;
+        private string serverOutput = "";
+
+        // 定时ping相关
+        private double lastPingTime = 0;
+        private float pingInterval = 1.0f;  // ping间隔（秒）
+        private bool isPinging = false;
 
         // 搜索相关
         private string searchQuery = "";
@@ -49,13 +65,40 @@ namespace SkillSystem.RAG
         private void OnEnable()
         {
             client = new EditorRAGClient(serverHost, serverPort);
+
+            // 注册定时器用于定期ping服务器
+            EditorApplication.update += OnEditorUpdate;
+
             // 延迟执行连接检查，避免阻塞主线程
             EditorApplication.delayCall += () => CheckConnectionAsync();
         }
 
         private void OnDisable()
         {
+            // 注销定时器
+            EditorApplication.update -= OnEditorUpdate;
+
+            // 停止服务器进程
+            StopServer();
             client?.Dispose();
+        }
+
+        /// <summary>
+        /// 编辑器更新回调，用于定时ping服务器
+        /// </summary>
+        private void OnEditorUpdate()
+        {
+            // 检查是否到了ping的时间
+            if (EditorApplication.timeSinceStartup - lastPingTime >= pingInterval)
+            {
+                lastPingTime = EditorApplication.timeSinceStartup;
+
+                // 异步ping服务器
+                if (!isPinging)
+                {
+                    PingServerAsync();
+                }
+            }
         }
 
         private void OnGUI()
@@ -90,10 +133,59 @@ namespace SkillSystem.RAG
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            // 连接状态
+            // 服务器管理按钮 - 检查进程状态
+            if (serverProcess != null && serverProcess.HasExited)
+            {
+                // 服务器进程意外退出
+                isServerRunning = false;
+                serverProcess.Dispose();
+                serverProcess = null;
+                if (isConnected)
+                {
+                    isConnected = false;
+                    statusMessage = "服务器意外停止";
+                }
+            }
+
+            if (isServerRunning)
+            {
+                // 服务器运行中
+                GUIStyle runningStyle = new GUIStyle(EditorStyles.toolbarButton);
+                runningStyle.normal.textColor = Color.green;
+                if (GUILayout.Button("● 服务器运行中", runningStyle, GUILayout.Width(110)))
+                {
+                    // 点击可查看输出
+                    Debug.Log($"[RAG Server] 输出:\n{serverOutput}");
+                }
+
+                if (GUILayout.Button("停止服务器", EditorStyles.toolbarButton, GUILayout.Width(80)))
+                {
+                    StopServer();
+                }
+            }
+            else
+            {
+                // 服务器未运行
+                if (GUILayout.Button("启动服务器", EditorStyles.toolbarButton, GUILayout.Width(80)))
+                {
+                    StartServer();
+                }
+            }
+
+            GUILayout.Space(10);
+
+            // 连接状态（带ping时间显示）
             GUIStyle statusStyle = new GUIStyle(EditorStyles.label);
             statusStyle.normal.textColor = isConnected ? Color.green : Color.red;
-            GUILayout.Label(isConnected ? "● 已连接" : "● 未连接", statusStyle);
+            string statusText = isConnected ? "● 已连接" : "● 未连接";
+            GUILayout.Label(statusText, statusStyle);
+
+            // 显示上次ping时间
+            if (lastPingTime > 0)
+            {
+                double timeSinceLastPing = EditorApplication.timeSinceStartup - lastPingTime;
+                GUILayout.Label($"(ping: {timeSinceLastPing:F1}s前)", EditorStyles.miniLabel, GUILayout.Width(80));
+            }
 
             GUILayout.FlexibleSpace();
 
@@ -275,16 +367,57 @@ namespace SkillSystem.RAG
         {
             EditorGUILayout.BeginVertical("box");
 
-            // Action类型标题
+            // Action类型标题行
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(recommendation.action_type, EditorStyles.boldLabel);
+
+            // 显示名称和类型
+            string title = !string.IsNullOrEmpty(recommendation.display_name)
+                ? $"{recommendation.display_name} ({recommendation.action_type})"
+                : recommendation.action_type;
+            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+
             GUILayout.FlexibleSpace();
-            GUILayout.Label($"出现 {recommendation.frequency} 次", EditorStyles.miniLabel);
+
+            // 综合得分标签（颜色根据得分高低）
+            Color originalColor = GUI.backgroundColor;
+            float score = recommendation.combined_score;
+            GUI.backgroundColor = score >= 0.7f ? Color.green :
+                                  score >= 0.4f ? Color.yellow : Color.red;
+            GUILayout.Label($"得分: {score:P0}", EditorStyles.miniButton, GUILayout.Width(60));
+            GUI.backgroundColor = originalColor;
+
             EditorGUILayout.EndHorizontal();
 
-            // 示例
+            // 分类和描述
+            if (!string.IsNullOrEmpty(recommendation.category))
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("分类:", GUILayout.Width(60));
+                EditorGUILayout.LabelField(recommendation.category, EditorStyles.miniLabel);
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (!string.IsNullOrEmpty(recommendation.description))
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("描述:", GUILayout.Width(60));
+                EditorGUILayout.LabelField(recommendation.description, EditorStyles.wordWrappedMiniLabel);
+                EditorGUILayout.EndHorizontal();
+            }
+
+            // 详细评分信息
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("详细评分:", EditorStyles.miniLabel, GUILayout.Width(60));
+            EditorGUILayout.LabelField(
+                $"语义相似度: {recommendation.semantic_similarity:P0}  |  使用频率: {recommendation.frequency} 次",
+                EditorStyles.miniLabel
+            );
+            EditorGUILayout.EndHorizontal();
+
+            // 参数示例
             if (recommendation.examples != null && recommendation.examples.Count > 0)
             {
+                EditorGUILayout.Space(3);
                 EditorGUILayout.LabelField("参数示例:", EditorStyles.miniLabel);
 
                 foreach (var example in recommendation.examples)
@@ -306,6 +439,7 @@ namespace SkillSystem.RAG
             }
 
             // 操作按钮
+            EditorGUILayout.Space(3);
             if (GUILayout.Button($"在编辑器中添加 {recommendation.action_type}", GUILayout.Height(25)))
             {
                 // TODO: 集成到SkillEditor，自动添加Action
@@ -405,9 +539,75 @@ namespace SkillSystem.RAG
         #region API调用
 
         /// <summary>
+        /// 定时ping服务器（不显示状态信息，仅更新连接状态）
+        /// </summary>
+        private async UniTaskVoid PingServerAsync()
+        {
+            if (isPinging)
+                return;
+
+            isPinging = true;
+
+            try
+            {
+                // 在后台线程执行HTTP请求（设置短超时）
+                var pingTask = UniTask.RunOnThreadPool(async () =>
+                {
+                    using (var tempClient = new EditorRAGClient(serverHost, serverPort))
+                    {
+                        return await tempClient.CheckHealthAsync();
+                    }
+                });
+
+                // 等待ping结果，最多1秒
+                string status = await pingTask.Timeout(TimeSpan.FromSeconds(1));
+
+                // Ping成功
+                if (!isConnected)
+                {
+                    // 从未连接变为已连接
+                    isConnected = true;
+                    statusMessage = $"已连接到RAG服务 ({status})";
+                    Repaint();
+                }
+                else
+                {
+                    // 保持已连接状态
+                    isConnected = true;
+                }
+            }
+            catch (TimeoutException)
+            {
+                // Ping超时
+                if (isConnected)
+                {
+                    // 从已连接变为未连接
+                    isConnected = false;
+                    statusMessage = "连接超时";
+                    Repaint();
+                }
+            }
+            catch (Exception)
+            {
+                // Ping失败
+                if (isConnected)
+                {
+                    // 从已连接变为未连接
+                    isConnected = false;
+                    statusMessage = "连接断开";
+                    Repaint();
+                }
+            }
+            finally
+            {
+                isPinging = false;
+            }
+        }
+
+        /// <summary>
         /// 异步检查连接（不阻塞主线程）
         /// </summary>
-        private async void CheckConnectionAsync()
+        private async UniTaskVoid CheckConnectionAsync()
         {
             statusMessage = "正在连接...";
             isLoading = true;
@@ -416,9 +616,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                string status = await System.Threading.Tasks.Task.Run(() =>
+                string status = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return client.CheckHealthAsync().Result;
+                    return await client.CheckHealthAsync();
                 });
 
                 isConnected = true;
@@ -437,7 +637,7 @@ namespace SkillSystem.RAG
             }
         }
 
-        private async void PerformSearch()
+        private async UniTaskVoid PerformSearch()
         {
             statusMessage = "正在搜索...";
             isLoading = true;
@@ -447,9 +647,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return client.SearchSkillsAsync(searchQuery, searchTopK, searchReturnDetails).Result;
+                    return await client.SearchSkillsAsync(searchQuery, searchTopK, searchReturnDetails);
                 });
 
                 searchResults = response.results ?? new List<EditorRAGClient.SearchResult>();
@@ -467,7 +667,7 @@ namespace SkillSystem.RAG
             }
         }
 
-        private async void PerformRecommend()
+        private async UniTaskVoid PerformRecommend()
         {
             statusMessage = "正在获取推荐...";
             isLoading = true;
@@ -477,9 +677,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return client.RecommendActionsAsync(recommendContext, recommendTopK).Result;
+                    return await client.RecommendActionsAsync(recommendContext, recommendTopK);
                 });
 
                 recommendations = response.recommendations ?? new List<EditorRAGClient.ActionRecommendation>();
@@ -497,7 +697,7 @@ namespace SkillSystem.RAG
             }
         }
 
-        private async void TriggerIndex(bool forceRebuild)
+        private async UniTaskVoid TriggerIndex(bool forceRebuild)
         {
             statusMessage = "正在索引...";
             isLoading = true;
@@ -506,9 +706,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return client.TriggerIndexAsync(forceRebuild).Result;
+                    return await client.TriggerIndexAsync(forceRebuild);
                 });
 
                 statusMessage = $"索引完成: {response.count} 个技能 ({response.elapsed_time:F2}秒)";
@@ -528,7 +728,7 @@ namespace SkillSystem.RAG
             }
         }
 
-        private async void ClearCache()
+        private async UniTaskVoid ClearCache()
         {
             statusMessage = "正在清空缓存...";
             isLoading = true;
@@ -537,9 +737,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                await System.Threading.Tasks.Task.Run(() =>
+                await UniTask.RunOnThreadPool(async () =>
                 {
-                    return client.ClearCacheAsync();
+                    await client.ClearCacheAsync();
                 });
 
                 statusMessage = "缓存已清空";
@@ -556,7 +756,7 @@ namespace SkillSystem.RAG
             }
         }
 
-        private async void GetStatistics()
+        private async UniTaskVoid GetStatistics()
         {
             statusMessage = "正在获取统计...";
             isLoading = true;
@@ -565,9 +765,9 @@ namespace SkillSystem.RAG
             try
             {
                 // 在后台线程执行HTTP请求
-                var response = await System.Threading.Tasks.Task.Run(() =>
+                var response = await UniTask.RunOnThreadPool(async () =>
                 {
-                    return client.GetStatisticsAsync().Result;
+                    return await client.GetStatisticsAsync();
                 });
 
                 statusMessage = "统计信息已获取";
@@ -606,16 +806,200 @@ namespace SkillSystem.RAG
             }
 
             // 打开技能编辑器
-            var skillData = SkillSystem.Data.SkillDataSerializer.LoadFromFile(assetPath);
+            var skillData = SkillDataSerializer.LoadFromFile(assetPath);
             if (skillData != null)
             {
-                SkillSystem.Editor.SkillEditorWindow.OpenSkill(skillData);
+                SkillEditorWindow.OpenSkill(skillData);
             }
             else
             {
                 EditorUtility.DisplayDialog("错误", $"无法加载技能文件: {assetPath}", "确定");
             }
         }
+
+        #region 服务器管理
+
+        /// <summary>
+        /// 启动Python RAG服务器
+        /// </summary>
+        private void StartServer()
+        {
+            if (isServerRunning)
+            {
+                UnityEngine.Debug.LogWarning("[RAG] 服务器已在运行中");
+                return;
+            }
+
+            try
+            {
+                // 查找Python可执行文件
+                string pythonPath = FindPythonExecutable();
+                if (string.IsNullOrEmpty(pythonPath))
+                {
+                    EditorUtility.DisplayDialog("错误", "未找到Python环境，请先安装Python 3.7+", "确定");
+                    return;
+                }
+
+                // 构建服务器脚本路径
+                // Application.dataPath = .../ai_agent_for_skill/ai_agent_for_skill/Assets
+                // 我们需要到上上级目录 .../ai_agent_for_skill/ 才能找到 SkillRAG/
+                string assetsPath = Application.dataPath;  // .../ai_agent_for_skill/Assets
+                string unityProjectPath = Directory.GetParent(assetsPath).FullName;  // .../ai_agent_for_skill
+                string rootPath = Directory.GetParent(unityProjectPath).FullName;  // .../
+                string serverScriptPath = Path.Combine(rootPath, "SkillRAG", "Python", "server.py");
+
+                // 标准化路径
+                serverScriptPath = Path.GetFullPath(serverScriptPath);
+
+                Debug.Log($"[RAG] 查找服务器脚本: {serverScriptPath}");
+
+                if (!File.Exists(serverScriptPath))
+                {
+                    EditorUtility.DisplayDialog("错误",
+                        $"未找到服务器脚本:\n{serverScriptPath}\n\n" +
+                        $"Assets路径: {assetsPath}\n" +
+                        $"Unity项目路径: {unityProjectPath}\n" +
+                        $"根路径: {rootPath}\n\n" +
+                        "请确保SkillRAG目录与ai_agent_for_skill目录在同一级",
+                        "确定");
+                    return;
+                }
+
+                // 配置进程启动信息
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = pythonPath,
+                    Arguments = $"\"{serverScriptPath}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    WorkingDirectory = Path.GetDirectoryName(serverScriptPath)
+                };
+
+                // 启动进程
+                serverProcess = new Process { StartInfo = startInfo };
+
+                // 监听输出
+                serverProcess.OutputDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        serverOutput += e.Data + "\n";
+                        UnityEngine.Debug.Log($"[RAG Server] {e.Data}");
+                    }
+                };
+
+                serverProcess.ErrorDataReceived += (sender, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        serverOutput += "[ERROR] " + e.Data + "\n";
+                        UnityEngine.Debug.LogWarning($"[RAG Server] {e.Data}");
+                    }
+                };
+
+                serverProcess.Start();
+                serverProcess.BeginOutputReadLine();
+                serverProcess.BeginErrorReadLine();
+
+                isServerRunning = true;
+                statusMessage = "服务器启动中...";
+
+                UnityEngine.Debug.Log($"[RAG] 服务器已启动 (PID: {serverProcess.Id})");
+
+                // 等待3秒后尝试连接
+                WaitAndConnectAsync().Forget();
+            }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError($"[RAG] 启动服务器失败: {e.Message}");
+                EditorUtility.DisplayDialog("错误", $"启动服务器失败:\n{e.Message}", "确定");
+                isServerRunning = false;
+            }
+        }
+
+        /// <summary>
+        /// 等待3秒后尝试连接（使用UniTask）
+        /// </summary>
+        private async UniTaskVoid WaitAndConnectAsync()
+        {
+            await UniTask.Delay(TimeSpan.FromSeconds(3));
+            CheckConnectionAsync().Forget();
+        }
+
+        /// <summary>
+        /// 停止Python RAG服务器
+        /// </summary>
+        private void StopServer()
+        {
+            if (serverProcess != null && !serverProcess.HasExited)
+            {
+                try
+                {
+                    serverProcess.Kill();
+                    serverProcess.WaitForExit(5000);
+                    serverProcess.Dispose();
+                    serverProcess = null;
+
+                    isServerRunning = false;
+                    isConnected = false;
+                    statusMessage = "服务器已停止";
+
+                    UnityEngine.Debug.Log("[RAG] 服务器已停止");
+                }
+                catch (Exception e)
+                {
+                    UnityEngine.Debug.LogError($"[RAG] 停止服务器失败: {e.Message}");
+                }
+            }
+            else
+            {
+                serverProcess = null;
+                isServerRunning = false;
+            }
+        }
+
+        /// <summary>
+        /// 查找Python可执行文件
+        /// </summary>
+        private string FindPythonExecutable()
+        {
+            // 尝试常见的Python命令
+            string[] pythonCommands = { "python", "python3", "py" };
+
+            foreach (string cmd in pythonCommands)
+            {
+                try
+                {
+                    ProcessStartInfo startInfo = new ProcessStartInfo
+                    {
+                        FileName = cmd,
+                        Arguments = "--version",
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    };
+
+                    using (Process process = Process.Start(startInfo))
+                    {
+                        process.WaitForExit(2000);
+                        if (process.ExitCode == 0)
+                        {
+                            return cmd;
+                        }
+                    }
+                }
+                catch
+                {
+                    // 继续尝试下一个命令
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
     }
 
 }

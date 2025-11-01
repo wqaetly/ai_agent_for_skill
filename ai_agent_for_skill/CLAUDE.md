@@ -201,3 +201,6 @@
 - [技能加载后自动Fit功能](.claude/docs/auto-fit-after-load.md) - 技能加载或创建新技能后自动调用fit功能，展示完整技能配置全貌，提升用户体验
 - [ResourceDependentHealAction](.claude/docs/resource-dependent-heal-action.md) - 基于资源消耗的治疗Action，支持怒气/法力等资源消耗并根据消耗量计算治疗量，含技能等级和法强缩放
 - [泰达米尔嗜血杀戮技能配置](.claude/docs/tryndamere-bloodlust-skill.md) - 泰达米尔Q技能Timeline配置，消耗怒气回复生命的资源依赖型治疗技能
+
+### RAG系统 (RAG System)
+- [RAG代码清理](.claude/docs/rag-code-cleanup.md) - RAG系统代码冗余清理，删除重复的HTTP客户端和管理窗口，统一API调用方式

@@ -1,0 +1,21 @@
+{
+    "name": "SkillSystem.Editor",
+    "rootNamespace": "SkillSystem.Editor",
+    "references": [
+        "SkillSystem.Actions",
+        "SkillSystem.Data",
+        "UniTask",
+        "SkillSystem.RAG"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

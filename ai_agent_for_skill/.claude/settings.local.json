@@ -12,7 +12,12 @@
       "Read(//e/Study/wqaetly/ai_agent_for_skill/**)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(Select-String -Pattern \"error CS|个错误|Build succeeded|Build FAILED\")",
+      "Bash(Select-Object -Last 5)",
+      "Bash(python:*)",
+      "Bash(dir:*)",
+      "Bash(Select-Object -Last 50)"
     ],
     "deny": [],
     "ask": []

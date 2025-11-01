@@ -1,26 +1,25 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7323428+08:00",
+    "exportTime": "2025-11-01T18:37:15.0743749+08:00",
     "action": {
         "typeName": "ProjectileAction",
         "fullTypeName": "SkillSystem.Actions.ProjectileAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "投射物",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: ProjectileAction\n显示名称: 投射物\n分类: Other\n参数: projectileType, projectileSpeed, maxRange, projectilePrefab, projectileSize, trailEffect, arcHeight, trackingStrength, maxTurnRate, pierceCount, pierceDamageReduction, collisionRadius, hitEffect, destroyOnHit, launchPosition, targetPosition, useWorldPosition\nProjectile Type(projectileType)\nProjectile Speed(projectileSpeed)\nMax Range(maxRange)\nProjectile Prefab(projectilePrefab)\nProjectile Size(projectileSize)",
+        "category": "Damage",
+        "description": "ProjectileAction是一个专业的投射物控制系统，用于创建和管理各种飞行轨迹的投射物。核心功能包括支持直线(Linear)、抛物线(Arc)和追踪(Homing)三种弹道类型，每种类型都有专门的参数配置：直线投射物以恒定速度飞行，抛物线投射物可设置弧线高度(Arc Height)，追踪投射物具备追踪强度(Tracking Strength)和最大转向速率(Max Turn Rate)参数。系统还支持穿透机制(Pierce)，可设置穿透次数和伤害衰减，以及完整的视觉效果管理包括投射物预制体、尺寸缩放、拖尾特效和命中特效。典型使用场景包括：DOTA2中的远程英雄普通攻击弹道、魔法飞弹技能如莉娜的光击阵、追踪导弹类技能如矮人直升机的火箭弹幕、抛物线投掷物如炼金术士的不稳定化合物，以及具备穿透能力的箭矢如风行者的大招。与简单移动Action不同，本系统专门针对投射物场景优化，包含完整的碰撞检测、生命周期管理和多弹道类型支持。",
+        "searchText": "投射物\nProjectileAction是一个专业的投射物控制系统，用于创建和管理各种飞行轨迹的投射物。核心功能包括支持直线(Linear)、抛物线(Arc)和追踪(Homing)三种弹道类型，每种类型都有专门的参数配置：直线投射物以恒定速度飞行，抛物线投射物可设置弧线高度(Arc Height)，追踪投射物具备追踪强度(Tracking Strength)和最大转向速率(Max Turn Rate)参数。系统还支持穿透机制(Pierce)，可设置穿透次数和伤害衰减，以及完整的视觉效果管理包括投射物预制体、尺寸缩放、拖尾特效和命中特效。典型使用场景包括：DOTA2中的远程英雄普通攻击弹道、魔法飞弹技能如莉娜的光击阵、追踪导弹类技能如矮人直升机的火箭弹幕、抛物线投掷物如炼金术士的不稳定化合物，以及具备穿透能力的箭矢如风行者的大招。与简单移动Action不同，本系统专门针对投射物场景优化，包含完整的碰撞检测、生命周期管理和多弹道类型支持。\n关键词: 投射物,弹道,Projectile,导弹,飞弹,弹道系统,追踪导弹,抛物线,直线飞行,穿透攻击,远程攻击,弹道效果,飞行物,弹道计算,弹道轨迹,弹道类型,弹道速度,弹道范围,弹道碰撞,弹道特效\n分类: Damage\n类型: ProjectileAction",
         "parameters": [
             {
                 "name": "projectileType",
                 "type": "ProjectileType",
+                "defaultValue": "Linear",
                 "label": "Projectile Type",
                 "group": "Projectile Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "Linear",
-                "isEnum": true,
                 "isArray": false,
+                "isEnum": true,
                 "elementType": "",
                 "enumValues": [
                     "Linear",
@@ -29,6 +28,7 @@
                 ],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -36,17 +36,17 @@
             {
                 "name": "projectileSpeed",
                 "type": "float",
+                "defaultValue": "1000",
                 "label": "Projectile Speed",
                 "group": "Projectile Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1000",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -54,17 +54,17 @@
             {
                 "name": "maxRange",
                 "type": "float",
+                "defaultValue": "1000",
                 "label": "Max Range",
                 "group": "Projectile Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1000",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -72,17 +72,17 @@
             {
                 "name": "projectilePrefab",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Projectile Prefab",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -90,17 +90,17 @@
             {
                 "name": "projectileSize",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "Projectile Size",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0.100000001490116",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -108,17 +108,17 @@
             {
                 "name": "trailEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Trail Effect",
                 "group": "Visual Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -126,17 +126,17 @@
             {
                 "name": "arcHeight",
                 "type": "float",
+                "defaultValue": "5",
                 "label": "Arc Height",
                 "group": "Ballistic Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -144,17 +144,17 @@
             {
                 "name": "trackingStrength",
                 "type": "float",
+                "defaultValue": "0.8",
                 "label": "Tracking Strength",
                 "group": "Tracking Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.8",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -162,17 +162,17 @@
             {
                 "name": "maxTurnRate",
                 "type": "float",
+                "defaultValue": "180",
                 "label": "Max Turn Rate",
                 "group": "Tracking Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "180",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -180,17 +180,17 @@
             {
                 "name": "pierceCount",
                 "type": "int",
+                "defaultValue": "0",
                 "label": "Pierce Count",
                 "group": "Pierce Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -198,17 +198,17 @@
             {
                 "name": "pierceDamageReduction",
                 "type": "float",
+                "defaultValue": "0.2",
                 "label": "Pierce Damage Reduction",
                 "group": "Pierce Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.2",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "1"
                 }
@@ -216,17 +216,17 @@
             {
                 "name": "collisionRadius",
                 "type": "float",
+                "defaultValue": "0.5",
                 "label": "Collision Radius",
                 "group": "Collision Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.5",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "0.100000001490116",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -234,17 +234,17 @@
             {
                 "name": "hitEffect",
                 "type": "GameObject",
+                "defaultValue": "null",
                 "label": "Hit Effect",
                 "group": "Collision Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "null",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -252,17 +252,17 @@
             {
                 "name": "destroyOnHit",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "Destroy on Hit",
                 "group": "Collision Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -270,17 +270,17 @@
             {
                 "name": "launchPosition",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
                 "label": "Launch Position",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 0)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -288,17 +288,17 @@
             {
                 "name": "targetPosition",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 10)",
                 "label": "Target Position",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 10)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -306,17 +306,17 @@
             {
                 "name": "useWorldPosition",
                 "type": "bool",
+                "defaultValue": "false",
                 "label": "Use World Position",
                 "group": "Target Settings",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "false",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

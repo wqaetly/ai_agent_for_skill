@@ -1,30 +1,30 @@
 {
     "version": "1.0",
-    "exportTime": "2025-10-30T21:16:18.7291652+08:00",
+    "exportTime": "2025-11-01T18:37:15.0466845+08:00",
     "action": {
         "typeName": "CameraAction",
         "fullTypeName": "SkillSystem.Actions.CameraAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "Assembly-CSharp",
+        "assemblyName": "SkillSystem.Actions",
         "displayName": "镜头效果",
-        "category": "Other",
-        "description": "",
-        "searchText": "Action类型: CameraAction\n显示名称: 镜头效果\n分类: Other\n参数: frame, duration, enabled, shakeIntensity, zoomScale, positionOffset, rotationOffset, fadeInTime, fadeOutTime, shakeFrequency, shakeCurve, followCaster, affectMainCamera\nframe(frame)\nduration(duration)\nenabled(enabled)\nshakeIntensity(shakeIntensity)\nzoomScale(zoomScale)",
+        "category": "Visual",
+        "description": "CameraAction是Unity技能系统中专门用于控制游戏镜头视觉效果的Action类，核心功能是通过多种镜头特效增强技能释放时的视觉冲击力。该Action支持震屏(Shake)、缩放(Zoom)、位移(Position Offset)和旋转(Rotation Offset)四种主要效果，可以单独使用或组合应用。参数配置包括震屏强度(0-2)、缩放倍率(0.5-3)、位移偏移量、旋转偏移量，以及效果过渡的渐入(FadeIn)和渐出(FadeOut)时间设置。震屏效果还支持频率调节(1-30Hz)和衰减曲线自定义，能够模拟不同强度的震动效果。典型使用场景包括：技能命中时的强烈震屏效果、瞄准技能的特写镜头缩放、冲锋技能的镜头跟随移动、爆炸技能的镜头抖动、终极技能的全屏特效。与其他视觉Action相比，CameraAction专注于镜头控制而非粒子特效，通过直接影响主相机来创造沉浸式视觉体验，支持跟随施法者(Follow Caster)和影响主相机(Affect Main Camera)的目标设置选项。",
+        "searchText": "镜头效果\nCameraAction是Unity技能系统中专门用于控制游戏镜头视觉效果的Action类，核心功能是通过多种镜头特效增强技能释放时的视觉冲击力。该Action支持震屏(Shake)、缩放(Zoom)、位移(Position Offset)和旋转(Rotation Offset)四种主要效果，可以单独使用或组合应用。参数配置包括震屏强度(0-2)、缩放倍率(0.5-3)、位移偏移量、旋转偏移量，以及效果过渡的渐入(FadeIn)和渐出(FadeOut)时间设置。震屏效果还支持频率调节(1-30Hz)和衰减曲线自定义，能够模拟不同强度的震动效果。典型使用场景包括：技能命中时的强烈震屏效果、瞄准技能的特写镜头缩放、冲锋技能的镜头跟随移动、爆炸技能的镜头抖动、终极技能的全屏特效。与其他视觉Action相比，CameraAction专注于镜头控制而非粒子特效，通过直接影响主相机来创造沉浸式视觉体验，支持跟随施法者(Follow Caster)和影响主相机(Affect Main Camera)的目标设置选项。\n关键词: 镜头效果,相机控制,震屏,镜头缩放,镜头位移,Camera Action,Shake Effect,Zoom Control,Position Offset,Rotation Offset,视觉特效,屏幕抖动,镜头跟随,技能特效\n分类: Visual\n类型: CameraAction",
         "parameters": [
             {
                 "name": "frame",
                 "type": "int",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -32,17 +32,17 @@
             {
                 "name": "duration",
                 "type": "int",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -50,17 +50,17 @@
             {
                 "name": "enabled",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -68,17 +68,17 @@
             {
                 "name": "shakeIntensity",
                 "type": "float",
+                "defaultValue": "0",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -86,17 +86,17 @@
             {
                 "name": "zoomScale",
                 "type": "float",
+                "defaultValue": "1",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0.5",
                     "max": "3"
                 }
@@ -104,17 +104,17 @@
             {
                 "name": "positionOffset",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 0)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -122,17 +122,17 @@
             {
                 "name": "rotationOffset",
                 "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "(0, 0, 0)",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -140,17 +140,17 @@
             {
                 "name": "fadeInTime",
                 "type": "float",
+                "defaultValue": "0.1",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -158,17 +158,17 @@
             {
                 "name": "fadeOutTime",
                 "type": "float",
+                "defaultValue": "0.1",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "0.1",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "0",
                     "max": "2"
                 }
@@ -176,17 +176,17 @@
             {
                 "name": "shakeFrequency",
                 "type": "float",
+                "defaultValue": "10",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "10",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "1",
                     "max": "30"
                 }
@@ -194,17 +194,17 @@
             {
                 "name": "shakeCurve",
                 "type": "AnimationCurve",
+                "defaultValue": "UnityEngine.AnimationCurve",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "UnityEngine.AnimationCurve",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -212,17 +212,17 @@
             {
                 "name": "followCaster",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }
@@ -230,17 +230,17 @@
             {
                 "name": "affectMainCamera",
                 "type": "bool",
+                "defaultValue": "true",
                 "label": "",
                 "group": "",
-                "description": "",
                 "infoBox": "",
-                "defaultValue": "true",
-                "isEnum": false,
                 "isArray": false,
+                "isEnum": false,
                 "elementType": "",
                 "enumValues": [],
                 "constraints": {
                     "minValue": "",
+                    "maxValue": "",
                     "min": "",
                     "max": ""
                 }

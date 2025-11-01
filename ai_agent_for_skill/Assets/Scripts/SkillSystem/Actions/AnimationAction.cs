@@ -4,9 +4,14 @@ using Sirenix.OdinInspector;
 
 namespace SkillSystem.Actions
 {
+    /// <summary>
+    /// 动画播放Action
+    /// 功能概述：控制角色播放指定的动画片段，支持动画层级、归一化时间和淡入淡出。
+    /// </summary>
     [Serializable]
     [ActionDisplayName("播放动画")]
     [ActionCategory("Visual & Audio")]
+    [ActionDescription("播放角色动画片段。通过指定动画剪辑名称(AnimationClip Name)来播放对应动画，支持动画层级切换、归一化时间控制、交叉淡入淡出(CrossFade)等功能。常用于攻击动画、技能释放动画、移动动画等视觉表现。不涉及伤害、控制、移动等游戏逻辑，纯粹用于视觉展示。")]
     public class AnimationAction : ISkillAction
     {
         [SerializeField]

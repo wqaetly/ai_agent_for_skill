@@ -20,7 +20,12 @@
       "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\download_model_direct.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\setup_local_model.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\setup_model_configs.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\fix_model.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\auto_fix_model.py\")",
       "Bash(powershell:*)",
       "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\download_qwen3.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\force_download_qwen3.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\Python\\check_and_upgrade.py\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\download_qwen3_model.bat\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\fix_download.bat\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\SkillRAG\\force_fix.bat\")",
-      "Bash(py check_paths.py:*)"
+      "Bash(py check_paths.py:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(findstr:*)",
+      "Bash(nul)",
+      "Bash(py:*)",
+      "Bash(dotnet build:*)"
     ],
     "deny": [],
     "ask": []

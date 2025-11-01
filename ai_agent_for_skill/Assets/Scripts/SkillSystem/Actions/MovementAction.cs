@@ -12,6 +12,7 @@ namespace SkillSystem.Actions
     /// </summary>
     [Serializable]
     [ActionDisplayName("位移")]
+    [ActionDescription("控制角色位移。支持4种移动类型：线性移动(Linear)直线前进、弧线移动(Arc)跳跃式移动、曲线移动(Curve)自定义轨迹、瞬移(Instant)瞬间传送。可配置移动速度、目标位置、相对/绝对坐标、面向方向等。常用于冲刺技能、闪现、跳跃攻击、位移突进等需要改变角色位置的技能。纯粹位移，不包含伤害和控制效果。")]
     public class MovementAction : ISkillAction
     {
         [BoxGroup("Movement Settings")]
