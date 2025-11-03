@@ -1,98 +1,98 @@
-# 加载 Claude 开发规范
+# Load Claude Development Standards
 
-加载指定的 Claude 开发规范到当前会话中。这个命令会根据项目需求和应用场景，智能选择并应用相应的提示词规范。
+Load specified Claude development standards into the current session. This command intelligently selects and applies appropriate prompt standards based on project requirements and application scenarios.
 
-## 使用方法
+## Usage
 
 ```bash
-/standards-load [选项]
+/standards-load [options]
 ```
 
-## 选项
+## Options
 
-### 规范类型
-- `--all`: 加载所有规范模块（默认）
-- `--language`: 仅加载语言表达规范
-- `--principles`: 仅加载核心工作原则
-- `--socratic`: 仅加载苏格拉底式对话规范
-- `--analysis`: 仅加载技术分析框架
+### Standard Types
+- `--all`: Load all standard modules (default)
+- `--language`: Load only language expression standards
+- `--principles`: Load only core work principles
+- `--socratic`: Load only Socratic dialogue standards
+- `--analysis`: Load only technical analysis framework
 
-### 应用场景
-- `--code-review`: 代码审查场景优化配置
-- `--architecture`: 架构设计场景优化配置
-- `--planning`: 技术规划场景优化配置
-- `--debugging`: 问题调试场景优化配置
+### Application Scenarios
+- `--code-review`: Code review scenario optimized configuration
+- `--architecture`: Architecture design scenario optimized configuration
+- `--planning`: Technical planning scenario optimized configuration
+- `--debugging`: Problem debugging scenario optimized configuration
 
-### 配置选项
-- `--interactive`: 交互式选择规范配置
-- `--force`: 强制重新加载，覆盖现有配置
-- `--dry-run`: 预览将要加载的规范，不实际应用
+### Configuration Options
+- `--interactive`: Interactive selection of standard configuration
+- `--force`: Force reload, overriding existing configuration
+- `--dry-run`: Preview standards to be loaded without actually applying
 
-## 示例
+## Examples
 
 ```bash
-# 加载所有规范
+# Load all standards
 /standards-load
 
-# 专为代码审查场景加载规范
+# Load standards specifically for code review scenario
 /standards-load --code-review
 
-# 交互式选择规范
+# Interactive selection of standards
 /standards-load --interactive
 
-# 仅加载语言和技术分析规范
+# Load only language and technical analysis standards
 /standards-load --language --analysis
 ```
 
-## 功能特性
+## Features
 
-### 智能规范选择
-- 基于当前项目类型自动推荐规范组合
-- 根据最近使用的工具和命令调整配置
-- 检测文件类型和应用场景优化提示词
+### Intelligent Standard Selection
+- Automatically recommend standard combinations based on current project type
+- Adjust configuration based on recently used tools and commands
+- Detect file types and application scenarios to optimize prompts
 
-### 配置持久化
-- 保存规范配置到项目本地
-- 支持团队共享规范配置
-- 版本化的规范更新机制
+### Configuration Persistence
+- Save standard configuration to project locally
+- Support team sharing of standard configurations
+- Versioned standard update mechanism
 
-### 冲突检测
-- 检测与其他插件的配置冲突
-- 提供冲突解决方案建议
-- 支持配置优先级设置
+### Conflict Detection
+- Detect configuration conflicts with other plugins
+- Provide conflict resolution suggestions
+- Support configuration priority settings
 
-## 输出格式
+## Output Format
 
-### 成功加载
+### Successful Load
 ```
-✅ Claude 开发规范加载成功
+✅ Claude development standards loaded successfully
 
-📋 已加载的规范模块:
-├── 语言表达规范 (zh-CN, 直接犀利风格)
-├── 核心工作原则 (质量导向，架构感知)
-├── 苏格拉底式对话 (智能激活)
-└── 技术分析框架 (系统性分析)
+📋 Loaded standard modules:
+├── Language Expression Standards (en-US, direct sharp style)
+├── Core Work Principles (quality-oriented, architecture-aware)
+├── Socratic Dialogue (smart activation)
+└── Technical Analysis Framework (systematic analysis)
 
-⚙️ 配置详情:
-- 主要语言: 中文
-- 表达风格: 直接、零废话
-- 质量底线: 严格模式
-- 对话模式: 智能激活
+⚙️ Configuration details:
+- Primary language: English
+- Expression style: Direct, zero-fluff
+- Quality gates: Strict mode
+- Dialogue mode: Smart activation
 
-💡 使用提示:
-- 使用"为什么"等关键词触发深度讨论
-- 代码审查将自动应用质量底线检查
-- 技术分析将使用系统性框架
+💡 Usage tips:
+- Use keywords like "why" to trigger deep discussions
+- Code reviews will automatically apply quality gate checks
+- Technical analysis will use systematic framework
 ```
 
-### 交互式选择
+### Interactive Selection
 ```
-🎯 请选择要加载的规范模块:
+🎯 Please select standard modules to load:
 
-1. 语言表达规范 - 中文交流，直接犀利风格
-2. 核心工作原则 - 质量导向，架构感知
-3. 苏格拉底式对话 - 深度质疑，智能激活
-4. 技术分析框架 - 系统性分析工具
+1. Language Expression Standards - English communication, direct sharp style
+2. Core Work Principles - Quality-oriented, architecture-aware
+3. Socratic Dialogue - Deep questioning, smart activation
+4. Technical Analysis Framework - Systematic analysis tools
 
-请输入数字选择 (多选用逗号分隔，或选择 0 加载全部):
+Please enter numbers to select (comma-separated for multiple, or select 0 to load all):
 ```

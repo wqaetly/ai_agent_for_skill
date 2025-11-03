@@ -1,98 +1,98 @@
-# Claude Code 插件集合 🚀
+# Claude Code Plugin Collection 🚀
 
-本目录包含用于游戏开发和 Unity 工具的 Claude Code 插件。
+This directory contains Claude Code plugins for game development and Unity tools.
 
-## 📁 目录结构
+## 📁 Directory Structure
 
 ```
 claude_code_plugins/
 ├── .claude-plugin/
-│   └── marketplace.json              # 插件市场配置
-├── claude-standards/                 # Claude 开发规范插件 (新增)
-├── game-skill-config-plugin/         # 游戏技能配置系统
-├── nkg-unity/                        # Unity C# 编译和错误修复
-├── _documentation/                   # Claude Code 文档参考
-├── INSTALLATION.md                   # 所有插件的安装指南
-└── README.md                         # 本文件
+│   └── marketplace.json              # Plugin marketplace configuration
+├── claude-standards/                 # Claude Development Standards Plugin (New)
+├── game-skill-config-plugin/         # Game Skill Configuration System
+├── nkg-unity/                        # Unity C# Compilation and Error Fixing
+├── _documentation/                   # Claude Code Documentation Reference
+├── INSTALLATION.md                   # Installation guide for all plugins
+└── README.md                         # This file
 ```
 
-## 🎮 可用插件
+## 🎮 Available Plugins
 
-### 1. Claude 开发规范插件 ⭐ (新增)
-- **名称**: `claude-standards`
-- **用途**: 提供统一的中文开发规范，包括语言表达、工作原则、苏格拉底式对话和技术分析框架
-- **特性**:
-  - 中文交流规范，直接犀利风格
-  - 核心工作原则，质量导向
-  - 苏格拉底式技术对话，智能激活
-  - 系统性技术分析框架
-  - 自动化质量检查钩子
+### 1. Claude Development Standards Plugin ⭐ (New)
+- **Name**: `claude-standards`
+- **Purpose**: Provides unified development standards, including communication guidelines, work principles, Socratic dialogue framework, and technical analysis methodologies
+- **Features**:
+  - Professional communication standards with direct, clear style
+  - Core work principles focused on quality-oriented development
+  - Socratic technical dialogue with intelligent activation
+  - Systematic technical analysis framework
+  - Automated quality checking hooks
 
-### 2. 游戏技能配置插件
-- **名称**: `game-skill-config`
-- **用途**: Unity 开发的完整技能配置和管理系统
-- **特性**:
-  - 生成新的技能配置
-  - 分析现有技能
-  - 调试技能问题
-  - 技能平衡性对比
-  - 自动验证钩子
+### 2. Game Skill Configuration Plugin
+- **Name**: `game-skill-config`
+- **Purpose**: Complete skill configuration and management system for Unity development
+- **Features**:
+  - Generate new skill configurations
+  - Analyze existing skills
+  - Debug skill issues
+  - Skill balance comparison
+  - Automatic validation hooks
 
-### 3. NKG Unity 插件
-- **名称**: `nkg-unity`
-- **用途**: Unity C# 编译和错误修复，具有智能程序集匹配功能
-- **特性**:
-  - 智能程序集名称解析
-  - 自动编译错误修复
-  - 支持常见的 Unity 程序集别名
-  - 安全的文件备份和修复策略
+### 3. NKG Unity Plugin
+- **Name**: `nkg-unity`
+- **Purpose**: Unity C# compilation and error fixing with intelligent assembly matching functionality
+- **Features**:
+  - Intelligent assembly name resolution
+  - Automatic compilation error fixing
+  - Support for common Unity assembly aliases
+  - Safe file backup and repair strategies
 
-## 🚀 快速安装
+## 🚀 Quick Installation
 
-### 步骤 1: 添加插件市场
+### Step 1: Add Plugin Marketplace
 ```bash
 /plugin marketplace add ./claude_code_plugins
 ```
 
-### 步骤 2: 安装插件
+### Step 2: Install Plugins
 ```bash
-# 安装 Claude 开发规范插件
+# Install Claude Development Standards Plugin
 /plugin install claude-standards@nkg-game-development-marketplace
 
-# 安装游戏技能配置插件
+# Install Game Skill Configuration Plugin
 /plugin install game-skill-config@nkg-game-development-marketplace
 
-# 安装 Unity 编译插件
+# Install Unity Compilation Plugin
 /plugin install nkg-unity@nkg-game-development-marketplace
 ```
 
-### 步骤 3: 重启 Claude Code
-退出并重启 Claude Code 以加载插件。
+### Step 3: Restart Claude Code
+Exit and restart Claude Code to load the plugins.
 
-## 📚 文档
+## 📚 Documentation
 
-- **[安装指南](INSTALLATION.md)** - 详细的安装和测试说明
-- **[_documentation/](./_documentation/)** - Claude Code 参考文档
-- **[claude-standards/README.md](./claude-standards/README.md)** - 开发规范插件详情
-- **[game-skill-config-plugin/README.md](./game-skill-config-plugin/README.md)** - 技能配置插件详情
-- **[nkg-unity/README.md](./nkg-unity/README.md)** - Unity 编译插件详情
+- **[Installation Guide](INSTALLATION.md)** - Detailed installation and testing instructions
+- **[_documentation/](./_documentation/)** - Claude Code reference documentation
+- **[claude-standards/README.md](./claude-standards/README.md)** - Development standards plugin details
+- **[game-skill-config-plugin/README.md](./game-skill-config-plugin/README.md)** - Skill configuration plugin details
+- **[nkg-unity/README.md](./nkg-unity/README.md)** - Unity compilation plugin details
 
-## 🔧 插件开发
+## 🔧 Plugin Development
 
-此插件市场为 NKG 开发团队配置，包含专门为 Unity 游戏开发工作流程设计的插件。
+This plugin marketplace is configured for the NKG development team and contains plugins specifically designed for Unity game development workflows.
 
-## 🎯 推荐使用顺序
+## 🎯 Recommended Installation Order
 
-1. **首先安装 `claude-standards`** - 建立中文开发规范基础
-2. **然后安装 `game-skill-config`** - 配置游戏技能系统
-3. **最后安装 `nkg-unity`** - 支持 Unity 编译和调试
+1. **First install `claude-standards`** - Establish professional development standards foundation
+2. **Then install `game-skill-config`** - Configure game skill system
+3. **Finally install `nkg-unity`** - Support Unity compilation and debugging
 
-## 📄 许可证
+## 📄 License
 
-各个插件可能有各自的许可证。请参考每个插件的 LICENSE 文件了解具体条款。
+Each plugin may have its own license. Please refer to each plugin's LICENSE file for specific terms.
 
 ---
 
-**用智能的 Claude Code 插件增强您的 Unity 开发工作流程！** 🎮✨
+**Enhance your Unity development workflow with intelligent Claude Code plugins!** 🎮✨
 
-**让 Claude 更懂中文开发规范！** 🇨🇳
+**Professional development standards for modern development!** 🌟

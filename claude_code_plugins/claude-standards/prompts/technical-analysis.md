@@ -1,187 +1,187 @@
-# 技术分析框架提示词
+# Technical Analysis Framework Prompt
 
-## 分析方法论
+## Analysis Methodology
 
-### 系统性分析流程
-1. **数据结构审视** → 识别核心数据和关系
-2. **数据流追踪** → 分析流向、所有权和修改权限
-3. **效率审查** → 找出冗余操作和性能瓶颈
-4. **架构决策权衡** → 平衡各种非功能需求
+### Systematic Analysis Process
+1. **Data Structure Review** → Identify core data and relationships
+2. **Data Flow Tracking** → Analyze flow direction, ownership, and modification permissions
+3. **Efficiency Audit** → Find redundant operations and performance bottlenecks
+4. **Architecture Decision Trade-offs** → Balance various non-functional requirements
 
-## 数据结构审视框架
+## Data Structure Review Framework
 
-### 核心数据识别
-**分析要点**:
-- 什么是系统的核心数据实体？
-- 数据间的关系类型和依赖方向？
-- 数据的生命周期管理策略？
-- 数据一致性和完整性保证机制？
+### Core Data Identification
+**Analysis Points**:
+- What are the system's core data entities?
+- What are the relationship types and dependency directions between data?
+- What are the data lifecycle management strategies?
+- What are the data consistency and integrity guarantee mechanisms?
 
-**关键问题**:
-- 核心数据是否被恰当抽象？
-- 数据冗余是否合理？
-- 数据访问模式是否高效？
-- 数据结构是否支持未来扩展？
+**Key Questions**:
+- Is core data properly abstracted?
+- Is data redundancy reasonable?
+- Are data access patterns efficient?
+- Do data structures support future expansion?
 
-### 数据流追踪
-**分析维度**:
-- **数据流向**: 输入→处理→输出的完整路径
-- **所有权**: 谁创建、修改、删除数据？
-- **权限控制**: 谁可以访问什么数据？
-- **变更传播**: 数据变更如何影响其他组件？
+### Data Flow Tracking
+**Analysis Dimensions**:
+- **Data Flow Direction**: Complete path from input → processing → output
+- **Ownership**: Who creates, modifies, deletes data?
+- **Access Control**: Who can access what data?
+- **Change Propagation**: How do data changes affect other components?
 
-**检查清单**:
-- [ ] 数据流是否清晰可追踪？
-- [ ] 数据变更是否有适当的审计机制？
-- [ ] 并发访问是否得到妥善处理？
-- [ ] 数据泄露风险是否得到控制？
+**Checklist**:
+- [ ] Are data flows clear and traceable?
+- [ ] Do data changes have appropriate audit mechanisms?
+- [ ] Is concurrent access properly handled?
+- [ ] Are data leakage risks under control?
 
-### 效率审查
-**审查重点**:
-- **时间复杂度**: 算法和数据操作的效率
-- **空间复杂度**: 内存使用和存储效率
-- **网络效率**: 数据传输和通信开销
-- **I/O效率**: 磁盘读写和数据库操作
+### Efficiency Audit
+**Audit Focus**:
+- **Time Complexity**: Efficiency of algorithms and data operations
+- **Space Complexity**: Memory usage and storage efficiency
+- **Network Efficiency**: Data transmission and communication overhead
+- **I/O Efficiency**: Disk read/write and database operations
 
-**优化策略识别**:
-- 索引优化机会
-- 缓存策略改进
-- 批处理优化
-- 懒加载实现
+**Optimization Strategy Identification**:
+- Index optimization opportunities
+- Cache strategy improvements
+- Batch processing optimization
+- Lazy loading implementation
 
-## 架构决策权衡分析
+## Architecture Decision Trade-off Analysis
 
-### 功能需求 vs 非功能需求
-**性能**:
-- 响应时间要求
-- 吞吐量目标
-- 资源使用限制
-- 扩展性需求
+### Functional vs Non-functional Requirements
+**Performance**:
+- Response time requirements
+- Throughput targets
+- Resource usage limitations
+- Scalability needs
 
-**可维护性**:
-- 代码可读性
-- 模块化程度
-- 测试覆盖率
-- 文档完整性
+**Maintainability**:
+- Code readability
+- Modularity level
+- Test coverage
+- Documentation completeness
 
-**可扩展性**:
-- 水平扩展能力
-- 垂直扩展空间
-- 新功能集成难度
-- 技术栈灵活性
+**Scalability**:
+- Horizontal scaling capability
+- Vertical scaling space
+- New feature integration difficulty
+- Technology stack flexibility
 
-**安全性**:
-- 认证授权机制
-- 数据加密保护
-- 漏洞防护措施
-- 安全审计能力
+**Security**:
+- Authentication authorization mechanisms
+- Data encryption protection
+- Vulnerability protection measures
+- Security audit capability
 
-### 开发效率 vs 代码质量
-**开发效率因素**:
-- 团队熟悉度
-- 开发工具支持
-- 学习曲线
-- 社区生态
+### Development Efficiency vs Code Quality
+**Development Efficiency Factors**:
+- Team familiarity
+- Development tool support
+- Learning curve
+- Community ecosystem
 
-**代码质量要求**:
-- 代码规范遵循
-- 设计模式应用
-- 错误处理机制
-- 性能优化程度
+**Code Quality Requirements**:
+- Code standard compliance
+- Design pattern application
+- Error handling mechanisms
+- Performance optimization level
 
-**权衡策略**:
-- MVP阶段优先开发效率
-- 成熟产品优先代码质量
-- 技术债务管理计划
-- 重构时机选择
+**Trade-off Strategy**:
+- Prioritize development efficiency in MVP phase
+- Prioritize code quality in mature products
+- Technical debt management plan
+- Refactoring timing selection
 
-### 必要复杂度 vs 过度设计
-**必要复杂度指标**:
-- 业务需求复杂度
-- 技术挑战难度
-- 集成系统复杂度
-- 团队协作复杂度
+### Necessary Complexity vs Over-engineering
+**Necessary Complexity Indicators**:
+- Business requirement complexity
+- Technical challenge difficulty
+- Integration system complexity
+- Team collaboration complexity
 
-**过度设计警示信号**:
-- 过度抽象
-- 过早优化
-- 不必要的灵活性
-- 过度工程化
+**Over-engineering Warning Signs**:
+- Excessive abstraction
+- Premature optimization
+- Unnecessary flexibility
+- Over-engineering
 
-**判断标准**:
-- YAGNI原则应用
-- KISS原则遵循
-- 最小可行实现
-- 渐进式复杂化
+**Judgment Criteria**:
+- YAGNI principle application
+- KISS principle adherence
+- Minimum viable implementation
+- Progressive complexity increase
 
-## 实际分析模板
+## Practical Analysis Templates
 
-### 代码审查分析
+### Code Review Analysis
 ```
-1. 数据结构分析
-   - 核心数据实体: ____
-   - 关键关系: ____
-   - 访问模式: ____
+1. Data Structure Analysis
+   - Core data entities: ____
+   - Key relationships: ____
+   - Access patterns: ____
 
-2. 性能分析
-   - 时间复杂度: ____
-   - 空间复杂度: ____
-   - 瓶颈识别: ____
+2. Performance Analysis
+   - Time complexity: ____
+   - Space complexity: ____
+   - Bottleneck identification: ____
 
-3. 架构评估
-   - 设计模式: ____
-   - 扩展性: ____
-   - 维护性: ____
+3. Architecture Assessment
+   - Design patterns: ____
+   - Scalability: ____
+   - Maintainability: ____
 
-4. 改进建议
-   - 立即优化: ____
-   - 长期改进: ____
-   - 风险提示: ____
-```
-
-### 技术方案评估
-```
-1. 方案概述
-   - 核心思路: ____
-   - 技术选型: ____
-   - 适用场景: ____
-
-2. 优势分析
-   - 性能优势: ____
-   - 开发效率: ____
-   - 维护便利: ____
-
-3. 风险评估
-   - 技术风险: ____
-   - 实施风险: ____
-   - 维护风险: ____
-
-4. 对比分析
-   - vs 方案A: ____
-   - vs 方案B: ____
-   - 推荐场景: ____
+4. Improvement Suggestions
+   - Immediate optimization: ____
+   - Long-term improvements: ____
+   - Risk warnings: ____
 ```
 
-## 质量检查标准
+### Technical Solution Evaluation
+```
+1. Solution Overview
+   - Core approach: ____
+   - Technology selection: ____
+   - Applicable scenarios: ____
 
-### 分析完整性检查
-- [ ] 是否覆盖了所有核心数据结构？
-- [ ] 是否分析了关键数据流？
-- [ ] 是否识别了性能瓶颈？
-- [ ] 是否评估了架构权衡？
-- [ ] 是否提供了具体改进建议？
+2. Advantage Analysis
+   - Performance advantages: ____
+   - Development efficiency: ____
+   - Maintenance convenience: ____
 
-### 分析质量检查
-- [ ] 分析是否有充分的数据支撑？
-- [ ] 结论是否逻辑严密？
-- [ ] 建议是否可执行？
-- [ ] 风险评估是否全面？
-- [ ] 优先级判断是否合理？
+3. Risk Assessment
+   - Technical risks: ____
+   - Implementation risks: ____
+   - Maintenance risks: ____
 
-## 激活条件
-当需要进行以下分析时应用此框架：
-- 代码审查和架构评估
-- 技术方案选型和对比
-- 性能优化和瓶颈分析
-- 系统设计和重构规划
-- 技术债务评估和管理
+4. Comparative Analysis
+   - vs Solution A: ____
+   - vs Solution B: ____
+   - Recommended scenarios: ____
+```
+
+## Quality Check Standards
+
+### Analysis Completeness Check
+- [ ] Are all core data structures covered?
+- [ ] Are key data flows analyzed?
+- [ ] Are performance bottlenecks identified?
+- [ ] Are architecture trade-offs evaluated?
+- [ ] Are specific improvement suggestions provided?
+
+### Analysis Quality Check
+- [ ] Is analysis supported by sufficient data?
+- [ ] Are conclusions logically rigorous?
+- [ ] Are suggestions actionable?
+- [ ] Is risk assessment comprehensive?
+- [ ] Are priority judgments reasonable?
+
+## Activation Conditions
+Apply this framework when needing to conduct:
+- Code reviews and architecture assessments
+- Technical solution selection and comparison
+- Performance optimization and bottleneck analysis
+- System design and refactoring planning
+- Technical debt assessment and management

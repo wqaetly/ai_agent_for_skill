@@ -29,7 +29,8 @@
       "Bash(mkdir:*)",
       "Bash(tree:*)",
       "Bash(chmod:*)",
-      "Bash(./test-smart-matching.sh:*)"
+      "Bash(./test-smart-matching.sh:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

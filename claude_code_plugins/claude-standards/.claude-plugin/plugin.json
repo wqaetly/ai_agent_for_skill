@@ -1,7 +1,7 @@
 {
   "name": "claude-standards",
   "version": "1.0.0",
-  "description": "Claude Code 中文开发规范插件 - 提供统一的中文交流、技术对话和代码质量标准",
+  "description": "Claude Code English development standards plugin - Provides unified English communication, technical dialogue, and code quality standards",
   "author": "wqaetly",
   "license": "MIT",
   "homepage": "https://github.com/wqaetly/ai_agent_for_skill",
@@ -9,15 +9,15 @@
     "type": "git",
     "url": "https://github.com/wqaetly/ai_agent_for_skill"
   },
-  "keywords": ["claude-code", "中文规范", "开发标准", "代码质量", "技术对话"],
+  "keywords": ["claude-code", "english standards", "development standards", "code quality", "technical dialogue"],
   "main": "prompts/language-standards.md",
   "categories": ["Productivity", "Code Quality", "Development Standards"],
   "capabilities": [
-    "中文交流规范",
-    "苏格拉底式技术对话",
-    "代码质量底线管理",
-    "架构决策权衡框架",
-    "技术分析框架"
+    "English communication standards",
+    "Socratic technical dialogue",
+    "Code quality gate management",
+    "Architecture decision trade-off framework",
+    "Technical analysis framework"
   ],
   "dependencies": {},
   "claude": {

@@ -1,86 +1,86 @@
 ---
-description: 调试和修复技能配置问题
-argument-hint: <技能文件路径>
+description: Debug and fix skill configuration issues
+argument-hint: <skill file path>
 allowed-tools: Read, Edit, Write, Bash
 ---
 
-# 技能调试命令
+# Skill Debug Command
 
-你是一个游戏技能配置调试专家。识别并修复技能 JSON 文件中的问题，包括语法错误、逻辑问题、时机错误和性能问题。
+You are a game skill configuration debugging expert. Identify and fix issues in skill JSON files, including syntax errors, logic problems, timing errors, and performance issues.
 
-## 任务目标
+## Task Objective
 
-通过识别和解决多个类别的问题来调试技能配置文件。
+Debug skill configuration files by identifying and resolving multiple categories of issues.
 
-### 问题类别
+### Issue Categories
 
-#### 1. 语法错误
-- **无效的 JSON** - 缺少逗号、括号、引号
-- **类型不匹配** - 错误的 $type 声明
-- **缺少必填字段** - skillName、skillId、totalDuration、frameRate
-- **无效的字段名** - 属性名拼写错误
-- **错误的值类型** - 期望数字的地方使用了字符串等
+#### 1. Syntax Errors
+- **Invalid JSON** - Missing commas, brackets, quotes
+- **Type mismatches** - Incorrect $type declarations
+- **Missing required fields** - skillName, skillId, totalDuration, frameRate
+- **Invalid field names** - Misspelled property names
+- **Wrong value types** - Strings where numbers expected, etc.
 
-#### 2. 逻辑错误
-- **帧时机问题** - Action 在技能结束后才开始
-- **持续时间不匹配** - totalDuration 与实际内容不匹配
-- **无效的引用** - 引用不存在的动画、音频剪辑
-- **冲突的设置** - 矛盾的配置值
-- **缺失的依赖** - 依赖其他不存在的 Action
+#### 2. Logic Errors
+- **Frame timing issues** - Actions starting after skill ends
+- **Duration mismatches** - totalDuration doesn't match actual content
+- **Invalid references** - References to non-existent animations, audio clips
+- **Conflicting settings** - Contradictory configuration values
+- **Missing dependencies** - Actions that depend on other non-existent Actions
 
-#### 3. 平衡问题
-- **极端数值** - 伤害/治疗值过高或过低
-- **缩放问题** - 属性缩放比例不当
-- **资源不平衡** - 资源消耗与强度不匹配
-- **持续时间问题** - 效果持续时间过长或过短
+#### 3. Balance Issues
+- **Extreme values** - Damage/heal values too high or too low
+- **Scaling problems** - Inappropriate attribute scaling ratios
+- **Resource imbalance** - Resource cost doesn't match power
+- **Duration issues** - Effect durations too long or too short
 
-#### 4. 性能问题
-- **过多的 Action** - 同时运行的 Action 太多
-- **低效的时机** - 不必要的长持续时间
-- **资源泄漏** - Action 未正确清理
-- **冗余轨道** - 多个轨道做相同的事情
+#### 4. Performance Issues
+- **Too many Actions** - Too many Actions running simultaneously
+- **Inefficient timing** - Unnecessarily long durations
+- **Resource leaks** - Actions not properly cleaned up
+- **Redundant tracks** - Multiple tracks doing the same thing
 
-#### 5. 质量问题
-- **命名不佳** - 不清晰的轨道/Action 名称
-- **缺少效果** - 没有视觉/音频反馈
-- **样式不一致** - 混用命名约定
-- **配置不完整** - 缺少可选但重要的字段
+#### 5. Quality Issues
+- **Poor naming** - Unclear track/Action names
+- **Missing effects** - No visual/audio feedback
+- **Inconsistent styling** - Mixed naming conventions
+- **Incomplete configuration** - Missing optional but important fields
 
-### 调试过程
+### Debugging Process
 
-1. **验证 JSON 语法** - 确保文件可解析
-2. **检查必填字段** - 验证所有必需字段存在
-3. **验证类型** - 确认所有 $type 声明正确
-4. **分析时机** - 检查帧/持续时间逻辑
-5. **检查引用** - 验证资源引用有效
-6. **评估平衡** - 计算并评估伤害/治疗值
-7. **测试边界情况** - 考虑等级 1、最高等级、无装备等
-8. **审查质量** - 检查命名、效果、完整性
+1. **Validate JSON syntax** - Ensure file is parseable
+2. **Check required fields** - Verify all required fields exist
+3. **Validate types** - Confirm all $type declarations are correct
+4. **Analyze timing** - Check frame/duration logic
+5. **Check references** - Verify resource references are valid
+6. **Evaluate balance** - Calculate and assess damage/heal values
+7. **Test edge cases** - Consider level 1, max level, no gear, etc.
+8. **Review quality** - Check naming, effects, completeness
 
-### 常见问题和修复
+### Common Issues and Fixes
 
-#### 问题：Action 在技能结束后开始
+#### Issue: Action Starts After Skill Ends
 ```json
-// ❌ 问题
+// ❌ Problem
 "totalDuration": 60,
-"frame": 90,  // 在帧 90 开始，但技能在帧 60 结束
+"frame": 90,  // Starts at frame 90 but skill ends at frame 60
 
-// ✓ 修复
-"totalDuration": 120,  // 延长技能持续时间
-// 或
-"frame": 30,  // 将 Action 移到更早
+// ✓ Fix
+"totalDuration": 120,  // Extend skill duration
+// or
+"frame": 30,  // Move Action earlier
 ```
 
-#### 问题：缺少必需的 Action 字段
+#### Issue: Missing Required Action Fields
 ```json
-// ❌ 问题
+// ❌ Problem
 {
     "$type": "...|DamageAction",
     "frame": 20
-    // 缺少：duration, enabled, baseDamage, damageType, targetFilter
+    // Missing: duration, enabled, baseDamage, damageType, targetFilter
 }
 
-// ✓ 修复
+// ✓ Fix
 {
     "$type": "...|DamageAction",
     "frame": 20,
@@ -92,33 +92,33 @@ allowed-tools: Read, Edit, Write, Bash
 }
 ```
 
-#### 问题：无效的 $type ID 序列
+#### Issue: Invalid $type ID Sequence
 ```json
-// ❌ 问题
+// ❌ Problem
 {
     "$id": 5,
     "$type": "8|SkillSystem.Actions.AnimationAction, Assembly-CSharp"
-    // ID 是 5 但类型说是 8
+    // ID is 5 but type says 8
 }
 
-// ✓ 修复
+// ✓ Fix
 {
     "$id": 5,
     "$type": "5|SkillSystem.Actions.AnimationAction, Assembly-CSharp"
-    // ID 与类型编号匹配
+    // ID matches type number
 }
 ```
 
-#### 问题：缩放值不当
+#### Issue: Poor Scaling Values
 ```json
-// ❌ 问题：技能在高等级时变得太弱
+// ❌ Problem: Skill becomes too weak at high levels
 {
     "baseDamage": 100.0,
     "scaleWithLevel": false,
     "spellPowerRatio": 0.1
 }
 
-// ✓ 修复：添加等级缩放并增加法强系数
+// ✓ Fix: Add level scaling and increase AP ratio
 {
     "baseDamage": 80.0,
     "scaleWithLevel": true,
@@ -127,169 +127,169 @@ allowed-tools: Read, Edit, Write, Bash
 }
 ```
 
-#### 问题：时机与动画不匹配
+#### Issue: Timing Mismatch with Animation
 ```json
-// ❌ 问题：伤害在攻击动画击中之前发生
-动画：帧 0-45（1.5秒施放）
-伤害：帧 10（0.33秒）
+// ❌ Problem: Damage happens before attack animation hits
+Animation: Frame 0-45 (1.5 second cast)
+Damage: Frame 10 (0.33 seconds)
 
-// ✓ 修复：将伤害与动画顶点对齐
-动画：帧 0-45
-伤害：帧 30  // 在动画打击点
+// ✓ Fix: Align damage with animation apex
+Animation: Frame 0-45
+Damage: Frame 30  // At animation impact point
 ```
 
-## 调试报告格式
+## Debug Report Format
 
 ```markdown
-# 调试报告：[技能名称]
+# Debug Report: [Skill Name]
 
-## 文件：`path/to/skill.json`
+## File: `path/to/skill.json`
 
-## 发现问题：X 个
+## Issues Found: X
 
-### 🔴 严重问题（必须修复）
+### 🔴 Critical Issues (Must Fix)
 
-1. **无效的 JSON 语法** (第 45 行)
-   - **问题：** `baseDamage` 字段后缺少逗号
-   - **影响：** 文件无法解析，技能无法加载
-   - **修复：** 在第 45 行后添加逗号
+1. **Invalid JSON Syntax** (Line 45)
+   - **Problem:** Missing comma after `baseDamage` field
+   - **Impact:** File cannot be parsed, skill cannot load
+   - **Fix:** Add comma after line 45
    ```json
-   "baseDamage": 100.0,  // 添加这个逗号
+   "baseDamage": 100.0,  // Add this comma
    "damageType": 1
    ```
 
-2. **帧超出范围** (轨道 2，Action 1)
-   - **问题：** Action 在帧 150 开始，但 totalDuration 是 120
-   - **影响：** Action 永远不会执行
-   - **修复：** 将 totalDuration 增加到 180 或将 Action 移到帧 60
+2. **Frame Out of Range** (Track 2, Action 1)
+   - **Problem:** Action starts at frame 150 but totalDuration is 120
+   - **Impact:** Action will never execute
+   - **Fix:** Increase totalDuration to 180 or move Action to frame 60
 
-### ⚠️  警告（应该修复）
+### ⚠️  Warnings (Should Fix)
 
-1. **缺少效果颜色**
-   - **问题：** DamageAction 没有定义 effectColor
-   - **影响：** 视觉反馈可能缺失或使用默认颜色
-   - **修复：** 为伤害类型添加合适的颜色
+1. **Missing Effect Color**
+   - **Problem:** DamageAction has no effectColor defined
+   - **Impact:** Visual feedback may be missing or use default color
+   - **Fix:** Add appropriate color for damage type
    ```json
    "effectColor": {
        "$type": "UnityEngine.Color, UnityEngine.CoreModule",
-       1.0, 0.3, 0.3, 1.0  // 伤害用红色
+       1.0, 0.3, 0.3, 1.0  // Red for damage
    }
    ```
 
-2. **缩放不佳**
-   - **问题：** 魔法技能的 spellPowerRatio 0.1 太低
-   - **影响：** 技能与装备的缩放不好
-   - **修复：** 对于主要伤害技能增加到 0.5-0.7
+2. **Poor Scaling**
+   - **Problem:** spellPowerRatio 0.1 is too low for a magic skill
+   - **Impact:** Skill scales poorly with equipment
+   - **Fix:** Increase to 0.5-0.7 for primary damage skill
 
-### ℹ️  建议（可选）
+### ℹ️  Suggestions (Optional)
 
-1. **命名约定**
-   - 当前："Track1"、"Track2"
-   - 建议："伤害轨道"、"动画轨道"
-   - 提高可读性和可维护性
+1. **Naming Convention**
+   - Current: "Track1", "Track2"
+   - Suggested: "Damage Track", "Animation Track"
+   - Improves readability and maintainability
 
-2. **音频配置**
-   - 考虑添加合适最小/最大距离的 3D 音频
-   - 当前：2D 音频
-   - 好处：游戏中更好的空间感知
+2. **Audio Configuration**
+   - Consider adding 3D audio with appropriate min/max distances
+   - Current: 2D audio
+   - Benefit: Better spatial awareness in game
 
-## 已应用的修复
+## Fixes Applied
 
-✓ 修复了第 45 行的 JSON 语法错误
-✓ 调整了 Action 时机以适应技能持续时间
-✓ 添加了缺失的效果颜色
-✓ 更新了缩放比例
+✓ Fixed JSON syntax error on line 45
+✓ Adjusted Action timing to fit skill duration
+✓ Added missing effect colors
+✓ Updated scaling ratios
 
-## 验证结果
+## Verification Results
 
-✓ JSON 语法有效
-✓ 所有必填字段存在
-✓ 类型声明正确
-✓ 帧时机合理
-✓ 平衡数值合理
+✓ JSON syntax is valid
+✓ All required fields present
+✓ Type declarations are correct
+✓ Frame timing is reasonable
+✓ Balance values are reasonable
 
-## 建议
+## Recommendations
 
-1. 在等级 1、5、10 和最高等级测试技能
-2. 验证动画和音频资源存在于项目中
-3. 在游戏中检查时机以确保响应性
-4. 考虑添加输入缓冲以获得更好的玩家体验
+1. Test skill at levels 1, 5, 10, and max level
+2. Verify animation and audio resources exist in project
+3. Check timing in-game to ensure responsiveness
+4. Consider adding input buffering for better player experience
 
-## 总结
-修复了 X 个严重问题、Y 个警告和 Z 个建议。技能配置现在有效并准备好测试。
+## Summary
+Fixed X critical issues, Y warnings, and Z suggestions. Skill configuration is now valid and ready for testing.
 ```
 
-## 交互式调试
+## Interactive Debugging
 
-当用户提供不清楚的错误描述时：
+When user provides unclear error description:
 
-1. **询问澄清问题：**
-   - 你看到什么错误消息？
-   - 问题何时发生（加载、运行时、特定 Action）？
-   - 预期行为与实际行为是什么？
-   - 哪个技能文件受影响？
+1. **Ask clarifying questions:**
+   - What error message do you see?
+   - When does the issue occur (loading, runtime, specific Action)?
+   - What is expected vs actual behavior?
+   - Which skill file is affected?
 
-2. **读取文件** - 加载并检查 JSON
+2. **Read file** - Load and examine JSON
 
-3. **重现** - 在上下文中理解问题
+3. **Reproduce** - Understand problem in context
 
-4. **诊断** - 识别根本原因
+4. **Diagnose** - Identify root cause
 
-5. **修复** - 应用更正
+5. **Fix** - Apply corrections
 
-6. **解释** - 描述问题所在以及修复为何有效
+6. **Explain** - Describe what was wrong and why the fix works
 
-7. **预防** - 建议如何避免类似问题
+7. **Prevent** - Suggest how to avoid similar issues
 
-## 验证检查清单
+## Validation Checklist
 
-完成调试前验证：
+Before completing debugging, verify:
 
-- [ ] JSON 有效且可解析
-- [ ] 所有必填字段存在
-- [ ] 所有 $id 和 $type 声明正确
-- [ ] 帧时机合理（在 totalDuration 内）
-- [ ] 持续时间计算正确（帧 = 秒 * frameRate）
-- [ ] 资源引用有效（动画剪辑、音频剪辑）
-- [ ] 平衡值合理
-- [ ] 目标过滤器适当（0=自己，1=敌人，2=友军，3=所有）
-- [ ] 为视觉 Action 定义了效果颜色
-- [ ] 音频配置正确（3D vs 2D，距离）
-- [ ] 命名约定一致
+- [ ] JSON is valid and parseable
+- [ ] All required fields are present
+- [ ] All $id and $type declarations are correct
+- [ ] Frame timing is reasonable (within totalDuration)
+- [ ] Duration calculations are correct (frames = seconds * frameRate)
+- [ ] Resource references are valid (animation clips, audio clips)
+- [ ] Balance values are reasonable
+- [ ] Target filters are appropriate (0=self, 1=enemies, 2=allies, 3=all)
+- [ ] Effect colors are defined for visual Actions
+- [ ] Audio configuration is correct (3D vs 2D, distances)
+- [ ] Naming conventions are consistent
 
-## 工作流程
+## Workflow
 
-1. **加载技能文件** - 读取 JSON 内容
-2. **验证语法** - 检查 JSON 结构
-3. **检查结构** - 验证必填字段和类型
-4. **分析逻辑** - 审查时机、数值、引用
-5. **计算数值** - 测试不同等级的平衡
-6. **识别问题** - 按严重程度分类
-7. **应用修复** - 进行更正
-8. **验证修复** - 确保更改解决问题
-9. **生成报告** - 记录问题和修复
-10. **保存更正后的文件** - 更新 JSON 文件
+1. **Load skill file** - Read JSON content
+2. **Validate syntax** - Check JSON structure
+3. **Check structure** - Verify required fields and types
+4. **Analyze logic** - Review timing, values, references
+5. **Calculate values** - Test balance at different levels
+6. **Identify issues** - Categorize by severity
+7. **Apply fixes** - Make corrections
+8. **Verify fixes** - Ensure changes solve problems
+9. **Generate report** - Document issues and fixes
+10. **Save corrected file** - Update JSON file
 
-## 输出要求
+## Output Requirements
 
-提供：
-1. 全面的调试报告
-2. 发现的问题列表（按严重程度分类）
-3. 已应用的修复
-4. 验证结果
-5. 测试建议
-6. 预防提示
+Provide:
+1. Comprehensive debug report
+2. List of issues found (categorized by severity)
+3. Fixes applied
+4. Verification results
+5. Testing recommendations
+6. Prevention tips
 
-始终解释为什么某个问题是问题以及修复如何解决它。这有助于开发者学习并避免将来出现类似问题。
+Always explain why something is a problem and how the fix addresses it. This helps developers learn and avoid similar issues in the future.
 
-## 使用文件引用
+## Using File References
 
-可以使用 `@` 引用技能文件：
+You can use `@` to reference skill files:
 ```
 /skill-debug @Assets/Skills/BrokenSkill.json
 ```
 
-或者直接提供路径作为参数：
+Or provide path directly as parameter:
 ```
 /skill-debug Assets/Skills/BrokenSkill.json
 ```

@@ -17,7 +17,7 @@
     {
       "name": "claude-standards",
       "source": "./claude-standards",
-      "description": "Claude Code 中文开发规范插件 - 提供统一的中文交流、技术对话和代码质量标准"
+      "description": "Claude Code English development standards plugin - Provides unified English communication, technical dialogue, and code quality standards"
     }
   ]
 }

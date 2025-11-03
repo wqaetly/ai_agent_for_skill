@@ -1,61 +1,61 @@
 ---
-description: 并排对比两个或多个技能配置
-argument-hint: <技能1> <技能2> [技能3...]
+description: Compare two or more skill configurations side-by-side
+argument-hint: <skill1> <skill2> [skill3...]
 allowed-tools: Read
 ---
 
-# 技能对比命令
+# Skill Comparison Command
 
-对比多个技能配置以识别差异、相似性和平衡差异。
+Compare multiple skill configurations to identify differences, similarities, and balance disparities.
 
-## 使用方法
+## Usage
 
 ```
 /skill-compare skill1.json skill2.json [skill3.json ...]
 ```
 
-或使用文件引用：
+Or use file references:
 ```
 /skill-compare @Assets/Skills/TryndamereBloodlust.json @Assets/Skills/SionSoulFurnace.json
 ```
 
-## 对比类别
+## Comparison Categories
 
-### 1. 基本信息
-- 技能名称、描述、ID
-- 持续时间（帧和秒）、帧率
+### 1. Basic Information
+- Skill name, description, ID
+- Duration (frames and seconds), frame rate
 
-### 2. 结构
-- 轨道数量、Action 数量
-- 使用的 Action 类型、轨道组织
+### 2. Structure
+- Number of tracks, number of Actions
+- Action types used, track organization
 
-### 3. 机制
-- 伤害/治疗/护盾输出
-- 资源消耗/生成
-- 特殊机制（输入检测、多阶段等）
+### 3. Mechanics
+- Damage/heal/shield output
+- Resource consumption/generation
+- Special mechanics (input detection, multi-phase, etc.)
 
-### 4. 缩放
-- 基础数值、法术强度系数
-- 攻击力系数、生命值系数、等级缩放
+### 4. Scaling
+- Base values, spell power ratios
+- Attack power ratios, health ratios, level scaling
 
-### 5. 时机
-- Action 时机模式、动画长度
-- 技能响应性、总持续时间
+### 5. Timing
+- Action timing patterns, animation length
+- Skill responsiveness, total duration
 
-### 6. 平衡
-- 1 级、6 级、11 级、16 级的有效值
-- 缩放效率
+### 6. Balance
+- Effective values at levels 1, 6, 11, 16
+- Scaling efficiency
 
-## 输出格式
+## Output Format
 
-提供全面的并排对比，包括：
-- 概览表格
-- 机制对比
-- 不同等级的数值计算
-- 时间轴对比
-- 平衡分析
-- 设计模式对比
-- 代码质量评估
-- 建议
+Provide comprehensive side-by-side comparison including:
+- Overview table
+- Mechanics comparison
+- Value calculations at different levels
+- Timeline comparison
+- Balance analysis
+- Design pattern comparison
+- Code quality assessment
+- Recommendations
 
-重点关注有助于维持技能系统平衡和一致性的洞察。
+Focus on insights that help maintain skill system balance and consistency.

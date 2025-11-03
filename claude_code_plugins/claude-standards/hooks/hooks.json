@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "/standards-load --auto",
-            "description": "会话开始时自动加载开发规范"
+            "description": "Auto-load development standards when session starts"
           }
         ]
       }
@@ -18,12 +18,12 @@
         "hooks": [
           {
             "type": "prompt_injection",
-            "prompt": "根据语言表达规范，使用中文交流，表达直接犀利，技术判断准确明确。在代码注释中使用 // + 空格 + 中文注释格式。",
+            "prompt": "According to language expression standards, communicate in English with direct and sharp expression, accurate technical judgments. Use // + space + English comment format in code comments.",
             "conditions": {
               "file_patterns": ["**/*.{js,ts,py,java,cpp,c,h,cs,go,rs}"],
               "exclude_patterns": ["**/node_modules/**", "**/dist/**", "**/build/**"]
             },
-            "description": "代码编辑时应用语言规范"
+            "description": "Apply language standards when editing code"
           }
         ]
       },
@@ -32,12 +32,12 @@
         "hooks": [
           {
             "type": "prompt_injection",
-            "prompt": "应用技术分析框架进行系统性分析：审视数据结构、追踪数据流、审查效率、评估架构决策权衡。",
+            "prompt": "Apply technical analysis framework for systematic analysis: scrutinize data structures, track data flows, review efficiency, evaluate architectural trade-offs.",
             "conditions": {
               "file_patterns": ["**/*.{json,yaml,yml,md,txt}"],
               "keywords": ["config", "architecture", "design", "spec"]
             },
-            "description": "技术文档分析时应用分析框架"
+            "description": "Apply analysis framework when analyzing technical documentation"
           }
         ]
       }
@@ -58,20 +58,20 @@
               "file_patterns": ["**/*.{js,ts,py,java,cpp,c,cs}"],
               "min_file_size": 1000
             },
-            "description": "代码修改后进行质量检查"
+            "description": "Perform quality checks after code modifications"
           }
         ]
       }
     ],
     "UserPrompt": [
       {
-        "matcher": "为什么|what if|how about|consider|what do you think|是否应该|如何改进|架构|最佳实践|brainstorm|头脑风暴|挑战|challenge|why",
+        "matcher": "why|what if|how about|consider|what do you think|architecture|best practices|brainstorm|challenge",
         "hooks": [
           {
             "type": "socratic_dialogue",
             "intensity": "auto_detect",
             "max_duration": 300,
-            "description": "检测到深度讨论关键词，激活苏格拉底式对话"
+            "description": "Deep discussion keywords detected, activate Socratic dialogue"
           }
         ]
       }
@@ -79,7 +79,7 @@
   },
   "validation_rules": {
     "check_architecture_decay": {
-      "description": "检查架构腐化迹象",
+      "description": "Check for architecture decay signs",
       "indicators": [
         "excessive_complexity",
         "tight_coupling",
@@ -90,7 +90,7 @@
       "action": "warn"
     },
     "check_technical_debt": {
-      "description": "检查技术债务积累",
+      "description": "Check for technical debt accumulation",
       "indicators": [
         "todo_comments",
         "deprecated_apis",
@@ -101,7 +101,7 @@
       "action": "suggest_refactor"
     },
     "check_maintainability": {
-      "description": "检查代码可维护性",
+      "description": "Check code maintainability",
       "indicators": [
         "long_methods",
         "deep_nesting",
@@ -115,17 +115,17 @@
   "socratic_settings": {
     "intensity_levels": {
       "gentle_inquiry": {
-        "triggers": ["如何", "怎样", "how to"],
+        "triggers": ["how to"],
         "style": "exploratory",
         "max_questions": 3
       },
       "deep_questioning": {
-        "triggers": ["为什么", "架构", "设计", "why", "architecture", "design"],
+        "triggers": ["why", "architecture", "design"],
         "style": "challenging",
         "max_questions": 5
       },
       "intense_refutation": {
-        "triggers": ["缺陷", "错误", "严重问题", "critical", "fatal", "wrong"],
+        "triggers": ["critical", "fatal", "wrong", "flaw", "defect"],
         "style": "direct_opposition",
         "max_questions": 7
       }
@@ -138,18 +138,18 @@
     }
   },
   "language_enforcement": {
-    "primary_language": "zh-CN",
+    "primary_language": "en-US",
     "technical_terms": {
       "action": "keep_english_with_explanation",
       "examples": {
-        "API": "API (应用程序编程接口)",
-        "REST": "REST (表述性状态转移)",
-        "SQL": "SQL (结构化查询语言)"
+        "API": "API (Application Programming Interface)",
+        "REST": "REST (Representational State Transfer)",
+        "SQL": "SQL (Structured Query Language)"
       }
     },
     "comment_format": {
-      "style": "chinese_with_space",
-      "pattern": "// + space + chinese_content"
+      "style": "english_with_space",
+      "pattern": "// + space + english_content"
     },
     "expression_style": {
       "directness": "high",

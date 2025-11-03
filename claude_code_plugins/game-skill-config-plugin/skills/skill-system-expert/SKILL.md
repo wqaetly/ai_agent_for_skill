@@ -1,126 +1,124 @@
 ---
 name: game-skill-system-expert
-description: Expert knowledge of Unity-based game skill configuration system. Use when working with skill JSON files, generating/modifying/analyzing game skills, debugging skill configs, or discussing skill mechanics like damage/healing/shields/buffs. Automatically activates for skill-related tasks in game development. 游戏技能配置系统专家知识，处理技能JSON、生成/分析/调试技能时自动激活。
+description: Expert knowledge of Unity-based game skill configuration system. Use when working with skill JSON files, generating/modifying/analyzing game skills, debugging skill configs, or discussing skill mechanics like damage/healing/shields/buffs. Automatically activates for skill-related tasks in game development.
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 
-# 游戏技能系统专家
+# Game Skill System Expert
 
-## 概览
+## Overview
 
-此 Skill 为基于 Unity 的游戏技能配置系统提供全面的专业知识。它理解完整的架构，包括 SkillData 结构、轨道、Action、时间系统、属性缩放和平衡原则。
+This Skill provides comprehensive expertise in Unity-based game skill configuration systems. It understands the complete architecture, including SkillData structures, tracks, Actions, timing systems, attribute scaling, and balance principles.
 
-## 何时使用此 Skill
+## When to Use This Skill
 
-当你：
-- 处理技能 JSON 配置文件
-- 生成、创建或修改游戏技能
-- 分析技能平衡或机制
-- 调试技能配置问题
-- 讨论游戏机制（伤害、治疗、护盾、资源、增益、减益）
-- 优化技能时机或性能
-- 批量处理多个技能配置
-- 引用 `Assets/Skills/` 目录中的文件
+I automatically activate when you:
+- Work with skill JSON configuration files
+- Generate, create, or modify game skills
+- Analyze skill balance or mechanics
+- Debug skill configuration issues
+- Discuss game mechanics (damage, healing, shields, resources, buffs, debuffs)
+- Optimize skill timing or performance
+- Batch process multiple skill configurations
+- Reference files in the `Assets/Skills/` directory
 
-我会自动激活。
+## Core Capabilities
 
-## 核心能力
+### 1. Skill Generation
+Create complete, production-ready skill configurations from natural language descriptions.
 
-### 1. 技能生成
-从自然语言描述创建完整的、生产就绪的技能配置。
+**Process:**
+1. Gather requirements through targeted questions
+2. Design appropriate track architecture
+3. Calculate balanced values using game design formulas
+4. Generate complete JSON with correct structure
+5. Validate configuration
+6. Explain mechanics and provide testing guidance
 
-**过程：**
-1. 通过针对性问题收集需求
-2. 设计合适的轨道架构
-3. 使用游戏设计公式计算平衡值
-4. 生成具有正确结构的完整 JSON
-5. 验证配置
-6. 说明机制并提供测试指导
+**Key Considerations:**
+- Appropriate base values for skill type
+- Scaling ratios that feel fair
+- Timing that feels responsive
+- Correct target filtering
+- Complete audio/visual configuration
+- Unique skill IDs
 
-**关键考虑因素：**
-- 技能类型的适当基础值
-- 感觉公平的缩放比例
-- 感觉响应的时机
-- 正确的目标过滤
-- 完整的音频/视觉配置
-- 唯一的技能 ID
+### 2. Skill Analysis
+Parse and analyze existing configurations to provide insights and recommendations.
 
-### 2. 技能分析
-解析和分析现有配置以提供洞察和建议。
+**Analysis Includes:**
+- Mechanics breakdown (what the skill does)
+- Timing analysis (when Actions occur)
+- Balance assessment (damage/heal output at different levels)
+- Scaling efficiency (effect of attribute scaling)
+- Code quality assessment
+- Comparison with similar skills
 
-**分析包括：**
-- 机制分解（技能做什么）
-- 时机分析（Action 何时发生）
-- 平衡评估（不同等级的伤害/治疗输出）
-- 缩放效率（属性缩放的效果）
-- 代码质量评估
-- 与类似技能的对比
+**Outputs:**
+- Comprehensive documentation
+- Timeline visualizations
+- Balance calculations
+- Improvement recommendations
 
-**输出：**
-- 全面的文档
-- 时间轴可视化
-- 平衡计算
-- 改进建议
+### 3. Skill Debugging
+Identify and fix issues in skill configurations.
 
-### 3. 技能调试
-识别并修复技能配置中的问题。
+**Issue Detection:**
+- Syntax errors (invalid JSON)
+- Structural errors (missing fields, wrong types)
+- Logic errors (timing issues, invalid references)
+- Balance problems (extreme values)
+- Quality issues (poor naming, missing effects)
 
-**问题检测：**
-- 语法错误（无效的 JSON）
-- 结构错误（缺失字段、错误类型）
-- 逻辑错误（时机问题、无效引用）
-- 平衡问题（极端数值）
-- 质量问题（命名不佳、缺失效果）
+**Debugging Process:**
+1. Validate JSON syntax
+2. Check required fields and types
+3. Analyze timing logic
+4. Verify resource references
+5. Assess balance
+6. Categorize issues by severity
+7. Apply fixes
+8. Generate debug report
 
-**调试过程：**
-1. 验证 JSON 语法
-2. 检查必填字段和类型
-3. 分析时机逻辑
-4. 验证资源引用
-5. 评估平衡
-6. 按严重程度分类问题
-7. 应用修复
-8. 生成调试报告
+### 4. Skill Optimization
+Improve existing skills for better performance, feel, or maintainability.
 
-### 4. 技能优化
-改进现有技能以获得更好的性能、手感或可维护性。
+**Optimization Areas:**
+- Timing refinement for better responsiveness
+- Scaling curve adjustments for smoother progression
+- Performance improvements (reduce redundancy)
+- Code quality (naming, structure, organization)
+- Balance adjustments
 
-**优化领域：**
-- 时机细化以获得更好的响应性
-- 缩放曲线调整以实现更平滑的成长
-- 性能改进（减少冗余）
-- 代码质量（命名、结构、组织）
-- 平衡调整
+## Technical Reference
 
-## 技术参考
-
-### SkillData 结构
+### SkillData Structure
 
 ```json
 {
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
-    "skillName": "技能名称",
-    "skillDescription": "技能作用",
-    "totalDuration": 180,  // 帧数
+    "skillName": "Skill Name",
+    "skillDescription": "What the skill does",
+    "totalDuration": 180,  // frames
     "frameRate": 30,       // fps
     "tracks": {
         "$id": 1,
         "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
         "$rlength": 3,
-        "$rcontent": [/* 轨道 */]
+        "$rcontent": [/* tracks */]
     },
-    "skillId": "英雄-技能名-001"
+    "skillId": "Hero-SkillName-001"
 }
 ```
 
-### 轨道结构
+### Track Structure
 
 ```json
 {
     "$id": 2,
     "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
-    "trackName": "轨道名称",
+    "trackName": "Track Name",
     "enabled": true,
     "actions": {
         "$id": 3,
@@ -131,264 +129,264 @@ allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 }
 ```
 
-### 常见 Action 类型
+### Common Action Types
 
-**伤害：**
-- `AttributeScaledDamageAction` - 基于法强、物攻、生命值缩放
-- `UnitTypeCappedDamageAction` - 对小兵/野怪/英雄有不同伤害上限
-- `DamageAction` - 简单的固定伤害
+**Damage:**
+- `AttributeScaledDamageAction` - Scales with spell power, attack damage, health
+- `UnitTypeCappedDamageAction` - Different damage caps for minions/jungle/champs
+- `DamageAction` - Simple fixed damage
 
-**治疗：**
-- `ResourceDependentHealAction` - 基于资源消耗的治疗
-- `HealAction` - 简单治疗
+**Healing:**
+- `ResourceDependentHealAction` - Healing based on resource consumption
+- `HealAction` - Simple healing
 
-**护盾：**
-- `AttributeScaledShieldAction` - 基于属性缩放且持续一段时间的护盾
+**Shields:**
+- `AttributeScaledShieldAction` - Attribute-scaled shield with duration
 
-**控制：**
-- `InputDetectionAction` - 检测玩家输入以触发条件效果
+**Control:**
+- `InputDetectionAction` - Detect player input to trigger conditional effects
 
-**动画/音频：**
-- `AnimationAction` - 播放动画剪辑
-- `AudioAction` - 播放音效（2D 或 3D 空间音频）
+**Animation/Audio:**
+- `AnimationAction` - Play animation clips
+- `AudioAction` - Play sound effects (2D or 3D spatial audio)
 
-**资源：**
-- `ResourceAction` - 修改资源（法力、怒气、能量等）
+**Resources:**
+- `ResourceAction` - Modify resources (mana, rage, energy, etc.)
 
-### Action 属性
+### Action Properties
 
-每个 Action 都有：
-- `$id` - 文件内的唯一数字 ID
-- `$type` - 带 ID 前缀的完整类型路径
-- `frame` - Action 开始时间（从 0 开始）
-- `duration` - Action 持续的帧数
-- `enabled` - Action 是否激活
+Each Action has:
+- `$id` - Unique numeric ID within the file
+- `$type` - Full type path with ID prefix
+- `frame` - Action start time (from 0)
+- `duration` - Number of frames Action lasts
+- `enabled` - Whether Action is active
 
-### 缩放公式
+### Scaling Formulas
 
-**伤害公式：**
+**Damage Formula:**
 ```
-总计 = (基础 + 等级 * 每级) + 法强 * 法强系数 + 物攻 * 物攻系数 + 最大生命 * 生命系数
-```
-
-**治疗公式：**
-```
-总计 = (基础 + 等级 * 每级) + 法强 * 法强系数 + 资源 * 每点资源
+Total = (Base + Level * PerLevel) + SpellPower * SpellPowerRatio + AttackDamage * ADRatio + MaxHealth * HealthRatio
 ```
 
-**护盾公式：**
+**Heal Formula:**
 ```
-总计 = (基础 + 等级 * 每级) + 法强 * 法强系数 + 生命 * 生命系数
-```
-
-### 平衡指南
-
-**伤害技能：**
-
-| 类型 | 基础 | 法强系数 | 每级 | 说明 |
-|------|------|----------|------|------|
-| 基础 | 60-100 | 0.4-0.6 | 10-15 | 可频繁释放 |
-| 主要 | 100-200 | 0.6-0.9 | 15-25 | 中等冷却 |
-| 终极 | 200-400 | 0.8-1.2 | 25-40 | 长冷却 |
-
-**治疗技能：**
-
-| 类型 | 基础 | 法强系数 | 每级 |
-|------|------|----------|------|
-| 基础 | 40-80 | 0.3-0.5 | 8-12 |
-| 主要 | 80-150 | 0.5-0.8 | 12-20 |
-
-**护盾技能：**
-
-| 类型 | 基础 | 法强系数 | 生命系数 | 持续时间 |
-|------|------|----------|----------|----------|
-| 基础 | 50-100 | 0.3-0.5 | 0.05-0.10 | 2-4秒 |
-| 主要 | 100-200 | 0.5-0.8 | 0.08-0.15 | 3-6秒 |
-
-**时机指南：**
-
-| 类型 | 持续时间 | 帧数 @ 30fps |
-|------|----------|--------------|
-| 瞬发 | 0.1-0.3秒 | 3-9 |
-| 快速 | 0.25-0.5秒 | 8-15 |
-| 标准 | 0.5-1.5秒 | 15-45 |
-| 引导 | 2-4秒 | 60-120 |
-
-### 目标过滤器
-
-- `0` = 仅自己
-- `1` = 仅敌人
-- `2` = 仅友军
-- `3` = 所有单位
-
-### 伤害类型
-
-- `0` = 物理伤害
-- `1` = 魔法伤害
-- `2` = 真实伤害（无视抗性）
-
-### 资源类型
-
-- `0` = 法力
-- `1` = 能量
-- `2` = 怒气
-- `3` = 护盾（临时生命值）
-- `4` = 生命值
-
-## 工作流示例
-
-### 示例 1：生成新技能
-
-**用户请求：** "为法师创建一个火球技能"
-
-**我的方法：**
-1. 询问澄清问题：
-   - 伤害量偏好？（我会建议 80 基础，0.6 法强系数）
-   - 持续时间？（我会建议 1 秒施放时间）
-   - 任何特殊机制？（AOE、单体等）
-
-2. 设计轨道：
-   - 伤害轨道（帧 20 的火焰伤害）
-   - 动画轨道（施放动画 0-30）
-   - 音频轨道（施放音效 + 击中音效）
-
-3. 生成具有正确结构的 JSON
-
-4. 说明机制和测试步骤
-
-### 示例 2：分析现有技能
-
-**用户请求：** "分析 TryndamereBloodlust.json"
-
-**我的方法：**
-1. 使用 Read 工具读取文件
-2. 解析结构并提取所有数据
-3. 计算等级 1、6、11、16 的治疗值
-4. 创建显示 Action 序列的时间轴
-5. 评估平衡（每点怒气的治疗量）
-6. 检查代码质量
-7. 提供建议
-
-### 示例 3：调试技能问题
-
-**用户请求：** "我的技能无法工作，伤害似乎不对"
-
-**我的方法：**
-1. 读取技能配置
-2. 验证 JSON 结构
-3. 检查 Action 时机和帧
-4. 计算实际伤害值
-5. 与预期值对比
-6. 识别问题（例如，错误的伤害类型、缺失的缩放）
-7. 修复并说明
-
-## 最佳实践
-
-### 结构
-- 在命名轨道中分组相关 Action
-- 使用清晰、描述性的轨道名称
-- 按逻辑顺序排列轨道（动画、伤害、音频、特效）
-
-### 时机
-- 将伤害/治疗与动画顶点对齐
-- 在适当时刻添加音效
-- 考虑输入缓冲以提高响应性
-- 帧 0 是技能开始，据此规划时机
-
-### 平衡
-- 从指南值开始，根据测试调整
-- 确保缩放感觉公平（前期不太弱，后期不太强）
-- 考虑资源消耗与强度级别
-- 在多个等级和属性级别测试
-
-### 质量
-- 始终为视觉 Action 包含效果颜色
-- 正确配置 3D 音频（minDistance、maxDistance）
-- 使用唯一、描述性的技能 ID
-- 在技能描述中添加有用的注释
-- 保存前验证
-
-### 可维护性
-- 遵循一致的命名约定
-- 将相关 Action 保持在一起的轨道中
-- 使用有意义的 ID 和名称
-- 在描述中记录复杂机制
-
-## 质量检查清单
-
-完成任何技能工作前验证：
-
-- [ ] JSON 语法有效
-- [ ] 所有必填字段存在（skillName、skillDescription、totalDuration、frameRate、skillId）
-- [ ] $id 和 $type 声明匹配且按序
-- [ ] 所有帧在 totalDuration 内
-- [ ] 持续时间计算正确（帧 = 秒 * frameRate）
-- [ ] 平衡值在适当范围内
-- [ ] 为视觉 Action 定义效果颜色
-- [ ] 音频配置正确（需要时使用 3D）
-- [ ] 目标过滤器适当
-- [ ] 命名一致且描述性强
-- [ ] 资源引用有效（动画/音频剪辑名称）
-
-## 常见模式
-
-**瞬发伤害技能：**
-```
-- 动画轨道：施放动画（10-20 帧）
-- 伤害轨道：在动画顶点造成伤害
-- 音频轨道：施放音效 + 击中音效
+Total = (Base + Level * PerLevel) + SpellPower * SpellPowerRatio + Resource * PerResource
 ```
 
-**引导技能：**
+**Shield Formula:**
 ```
-- 动画轨道：引导动画（整个持续时间）
-- 伤害轨道：多次伤害跳动
-- 音频轨道：引导循环音效
+Total = (Base + Level * PerLevel) + SpellPower * SpellPowerRatio + Health * HealthRatio
 ```
 
-**带爆炸的护盾：**
+### Balance Guidelines
+
+**Damage Skills:**
+
+| Type | Base | Spell Power Ratio | Per Level | Description |
+|------|------|-------------------|-----------|-------------|
+| Basic | 60-100 | 0.4-0.6 | 10-15 | Can be cast frequently |
+| Main | 100-200 | 0.6-0.9 | 15-25 | Medium cooldown |
+| Ultimate | 200-400 | 0.8-1.2 | 25-40 | Long cooldown |
+
+**Heal Skills:**
+
+| Type | Base | Spell Power Ratio | Per Level |
+|------|------|-------------------|-----------|
+| Basic | 40-80 | 0.3-0.5 | 8-12 |
+| Main | 80-150 | 0.5-0.8 | 12-20 |
+
+**Shield Skills:**
+
+| Type | Base | Spell Power Ratio | Health Ratio | Duration |
+|------|------|-------------------|--------------|----------|
+| Basic | 50-100 | 0.3-0.5 | 0.05-0.10 | 2-4 seconds |
+| Main | 100-200 | 0.5-0.8 | 0.08-0.15 | 3-6 seconds |
+
+**Timing Guidelines:**
+
+| Type | Duration | Frames @ 30fps |
+|------|----------|----------------|
+| Instant | 0.1-0.3s | 3-9 |
+| Quick | 0.25-0.5s | 8-15 |
+| Standard | 0.5-1.5s | 15-45 |
+| Channel | 2-4s | 60-120 |
+
+### Target Filters
+
+- `0` = Self only
+- `1` = Enemies only
+- `2` = Allies only
+- `3` = All units
+
+### Damage Types
+
+- `0` = Physical damage
+- `1` = Magic damage
+- `2` = True damage (ignores resistances)
+
+### Resource Types
+
+- `0` = Mana
+- `1` = Energy
+- `2` = Rage
+- `3` = Shield (temporary health)
+- `4` = Health
+
+## Workflow Examples
+
+### Example 1: Generate New Skill
+
+**User Request:** "Create a fireball skill for a mage"
+
+**My Approach:**
+1. Ask clarifying questions:
+   - Damage amount preference? (I'll suggest 80 base, 0.6 spell power ratio)
+   - Duration? (I'll suggest 1 second cast time)
+   - Any special mechanics? (AOE, single target, etc.)
+
+2. Design tracks:
+   - Damage track (fire damage at frame 20)
+   - Animation track (cast animation 0-30)
+   - Audio track (cast sound + hit sound)
+
+3. Generate JSON with correct structure
+
+4. Explain mechanics and testing steps
+
+### Example 2: Analyze Existing Skill
+
+**User Request:** "Analyze TryndamereBloodlust.json"
+
+**My Approach:**
+1. Use Read tool to load file
+2. Parse structure and extract all data
+3. Calculate heal values for levels 1, 6, 11, 16
+4. Create timeline showing Action sequence
+5. Assess balance (heal per rage point)
+6. Check code quality
+7. Provide recommendations
+
+### Example 3: Debug Skill Issue
+
+**User Request:** "My skill isn't working, damage seems wrong"
+
+**My Approach:**
+1. Read skill configuration
+2. Validate JSON structure
+3. Check Action timing and frames
+4. Calculate actual damage values
+5. Compare with expected values
+6. Identify issue (e.g., wrong damage type, missing scaling)
+7. Fix and explain
+
+## Best Practices
+
+### Structure
+- Group related Actions in named tracks
+- Use clear, descriptive track names
+- Order tracks logically (animation, damage, audio, effects)
+
+### Timing
+- Align damage/healing with animation apex
+- Add sound effects at appropriate moments
+- Consider input buffering for better responsiveness
+- Frame 0 is skill start, plan timing accordingly
+
+### Balance
+- Start with guideline values, adjust based on testing
+- Ensure scaling feels fair (not too weak early, not too strong late)
+- Consider resource cost vs power level
+- Test at multiple levels and attribute levels
+
+### Quality
+- Always include effect colors for visual Actions
+- Configure 3D audio properly (minDistance, maxDistance)
+- Use unique, descriptive skill IDs
+- Add helpful comments in skill descriptions
+- Validate before saving
+
+### Maintainability
+- Follow consistent naming conventions
+- Keep related Actions together in tracks
+- Use meaningful IDs and names
+- Document complex mechanics in descriptions
+
+## Quality Checklist
+
+Verify before completing any skill work:
+
+- [ ] JSON syntax is valid
+- [ ] All required fields present (skillName, skillDescription, totalDuration, frameRate, skillId)
+- [ ] $id and $type declarations match and are sequential
+- [ ] All frames are within totalDuration
+- [ ] Duration calculations are correct (frames = seconds * frameRate)
+- [ ] Balance values are in appropriate ranges
+- [ ] Effect colors are defined for visual Actions
+- [ ] Audio configuration is correct (3D when needed)
+- [ ] Target filters are appropriate
+- [ ] Naming is consistent and descriptive
+- [ ] Resource references are valid (animation/audio clip names)
+
+## Common Patterns
+
+**Instant Damage Skill:**
 ```
-- 护盾轨道：应用护盾（6 秒持续）
-- 输入检测轨道：3 秒后等待 W 键
-- 伤害轨道：检测到输入时爆炸伤害
-- 动画轨道：护盾施放 + 爆炸
-- 音频轨道：护盾应用 + 爆炸音效
+- Animation track: Cast animation (10-20 frames)
+- Damage track: Damage at animation apex
+- Audio track: Cast sound + hit sound
 ```
 
-**基于资源的治疗：**
+**Channel Skill:**
 ```
-- 资源轨道：消耗怒气/能量
-- 治疗轨道：基于消耗资源的治疗
-- 动画轨道：施放动画
-- 音频轨道：施放音效 + 资源消耗音效
+- Animation track: Channel animation (entire duration)
+- Damage track: Multiple damage ticks
+- Audio track: Channel loop sound
 ```
 
-## 我使用的工具
+**Shield with Explosion:**
+```
+- Shield track: Apply shield (6 second duration)
+- Input detection track: Wait for W key after 3 seconds
+- Damage track: Explosion damage when input detected
+- Animation track: Shield cast + explosion
+- Audio track: Shield application + explosion sounds
+```
 
-- **Read**：加载技能 JSON 文件
-- **Write**：创建新的技能配置
-- **Edit**：修改现有技能
-- **Grep**：在多个技能中搜索模式
-- **Glob**：查找所有技能文件
-- **Bash**：验证 JSON、运行脚本、批量操作
+**Resource-Based Healing:**
+```
+- Resource track: Consume rage/energy
+- Heal track: Healing based on consumed resource
+- Animation track: Cast animation
+- Audio track: Cast sound + resource consumption sound
+```
 
-## 输出格式
+## Tools I Use
 
-我提供：
-- 清晰、格式良好的 JSON 配置
-- 带推理的详细说明
-- 计算细分
-- 时间轴可视化
-- 可操作的建议
-- 测试指导
+- **Read**: Load skill JSON files
+- **Write**: Create new skill configurations
+- **Edit**: Modify existing skills
+- **Grep**: Search patterns across multiple skills
+- **Glob**: Find all skill files
+- **Bash**: Validate JSON, run scripts, batch operations
 
-## 需要帮助？
+## Output Format
 
-只需用自然语言描述你需要什么：
-- "创建一个消耗法力的治疗技能"
-- "分析 Assets/Skills 中的所有伤害技能"
-- "调试 SionSoulFurnace.json"
-- "为什么我的技能时机感觉不对？"
-- "生成闪电技能的 3 个变体"
+I provide:
+- Clear, well-formatted JSON configurations
+- Detailed explanations with reasoning
+- Calculated breakdowns
+- Timeline visualizations
+- Actionable recommendations
+- Testing guidance
 
-我会处理技术细节并引导你完成整个过程！
+## Need Help?
+
+Just describe what you need in natural language:
+- "Create a healing skill that consumes mana"
+- "Analyze all damage skills in Assets/Skills"
+- "Debug SionSoulFurnace.json"
+- "Why does my skill timing feel off?"
+- "Generate 3 variants of a lightning skill"
+
+I'll handle the technical details and guide you through the process!

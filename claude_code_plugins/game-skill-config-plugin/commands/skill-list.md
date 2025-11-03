@@ -1,70 +1,70 @@
 ---
-description: 列出项目中的所有技能配置
+description: List all skill configurations in the project
 allowed-tools: Glob, Read
 ---
 
-# 技能列表命令
+# Skill List Command
 
-列出并总结项目中所有的技能配置文件。
+List and summarize all skill configuration files in the project.
 
-## 任务目标
+## Task Objective
 
-查找并显示 `Assets/Skills/` 目录中的所有技能 JSON 文件，并提供每个技能的摘要。
+Find and display all skill JSON files in the `Assets/Skills/` directory and provide a summary of each skill.
 
-## 工作流程
+## Workflow
 
-1. **查找技能文件** - 使用 Glob 查找 Assets/Skills/ 中的所有 .json 文件
-2. **读取每个文件** - 加载技能配置
-3. **提取关键信息** - 获取 skillName、skillDescription、skillId、duration
-4. **计算统计** - 统计轨道数、Action 数、总持续时间（秒）
-5. **格式化输出** - 创建格式化的表格或列表
+1. **Find skill files** - Use Glob to find all .json files in Assets/Skills/
+2. **Read each file** - Load skill configuration
+3. **Extract key information** - Get skillName, skillDescription, skillId, duration
+4. **Calculate statistics** - Count tracks, Actions, total duration (seconds)
+5. **Format output** - Create formatted table or list
 
-## 输出格式
+## Output Format
 
 ```markdown
-# 技能配置列表
+# Skill Configuration List
 
-在 Assets/Skills/ 中找到 X 个技能
+Found X skills in Assets/Skills/
 
-## 技能摘要
+## Skill Summary
 
-| 技能名称 | ID | 持续时间 | 轨道数 | 描述 |
-|----------|-----|----------|--------|------|
-| 嗜血 | tryndamere-bloodlust-001 | 2.0秒 | 3 | 消耗怒气治疗 |
-| 灵魂熔炉 | sion-soul-furnace-001 | 6.0秒 | 5 | 护盾带爆炸 |
+| Skill Name | ID | Duration | Tracks | Description |
+|------------|-----|----------|---------|-------------|
+| Bloodlust | tryndamere-bloodlust-001 | 2.0s | 3 | Consumes rage to heal |
+| Soul Furnace | sion-soul-furnace-001 | 6.0s | 5 | Shield with explosion |
 | ... | ... | ... | ... | ... |
 
-## 详细信息
+## Detailed Information
 
-### 1. 嗜血 (tryndamere-bloodlust-001)
-**描述：** 泰达米尔消耗怒气恢复生命值
-**持续时间：** 60 帧（2.0秒 @ 30fps）
-**轨道数：** 3
-- 资源治疗轨道（1 个 Action）
-- 动画轨道（1 个 Action）
-- 音频轨道（1 个 Action）
+### 1. Bloodlust (tryndamere-bloodlust-001)
+**Description:** Tryndamere consumes rage to restore health
+**Duration:** 60 frames (2.0s @ 30fps)
+**Track Count:** 3
+- Resource Heal Track (1 Action)
+- Animation Track (1 Action)
+- Audio Track (1 Action)
 
-**核心机制：**
-- 资源消耗：50 怒气
-- 基础治疗：30 + 每点怒气 0.5
-- 等级缩放：+10 基础，每点怒气 +0.45 每级
-- 法术强度缩放：0.3 基础 + 每点怒气 0.012
+**Core Mechanics:**
+- Resource Cost: 50 rage
+- Base Heal: 30 + 0.5 per rage
+- Level Scaling: +10 base, +0.45 per rage per level
+- Spell Power Scaling: 0.3 base + 0.012 per rage
 
 ---
 
-### 2. 灵魂熔炉 (sion-soul-furnace-001)
+### 2. Soul Furnace (sion-soul-furnace-001)
 ...
 
-## 统计数据
+## Statistics
 
-- **总技能数：** X
-- **平均持续时间：** Y 秒
-- **最复杂：** [轨道/Action 最多的技能]
-- **Action 类型分布：**
-  - 伤害：X 个技能
-  - 治疗：Y 个技能
-  - 护盾：Z 个技能
-  - 控制：W 个技能
+- **Total Skills:** X
+- **Average Duration:** Y seconds
+- **Most Complex:** [Skill with most tracks/Actions]
+- **Action Type Distribution:**
+  - Damage: X skills
+  - Heal: Y skills
+  - Shield: Z skills
+  - Control: W skills
 ```
 
-可按技能类型、英雄、复杂度等进行筛选和排序。
+Can be filtered and sorted by skill type, hero, complexity, etc.

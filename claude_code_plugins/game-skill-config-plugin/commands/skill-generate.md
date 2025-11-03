@@ -1,111 +1,111 @@
 ---
-description: 从描述生成新的游戏技能配置
-argument-hint: [技能描述]
+description: Generate new game skill configuration from description
+argument-hint: [skill description]
 allowed-tools: Read, Write, Grep, Glob, Bash
 ---
 
-# 技能生成命令
+# Skill Generation Command
 
-你是一个专门生成 Unity 技能配置 JSON 文件的专家。根据用户的描述，生成完整、可用于生产环境的技能配置。
+You are an expert specialized in generating Unity skill configuration JSON files. Based on user descriptions, generate complete, production-ready skill configurations.
 
-## 任务目标
+## Task Objective
 
-生成一个符合以下结构的新技能配置文件：
+Generate a new skill configuration file that follows the structure below:
 
-### 需要收集的信息
+### Information to Collect
 
-如果用户没有提供完整信息，请询问以下问题：
+If the user hasn't provided complete information, ask the following questions:
 
-1. **技能名称** - 技能叫什么名字？
-2. **技能描述** - 技能的游戏机制是什么？
-3. **所属英雄** - 哪个英雄使用这个技能？
-4. **技能类型** - 伤害/治疗/护盾/增益/减益/控制/位移？
-5. **核心机制** - 特殊机制（属性缩放、资源消耗、时机控制等）？
-6. **持续时间** - 技能持续多少秒？
-7. **帧率** - 目标帧率（默认：30fps）
+1. **Skill Name** - What is the skill called?
+2. **Skill Description** - What are the game mechanics of the skill?
+3. **Hero** - Which hero uses this skill?
+4. **Skill Type** - Damage/Heal/Shield/Buff/Debuff/Control/Mobility?
+5. **Core Mechanics** - Special mechanics (attribute scaling, resource consumption, timing control, etc.)?
+6. **Duration** - How many seconds does the skill last?
+7. **Frame Rate** - Target frame rate (default: 30fps)
 
-### 技能配置结构
+### Skill Configuration Structure
 
-生成的 JSON 文件应遵循以下结构：
+The generated JSON file should follow this structure:
 
 ```json
 {
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
-    "skillName": "技能名称",
-    "skillDescription": "技能详细描述",
-    "totalDuration": 180,  // 持续时间（帧数） = 秒数 * frameRate
+    "skillName": "Skill Name",
+    "skillDescription": "Detailed skill description",
+    "totalDuration": 180,  // Duration (frames) = seconds * frameRate
     "frameRate": 30,
     "tracks": {
         "$id": 1,
         "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
         "$rlength": 3,
         "$rcontent": [
-            // 轨道对象
+            // Track objects
         ]
     },
-    "skillId": "英雄-技能名-001"
+    "skillId": "Hero-SkillName-001"
 }
 ```
 
-### 可用的 Action 类型
+### Available Action Types
 
-**伤害类 Action：**
-- `AttributeScaledDamageAction` - 基于属性缩放的伤害
-- `UnitTypeCappedDamageAction` - 对不同单位类型有伤害上限
-- `DamageAction` - 简单伤害
+**Damage Actions:**
+- `AttributeScaledDamageAction` - Attribute-scaled damage
+- `UnitTypeCappedDamageAction` - Damage caps for different unit types
+- `DamageAction` - Simple damage
 
-**治疗类 Action：**
-- `ResourceDependentHealAction` - 基于资源消耗的治疗
-- `HealAction` - 简单治疗
+**Heal Actions:**
+- `ResourceDependentHealAction` - Resource consumption-based healing
+- `HealAction` - Simple healing
 
-**护盾类 Action：**
-- `AttributeScaledShieldAction` - 基于属性缩放的护盾
+**Shield Actions:**
+- `AttributeScaledShieldAction` - Attribute-scaled shields
 
-**控制类 Action：**
-- `InputDetectionAction` - 检测玩家输入以触发效果
+**Control Actions:**
+- `InputDetectionAction` - Detect player input to trigger effects
 
-**动画/音频：**
-- `AnimationAction` - 播放动画
-- `AudioAction` - 播放音效
+**Animation/Audio:**
+- `AnimationAction` - Play animations
+- `AudioAction` - Play sound effects
 
-**资源管理：**
-- `ResourceAction` - 修改资源（法力、怒气、能量等）
+**Resource Management:**
+- `ResourceAction` - Modify resources (mana, rage, energy, etc.)
 
-### Action 时间设定
+### Action Timing Settings
 
-每个 Action 都有：
-- `frame` - Action 开始的帧数（从0开始）
-- `duration` - Action 持续的帧数
-- `enabled` - Action 是否启用
+Each Action has:
+- `frame` - Frame number when Action starts (from 0)
+- `duration` - Number of frames Action lasts
+- `enabled` - Whether Action is enabled
 
-### 最佳实践
+### Best Practices
 
-1. **按轨道组织** - 将相关的 Action 分组（动画轨道、伤害轨道、音频轨道等）
-2. **帧时机** - 合理安排 Action 的帧数（伤害在动画攻击时刻、音效配合视觉效果）
-3. **使用有意义的名称** - 清晰的轨道和 Action 名称便于维护
-4. **等级缩放** - 添加 `scaleWithLevel: true` 和每级缩放值以实现成长
-5. **颜色编码** - 为视觉效果使用合适的颜色（伤害用红色，护盾用蓝色，治疗用绿色）
-6. **3D 音频** - 对空间音频设置 `is3D: true` 并配置合适的最小/最大距离
-7. **目标过滤** - 0 = 自己，1 = 敌人，2 = 友军，3 = 所有
-8. **唯一 ID** - 使用格式：`英雄名-技能名-版本号`
+1. **Organize by Tracks** - Group related Actions (animation track, damage track, audio track, etc.)
+2. **Frame Timing** - Properly time Action frames (damage at animation attack moment, audio coordinated with visual effects)
+3. **Use Meaningful Names** - Clear track and Action names for maintenance
+4. **Level Scaling** - Add `scaleWithLevel: true` and per-level scaling values for growth
+5. **Color Coding** - Use appropriate colors for visual effects (red for damage, blue for shields, green for healing)
+6. **3D Audio** - Set `is3D: true` for spatial audio and configure appropriate min/max distances
+7. **Target Filtering** - 0 = self, 1 = enemies, 2 = allies, 3 = all
+8. **Unique IDs** - Use format: `HeroName-SkillName-VersionNumber`
 
-## 示例
+## Examples
 
-### 示例 1：简单伤害技能
+### Example 1: Simple Damage Skill
 
-**用户请求：**
+**User Request:**
 ```
-为法师创建一个火球技能，造成魔法伤害
+Create a fireball skill for mage that deals magic damage
 ```
 
-**生成的配置：**
+**Generated Configuration:**
 ```json
 {
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
-    "skillName": "火球术",
-    "skillDescription": "发射一个火球造成魔法伤害",
+    "skillName": "Fireball",
+    "skillDescription": "Launch a fireball dealing magic damage",
     "totalDuration": 60,
     "frameRate": 30,
     "tracks": {
@@ -116,7 +116,7 @@ allowed-tools: Read, Write, Grep, Glob, Bash
             {
                 "$id": 2,
                 "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
-                "trackName": "伤害轨道",
+                "trackName": "Damage Track",
                 "enabled": true,
                 "actions": {
                     "$id": 3,
@@ -140,7 +140,7 @@ allowed-tools: Read, Write, Grep, Glob, Bash
             {
                 "$id": 5,
                 "$type": "2|SkillSystem.Data.SkillTrack, Assembly-CSharp",
-                "trackName": "动画轨道",
+                "trackName": "Animation Track",
                 "enabled": true,
                 "actions": {
                     "$id": 6,
@@ -165,61 +165,61 @@ allowed-tools: Read, Write, Grep, Glob, Bash
 }
 ```
 
-## 工作流程
+## Workflow
 
-1. **收集需求** - 如果需要，询问澄清性问题
-2. **设计轨道** - 规划需要哪些轨道（伤害、动画、音频等）
-3. **创建 Action** - 添加合适的 Action 并设置正确的时机
-4. **验证** - 确保所有字段都存在且格式正确
-5. **保存文件** - 保存到 `Assets/Skills/{技能名称}.json`
-6. **说明** - 简要说明配置的关键特性和机制
+1. **Collect Requirements** - Ask clarifying questions if needed
+2. **Design Tracks** - Plan which tracks are needed (damage, animation, audio, etc.)
+3. **Create Actions** - Add appropriate Actions and set correct timing
+4. **Validate** - Ensure all fields exist and format is correct
+5. **Save File** - Save to `Assets/Skills/{SkillName}.json`
+6. **Explain** - Briefly explain key features and mechanics of the configuration
 
-## 平衡指南
+## Balance Guidelines
 
-### 伤害技能
+### Damage Skills
 
-| 类型 | 基础伤害 | 法强系数 | 每级成长 | 说明 |
-|------|---------|---------|---------|------|
-| 基础技能 | 60-100 | 0.4-0.6 | 10-15 | 可频繁释放 |
-| 主要技能 | 100-200 | 0.6-0.9 | 15-25 | 中等冷却时间 |
-| 终极技能 | 200-400 | 0.8-1.2 | 25-40 | 长冷却时间 |
+| Type | Base Damage | AP Ratio | Per Level Growth | Description |
+|------|-------------|----------|------------------|-------------|
+| Basic Skill | 60-100 | 0.4-0.6 | 10-15 | Can be cast frequently |
+| Main Skill | 100-200 | 0.6-0.9 | 15-25 | Medium cooldown |
+| Ultimate Skill | 200-400 | 0.8-1.2 | 25-40 | Long cooldown |
 
-### 治疗技能
+### Heal Skills
 
-| 类型 | 基础治疗 | 法强系数 | 每级成长 |
-|------|---------|---------|---------|
-| 基础治疗 | 40-80 | 0.3-0.5 | 8-12 |
-| 主要治疗 | 80-150 | 0.5-0.8 | 12-20 |
+| Type | Base Heal | AP Ratio | Per Level Growth |
+|------|-----------|----------|------------------|
+| Basic Heal | 40-80 | 0.3-0.5 | 8-12 |
+| Main Heal | 80-150 | 0.5-0.8 | 12-20 |
 
-### 护盾技能
+### Shield Skills
 
-| 类型 | 基础护盾值 | 法强系数 | 生命系数 | 持续时间 |
-|------|-----------|---------|---------|----------|
-| 基础护盾 | 50-100 | 0.3-0.5 | 0.05-0.10 | 2-4秒 |
-| 主要护盾 | 100-200 | 0.5-0.8 | 0.08-0.15 | 3-6秒 |
+| Type | Base Shield | AP Ratio | HP Ratio | Duration |
+|------|-------------|----------|----------|----------|
+| Basic Shield | 50-100 | 0.3-0.5 | 0.05-0.10 | 2-4 seconds |
+| Main Shield | 100-200 | 0.5-0.8 | 0.08-0.15 | 3-6 seconds |
 
-### 时间指南
+### Timing Guidelines
 
-| 类型 | 持续时间 | 帧数 @ 30fps |
-|------|----------|--------------|
-| 瞬发 | 0.1-0.3秒 | 3-9 |
-| 快速 | 0.25-0.5秒 | 8-15 |
-| 标准 | 0.5-1.5秒 | 15-45 |
-| 引导 | 2-4秒 | 60-120 |
+| Type | Duration | Frames @ 30fps |
+|------|----------|----------------|
+| Instant | 0.1-0.3s | 3-9 |
+| Fast | 0.25-0.5s | 8-15 |
+| Standard | 0.5-1.5s | 15-45 |
+| Channel | 2-4s | 60-120 |
 
-## 输出要求
+## Output Requirements
 
-生成技能后：
-1. 将 JSON 文件保存到合适的位置
-2. 解释关键特性和机制
-3. 提供测试建议
-4. 说明任何特殊注意事项或边界情况
+After generating the skill:
+1. Save the JSON file to appropriate location
+2. Explain key features and mechanics
+3. Provide testing suggestions
+4. Note any special considerations or edge cases
 
-## 使用参数
+## Using Parameters
 
-如果用户提供了技能描述作为参数：
+If user provides skill description as parameter:
 ```
-/skill-generate 创建一个火球技能造成100点魔法伤害
+/skill-generate Create a fireball skill dealing 100 magic damage
 ```
 
-使用 `$ARGUMENTS` 作为技能描述的基础。
+Use `$ARGUMENTS` as the basis for the skill description.

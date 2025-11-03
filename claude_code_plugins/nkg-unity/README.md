@@ -1,83 +1,84 @@
 # NKG Unity Plugin 🚀
 
-Unity C# 编译和错误修复的智能Claude Code插件。
+Intelligent Claude Code plugin for Unity C# compilation and error fixing.
 
-## ✨ 核心特性
+## ✨ Core Features
 
-- **智能程序集匹配**: 使用别名和模糊匹配找到正确的程序集
-- **自动编译修复**: 智能识别并修复常见Unity C#编译错误
-- **安全机制**: 文件备份和保守修复策略
-- **用户友好**: 无需记住复杂的程序集名称
+- **Smart Assembly Matching**: Use aliases and fuzzy matching to find the correct assembly
+- **Automatic Compilation Fixing**: Intelligently identify and fix common Unity C# compilation errors
+- **Safety Mechanisms**: File backups and conservative fixing strategies
+- **User-Friendly**: No need to remember complex assembly names
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 安装插件
+### Plugin Installation
 ```bash
-# 添加NKG游戏开发市场
+# Add NKG Game Development Marketplace
 /plugin marketplace add ./claude_code_plugins
 
-# 安装NKG Unity编译插件
+# Install NKG Unity Compilation Plugin
 /plugin install nkg-unity@nkg-game-development-marketplace
 
-# 重启Claude Code
+# Restart Claude Code
 ```
 
-### 使用方法
+### Usage
 
-#### 智能编译命令
+#### Smart Compilation Commands
 ```bash
-# 使用别名编译 - 无需记住完整程序集名称！
-/compile main          # 编译主程序集 (Assembly-CSharp)
-/compile editor        # 编译编辑器程序集 (Assembly-CSharp-Editor)
-/compile MyGame        # 智能匹配 MyGameLogic.csproj
-/compile UI            # 智能匹配 UIManager.csproj
+# Compile using aliases - no need to remember full assembly names!
+/compile main          # Compile main assembly (Assembly-CSharp)
+/compile editor        # Compile editor assembly (Assembly-CSharp-Editor)
+/compile MyGame        # Smart match MyGameLogic.csproj
+/compile UI            # Smart match UIManager.csproj
 
-# 查找程序集
+# Find assemblies
 /find-assembly main
 /find-assembly editor
 /find-assembly MyGame
 ```
 
-#### 支持的别名对照表
-| 输入别名 | 映射到程序集 | 用途说明 |
-|---------|-------------|----------|
-| `main`, `primary`, `game`, `runtime` | `Assembly-CSharp` | 主游戏逻辑程序集 |
-| `editor`, `edit`, `editor-scripts` | `Assembly-CSharp-Editor` | 编辑器扩展程序集 |
-| `firstpass`, `preimport`, `pre-import` | `Assembly-CSharp-firstpass` | 预导入程序集 |
-| `editor-firstpass`, `editor-preimport` | `Assembly-CSharp-Editor-firstpass` | 编辑器预导入程序集 |
+#### Supported Alias Mapping Table
+| Input Alias | Maps to Assembly | Description |
+|-------------|-----------------|-------------|
+| `main`, `primary`, `game`, `runtime` | `Assembly-CSharp` | Main game logic assembly |
+| `editor`, `edit`, `editor-scripts` | `Assembly-CSharp-Editor` | Editor extension assembly |
+| `firstpass`, `preimport`, `pre-import` | `Assembly-CSharp-firstpass` | Pre-import assembly |
+| `editor-firstpass`, `editor-preimport` | `Assembly-CSharp-Editor-firstpass` | Editor pre-import assembly |
 
-## 🔧 支持的错误修复
+## 🔧 Supported Error Fixes
 
-插件可以自动修复以下类型的编译错误：
+The plugin can automatically fix the following types of compilation errors:
 
-- ✅ **CS0103**: 缺失using语句 → 自动添加 `using UnityEngine;` 等
-- ✅ **CS0246**: 类型或命名空间不存在 → 修复拼写错误，添加引用
-- ✅ **CS0117**: 成员不存在 → 修复API调用错误
-- ✅ **CS1061**: 扩展方法不存在 → 添加 `using System.Linq;`
-- ✅ **CS0029**: 类型转换错误 → 添加显式转换
-- ✅ **CS1503**: 参数不匹配 → 修复方法签名
+- ✅ **CS0103**: Missing using statements → Automatically add `using UnityEngine;` etc.
+- ✅ **CS0246**: Type or namespace does not exist → Fix typos, add references
+- ✅ **CS0117**: Member does not exist → Fix API call errors
+- ✅ **CS1061**: Extension method does not exist → Add `using System.Linq;`
+- ✅ **CS0029**: Type conversion error → Add explicit conversion
+- ✅ **CS1503**: Parameter mismatch → Fix method signatures
 
-## 📁 插件结构
+## 📁 Plugin Structure
 
 ```
 nkg-unity/
 ├── .claude-plugin/
-│   └── plugin.json                    # 插件元数据
+│   └── plugin.json                    # Plugin metadata
 ├── commands/
-│   ├── compile.md                     # 🔨 智能编译命令
-│   └── find-assembly.md               # 🔍 程序集查找命令
+│   ├── compile.md                     # 🔨 Smart compilation command
+│   └── find-assembly.md               # 🔍 Assembly search command
+│   └── nkg-git-commit.md              # 🚀 Git rebase, commit, push command
 ├── scripts/
-│   └── smart-assembly-resolver.sh     # 🧠 智能匹配脚本
-└── README.md                          # 本文档
+│   └── smart-assembly-resolver.sh     # 🧠 Smart matching script
+└── README.md                          # This documentation
 ```
 
-## 🎮 使用示例
+## 🎮 Usage Examples
 
-### 场景1: 快速编译主程序集
+### Scenario 1: Quick Main Assembly Compilation
 ```bash
 /compile main
 ```
-输出：
+Output:
 ```
 🔍 Searching for assembly: main
 📝 Resolved alias: main → Assembly-CSharp
@@ -86,11 +87,11 @@ nkg-unity/
 ✅ Build succeeded! Fixed 2 errors automatically.
 ```
 
-### 场景2: 智能匹配自定义程序集
+### Scenario 2: Smart Custom Assembly Matching
 ```bash
 /compile MyGame
 ```
-输出：
+Output:
 ```
 🔍 Searching for assembly: MyGame
 🎯 Fuzzy match: ./MyGameLogic.csproj
@@ -98,26 +99,26 @@ nkg-unity/
 ✅ Build succeeded! No errors found.
 ```
 
-## 🛠️ 技术特点
+## 🛠️ Technical Features
 
-### 智能匹配算法
-- **多层级搜索**: 精确匹配 → 别名映射 → 模糊匹配 → 模式匹配
-- **优先级排序**: 根据相关性选择最佳匹配项
-- **容错设计**: 处理各种用户输入情况
+### Smart Matching Algorithm
+- **Multi-level Search**: Exact match → Alias mapping → Fuzzy matching → Pattern matching
+- **Priority Sorting**: Select best match based on relevance
+- **Fault-tolerant Design**: Handle various user input scenarios
 
-### 安全修复机制
-- **文件备份**: 修改前自动创建备份
-- **保守策略**: 只修复确信的错误类型
-- **验证机制**: 修复后重新编译验证
+### Safe Fixing Mechanism
+- **File Backup**: Automatically create backups before modifications
+- **Conservative Strategy**: Only fix confident error types
+- **Verification Mechanism**: Re-compile to verify fixes
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交Issue和Pull Request来改进这个插件！
+Issues and Pull Requests are welcome to improve this plugin!
 
-## 📄 许可证
+## 📄 License
 
 MIT License
 
 ---
 
-**让Unity编译变得简单而智能！** 🎮✨
+**Making Unity compilation simple and intelligent!** 🎮✨

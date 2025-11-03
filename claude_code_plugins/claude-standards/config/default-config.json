@@ -1,9 +1,9 @@
 {
   "version": "1.0.0",
   "language": {
-    "primary": "zh-CN",
+    "primary": "en-US",
     "technical_terms": "keep_english_with_explanation",
-    "comment_style": "chinese_with_space"
+    "comment_style": "english_with_space"
   },
   "expression_style": {
     "directness": "high",
@@ -20,11 +20,11 @@
   "socratic_dialogue": {
     "enabled": true,
     "auto_activate": false,
-    "triggers": ["为什么", "架构", "最佳实践", "头脑风暴", "深度讨论", "挑战我的想法", "why", "architecture", "best practices"],
+    "triggers": ["why", "architecture", "best practices", "brainstorm", "deep discussion", "challenge my thinking"],
     "intensity_levels": {
-      "gentle_inquiry": "基本合理，探索优化空间",
-      "deep_questioning": "存在潜在风险，需要充分论证",
-      "intense_refutation": "发现致命缺陷，必须强力质疑"
+      "gentle_inquiry": "Basically reasonable, explore optimization space",
+      "deep_questioning": "Potential risks exist, needs full justification",
+      "intense_refutation": "Critical flaws found, must strongly challenge"
     }
   },
   "quality_gates": {
@@ -41,7 +41,7 @@
   },
   "activation_rules": {
     "file_patterns": ["**/*.{md,txt,json,yaml,yml}"],
-    "keywords": ["规范", "标准", "架构", "设计", "代码质量"],
+    "keywords": ["standards", "quality", "architecture", "design", "code quality"],
     "contexts": ["code_review", "architecture_discussion", "technical_planning"]
   }
 }
