@@ -1,0 +1,167 @@
+{
+  "hooks": {
+    "PostSessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/standards-load --auto",
+            "description": "会话开始时自动加载开发规范"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "prompt_injection",
+            "prompt": "根据语言表达规范，使用中文交流，表达直接犀利，技术判断准确明确。在代码注释中使用 // + 空格 + 中文注释格式。",
+            "conditions": {
+              "file_patterns": ["**/*.{js,ts,py,java,cpp,c,h,cs,go,rs}"],
+              "exclude_patterns": ["**/node_modules/**", "**/dist/**", "**/build/**"]
+            },
+            "description": "代码编辑时应用语言规范"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Grep|Glob",
+        "hooks": [
+          {
+            "type": "prompt_injection",
+            "prompt": "应用技术分析框架进行系统性分析：审视数据结构、追踪数据流、审查效率、评估架构决策权衡。",
+            "conditions": {
+              "file_patterns": ["**/*.{json,yaml,yml,md,txt}"],
+              "keywords": ["config", "architecture", "design", "spec"]
+            },
+            "description": "技术文档分析时应用分析框架"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "validation",
+            "validation_type": "quality_gate",
+            "rules": [
+              "check_architecture_decay",
+              "check_technical_debt",
+              "check_maintainability"
+            ],
+            "conditions": {
+              "file_patterns": ["**/*.{js,ts,py,java,cpp,c,cs}"],
+              "min_file_size": 1000
+            },
+            "description": "代码修改后进行质量检查"
+          }
+        ]
+      }
+    ],
+    "UserPrompt": [
+      {
+        "matcher": "为什么|what if|how about|consider|what do you think|是否应该|如何改进|架构|最佳实践|brainstorm|头脑风暴|挑战|challenge|why",
+        "hooks": [
+          {
+            "type": "socratic_dialogue",
+            "intensity": "auto_detect",
+            "max_duration": 300,
+            "description": "检测到深度讨论关键词，激活苏格拉底式对话"
+          }
+        ]
+      }
+    ]
+  },
+  "validation_rules": {
+    "check_architecture_decay": {
+      "description": "检查架构腐化迹象",
+      "indicators": [
+        "excessive_complexity",
+        "tight_coupling",
+        "code_duplication",
+        "violates_single_responsibility"
+      ],
+      "threshold": 3,
+      "action": "warn"
+    },
+    "check_technical_debt": {
+      "description": "检查技术债务积累",
+      "indicators": [
+        "todo_comments",
+        "deprecated_apis",
+        "security_vulnerabilities",
+        "performance_anti_patterns"
+      ],
+      "threshold": 2,
+      "action": "suggest_refactor"
+    },
+    "check_maintainability": {
+      "description": "检查代码可维护性",
+      "indicators": [
+        "long_methods",
+        "deep_nesting",
+        "magic_numbers",
+        "poor_naming"
+      ],
+      "threshold": 4,
+      "action": "suggest_improvement"
+    }
+  },
+  "socratic_settings": {
+    "intensity_levels": {
+      "gentle_inquiry": {
+        "triggers": ["如何", "怎样", "how to"],
+        "style": "exploratory",
+        "max_questions": 3
+      },
+      "deep_questioning": {
+        "triggers": ["为什么", "架构", "设计", "why", "architecture", "design"],
+        "style": "challenging",
+        "max_questions": 5
+      },
+      "intense_refutation": {
+        "triggers": ["缺陷", "错误", "严重问题", "critical", "fatal", "wrong"],
+        "style": "direct_opposition",
+        "max_questions": 7
+      }
+    },
+    "auto_termination": {
+      "consensus_reached": true,
+      "max_questions_exceeded": true,
+      "shift_to_implementation": true,
+      "diminishing_returns": true
+    }
+  },
+  "language_enforcement": {
+    "primary_language": "zh-CN",
+    "technical_terms": {
+      "action": "keep_english_with_explanation",
+      "examples": {
+        "API": "API (应用程序编程接口)",
+        "REST": "REST (表述性状态转移)",
+        "SQL": "SQL (结构化查询语言)"
+      }
+    },
+    "comment_format": {
+      "style": "chinese_with_space",
+      "pattern": "// + space + chinese_content"
+    },
+    "expression_style": {
+      "directness": "high",
+      "sharpness": "high",
+      "zero_fluff": true,
+      "technical_judgment": "accurate_over_friendly"
+    }
+  },
+  "quality_settings": {
+    "strict_mode": true,
+    "auto_fix": false,
+    "suggestions_only": true,
+    "confidence_threshold": 0.7
+  }
+}

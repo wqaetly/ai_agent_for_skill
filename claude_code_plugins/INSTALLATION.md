@@ -1,253 +1,354 @@
-# Installation Guide
+# 安装指南
 
-Quick guide to install and test the Game Skill Configuration Plugin.
+快速安装和测试所有 Claude Code 插件的指南。
 
-## Quick Start (Local Testing)
+## 🚀 快速开始 (本地测试)
 
-Since you're in the development directory, you can install directly:
+由于您在开发目录中，可以直接安装：
 
-### Step 1: Add the Marketplace
+### 步骤 1: 添加插件市场
 
-In Claude Code, run:
+在 Claude Code 中运行：
 ```
 /plugin marketplace add E:\Study\wqaetly\ai_agent_for_skill\claude_code_plugins
 ```
 
-Or use relative path from your project root:
+或使用项目根目录的相对路径：
 ```
 /plugin marketplace add ./claude_code_plugins
 ```
 
-### Step 2: Install the Plugin
+### 步骤 2: 安装插件
 
+#### 安装 Claude 开发规范插件 (推荐首先安装)
 ```
-/plugin install game-skill-config@game-dev-plugins
+/plugin install claude-standards@nkg-game-development-marketplace
 ```
 
-### Step 3: Restart Claude Code
+#### 安装游戏技能配置插件
+```
+/plugin install game-skill-config@nkg-game-development-marketplace
+```
 
-Exit and restart Claude Code to load the plugin.
+#### 安装 Unity 编译插件
+```
+/plugin install nkg-unity@nkg-game-development-marketplace
+```
 
-### Step 4: Verify Installation
+### 步骤 3: 重启 Claude Code
 
-Check that the plugin is loaded:
+退出并重启 Claude Code 以加载插件。
+
+### 步骤 4: 验证安装
+
+检查插件是否已加载：
 ```
 /help
 ```
 
-You should see new commands:
-- `/skill-generate` - Generate new skill configurations
-- `/skill-analyze` - Analyze existing skills
-- `/skill-debug` - Debug skill issues
-- `/skill-list` - List all skills
-- `/skill-compare` - Compare skills
+您应该看到以下新增命令：
 
-## Testing the Plugin
+#### Claude 开发规范插件命令：
+- `/standards-load` - 加载开发规范
+- `/standards-config` - 配置规范参数
+- `/standards-status` - 查看规范状态
 
-### Test 1: Generate a Simple Skill
+#### 游戏技能配置插件命令：
+- `/skill-generate` - 生成新的技能配置
+- `/skill-analyze` - 分析现有技能
+- `/skill-debug` - 调试技能问题
+- `/skill-list` - 列出所有技能
+- `/skill-compare` - 对比技能
 
+#### Unity 编译插件命令：
+- `/compile` - 智能编译 Unity 项目
+- `/find-assembly` - 查找程序集
+
+## 🧪 插件测试
+
+### 测试 Claude 开发规范插件
+
+#### 测试 1: 加载开发规范
+```
+/standards-load
+```
+
+Claude 应该：
+1. 显示成功加载的规范模块
+2. 列出当前配置详情
+3. 提供使用提示
+
+#### 测试 2: 配置规范参数
+```
+/standards-config language --primary zh-CN
+/standards-config socratic --auto-activate true
+```
+
+#### 测试 3: 查看规范状态
+```
+/standards-status --detailed
+```
+
+#### 测试 4: 触发苏格拉底式对话
+尝试使用关键词：
+```
+为什么选择这个架构方案？
+```
+
+Claude 应该自动进入深度质疑模式。
+
+### 测试游戏技能配置插件
+
+#### 测试 1: 生成简单技能
 ```
 /skill-generate
 
-Create a simple fireball skill that deals 100 magic damage
+创建一个简单的火球术技能，造成 100 点魔法伤害
 ```
 
-Claude should:
-1. Ask clarifying questions if needed
-2. Generate a complete JSON configuration
-3. Save it to `Assets/Skills/` directory
-4. Explain the mechanics
+Claude 应该：
+1. 如有需要询问澄清问题
+2. 生成完整的 JSON 配置
+3. 保存到 `Assets/Skills/` 目录
+4. 解释技能机制
 
-### Test 2: Analyze an Existing Skill
-
+#### 测试 2: 分析现有技能
 ```
 /skill-analyze
 
-Analyze Assets/Skills/TryndamereBloodlust.json
+分析 Assets/Skills/TryndamereBloodlust.json
 ```
 
-Claude should:
-1. Read the file
-2. Provide detailed mechanical breakdown
-3. Show timeline visualization
-4. Calculate values at different levels
-5. Give recommendations
+Claude 应该：
+1. 读取文件
+2. 提供详细的机制分析
+3. 显示时间轴可视化
+4. 计算不同等级的数值
+5. 给出改进建议
 
-### Test 3: List All Skills
-
+#### 测试 3: 列出所有技能
 ```
 /skill-list
 ```
 
-Claude should show a formatted list of all skills in your project.
+Claude 应该显示项目中所有技能的格式化列表。
 
-### Test 4: Compare Skills
-
+#### 测试 4: 对比技能
 ```
 /skill-compare
 
-Compare TryndamereBloodlust.json and SionSoulFurnaceV2.json
+对比 TryndamereBloodlust.json 和 SionSoulFurnaceV2.json
 ```
 
-Claude should show side-by-side comparison with balance analysis.
+Claude 应该显示并排对比和平衡性分析。
 
-### Test 5: Natural Language (Agent/Skill Activation)
-
-Try natural language instead of commands:
+#### 测试 5: 自然语言激活 (代理/技能激活)
+尝试自然语言而不是命令：
 ```
-I need a healing skill that consumes mana to restore health.
-The healing should scale with spell power.
-```
-
-The Skill Configuration Specialist agent or Game Skill System Expert should automatically activate.
-
-### Test 6: Validation Hook
-
-Create or edit a skill file and the validation hook should run automatically:
-```
-Create a new file: Assets/Skills/TestSkill.json
-
-Then modify it and save
+我需要一个消耗法力值来恢复生命值的治愈技能。
+治疗效果应该随法术强度缩放。
 ```
 
-You should see validation messages after saving.
+技能配置专家代理或游戏技能系统专家应该自动激活。
 
-## Troubleshooting
+#### 测试 6: 验证钩子
+创建或编辑技能文件，验证钩子应该自动运行：
+```
+创建新文件：Assets/Skills/TestSkill.json
 
-### Commands Not Showing
+然后修改并保存
+```
 
-If commands don't appear in `/help`:
+保存后您应该看到验证消息。
 
-1. Check plugin is installed:
+### 测试 Unity 编译插件
+
+#### 测试 1: 智能编译
+```
+/compile
+```
+
+Claude 应该智能识别项目类型并执行编译。
+
+#### 测试 2: 查找程序集
+```
+/find-assembly UnityEngine
+```
+
+## 🔧 故障排除
+
+### 命令未显示
+
+如果命令没有在 `/help` 中出现：
+
+1. 检查插件是否已安装：
    ```
    /plugin
    ```
 
-2. Verify marketplace is added:
+2. 验证市场是否已添加：
    ```
    /plugin marketplace list
    ```
 
-3. Check plugin is enabled:
+3. 检查插件是否已启用：
    ```
    /plugin list
    ```
 
-4. Try reinstalling:
+4. 尝试重新安装：
    ```
-   /plugin uninstall game-skill-config@game-dev-plugins
-   /plugin install game-skill-config@game-dev-plugins
+   /plugin uninstall claude-standards@nkg-game-development-marketplace
+   /plugin install claude-standards@nkg-game-development-marketplace
    ```
 
-5. Restart Claude Code
+5. 重启 Claude Code
 
-### Hooks Not Working
+### 钩子不工作
 
-If validation hooks aren't firing:
+如果验证钩子没有触发：
 
-1. Check scripts are executable:
+1. 检查脚本是否可执行：
    ```bash
    cd claude_code_plugins/game-skill-config-plugin/scripts
    ls -la
    ```
 
-   If not executable:
+   如果不可执行：
    ```bash
    chmod +x *.sh
    ```
 
-2. Test script manually:
+2. 手动测试脚本：
    ```bash
    ./validate-skill.sh "../../../ai_agent_for_skill/Assets/Skills/TryndamereBloodlust.json"
    ```
 
-3. Check Python is available:
+3. 检查 Python 是否可用：
    ```bash
    python3 --version
    ```
 
-### Agent Not Activating
+### 代理未激活
 
-The agent should activate automatically when you mention skill configuration. If it doesn't:
+代理应该在您提到技能配置时自动激活。如果没有：
 
-1. Try using a command first: `/skill-generate`
-2. Be explicit: "Use the skill configuration specialist to help me..."
-3. Reference skill files directly: "Analyze TryndamereBloodlust.json"
+1. 先尝试使用命令：`/skill-generate`
+2. 明确指定："使用技能配置专家帮我..."
+3. 直接引用技能文件："分析 TryndamereBloodlust.json"
 
-### Path Issues on Windows
+### Windows 路径问题
 
-If you encounter path issues on Windows:
+如果在 Windows 上遇到路径问题：
 
-Use forward slashes or escape backslashes:
+使用正斜杠或转义反斜杠：
 ```
 /plugin marketplace add E:/Study/wqaetly/ai_agent_for_skill/claude_code_plugins
 ```
 
-Or from within your project:
+或在您的项目内：
 ```
 cd E:\Study\wqaetly\ai_agent_for_skill
 claude
 /plugin marketplace add ./claude_code_plugins
 ```
 
-## Plugin Structure
+### 中文规范未生效
 
-Your installed plugin has this structure:
+如果中文开发规范没有生效：
+
+1. 检查规范是否已加载：
+   ```
+   /standards-status --module language-standards
+   ```
+
+2. 重新加载语言规范：
+   ```
+   /standards-load --language
+   ```
+
+3. 检查配置冲突：
+   ```
+   /standards-config check-conflicts
+   ```
+
+## 📁 插件结构
+
+您已安装的插件具有以下结构：
 
 ```
 claude_code_plugins/
 ├── .claude-plugin/
-│   └── marketplace.json         # Marketplace definition
+│   └── marketplace.json         # 市场定义
+├── claude-standards/            # 开发规范插件
+│   ├── .claude-plugin/
+│   │   └── plugin.json          # 插件清单
+│   ├── prompts/                 # 提示词模块
+│   ├── commands/                # 管理命令
+│   ├── hooks/                   # 钩子配置
+│   ├── config/                  # 配置文件
+│   ├── scripts/                 # 管理脚本
+│   └── README.md                # 文档
 └── game-skill-config-plugin/
     ├── .claude-plugin/
-    │   └── plugin.json          # Plugin manifest
+    │   └── plugin.json          # 插件清单
     ├── commands/
-    │   ├── skill-generate.md    # Generate new skills
-    │   ├── skill-analyze.md     # Analyze existing skills
-    │   ├── skill-debug.md       # Debug skill issues
-    │   ├── skill-list.md        # List all skills
-    │   └── skill-compare.md     # Compare skills
+    │   ├── skill-generate.md    # 生成新技能
+    │   ├── skill-analyze.md     # 分析现有技能
+    │   ├── skill-debug.md       # 调试技能问题
+    │   ├── skill-list.md        # 列出所有技能
+    │   └── skill-compare.md     # 对比技能
     ├── agents/
-    │   └── skill-config-specialist.md  # Specialized agent
+    │   └── skill-config-specialist.md  # 专门代理
     ├── skills/
     │   └── skill-system-expert/
-    │       └── SKILL.md         # Agent Skill
+    │       └── SKILL.md         # 代理技能
     ├── hooks/
-    │   └── hooks.json           # Hook configuration
+    │   └── hooks.json           # 钩子配置
     ├── scripts/
-    │   ├── validate-skill.sh    # Validation script
-    │   └── detect-skill-intent.sh  # Intent detection
-    ├── README.md                # Documentation
-    ├── LICENSE                  # MIT License
-    └── CHANGELOG.md             # Version history
+    │   ├── validate-skill.sh    # 验证脚本
+    │   └── detect-skill-intent.sh  # 意图检测
+    ├── README.md                # 文档
+    ├── LICENSE                  # MIT 许可证
+    └── CHANGELOG.md             # 版本历史
 ```
 
-## Next Steps
+## 🎯 后续步骤
 
-Once installed successfully:
+成功安装后：
 
-1. **Generate your first skill** - Try `/skill-generate` with a simple concept
-2. **Analyze existing skills** - Use `/skill-analyze` to understand your current skills
-3. **Compare for balance** - Use `/skill-compare` to check balance across skills
-4. **Use natural language** - Just describe what you need, let the agent help
+1. **建立开发规范** - 首先运行 `/standards-load` 建立中文开发基础
+2. **生成您的第一个技能** - 尝试 `/skill-generate` 配合简单概念
+3. **分析现有技能** - 使用 `/skill-analyze` 了解当前技能
+4. **对比平衡性** - 使用 `/skill-compare` 检查技能间平衡
+5. **使用自然语言** - 直接描述需求，让代理帮助
 
-## Support
+## 📞 支持
 
-If you encounter issues:
+如果遇到问题：
 
-1. Check this installation guide
-2. Review the main [README.md](game-skill-config-plugin/README.md)
-3. Run Claude Code with debug: `claude --debug`
-4. Check the [CHANGELOG.md](game-skill-config-plugin/CHANGELOG.md)
+1. 检查此安装指南
+2. 查看主要的 [README.md](claude-standards/README.md) 和 [README.md](game-skill-config-plugin/README.md)
+3. 运行调试模式的 Claude Code：`claude --debug`
+4. 检查 [CHANGELOG.md](game-skill-config-plugin/CHANGELOG.md)
 
-## Development Mode
+## 🛠️ 开发模式
 
-If you want to modify the plugin:
+如果您想修改插件：
 
-1. Make changes to files in `game-skill-config-plugin/`
-2. Uninstall: `/plugin uninstall game-skill-config@game-dev-plugins`
-3. Reinstall: `/plugin install game-skill-config@game-dev-plugins`
-4. Restart Claude Code
-5. Test your changes
+1. 修改相关插件目录中的文件
+2. 卸载：`/plugin uninstall [plugin-name]@nkg-game-development-marketplace`
+3. 重新安装：`/plugin install [plugin-name]@nkg-game-development-marketplace`
+4. 重启 Claude Code
+5. 测试您的更改
 
-Happy skill crafting! 🎮✨
+## 🎮 推荐使用流程
+
+1. **安装顺序**：claude-standards → game-skill-config → nkg-unity
+2. **首次使用**：先运行 `/standards-load` 建立开发规范
+3. **日常开发**：利用自然语言激活相应代理
+4. **质量控制**：依赖自动化钩子和验证机制
+
+祝您开发愉快！🎮✨
+
+**让 Claude 更懂中文开发规范！** 🇨🇳

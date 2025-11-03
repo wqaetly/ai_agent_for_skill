@@ -13,6 +13,11 @@
       "name": "nkg-unity",
       "source": "./nkg-unity",
       "description": "Unity C# compilation and error fixing plugin with intelligent assembly matching"
+    },
+    {
+      "name": "claude-standards",
+      "source": "./claude-standards",
+      "description": "Claude Code 中文开发规范插件 - 提供统一的中文交流、技术对话和代码质量标准"
     }
   ]
 }
