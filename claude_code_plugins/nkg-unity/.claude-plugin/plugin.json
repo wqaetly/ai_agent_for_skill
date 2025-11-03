@@ -1,0 +1,17 @@
+{
+  "name": "nkg-unity",
+  "description": "Unity C# compilation and error fixing plugin with intelligent assembly matching",
+  "version": "1.0.0",
+  "author": {
+    "name": "NKG Team"
+  },
+  "keywords": [
+    "unity",
+    "compilation",
+    "error-fixing",
+    "csharp",
+    "assembly-matching",
+    "game-development"
+  ],
+  "license": "MIT"
+}

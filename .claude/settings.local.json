@@ -25,7 +25,11 @@
       "Bash(findstr:*)",
       "Bash(nul)",
       "Bash(py:*)",
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "Bash(./test-smart-matching.sh:*)"
     ],
     "deny": [],
     "ask": []
