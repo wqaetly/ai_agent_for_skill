@@ -123,6 +123,15 @@
       },
       "url": "https://packages.tuanjie.cn"
     },
+    "com.unity.textmeshpro": {
+      "version": "3.0.9",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.tuanjie.cn"
+    },
     "com.unity.timeline": {
       "version": "1.8.7",
       "depth": 0,

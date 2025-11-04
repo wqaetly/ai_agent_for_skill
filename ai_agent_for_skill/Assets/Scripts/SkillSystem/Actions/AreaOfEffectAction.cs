@@ -72,6 +72,15 @@ namespace SkillSystem.Actions
         /// <summary>效果间隔时间，单位为秒，决定AOE效果的触发频率</summary>
         public float effectInterval = 1f;
 
+        /// <summary>跳动频率别名，用于Visualizer兼容</summary>
+        public float tickRate => effectInterval > 0f ? 1f / effectInterval : 0f;
+
+        /// <summary>每次跳动伤害，用于Visualizer兼容</summary>
+        public float damagePerTick => effectValue;
+
+        /// <summary>范围半径别名，用于Visualizer兼容</summary>
+        public float radius => areaSize;
+
         [BoxGroup("Falloff Settings")]
         [LabelText("Use Distance Falloff")]
         /// <summary>使用距离衰减，true时效果强度会随距离中心的距离而衰减</summary>
@@ -109,6 +118,9 @@ namespace SkillSystem.Actions
         [LabelText("Ignore Caster")]
         /// <summary>忽略施法者，true时AOE效果不会影响施法者自身</summary>
         public bool ignoreCaster = true;
+
+        /// <summary>影响施法者别名，用于Visualizer兼容</summary>
+        public bool affectsCaster => !ignoreCaster;
 
         /// <summary>实际中心位置，经过计算后的世界坐标中心点</summary>
         private Vector3 actualCenterPosition;

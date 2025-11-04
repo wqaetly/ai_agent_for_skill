@@ -67,6 +67,9 @@ namespace SkillSystem.Actions
         /// <summary>忽略碰撞，true时移动过程中不进行碰撞检测，可穿越障碍物</summary>
         public bool ignoreCollision = false;
 
+        /// <summary>移动距离，用于Visualizer兼容（基于targetPosition计算）</summary>
+        public float distance => targetPosition.magnitude;
+
         /// <summary>起始位置，记录移动开始时的世界坐标</summary>
         private Vector3 startPosition;
         /// <summary>实际目标位置，经过相对位置计算后的最终目标世界坐标</summary>
@@ -179,9 +182,13 @@ namespace SkillSystem.Actions
     /// <summary>移动类型枚举</summary>
     public enum MovementType
     {
-        Linear,     // 线性移动
-        Arc,        // 弧线移动（抛物线）
-        Curve,      // 自定义曲线移动
-        Instant     // 瞬间传送
+        Linear,         // 线性移动
+        Arc,            // 弧线移动（抛物线）
+        Curve,          // 自定义曲线移动
+        Instant,        // 瞬间传送
+        Dash,           // 冲刺（用于Visualizer）
+        Teleport,       // 传送（用于Visualizer）
+        TowardsTarget,  // 朝向目标（用于Visualizer）
+        Knockback       // 击退（用于Visualizer）
     }
 }

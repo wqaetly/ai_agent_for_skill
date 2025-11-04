@@ -74,6 +74,15 @@ namespace SkillSystem.Actions
         /// <summary>伤害半径，0表示单体伤害，大于0表示范围伤害的作用半径</summary>
         public float damageRadius = 0f;
 
+        /// <summary>伤害别名，用于Visualizer兼容</summary>
+        public float damage => baseDamage;
+
+        /// <summary>每次伤害值（用于持续伤害）</summary>
+        public float damagePerTick = 0f;
+
+        /// <summary>持续时间，用于持续伤害效果</summary>
+        public float duration = 0f;
+
         public override string GetActionName()
         {
             return "Damage Action";

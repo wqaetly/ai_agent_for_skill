@@ -44,6 +44,9 @@ namespace SkillSystem.Actions
         /// <summary>Buff持续时间，单位为秒，0表示永久持续直到被主动移除</summary>
         public float buffDuration = 10f;
 
+        /// <summary>持续时间别名，用于Visualizer兼容</summary>
+        public float durationSeconds => buffDuration;
+
         [BoxGroup("Duration Settings")]
         [LabelText("Is Permanent")]
         /// <summary>是否为永久效果，true时忽略持续时间，直到被主动移除</summary>
@@ -75,6 +78,28 @@ namespace SkillSystem.Actions
         [LabelText("Special Effects")]
         /// <summary>特殊效果类型，定义该Buff具有的特殊功能（如眩晕、隐身等）</summary>
         public SpecialEffect specialEffects = SpecialEffect.None;
+
+        [BoxGroup("Effect Settings")]
+        [LabelText("Damage Per Second")]
+        [MinValue(0f)]
+        /// <summary>每秒伤害值（用于持续伤害Buff）</summary>
+        public float damagePerSecond = 0f;
+
+        [BoxGroup("Effect Settings")]
+        [LabelText("Heal Per Second")]
+        [MinValue(0f)]
+        /// <summary>每秒治疗值（用于持续治疗Buff）</summary>
+        public float healPerSecond = 0f;
+
+        [BoxGroup("Effect Settings")]
+        [LabelText("Move Speed Modifier")]
+        /// <summary>移动速度修正值</summary>
+        public float moveSpeedModifier = 0f;
+
+        [BoxGroup("Effect Settings")]
+        [LabelText("Attack Speed Modifier")]
+        /// <summary>攻击速度修正值</summary>
+        public float attackSpeedModifier = 0f;
 
         [BoxGroup("Target Settings")]
         [LabelText("Target Filter")]
@@ -153,7 +178,10 @@ namespace SkillSystem.Actions
     public enum BuffType
     {
         Buff,       // 增益效果
-        Debuff      // 减益效果
+        Debuff,     // 减益效果
+        Positive,   // 增益（用于Visualizer）
+        Negative,   // 减益（用于Visualizer）
+        Neutral     // 中性（用于Visualizer）
     }
 
     /// <summary>叠加类型枚举</summary>

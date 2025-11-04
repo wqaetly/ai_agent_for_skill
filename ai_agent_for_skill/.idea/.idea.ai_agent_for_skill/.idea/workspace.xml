@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="" />
+    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/../.claude/settings.local.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/DamageAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/DamageAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/HealAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/HealAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/MovementAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/MovementAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ProjectileAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ProjectileAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -136,6 +147,7 @@
       <workItem from="1761879942606" duration="3814000" />
       <workItem from="1761966184943" duration="10431000" />
       <workItem from="1762242114874" duration="20000" />
+      <workItem from="1762260652563" duration="623000" />
     </task>
     <servers />
   </component>
@@ -170,7 +182,14 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionSelectorUI.cs</url>
           <line>47</line>
-          <properties documentPath="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill\Assets\Scripts\SkillSystem\Editor\ActionSelectorUI.cs" containingFunctionPresentation="方法 'ShowActionSelector'" />
+          <properties documentPath="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill\Assets\Scripts\SkillSystem\Editor\ActionSelectorUI.cs" containingFunctionPresentation="方法 'ShowActionSelector'">
+            <startOffsets>
+              <option value="1582" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1652" />
+            </endOffsets>
+          </properties>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>

@@ -113,6 +113,12 @@ namespace SkillSystem.Actions
         /// <summary>优先低生命值目标，true时优先选择生命值较低的目标进行治疗</summary>
         public bool prioritizeLowHealth = true;
 
+        /// <summary>治疗浮动值，用于Visualizer兼容</summary>
+        public float healVariance = 0f;
+
+        /// <summary>治疗半径，用于Visualizer兼容</summary>
+        public float healRadius = 0f;
+
         /// <summary>持续治疗剩余时间，记录持续治疗模式的剩余时间</summary>
         private float remainingHealTime;
         /// <summary>下次治疗时间，控制持续治疗的间隔</summary>

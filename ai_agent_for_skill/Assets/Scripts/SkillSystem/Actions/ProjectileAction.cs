@@ -112,6 +112,12 @@ namespace SkillSystem.Actions
         /// <summary>使用世界坐标，true时目标位置为世界坐标，false时为相对坐标</summary>
         public bool useWorldPosition = false;
 
+        /// <summary>最大旅行距离别名，用于Visualizer兼容</summary>
+        public float maxTravelDistance => maxRange;
+
+        /// <summary>命中伤害值，用于Visualizer兼容</summary>
+        public float damageOnHit = 0f;
+
         /// <summary>投射物实例引用，用于跟踪和控制生成的投射物GameObject</summary>
         private GameObject projectileInstance;
         /// <summary>实际发射位置，经过计算后的世界坐标发射点</summary>
