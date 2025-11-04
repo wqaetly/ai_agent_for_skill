@@ -4,68 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/../.claude/docs/rag-connection-fix.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/../.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AnimationAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AnimationAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AreaOfEffectAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AreaOfEffectAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AttributeScaledDamageAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AttributeScaledDamageAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AttributeScaledShieldAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AttributeScaledShieldAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AudioAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/AudioAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/BuffAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/BuffAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/CameraAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/CameraAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/CollisionAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/CollisionAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ControlAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ControlAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/DamageAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/DamageAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/HealAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/HealAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/LogAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/LogAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/MovementAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/MovementAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ProjectileAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ProjectileAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ResourceAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ResourceAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ResourceDependentHealAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ResourceDependentHealAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ShieldAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/ShieldAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/SummonAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/SummonAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/TeleportAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/TeleportAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/Actions/UnitTypeCappedDamageAction.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/Actions/UnitTypeCappedDamageAction.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/FINAL_SOLUTION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/action_indexer.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/action_indexer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/rag_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/rag_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/QUICKSTART.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/RELATIVE_PATH_MIGRATION.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/UPDATE_NOTES.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/action-inspector-custom-fields-fix.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/action-inspector-gui-layout-fix.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/auto-fit-after-load.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/remove-track-color-feature.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-cursor-ruler-and-layout-fixes.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-cursor-ruler-full-height.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-timeline-drag-execution.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-timeline-ruler-improvements.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-toolbar-improvements.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-ui-elements-refactor.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-ui-fixes.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/skill-editor-ui-layout-improvements.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/docs/timeline-scroller-optimization.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/CopilotChatHistory.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/CopilotChatHistory.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/CopilotChatTabs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/CopilotChatTabs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AnimationAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AnimationAction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ControlAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ControlAction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/DamageAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/DamageAction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/MovementAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/MovementAction.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionToJsonExporter.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionToJsonExporter.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-    </list>
+    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -77,8 +16,14 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/.claude/settings.local.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionExportModels.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionDatabase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillSystem.RAG.Editor.asmdef" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/SkillSystem.RAG.asmdef" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ControlAction.cs" root0="FORCE_HIGHLIGHTING" />
@@ -92,18 +37,6 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Runtime/SkillPlayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Runtime/SkillSystemEvents.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Skills/FlameShockwave.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://diff.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -202,6 +135,7 @@
       <workItem from="1761829972514" duration="69000" />
       <workItem from="1761879942606" duration="3814000" />
       <workItem from="1761966184943" duration="10431000" />
+      <workItem from="1762242114874" duration="20000" />
     </task>
     <servers />
   </component>
@@ -236,14 +170,7 @@
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionSelectorUI.cs</url>
           <line>47</line>
-          <properties documentPath="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill\Assets\Scripts\SkillSystem\Editor\ActionSelectorUI.cs" containingFunctionPresentation="方法 'ShowActionSelector'">
-            <startOffsets>
-              <option value="1582" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1652" />
-            </endOffsets>
-          </properties>
+          <properties documentPath="H:\GameProject\ai_agent_for_skill\ai_agent_for_skill\Assets\Scripts\SkillSystem\Editor\ActionSelectorUI.cs" containingFunctionPresentation="方法 'ShowActionSelector'" />
           <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>

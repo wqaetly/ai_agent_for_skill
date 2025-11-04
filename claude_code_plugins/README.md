@@ -49,13 +49,31 @@ claude_code_plugins/
 
 ## 🚀 Quick Installation
 
-### Step 1: Add Plugin Marketplace
+### Remote Installation (Recommended)
 ```bash
-/plugin marketplace add ./claude_code_plugins
+# Step 1: Add Plugin Marketplace from GitHub
+/plugin marketplace add https://github.com/wqaetly/ai_agent_for_skill.git
+
+# Step 2: Install Plugins
+# Install Claude Development Standards Plugin
+/plugin install claude-standards@ai_agent_for_skill
+
+# Install Game Skill Configuration Plugin
+/plugin install game-skill-config@ai_agent_for_skill
+
+# Install Unity Compilation Plugin
+/plugin install nkg-unity@ai_agent_for_skill
+
+# Step 3: Restart Claude Code
+# Exit and restart Claude Code to load the plugins
 ```
 
-### Step 2: Install Plugins
+### Local Installation (For Developers)
 ```bash
+# Step 1: Add Plugin Marketplace
+/plugin marketplace add ./claude_code_plugins
+
+# Step 2: Install Plugins
 # Install Claude Development Standards Plugin
 /plugin install claude-standards@nkg-game-development-marketplace
 
@@ -64,10 +82,10 @@ claude_code_plugins/
 
 # Install Unity Compilation Plugin
 /plugin install nkg-unity@nkg-game-development-marketplace
-```
 
-### Step 3: Restart Claude Code
-Exit and restart Claude Code to load the plugins.
+# Step 3: Restart Claude Code
+# Exit and restart Claude Code to load the plugins
+```
 
 ## 📚 Documentation
 
@@ -86,6 +104,8 @@ This plugin marketplace is configured for the NKG development team and contains 
 1. **First install `claude-standards`** - Establish professional development standards foundation
 2. **Then install `game-skill-config`** - Configure game skill system
 3. **Finally install `nkg-unity`** - Support Unity compilation and debugging
+
+**Note**: Use remote installation for easier setup and automatic updates. Use local installation only if you're developing or modifying the plugins.
 
 ## 📄 License
 

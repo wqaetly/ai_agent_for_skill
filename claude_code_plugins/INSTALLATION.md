@@ -1,21 +1,62 @@
 # Installation Guide
 
-Quick guide for installing and testing all Claude Code plugins.
+Quick guide for installing and testing all Claude Code plugins from the remote GitHub repository.
 
-## 🚀 Quick Start (Local Testing)
+## 🚀 Remote Installation (Recommended)
 
-Since you're in the development directory, you can install directly:
+Since the plugins are hosted on GitHub, you can install them directly from the remote repository:
 
-### Step 1: Add Plugin Marketplace
+### Step 1: Add Plugin Marketplace from GitHub
 
 Run in Claude Code:
 ```
-/plugin marketplace add E:\Study\wqaetly\ai_agent_for_skill\claude_code_plugins
+/plugin marketplace add https://github.com/wqaetly/ai_agent_for_skill.git
 ```
 
-Or use the relative path from project root:
+This will add the entire repository as a plugin marketplace, giving you access to all plugins.
+
+### Step 2: Install Plugins
+
+#### Install Claude Development Standards Plugin (Recommended first)
+```
+/plugin install claude-standards@ai_agent_for_skill
+```
+
+#### Install Game Skill Configuration Plugin
+```
+/plugin install game-skill-config@ai_agent_for_skill
+```
+
+#### Install Unity Compilation Plugin
+```
+/plugin install nkg-unity@ai_agent_for_skill
+```
+
+### Step 3: Restart Claude Code
+
+Exit and restart Claude Code to load the plugins.
+
+### Step 4: Verify Installation
+
+Check if plugins are loaded:
+```
+/help
+```
+
+## 🛠️ Local Installation (For Developers)
+
+If you have cloned this repository locally, you can install from the local directory:
+
+### Step 1: Add Plugin Marketplace Locally
+
+Run in Claude Code:
 ```
 /plugin marketplace add ./claude_code_plugins
+```
+
+Or use the absolute path:
+```
+/plugin marketplace add E:\Study\wqaetly\ai_agent_for_skill\claude_code_plugins
 ```
 
 ### Step 2: Install Plugins
@@ -198,6 +239,11 @@ If commands don't appear in `/help`:
 
 4. Try reinstalling:
    ```
+   # For remote installation:
+   /plugin uninstall claude-standards@ai_agent_for_skill
+   /plugin install claude-standards@ai_agent_for_skill
+
+   # For local installation:
    /plugin uninstall claude-standards@nkg-game-development-marketplace
    /plugin install claude-standards@nkg-game-development-marketplace
    ```
@@ -239,7 +285,7 @@ Agents should activate automatically when you mention skill configuration. If no
 
 ### Windows Path Issues
 
-If you encounter path issues on Windows:
+If you encounter path issues on Windows with local installation:
 
 Use forward slashes or escaped backslashes:
 ```
@@ -251,6 +297,11 @@ Or within your project:
 cd E:\Study\wqaetly\ai_agent_for_skill
 claude
 /plugin marketplace add ./claude_code_plugins
+```
+
+**Recommended**: Use remote GitHub installation to avoid path issues:
+```
+/plugin marketplace add https://github.com/wqaetly/ai_agent_for_skill.git
 ```
 
 ### Development Standards Not Effective
@@ -337,8 +388,12 @@ If you encounter issues:
 If you want to modify plugins:
 
 1. Modify files in the relevant plugin directory
-2. Uninstall: `/plugin uninstall [plugin-name]@nkg-game-development-marketplace`
-3. Reinstall: `/plugin install [plugin-name]@nkg-game-development-marketplace`
+2. Uninstall:
+   - Remote: `/plugin uninstall [plugin-name]@ai_agent_for_skill`
+   - Local: `/plugin uninstall [plugin-name]@nkg-game-development-marketplace`
+3. Reinstall:
+   - Remote: `/plugin install [plugin-name]@ai_agent_for_skill`
+   - Local: `/plugin install [plugin-name]@nkg-game-development-marketplace`
 4. Restart Claude Code
 5. Test your changes
 
