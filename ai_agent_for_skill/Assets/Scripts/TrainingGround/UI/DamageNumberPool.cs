@@ -150,7 +150,7 @@ namespace TrainingGround.UI
             // 设置RectTransform
             var rectTransform = prefab.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(200, 100);
-            rectTransform.localScale = Vector3.one * 0.005f; // 更小的缩放
+            rectTransform.localScale = Vector3.one * 0.01f; // 调整缩放以适配字体大小
 
             // 添加CanvasScaler
             var scaler = prefab.AddComponent<UnityEngine.UI.CanvasScaler>();

@@ -27,6 +27,7 @@ namespace SkillSystem.Editor
 
         // Action tracking
         private readonly HashSet<ISkillAction> activeActions = new HashSet<ISkillAction>();
+        private readonly Dictionary<ISkillAction, int> lastTickFrames = new Dictionary<ISkillAction, int>();
 
         public SkillData CurrentSkillData => currentSkillData;
         public int CurrentFrame => currentFrame;
@@ -95,6 +96,7 @@ namespace SkillSystem.Editor
             }
 
             activeActions.Clear();
+            lastTickFrames.Clear();
             isExecuting = false;
             OnSkillStopped?.Invoke(currentSkillData);
         }
@@ -187,6 +189,7 @@ namespace SkillSystem.Editor
                         action.OnExit();
                     }
                     activeActions.Remove(action);
+                    lastTickFrames.Remove(action);
                     OnActionExited?.Invoke(action);
                 }
                 catch (System.Exception e)
@@ -215,6 +218,7 @@ namespace SkillSystem.Editor
                         action.OnEnter();
                     }
                     activeActions.Add(action);
+                    lastTickFrames.Remove(action);
                     OnActionEntered?.Invoke(action);
                 }
                 catch (System.Exception e)
@@ -228,13 +232,18 @@ namespace SkillSystem.Editor
             {
                 try
                 {
+                    int relativeFrame = currentFrame - action.frame;
+
                     // 只有在应该执行的情况下才调用Action的真实逻辑
-                    if (shouldExecute)
+                    if (!lastTickFrames.TryGetValue(action, out int lastTick) || lastTick != relativeFrame)
                     {
-                        int relativeFrame = currentFrame - action.frame;
-                        action.OnTick(relativeFrame);
+                        if (shouldExecute)
+                        {
+                            action.OnTick(relativeFrame);
+                        }
+                        lastTickFrames[action] = relativeFrame;
+                        OnActionTicked?.Invoke(action, relativeFrame);
                     }
-                    OnActionTicked?.Invoke(action, currentFrame - action.frame);
                 }
                 catch (System.Exception e)
                 {
@@ -270,6 +279,7 @@ namespace SkillSystem.Editor
             }
 
             activeActions.Clear();
+            lastTickFrames.Clear();
 
             if (currentSkillData != null)
             {

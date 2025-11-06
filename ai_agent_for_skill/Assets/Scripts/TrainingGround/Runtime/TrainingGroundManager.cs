@@ -146,6 +146,19 @@ namespace TrainingGround.Runtime
                 healthBarObj.transform.SetParent(playerObj.transform);
                 healthBar = healthBarObj.AddComponent<EntityHealthBar>();
                 healthBar.SetTargetEntity(player);
+                if (uiCanvas != null)
+                {
+                    healthBar.SetTargetCanvas(uiCanvas);
+                }
+                healthBar.SetShowResourceBar(true);
+            }
+            else
+            {
+                healthBar.SetTargetEntity(player);
+                if (uiCanvas != null)
+                {
+                    healthBar.SetTargetCanvas(uiCanvas);
+                }
                 healthBar.SetShowResourceBar(true);
             }
 
@@ -199,6 +212,18 @@ namespace TrainingGround.Runtime
                 healthBarObj.transform.SetParent(dummyObj.transform);
                 healthBar = healthBarObj.AddComponent<EntityHealthBar>();
                 healthBar.SetTargetEntity(dummy);
+                if (uiCanvas != null)
+                {
+                    healthBar.SetTargetCanvas(uiCanvas);
+                }
+            }
+            else
+            {
+                healthBar.SetTargetEntity(dummy);
+                if (uiCanvas != null)
+                {
+                    healthBar.SetTargetCanvas(uiCanvas);
+                }
             }
 
             Debug.Log($"[TrainingGroundManager] Created dummy {index + 1} at {position}");

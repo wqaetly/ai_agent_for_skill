@@ -30,6 +30,7 @@ namespace TrainingGround.UI
         private Vector3 randomOffset;
         private Color startColor;
         private float startScale = 1f;
+        private Vector3 baseScale = Vector3.one;
 
         void Awake()
         {
@@ -42,6 +43,8 @@ namespace TrainingGround.UI
             {
                 Debug.LogError("[DamageNumber] TextMeshProUGUI component not found!");
             }
+
+            baseScale = transform.localScale;
         }
 
         public void Initialize(Vector3 worldPosition, float value, Color color, bool isCritical = false, bool isHeal = false)
@@ -127,7 +130,7 @@ namespace TrainingGround.UI
             }
             else
             {
-                transform.localScale = Vector3.one * startScale;
+                transform.localScale = baseScale * startScale;
             }
 
             elapsedTime = 0f;
@@ -143,11 +146,11 @@ namespace TrainingGround.UI
             {
                 float popT = normalizedTime / 0.2f;
                 float scale = popCurve.Evaluate(popT) * startScale;
-                transform.localScale = Vector3.one * scale;
+                transform.localScale = baseScale * scale;
             }
-            else if (enableScaleAnimation && transform.localScale.x < startScale)
+            else if (enableScaleAnimation && transform.localScale.x < baseScale.x * startScale)
             {
-                transform.localScale = Vector3.one * startScale;
+                transform.localScale = baseScale * startScale;
             }
 
             // 向上飘动（使用曲线）
@@ -180,7 +183,7 @@ namespace TrainingGround.UI
                 if (enableScaleAnimation)
                 {
                     float shrinkScale = Mathf.Lerp(startScale, startScale * 0.8f, fadeT);
-                    transform.localScale = Vector3.one * shrinkScale;
+                    transform.localScale = baseScale * shrinkScale;
                 }
             }
 
@@ -214,7 +217,7 @@ namespace TrainingGround.UI
         public void ResetState()
         {
             elapsedTime = 0f;
-            transform.localScale = Vector3.one;
+            transform.localScale = baseScale;
             gameObject.SetActive(true);
         }
     }
