@@ -29,14 +29,14 @@ namespace TrainingGround.UI
         [SerializeField] private bool alwaysFaceCamera = true;
         [SerializeField] private float smoothSpeed = 10f;
 
-        private Camera mainCamera;
+        private UnityEngine.Camera mainCamera;
         private float currentHealthPercentage;
         private float currentShieldPercentage;
         private float currentResourcePercentage;
 
         void Awake()
         {
-            mainCamera = Camera.main;
+            mainCamera = UnityEngine.Camera.main;
 
             // 如果没有Canvas，创建默认UI
             if (canvas == null)
@@ -72,10 +72,18 @@ namespace TrainingGround.UI
             // 跟随目标
             transform.position = targetTransform.position + offset;
 
-            // 面向摄像机
+            // 面向摄像机 - Billboard效果
             if (alwaysFaceCamera && mainCamera != null)
             {
-                transform.rotation = Quaternion.LookRotation(transform.position - mainCamera.transform.position);
+                // 计算指向相机的方向
+                Vector3 directionToCamera = mainCamera.transform.position - transform.position;
+                directionToCamera.y = 0; // 锁定Y轴，保持水平
+
+                // 只有方向不为零时才设置旋转
+                if (directionToCamera != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(-directionToCamera);
+                }
             }
 
             // 更新血条
@@ -182,14 +190,15 @@ namespace TrainingGround.UI
             healthText.color = Color.white;
             SetupRectTransform(textObj.GetComponent<RectTransform>(), new Vector2(0, 0.1f), new Vector2(1, 0.35f), Vector2.zero, Vector2.zero);
 
-            // 创建名称文本
-            GameObject nameObj = CreateUIElement("EntityName", bgObj.transform);
+            // 创建名称文本 - 独立于Background，显示在血条上方
+            GameObject nameObj = CreateUIElement("EntityName", canvasObj.transform);
             entityNameText = nameObj.AddComponent<TextMeshProUGUI>();
             entityNameText.fontSize = 20;
             entityNameText.alignment = TextAlignmentOptions.Center;
             entityNameText.color = Color.white;
             entityNameText.fontStyle = FontStyles.Bold;
-            SetupRectTransform(nameObj.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            // 将名称放置在Canvas顶部上方
+            SetupRectTransform(nameObj.GetComponent<RectTransform>(), new Vector2(0, 1f), new Vector2(1, 1.3f), Vector2.zero, Vector2.zero);
         }
 
         private GameObject CreateUIElement(string name, Transform parent)

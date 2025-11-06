@@ -163,7 +163,8 @@ namespace SkillSystem.Editor
             inspectorContent.Add(instructionsText);
 
             // Add actions list
-            var actionsLabel = new Label($"Actions ({track.actions.Count})");
+            var actionsCount = track.actions?.Count ?? 0;
+            var actionsLabel = new Label($"Actions ({actionsCount})");
             actionsLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             actionsLabel.style.marginTop = 5;
             inspectorContent.Add(actionsLabel);
@@ -225,9 +226,14 @@ namespace SkillSystem.Editor
 
         private void CreateActionsList(SkillTrack track, int trackIndex)
         {
+            // 防御性检查：track.actions 可能在反序列化时为 null
+            if (track.actions == null) return;
+
             for (int i = 0; i < track.actions.Count; i++)
             {
                 var action = track.actions[i];
+                // 防御性检查：action 可能为 null
+                if (action == null) continue;
                 var actionContainer = new VisualElement();
                 actionContainer.style.flexDirection = FlexDirection.Row;
                 actionContainer.style.alignItems = Align.Center;

@@ -84,7 +84,7 @@ namespace SkillSystem.Actions
 
         public override void OnEnter()
         {
-            var transform = UnityEngine.Object.FindFirstObjectByType<Transform>();
+            var transform = GetCasterTransform();
             if (transform != null)
             {
                 startPosition = transform.position;
@@ -123,7 +123,7 @@ namespace SkillSystem.Actions
         {
             if (movementType == MovementType.Instant) return;
 
-            var transform = UnityEngine.Object.FindFirstObjectByType<Transform>();
+            var transform = GetCasterTransform();
             if (transform != null)
             {
                 float progress = (float)relativeFrame / duration;
@@ -176,6 +176,37 @@ namespace SkillSystem.Actions
                 default:
                     return startPosition;
             }
+        }
+
+        /// <summary>
+        /// 获取技能施法者的Transform
+        /// 优先查找Player对象，其次查找带有SkillPlayer组件的对象
+        /// </summary>
+        private Transform GetCasterTransform()
+        {
+            // 方案1：查找名为Player的GameObject（训练场标准设置）
+            GameObject playerObj = GameObject.Find("Player");
+            if (playerObj != null)
+            {
+                return playerObj.transform;
+            }
+
+            // 方案2：查找带有SkillPlayer组件的对象
+            var skillPlayer = UnityEngine.Object.FindFirstObjectByType<SkillSystem.Runtime.SkillPlayer>();
+            if (skillPlayer != null)
+            {
+                return skillPlayer.transform;
+            }
+
+            // 方案3：查找带有Player标签的对象
+            playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                return playerObj.transform;
+            }
+
+            Debug.LogWarning("[MovementAction] 无法找到施法者对象，位移Action无法执行");
+            return null;
         }
     }
 

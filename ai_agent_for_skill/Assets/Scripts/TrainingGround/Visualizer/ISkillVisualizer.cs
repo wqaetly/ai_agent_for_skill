@@ -37,7 +37,7 @@ namespace TrainingGround.Visualizer
     /// <summary>
     /// 可视化器基类 - 提供通用功能
     /// </summary>
-    public abstract class SkillVisualizerBase<T> : ISkillVisualizer where T : ISkillAction
+    public abstract class SkillVisualizerBase<T> : MonoBehaviour, ISkillVisualizer where T : ISkillAction
     {
         public System.Type SupportedActionType => typeof(T);
 

@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using SkillSystem.Actions;
 using TrainingGround.Entity;
+using TrainingGround.Materials;
 
 namespace TrainingGround.Visualizer
 {
@@ -62,24 +63,23 @@ namespace TrainingGround.Visualizer
             Vector3 startPosition = caster.transform.position + Vector3.up + caster.transform.forward * 0.5f;
             projectile.transform.position = startPosition;
 
-            // 设置颜色（根据投射物类型）
+            // 设置颜色（根据投射物类型） - 使用MaterialLibrary
             var renderer = projectile.GetComponent<Renderer>();
             if (renderer != null)
             {
-                var material = new Material(Shader.Find("Standard"));
-                material.color = GetProjectileColor(action);
-                material.SetFloat("_Metallic", 0.5f);
-                renderer.material = material;
+                Color projColor = GetProjectileColor(action);
+                renderer.material = MaterialLibrary.Instance.GetProjectileMaterial(projColor, 0.5f);
             }
 
-            // 添加拖尾
+            // 添加拖尾 - 使用MaterialLibrary
             var trail = projectile.AddComponent<TrailRenderer>();
             trail.time = 0.5f;
             trail.startWidth = 0.2f;
             trail.endWidth = 0.05f;
-            trail.material = new Material(Shader.Find("Sprites/Default"));
-            trail.startColor = GetProjectileColor(action);
-            trail.endColor = new Color(GetProjectileColor(action).r, GetProjectileColor(action).g, GetProjectileColor(action).b, 0f);
+            Color trailColor = GetProjectileColor(action);
+            trail.material = MaterialLibrary.Instance.GetParticleMaterial(trailColor);
+            trail.startColor = trailColor;
+            trail.endColor = new Color(trailColor.r, trailColor.g, trailColor.b, 0f);
 
             // 添加行为组件
             var behavior = projectile.AddComponent<ProjectileBehavior>();
@@ -214,10 +214,8 @@ namespace TrainingGround.Visualizer
             var renderer = flash.GetComponent<Renderer>();
             if (renderer != null)
             {
-                var material = new Material(Shader.Find("Standard"));
-                material.color = Color.yellow;
-                material.SetFloat("_Metallic", 0.8f);
-                renderer.material = material;
+                // 使用MaterialLibrary提供的命中特效材质
+                renderer.material = MaterialLibrary.Instance.GetHitEffectMaterial(Color.yellow);
             }
 
             // 移除碰撞体

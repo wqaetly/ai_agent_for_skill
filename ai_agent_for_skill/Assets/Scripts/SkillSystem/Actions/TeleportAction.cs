@@ -176,7 +176,7 @@ namespace SkillSystem.Actions
 
         public override void OnEnter()
         {
-            var casterTransform = UnityEngine.Object.FindFirstObjectByType<Transform>();
+            var casterTransform = GetCasterTransform();
             if (casterTransform != null)
             {
                 originalPosition = casterTransform.position;
@@ -464,7 +464,7 @@ namespace SkillSystem.Actions
         /// <summary>执行实际的传送操作</summary>
         private void PerformTeleportation()
         {
-            var casterTransform = UnityEngine.Object.FindFirstObjectByType<Transform>();
+            var casterTransform = GetCasterTransform();
             if (casterTransform != null)
             {
                 casterTransform.position = actualTargetPosition;
@@ -514,6 +514,37 @@ namespace SkillSystem.Actions
         {
             // 在实际项目中，这里会检查是否受到伤害或控制效果
             return UnityEngine.Random.value < 0.001f; // 很低的概率，仅作示例
+        }
+
+        /// <summary>
+        /// 获取技能施法者的Transform
+        /// 优先查找Player对象，其次查找带有SkillPlayer组件的对象
+        /// </summary>
+        private Transform GetCasterTransform()
+        {
+            // 方案1：查找名为Player的GameObject（训练场标准设置）
+            GameObject playerObj = GameObject.Find("Player");
+            if (playerObj != null)
+            {
+                return playerObj.transform;
+            }
+
+            // 方案2：查找带有SkillPlayer组件的对象
+            var skillPlayer = UnityEngine.Object.FindFirstObjectByType<SkillSystem.Runtime.SkillPlayer>();
+            if (skillPlayer != null)
+            {
+                return skillPlayer.transform;
+            }
+
+            // 方案3：查找带有Player标签的对象
+            playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                return playerObj.transform;
+            }
+
+            Debug.LogWarning("[TeleportAction] 无法找到施法者对象，传送Action无法执行");
+            return null;
         }
     }
 

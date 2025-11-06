@@ -5,6 +5,8 @@ using SkillSystem.Data;
 using TrainingGround.Entity;
 using TrainingGround.Visualizer;
 using TrainingGround.UI;
+using TrainingGround.Materials;
+using TrainingGround.Camera;
 
 namespace TrainingGround.Runtime
 {
@@ -17,7 +19,7 @@ namespace TrainingGround.Runtime
         [Header("场景引用")]
         [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject dummyPrefab;
-        [SerializeField] private Camera mainCamera;
+        [SerializeField] private UnityEngine.Camera mainCamera;
 
         [Header("实体设置")]
         [SerializeField] private int initialDummyCount = 3;
@@ -35,6 +37,10 @@ namespace TrainingGround.Runtime
         private SkillVisualizerManager visualizerManager;
         private DamageNumberPool damageNumberPool;
         private SkillTimelinePanel timelinePanel;
+        private TrainingGroundCameraController cameraController;
+
+        // 初始化标志
+        private bool isInitialized = false;
 
         void Awake()
         {
@@ -44,8 +50,11 @@ namespace TrainingGround.Runtime
             // 获取或创建主摄像机
             if (mainCamera == null)
             {
-                mainCamera = Camera.main;
+                mainCamera = UnityEngine.Camera.main;
             }
+
+            // 创建并配置相机控制器
+            SetupCameraController();
 
             // 创建UI画布
             if (autoCreateUI && uiCanvas == null)
@@ -56,6 +65,9 @@ namespace TrainingGround.Runtime
 
         void Start()
         {
+            // 防止重复初始化
+            if (isInitialized) return;
+
             // 自动设置训练场
             SetupTrainingGround();
         }
@@ -66,6 +78,9 @@ namespace TrainingGround.Runtime
         [ContextMenu("Setup Training Ground")]
         public void SetupTrainingGround()
         {
+            // 防止重复初始化
+            if (isInitialized) return;
+
             Debug.Log("[TrainingGroundManager] Setting up training ground...");
 
             // 创建玩家
@@ -87,6 +102,9 @@ namespace TrainingGround.Runtime
             SetupUISystem();
 
             Debug.Log($"[TrainingGroundManager] Training ground setup complete! Player: {player != null}, Dummies: {dummies.Count}");
+
+            // 标记为已初始化
+            isInitialized = true;
         }
 
         #region 实体创建
@@ -129,6 +147,12 @@ namespace TrainingGround.Runtime
                 healthBar = healthBarObj.AddComponent<EntityHealthBar>();
                 healthBar.SetTargetEntity(player);
                 healthBar.SetShowResourceBar(true);
+            }
+
+            // 设置相机跟随目标
+            if (cameraController != null)
+            {
+                cameraController.SetFollowTarget(playerObj.transform);
             }
 
             Debug.Log("[TrainingGroundManager] Player created");
@@ -189,9 +213,8 @@ namespace TrainingGround.Runtime
             var renderer = player.GetComponent<Renderer>();
             if (renderer != null)
             {
-                var material = new Material(Shader.Find("Standard"));
-                material.color = Color.blue;
-                renderer.material = material;
+                // 使用MaterialLibrary提供的玩家材质
+                renderer.material = MaterialLibrary.Instance.GetDefaultPlayerMaterial();
             }
 
             return player;
@@ -206,9 +229,8 @@ namespace TrainingGround.Runtime
             var renderer = dummy.GetComponent<Renderer>();
             if (renderer != null)
             {
-                var material = new Material(Shader.Find("Standard"));
-                material.color = Color.gray;
-                renderer.material = material;
+                // 使用MaterialLibrary提供的敌人材质
+                renderer.material = MaterialLibrary.Instance.GetDefaultEnemyMaterial();
             }
 
             return dummy;
@@ -217,6 +239,24 @@ namespace TrainingGround.Runtime
         #endregion
 
         #region 系统设置
+
+        private void SetupCameraController()
+        {
+            // 查找或创建相机控制器
+            cameraController = FindFirstObjectByType<TrainingGroundCameraController>();
+
+            if (cameraController == null)
+            {
+                GameObject cameraControllerObj = new GameObject("TrainingGroundCameraController");
+                cameraControllerObj.transform.SetParent(transform);
+                cameraController = cameraControllerObj.AddComponent<TrainingGroundCameraController>();
+            }
+
+            // 确保相机控制器设置为俯视角模式
+            cameraController.SwitchToTopDownView();
+
+            Debug.Log("[TrainingGroundManager] Camera controller setup complete - TopDown mode activated");
+        }
 
         private void SetupVisualizationSystem()
         {
@@ -248,8 +288,8 @@ namespace TrainingGround.Runtime
                 damageNumberPool = poolObj.AddComponent<DamageNumberPool>();
             }
 
-            // 创建SkillTimelinePanel
-            if (uiCanvas != null && player != null)
+            // 创建SkillTimelinePanel - 添加空值和销毁检查
+            if (uiCanvas != null && uiCanvas.transform != null && player != null)
             {
                 var skillPlayer = player.GetComponent<SkillPlayer>();
                 if (skillPlayer != null)
@@ -257,19 +297,32 @@ namespace TrainingGround.Runtime
                     var timelinePanelObj = uiCanvas.transform.Find("SkillTimelinePanel");
                     if (timelinePanelObj == null)
                     {
-                        timelinePanelObj = new GameObject("SkillTimelinePanel").transform;
-                        timelinePanelObj.SetParent(uiCanvas.transform, false);
+                        GameObject timelinePanelGO = new GameObject("SkillTimelinePanel");
+                        timelinePanelGO.transform.SetParent(uiCanvas.transform, false);
 
-                        var rectTransform = timelinePanelObj.gameObject.AddComponent<RectTransform>();
+                        var rectTransform = timelinePanelGO.AddComponent<RectTransform>();
                         rectTransform.anchorMin = new Vector2(0.1f, 0.05f);
                         rectTransform.anchorMax = new Vector2(0.9f, 0.15f);
                         rectTransform.offsetMin = Vector2.zero;
                         rectTransform.offsetMax = Vector2.zero;
 
-                        timelinePanel = timelinePanelObj.gameObject.AddComponent<SkillTimelinePanel>();
+                        timelinePanel = timelinePanelGO.AddComponent<SkillTimelinePanel>();
                         timelinePanel.SetTargetSkillPlayer(skillPlayer);
                     }
+                    else
+                    {
+                        // 如果已存在，直接获取引用
+                        timelinePanel = timelinePanelObj.GetComponent<SkillTimelinePanel>();
+                        if (timelinePanel != null)
+                        {
+                            timelinePanel.SetTargetSkillPlayer(skillPlayer);
+                        }
+                    }
                 }
+            }
+            else
+            {
+                Debug.LogWarning("[TrainingGroundManager] Cannot setup SkillTimelinePanel - uiCanvas or player is null or destroyed");
             }
 
             Debug.Log("[TrainingGroundManager] UI system setup complete");
@@ -436,6 +489,7 @@ namespace TrainingGround.Runtime
         public List<TrainingDummy> Dummies => dummies;
         public SkillVisualizerManager VisualizerManager => visualizerManager;
         public DamageNumberPool DamageNumberPool => damageNumberPool;
+        public TrainingGroundCameraController CameraController => cameraController;
 
         #endregion
     }

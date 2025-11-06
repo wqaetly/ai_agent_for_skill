@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using SkillSystem.Actions;
 using TrainingGround.Entity;
+using TrainingGround.Materials;
 
 namespace TrainingGround.Visualizer
 {
@@ -93,21 +94,11 @@ namespace TrainingGround.Visualizer
             // 移除碰撞体
             Object.Destroy(circle.GetComponent<Collider>());
 
-            // 设置材质（半透明红色）
+            // 设置材质（半透明红色） - 使用MaterialLibrary
             var renderer = circle.GetComponent<Renderer>();
             if (renderer != null)
             {
-                var material = new Material(Shader.Find("Standard"));
-                material.color = new Color(1f, 0f, 0f, 0.3f);
-                material.SetFloat("_Mode", 3); // Transparent mode
-                material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                material.SetInt("_ZWrite", 0);
-                material.DisableKeyword("_ALPHATEST_ON");
-                material.EnableKeyword("_ALPHABLEND_ON");
-                material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                material.renderQueue = 3000;
-                renderer.material = material;
+                renderer.material = MaterialLibrary.Instance.GetDefaultAOEMaterial();
             }
 
             return circle;

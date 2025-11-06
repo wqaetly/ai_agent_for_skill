@@ -181,8 +181,14 @@ namespace SkillSystem.Editor
             // Clamp actions that extend beyond new duration
             foreach (var track in skillData.tracks)
             {
+                // 防御性检查：track.actions 可能在反序列化时为 null
+                if (track.actions == null) continue;
+
                 foreach (var action in track.actions)
                 {
+                    // 防御性检查：action 可能为 null
+                    if (action == null) continue;
+
                     if (action.frame >= newDuration)
                     {
                         action.frame = newDuration - 1;

@@ -1,0 +1,219 @@
+{
+    "$id": 0,
+    "$type": "0|SkillSystem.Data.SkillData, SkillSystem.Data",
+    "skillName": "Soul Furnace",
+    "skillDescription": "\u8d5b\u6069\u83b7\u5f97\u62a4\u76fe\uff0c\u6301\u7eed6\u79d2\u3002\u62a4\u76fe\u503c\u57fa\u4e8e\u6280\u80fd\u7b49\u7ea7\u3001\u6cd5\u672f\u5f3a\u5ea6\u548c\u5f53\u524d\u751f\u547d\u503c\u30023\u79d2\u540e\u82e5\u62a4\u76fe\u4ecd\u5b58\u5728\uff0c\u53ef\u5f15\u7206\u9020\u6210\u8303\u56f4\u9b54\u6cd5\u4f24\u5bb3\uff0c\u5bf9\u5c0f\u5175\u548c\u91ce\u602a\u6709\u4f24\u5bb3\u4e0a\u9650\u3002",
+    "totalDuration": 180,
+    "frameRate": 30,
+    "tracks": {
+        "$id": 1,
+        "$type": "1|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, SkillSystem.Data]], mscorlib",
+        "$rlength": 4,
+        "$rcontent": [
+            {
+                "$id": 2,
+                "$type": "2|SkillSystem.Data.SkillTrack, SkillSystem.Data",
+                "trackName": "Shield Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 3,
+                    "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, SkillSystem.Actions]], mscorlib",
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 4,
+                            "$type": "4|SkillSystem.Actions.AttributeScaledShieldAction, SkillSystem.Actions",
+                            "frame": 0,
+                            "duration": 180,
+                            "enabled": true,
+                            "baseShieldAmount": 60,
+                            "shieldDuration": 6,
+                            "scaleWithLevel": true,
+                            "shieldPerLevel": 15,
+                            "spellPowerRatio": 0.4,
+                            "healthRatio": 0.08,
+                            "healthRatioPerLevel": 0.02,
+                            "useCurrentHealth": true,
+                            "shieldType": 0,
+                            "blockPhysicalDamage": true,
+                            "blockMagicalDamage": true,
+                            "blockPureDamage": false,
+                            "refreshable": true,
+                            "breakOnSpellCast": false,
+                            "breakOnAttack": false,
+                            "breakOnMovement": false,
+                            "shieldEffect": null,
+                            "breakEffect": null,
+                            "effectColor": {
+                                "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                                0.5,
+                                0.8,
+                                1,
+                                0.6
+                            },
+                            "shieldApplySound": null,
+                            "shieldBreakSound": null,
+                            "targetFilter": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 5,
+                "$type": 2,
+                "trackName": "Explosion Damage Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 6,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 7,
+                            "$type": "6|SkillSystem.Actions.UnitTypeCappedDamageAction, SkillSystem.Actions",
+                            "frame": 90,
+                            "duration": 1,
+                            "enabled": true,
+                            "baseDamage": 40,
+                            "damageType": 1,
+                            "scaleWithLevel": true,
+                            "damagePerLevel": 25,
+                            "spellPowerRatio": 0.4,
+                            "maxHealthRatio": 0.14,
+                            "useTargetMaxHealth": false,
+                            "damageCaps": {
+                                "$id": 8,
+                                "$type": "7|SkillSystem.Actions.UnitTypeDamageCap[], SkillSystem.Actions",
+                                "$rlength": 2,
+                                "$rcontent": [
+                                    {
+                                        "$type": "8|SkillSystem.Actions.UnitTypeDamageCap, SkillSystem.Actions",
+                                        "unitType": 1,
+                                        "damageCap": 400
+                                    },
+                                    {
+                                        "$type": 8,
+                                        "unitType": 2,
+                                        "damageCap": 400
+                                    }
+                                ]
+                            },
+                            "targetFilter": 1,
+                            "maxTargets": 10,
+                            "damageRadius": 5,
+                            "damageEffect": null,
+                            "cappedDamageEffect": null,
+                            "effectColor": {
+                                "$type": 5,
+                                1,
+                                0.3,
+                                0,
+                                1
+                            },
+                            "hitSound": null,
+                            "cappedHitSound": null
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 9,
+                "$type": 2,
+                "trackName": "Animation Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 10,
+                    "$type": 3,
+                    "$rlength": 1,
+                    "$rcontent": [
+                        {
+                            "$id": 11,
+                            "$type": "9|SkillSystem.Actions.AnimationAction, SkillSystem.Actions",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "animationClipName": "SionSoulFurnace",
+                            "normalizedTime": 0,
+                            "crossFadeDuration": 0.1,
+                            "animationLayer": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "$id": 12,
+                "$type": 2,
+                "trackName": "Audio Track",
+                "enabled": true,
+                "actions": {
+                    "$id": 13,
+                    "$type": 3,
+                    "$rlength": 2,
+                    "$rcontent": [
+                        {
+                            "$id": 14,
+                            "$type": "10|SkillSystem.Actions.AudioAction, SkillSystem.Actions",
+                            "frame": 0,
+                            "duration": 30,
+                            "enabled": true,
+                            "AudioAction+frame": 0,
+                            "AudioAction+duration": 0,
+                            "AudioAction+enabled": false,
+                            "audioClipName": "sion_soul_furnace_cast",
+                            "volume": 0.9,
+                            "pitch": 1,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": "11|UnityEngine.Vector3, UnityEngine.CoreModule",
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 3,
+                            "maxDistance": 15,
+                            "rolloffMode": 0,
+                            "delayTime": 0,
+                            "fadeInTime": 0,
+                            "fadeOutTime": 0.2,
+                            "priority": 180,
+                            "bypassListenerEffects": false,
+                            "bypassReverbZones": false
+                        },
+                        {
+                            "$id": 15,
+                            "$type": 10,
+                            "frame": 90,
+                            "duration": 15,
+                            "enabled": true,
+                            "AudioAction+frame": 0,
+                            "AudioAction+duration": 0,
+                            "AudioAction+enabled": false,
+                            "audioClipName": "sion_soul_furnace_explosion",
+                            "volume": 1,
+                            "pitch": 1,
+                            "loop": false,
+                            "is3D": true,
+                            "positionOffset": {
+                                "$type": 11,
+                                0,
+                                0,
+                                0
+                            },
+                            "minDistance": 5,
+                            "maxDistance": 20,
+                            "rolloffMode": 0,
+                            "delayTime": 0,
+                            "fadeInTime": 0,
+                            "fadeOutTime": 0.3,
+                            "priority": 200,
+                            "bypassListenerEffects": false,
+                            "bypassReverbZones": false
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "skillId": "sion-soul-furnace-001"
+}

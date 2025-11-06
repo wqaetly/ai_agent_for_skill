@@ -246,6 +246,57 @@ namespace TrainingGround.Visualizer
             }
         }
 
+        /// <summary>
+        /// 从外部触发Action进入（用于编辑器预览）
+        /// </summary>
+        public void TriggerActionEnter(ISkillAction action)
+        {
+            if (action == null) return;
+
+            var visualizer = GetVisualizer(action.GetType());
+            if (visualizer != null)
+            {
+                visualizer.VisualizeEnter(action, casterObject);
+                activeActions[action] = 0;
+                Debug.Log($"[SkillVisualizerManager] [Editor Preview] Visualizing action enter: {action.GetDisplayName()}");
+            }
+            else
+            {
+                Debug.LogWarning($"[SkillVisualizerManager] No visualizer found for action type: {action.GetType().Name}");
+            }
+        }
+
+        /// <summary>
+        /// 从外部触发Action Tick（用于编辑器预览）
+        /// </summary>
+        public void TriggerActionTick(ISkillAction action, int relativeFrame)
+        {
+            if (action == null) return;
+
+            if (activeActions.ContainsKey(action))
+            {
+                activeActions[action] = relativeFrame;
+                var visualizer = GetVisualizer(action.GetType());
+                visualizer?.VisualizeTick(action, casterObject, relativeFrame);
+            }
+        }
+
+        /// <summary>
+        /// 从外部触发Action退出（用于编辑器预览）
+        /// </summary>
+        public void TriggerActionExit(ISkillAction action)
+        {
+            if (action == null) return;
+
+            if (activeActions.ContainsKey(action))
+            {
+                var visualizer = GetVisualizer(action.GetType());
+                visualizer?.VisualizeExit(action, casterObject);
+                activeActions.Remove(action);
+                Debug.Log($"[SkillVisualizerManager] [Editor Preview] Visualizing action exit: {action.GetDisplayName()}");
+            }
+        }
+
         #endregion
 
         void OnDestroy()

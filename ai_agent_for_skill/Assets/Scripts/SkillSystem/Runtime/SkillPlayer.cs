@@ -217,8 +217,14 @@ namespace SkillSystem.Runtime
 
             foreach (var track in enabledTracks)
             {
+                // 防御性检查：track.actions 可能在反序列化时为 null
+                if (track.actions == null) continue;
+
                 foreach (var action in track.actions)
                 {
+                    // 防御性检查：action 可能为 null
+                    if (action == null) continue;
+
                     if (action.IsActiveAtFrame(currentFrame))
                     {
                         activeActions[action] = true;
@@ -234,8 +240,14 @@ namespace SkillSystem.Runtime
 
             foreach (var track in enabledTracks)
             {
+                // 防御性检查：track.actions 可能在反序列化时为 null
+                if (track.actions == null) continue;
+
                 foreach (var action in track.actions)
                 {
+                    // 防御性检查：action 可能为 null
+                    if (action == null) continue;
+
                     try
                     {
                         action.Initialize();
@@ -256,8 +268,14 @@ namespace SkillSystem.Runtime
 
             foreach (var track in enabledTracks)
             {
+                // 防御性检查：track.actions 可能在反序列化时为 null
+                if (track.actions == null) continue;
+
                 foreach (var action in track.actions)
                 {
+                    // 防御性检查：action 可能为 null
+                    if (action == null) continue;
+
                     try
                     {
                         action.Cleanup();

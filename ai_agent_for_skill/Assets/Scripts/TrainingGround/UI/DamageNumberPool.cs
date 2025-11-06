@@ -140,12 +140,17 @@ namespace TrainingGround.UI
             // 添加Canvas
             var canvas = prefab.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.WorldSpace;
-            canvas.worldCamera = Camera.main;
 
-            // 设置Canvas大小
+            // 延迟设置相机，避免在Awake中找不到
+            if (UnityEngine.Camera.main != null)
+            {
+                canvas.worldCamera = UnityEngine.Camera.main;
+            }
+
+            // 设置RectTransform
             var rectTransform = prefab.GetComponent<RectTransform>();
             rectTransform.sizeDelta = new Vector2(200, 100);
-            rectTransform.localScale = Vector3.one * 0.01f; // 缩小以适应世界坐标
+            rectTransform.localScale = Vector3.one * 0.005f; // 更小的缩放
 
             // 添加CanvasScaler
             var scaler = prefab.AddComponent<UnityEngine.UI.CanvasScaler>();
@@ -161,6 +166,8 @@ namespace TrainingGround.UI
             textMesh.alignment = TextAlignmentOptions.Center;
             textMesh.color = Color.white;
             textMesh.text = "999";
+            textMesh.outlineWidth = 0.2f;
+            textMesh.outlineColor = new Color(0, 0, 0, 0.8f);
 
             // 设置Text的RectTransform
             var textRect = textObject.GetComponent<RectTransform>();
