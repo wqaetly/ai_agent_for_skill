@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/EditorSkillExecutor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/EditorSkillExecutor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/Runtime/TrainingGroundManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/Runtime/TrainingGroundManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/UI/DamageNumber.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/UI/DamageNumber.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/UI/DamageNumberPool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/UI/DamageNumberPool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/UI/EntityHealthBar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/TrainingGround/UI/EntityHealthBar.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,9 +26,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillSystem.RAG.Editor.asmdef" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/SkillSystem.RAG.asmdef" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ControlAction.cs" root0="FORCE_HIGHLIGHTING" />
@@ -148,6 +142,7 @@
       <workItem from="1762260652563" duration="1276000" />
       <workItem from="1762308998097" duration="9703000" />
       <workItem from="1762396086250" duration="23659000" />
+      <workItem from="1762485152682" duration="13444000" />
     </task>
     <servers />
   </component>

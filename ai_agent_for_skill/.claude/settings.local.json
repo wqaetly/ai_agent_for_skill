@@ -11,7 +11,9 @@
       "Bash(echo:*)",
       "SlashCommand(/nkg-unity:compile Assembly-CSharp-Editor)",
       "Bash(dir /s /b *.json)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
