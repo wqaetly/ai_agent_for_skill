@@ -388,45 +388,16 @@ namespace SkillSystem.RAG
 
             EditorGUILayout.EndHorizontal();
 
-            // 分类和描述
+            // 分类
             if (!string.IsNullOrEmpty(recommendation.category))
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("分类:", GUILayout.Width(60));
-                EditorGUILayout.LabelField(recommendation.category, EditorStyles.miniLabel);
-                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.LabelField($"分类: {recommendation.category}", EditorStyles.miniLabel);
             }
 
-            if (!string.IsNullOrEmpty(recommendation.description))
-            {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("描述:", GUILayout.Width(60));
-                EditorGUILayout.LabelField(recommendation.description, EditorStyles.wordWrappedMiniLabel);
-                EditorGUILayout.EndHorizontal();
-            }
-
-            // 语义相似度
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("语义相似度:", EditorStyles.miniLabel, GUILayout.Width(80));
-            EditorGUILayout.LabelField(
-                $"{recommendation.semantic_similarity:P0}",
-                EditorStyles.miniLabel
-            );
-            EditorGUILayout.EndHorizontal();
-
-            // 分类和描述
-            if (!string.IsNullOrEmpty(recommendation.category))
-            {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("分类:", EditorStyles.miniLabel, GUILayout.Width(80));
-                EditorGUILayout.LabelField(recommendation.category, EditorStyles.miniLabel);
-                EditorGUILayout.EndHorizontal();
-            }
-
+            // 描述
             if (!string.IsNullOrEmpty(recommendation.description))
             {
                 EditorGUILayout.Space(2);
-                EditorGUILayout.LabelField("描述:", EditorStyles.miniLabel);
                 EditorGUI.indentLevel++;
                 EditorGUILayout.LabelField(recommendation.description, EditorStyles.wordWrappedMiniLabel);
                 EditorGUI.indentLevel--;
