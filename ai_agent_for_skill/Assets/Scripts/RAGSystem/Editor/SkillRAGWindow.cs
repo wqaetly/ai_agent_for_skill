@@ -279,7 +279,7 @@ namespace SkillSystem.RAG
 
             // 详细信息
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("技能ID:", GUILayout.Width(60));
+            EditorGUILayout.LabelField("技能ID:", GUILayout.Width(70));
             EditorGUILayout.SelectableLabel(result.skill_id, GUILayout.Height(16));
             EditorGUILayout.EndHorizontal();
 
@@ -378,12 +378,12 @@ namespace SkillSystem.RAG
 
             GUILayout.FlexibleSpace();
 
-            // 综合得分标签（颜色根据得分高低）
+            // 语义相似度标签（颜色根据相似度高低）
             Color originalColor = GUI.backgroundColor;
-            float score = recommendation.combined_score;
+            float score = recommendation.semantic_similarity;
             GUI.backgroundColor = score >= 0.7f ? Color.green :
                                   score >= 0.4f ? Color.yellow : Color.red;
-            GUILayout.Label($"得分: {score:P0}", EditorStyles.miniButton, GUILayout.Width(60));
+            GUILayout.Label($"相似度: {score:P0}", EditorStyles.miniButton, GUILayout.Width(100));
             GUI.backgroundColor = originalColor;
 
             EditorGUILayout.EndHorizontal();
@@ -405,37 +405,31 @@ namespace SkillSystem.RAG
                 EditorGUILayout.EndHorizontal();
             }
 
-            // 详细评分信息
+            // 语义相似度
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("详细评分:", EditorStyles.miniLabel, GUILayout.Width(60));
+            EditorGUILayout.LabelField("语义相似度:", EditorStyles.miniLabel, GUILayout.Width(80));
             EditorGUILayout.LabelField(
-                $"语义相似度: {recommendation.semantic_similarity:P0}  |  使用频率: {recommendation.frequency} 次",
+                $"{recommendation.semantic_similarity:P0}",
                 EditorStyles.miniLabel
             );
             EditorGUILayout.EndHorizontal();
 
-            // 参数示例
-            if (recommendation.examples != null && recommendation.examples.Count > 0)
+            // 分类和描述
+            if (!string.IsNullOrEmpty(recommendation.category))
             {
-                EditorGUILayout.Space(3);
-                EditorGUILayout.LabelField("参数示例:", EditorStyles.miniLabel);
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("分类:", EditorStyles.miniLabel, GUILayout.Width(80));
+                EditorGUILayout.LabelField(recommendation.category, EditorStyles.miniLabel);
+                EditorGUILayout.EndHorizontal();
+            }
 
-                foreach (var example in recommendation.examples)
-                {
-                    EditorGUI.indentLevel++;
-                    EditorGUILayout.LabelField($"来自: {example.skill_name}", EditorStyles.miniLabel);
-
-                    if (example.parameters != null && example.parameters.Count > 0)
-                    {
-                        EditorGUI.indentLevel++;
-                        foreach (var param in example.parameters)
-                        {
-                            EditorGUILayout.LabelField($"{param.Key}: {param.Value}", EditorStyles.miniLabel);
-                        }
-                        EditorGUI.indentLevel--;
-                    }
-                    EditorGUI.indentLevel--;
-                }
+            if (!string.IsNullOrEmpty(recommendation.description))
+            {
+                EditorGUILayout.Space(2);
+                EditorGUILayout.LabelField("描述:", EditorStyles.miniLabel);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField(recommendation.description, EditorStyles.wordWrappedMiniLabel);
+                EditorGUI.indentLevel--;
             }
 
             // 操作按钮

@@ -97,11 +97,11 @@ namespace SkillSystem.RAG
 
             if (suggestions == null || suggestions.Count == 0)
             {
-                EditorGUILayout.HelpBox("没有找到相关的参数建议", MessageType.Info);
+                EditorGUILayout.HelpBox("没有找到相关的AI推荐", MessageType.Info);
                 return;
             }
 
-            EditorGUILayout.LabelField($"基于 {GetTotalFrequency(suggestions)} 个相似案例的建议:", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField($"找到 {suggestions.Count} 个推荐的Action类型:", EditorStyles.miniLabel);
             EditorGUILayout.Space(3);
 
             suggestionsScrollPos = EditorGUILayout.BeginScrollView(
@@ -109,13 +109,10 @@ namespace SkillSystem.RAG
                 GUILayout.MaxHeight(200)
             );
 
-            // 只显示当前Action类型的建议
+            // 显示所有推荐的Action
             foreach (var suggestion in suggestions)
             {
-                if (suggestion.action_type == actionType)
-                {
-                    DrawActionSuggestion(suggestion, action);
-                }
+                DrawActionSuggestion(suggestion);
             }
 
             EditorGUILayout.EndScrollView();
@@ -124,62 +121,24 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 绘制单个Action建议
         /// </summary>
-        private static void DrawActionSuggestion(EditorRAGClient.ActionRecommendation suggestion, SkillSystem.Actions.ISkillAction action)
+        private static void DrawActionSuggestion(EditorRAGClient.ActionRecommendation suggestion)
         {
-            if (suggestion.examples == null || suggestion.examples.Count == 0)
-                return;
-
             EditorGUILayout.BeginVertical("box");
 
-            EditorGUILayout.LabelField($"常见参数配置 (出现 {suggestion.frequency} 次)", EditorStyles.boldLabel);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField($"{suggestion.display_name} ({suggestion.action_type})", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"相似度: {suggestion.semantic_similarity:F3}", GUILayout.Width(100));
+            EditorGUILayout.EndHorizontal();
 
-            foreach (var example in suggestion.examples)
+            if (!string.IsNullOrEmpty(suggestion.description))
             {
-                EditorGUILayout.BeginVertical("helpBox");
-
-                EditorGUILayout.LabelField($"来源: {example.skill_name}", EditorStyles.miniLabel);
-                EditorGUILayout.Space(2);
-
-                if (example.parameters != null && example.parameters.Count > 0)
-                {
-                    EditorGUI.indentLevel++;
-
-                    foreach (var param in example.parameters)
-                    {
-                        EditorGUILayout.BeginHorizontal();
-
-                        EditorGUILayout.LabelField($"{param.Key}:", GUILayout.Width(150));
-
-                        // 显示值
-                        string valueStr = param.Value?.ToString() ?? "null";
-                        EditorGUILayout.SelectableLabel(valueStr, EditorStyles.miniLabel, GUILayout.Height(16));
-
-                        // 应用按钮
-                        if (GUILayout.Button("应用", EditorStyles.miniButton, GUILayout.Width(40)))
-                        {
-                            ApplyParameterToAction(action, param.Key, param.Value);
-                        }
-
-                        EditorGUILayout.EndHorizontal();
-                    }
-
-                    EditorGUI.indentLevel--;
-                }
-
-                EditorGUILayout.EndVertical();
-                EditorGUILayout.Space(3);
+                EditorGUILayout.LabelField($"描述: {suggestion.description}", EditorStyles.wordWrappedMiniLabel);
             }
 
-            // 全部应用按钮
-            if (suggestion.examples.Count > 0 && suggestion.examples[0].parameters != null)
-            {
-                if (GUILayout.Button("应用此配置的所有参数", GUILayout.Height(25)))
-                {
-                    ApplyAllParameters(action, suggestion.examples[0].parameters);
-                }
-            }
+            EditorGUILayout.LabelField($"分类: {suggestion.category}", EditorStyles.miniLabel);
 
             EditorGUILayout.EndVertical();
+            EditorGUILayout.Space(2);
         }
 
         /// <summary>
@@ -247,142 +206,6 @@ namespace SkillSystem.RAG
             };
 
             return contextMap.ContainsKey(baseName) ? contextMap[baseName] : $"{baseName} 相关效果";
-        }
-
-        /// <summary>
-        /// 应用参数到Action
-        /// </summary>
-        private static void ApplyParameterToAction(SkillSystem.Actions.ISkillAction action, string paramName, object paramValue)
-        {
-            try
-            {
-                var field = action.GetType().GetField(paramName);
-
-                if (field != null)
-                {
-                    // 类型转换
-                    object convertedValue = ConvertValue(paramValue, field.FieldType);
-
-                    if (convertedValue != null)
-                    {
-                        // Note: ISkillAction is not a UnityEngine.Object, so we can't use Undo
-                        // The changes will be applied directly to the action data
-                        field.SetValue(action, convertedValue);
-
-                        Debug.Log($"[SmartActionInspector] 已应用参数: {paramName} = {paramValue}");
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"[SmartActionInspector] 无法转换参数类型: {paramName}");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"[SmartActionInspector] 未找到字段: {paramName}");
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"[SmartActionInspector] 应用参数失败: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 应用所有参数
-        /// </summary>
-        private static void ApplyAllParameters(SkillSystem.Actions.ISkillAction action, Dictionary<string, object> parameters)
-        {
-            // Note: ISkillAction is not a UnityEngine.Object, so we can't use Undo
-            // The changes will be applied directly to the action data
-
-            int appliedCount = 0;
-
-            foreach (var param in parameters)
-            {
-                try
-                {
-                    var field = action.GetType().GetField(param.Key);
-
-                    if (field != null)
-                    {
-                        object convertedValue = ConvertValue(param.Value, field.FieldType);
-
-                        if (convertedValue != null)
-                        {
-                            field.SetValue(action, convertedValue);
-                            appliedCount++;
-                        }
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogWarning($"[SmartActionInspector] 应用参数 {param.Key} 失败: {e.Message}");
-                }
-            }
-
-            Debug.Log($"[SmartActionInspector] 已应用 {appliedCount}/{parameters.Count} 个参数");
-        }
-
-        /// <summary>
-        /// 类型转换辅助方法
-        /// </summary>
-        private static object ConvertValue(object value, System.Type targetType)
-        {
-            if (value == null)
-                return null;
-
-            try
-            {
-                // 如果类型已匹配
-                if (targetType.IsAssignableFrom(value.GetType()))
-                    return value;
-
-                // 字符串转换
-                if (value is string strValue)
-                {
-                    if (targetType == typeof(int))
-                        return int.Parse(strValue);
-                    if (targetType == typeof(float))
-                        return float.Parse(strValue);
-                    if (targetType == typeof(double))
-                        return double.Parse(strValue);
-                    if (targetType == typeof(bool))
-                        return bool.Parse(strValue);
-                    if (targetType.IsEnum)
-                        return System.Enum.Parse(targetType, strValue);
-                }
-
-                // 数值类型转换
-                if (targetType == typeof(float) && (value is int || value is double))
-                    return System.Convert.ToSingle(value);
-
-                if (targetType == typeof(int) && (value is float || value is double))
-                    return System.Convert.ToInt32(value);
-
-                // 枚举转换
-                if (targetType.IsEnum && value is string enumStr)
-                    return System.Enum.Parse(targetType, enumStr);
-
-                // 默认转换
-                return System.Convert.ChangeType(value, targetType);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// 获取总频率
-        /// </summary>
-        private static int GetTotalFrequency(List<EditorRAGClient.ActionRecommendation> suggestions)
-        {
-            int total = 0;
-            foreach (var suggestion in suggestions)
-            {
-                total += suggestion.frequency;
-            }
-            return total;
         }
 
         /// <summary>

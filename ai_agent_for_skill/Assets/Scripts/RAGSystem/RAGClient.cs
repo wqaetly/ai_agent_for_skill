@@ -83,16 +83,11 @@ namespace SkillSystem.RAG
         [Serializable]
         public class ActionRecommendation
         {
-            public string action_type;
-            public int frequency;
-            public List<ActionExample> examples;
-        }
-
-        [Serializable]
-        public class ActionExample
-        {
-            public string skill_name;
-            public Dictionary<string, object> parameters;
+            public string action_type;              // Action类型名（如DamageAction）
+            public string display_name;             // 显示名称（如"伤害"）
+            public string category;                 // 分类（如"Damage"）
+            public string description;              // 功能描述
+            public float semantic_similarity;       // 语义相似度（0-1）
         }
 
         [Serializable]

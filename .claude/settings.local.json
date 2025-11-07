@@ -6,7 +6,13 @@
       "Bash(dir:*)",
       "Bash(findstr:*)",
       "Bash(where /R 'C:\\Program Files' Unity.TextMeshPro.dll 2)",
-      "Bash(nul)"
+      "Bash(nul)",
+      "Bash(powershell -Command \"Get-Process | Where-Object {$_MainWindowTitle -match ''rag_engine''}\")",
+      "Bash(python temp_modify.py:*)",
+      "Bash(del temp_modify.py)",
+      "Bash(python temp_modify_unity.py:*)",
+      "Bash(powershell -Command \"Get-Content ''Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs'' | Select-String -Pattern ''ApplyParameterToAction|ApplyAllParameters|ConvertValue'' -Context 2,2\")",
+      "Bash(python fix_inspector.py:*)"
     ],
     "deny": [],
     "ask": []

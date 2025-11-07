@@ -94,17 +94,7 @@ namespace SkillSystem.RAG
             public string display_name;             // 显示名称（如"伤害"）
             public string category;                 // 分类（如"Damage"）
             public string description;              // 功能描述
-            public float combined_score;            // 综合得分（0-1）
             public float semantic_similarity;       // 语义相似度（0-1）
-            public int frequency;                   // 在相似技能中的使用频率
-            public List<ActionExample> examples;    // 参数示例
-        }
-
-        [Serializable]
-        public class ActionExample
-        {
-            public string skill_name;
-            public Dictionary<string, object> parameters;
         }
 
         [Serializable]
