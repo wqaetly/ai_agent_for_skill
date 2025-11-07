@@ -228,7 +228,7 @@ namespace SkillSystem.Runtime
                     if (action.IsActiveAtFrame(currentFrame))
                     {
                         activeActions[action] = true;
-                        action.Update(currentFrame);
+                        action.ProcessLifecycle(currentFrame);
                     }
                 }
             }
@@ -278,7 +278,7 @@ namespace SkillSystem.Runtime
 
                     try
                     {
-                        action.Cleanup();
+                        action.ForceExit();
                     }
                     catch (System.Exception e)
                     {

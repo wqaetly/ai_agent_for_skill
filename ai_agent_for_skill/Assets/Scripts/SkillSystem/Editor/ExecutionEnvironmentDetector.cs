@@ -12,7 +12,8 @@ namespace SkillSystem.Editor
         private static readonly bool EnableDebugLog = true;
 
         // 编辑器预览模式开关 - 允许在编辑器中预览技能效果（位移、动画等）
-        public static bool EnableEditorPreview = true;
+        // 默认为 false，避免默认托管角色移动，用户可以通过技能编辑器 UI 手动启用
+        public static bool EnableEditorPreview = false;
 
         /// <summary>
         /// 检查是否应该执行技能Action

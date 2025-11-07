@@ -76,6 +76,10 @@ namespace SkillSystem.Actions
         private Vector3 actualTargetPosition;
         /// <summary>总移动距离，起始位置到目标位置的直线距离</summary>
         private float totalDistance;
+        /// <summary>PlayerMovementController缓存，用于技能期间临时禁用</summary>
+        private TrainingGround.Entity.PlayerMovementController playerMovement;
+        /// <summary>移动控制器原始启用状态</summary>
+        private bool wasMovementEnabled;
 
         public override string GetActionName()
         {
@@ -89,10 +93,25 @@ namespace SkillSystem.Actions
             {
                 startPosition = transform.position;
 
+                // 禁用玩家移动控制以避免冲突
+                playerMovement = transform.GetComponent<TrainingGround.Entity.PlayerMovementController>();
+                if (playerMovement != null)
+                {
+                    wasMovementEnabled = playerMovement.IsMovementEnabled();
+                    playerMovement.SetMovementEnabled(false);
+                    Debug.Log("[MovementAction] Player movement temporarily disabled");
+                }
+
                 // 计算实际目标位置
                 if (useRelativePosition)
                 {
-                    actualTargetPosition = startPosition + targetPosition;
+                    // 相对位置：基于角色当前朝向
+                    Vector3 forward = transform.forward;
+                    Vector3 right = transform.right;
+                    actualTargetPosition = startPosition +
+                        right * targetPosition.x +
+                        Vector3.up * targetPosition.y +
+                        forward * targetPosition.z;
                 }
                 else
                 {
@@ -151,6 +170,13 @@ namespace SkillSystem.Actions
 
         public override void OnExit()
         {
+            // 恢复玩家移动控制
+            if (playerMovement != null && wasMovementEnabled)
+            {
+                playerMovement.SetMovementEnabled(true);
+                Debug.Log("[MovementAction] Player movement re-enabled");
+            }
+
             Debug.Log($"[MovementAction] Movement completed");
         }
 

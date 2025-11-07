@@ -73,14 +73,17 @@
                             "duration": 20,
                             "enabled": true,
                             "movementType": 1,
-                            "direction": {
+                            "movementSpeed": 10.0,
+                            "targetPosition": {
                                 "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
                                 0,
                                 0,
-                                1
+                                3.5
                             },
-                            "speed": 8.0,
-                            "distance": 3.5
+                            "useRelativePosition": true,
+                            "faceMovementDirection": true,
+                            "allowMovementCancel": false,
+                            "ignoreCollision": false
                         },
                         {
                             "$id": 10,
@@ -89,14 +92,17 @@
                             "duration": 20,
                             "enabled": true,
                             "movementType": 1,
-                            "direction": {
+                            "movementSpeed": 10.0,
+                            "targetPosition": {
                                 "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
                                 0,
                                 0,
-                                1
+                                3.5
                             },
-                            "speed": 8.0,
-                            "distance": 3.5
+                            "useRelativePosition": true,
+                            "faceMovementDirection": true,
+                            "allowMovementCancel": false,
+                            "ignoreCollision": false
                         },
                         {
                             "$id": 11,
@@ -104,15 +110,19 @@
                             "frame": 205,
                             "duration": 25,
                             "enabled": true,
-                            "movementType": 3,
-                            "direction": {
+                            "movementType": 1,
+                            "movementSpeed": 12.0,
+                            "targetPosition": {
                                 "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
                                 0,
-                                0.5,
-                                1
+                                0,
+                                4.0
                             },
-                            "speed": 10.0,
-                            "distance": 4.0
+                            "useRelativePosition": true,
+                            "arcHeight": 2.0,
+                            "faceMovementDirection": true,
+                            "allowMovementCancel": false,
+                            "ignoreCollision": false
                         }
                     ]
                 }

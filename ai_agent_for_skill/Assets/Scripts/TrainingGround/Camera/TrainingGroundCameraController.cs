@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using Unity.Cinemachine.TargetTracking;
 
 namespace TrainingGround.Camera
 {
@@ -186,12 +187,25 @@ namespace TrainingGround.Camera
             }
             followComponent.FollowOffset = currentOffset;
 
+            // 禁用位置阻尼，移除相机拖尾效果
+            followComponent.TrackerSettings = new TrackerSettings
+            {
+                BindingMode = BindingMode.WorldSpace,
+                PositionDamping = Vector3.zero,  // 设为 0 = 无阻尼
+                AngularDampingMode = AngularDampingMode.Euler,
+                RotationDamping = Vector3.zero,
+                QuaternionDamping = 0
+            };
+
             // 配置旋转组件（观察目标）
             var rotationComposer = mainVirtualCamera.GetComponent<CinemachineRotationComposer>();
             if (rotationComposer == null)
             {
                 rotationComposer = mainVirtualCamera.gameObject.AddComponent<CinemachineRotationComposer>();
             }
+
+            // 禁用旋转阻尼，移除相机旋转延迟
+            rotationComposer.Damping = Vector2.zero;  // 设为 0 = 无阻尼
 
             // 设置Lens参数
             var lens = mainVirtualCamera.Lens;

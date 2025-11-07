@@ -29,6 +29,7 @@ namespace TrainingGround.UI
         [SerializeField] private bool showShieldBar = true;
         [SerializeField] private bool showResourceBar = false;
         [SerializeField] private float smoothSpeed = 10f;
+        [SerializeField] private float positionSmoothSpeed = 15f;
 
         private UnityEngine.Camera mainCamera;
         private RectTransform canvasRectTransform;
@@ -121,7 +122,10 @@ namespace TrainingGround.UI
 
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPoint, cameraForCanvas, out Vector2 localPoint))
             {
-                healthBarRoot.anchoredPosition = localPoint;
+                // 平滑插值位置，避免抖动
+                Vector2 currentPos = healthBarRoot.anchoredPosition;
+                Vector2 smoothPos = Vector2.Lerp(currentPos, localPoint, Time.deltaTime * positionSmoothSpeed);
+                healthBarRoot.anchoredPosition = smoothPos;
             }
         }
 
@@ -132,7 +136,10 @@ namespace TrainingGround.UI
                 return;
             }
 
-            healthBarRoot.position = worldPosition;
+            // 平滑插值位置，避免抖动
+            Vector3 currentPos = healthBarRoot.position;
+            Vector3 smoothPos = Vector3.Lerp(currentPos, worldPosition, Time.deltaTime * positionSmoothSpeed);
+            healthBarRoot.position = smoothPos;
 
             if (mainCamera == null)
             {
@@ -141,7 +148,9 @@ namespace TrainingGround.UI
 
             if (mainCamera != null)
             {
-                healthBarRoot.rotation = mainCamera.transform.rotation;
+                // 平滑旋转，避免突然转向
+                Quaternion targetRotation = mainCamera.transform.rotation;
+                healthBarRoot.rotation = Quaternion.Slerp(healthBarRoot.rotation, targetRotation, Time.deltaTime * positionSmoothSpeed);
             }
         }
 

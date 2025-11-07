@@ -5,7 +5,13 @@
       "Bash(find:*)",
       "Bash(dotnet build:*)",
       "SlashCommand(/nkg-unity:compile TrainingGround.Runtime)",
-      "SlashCommand(/nkg-unity:compile)"
+      "SlashCommand(/nkg-unity:compile)",
+      "Bash(python -m json.tool:*)",
+      "Bash(nul)",
+      "Bash(echo:*)",
+      "SlashCommand(/nkg-unity:compile Assembly-CSharp-Editor)",
+      "Bash(dir /s /b *.json)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
