@@ -122,13 +122,13 @@ namespace TrainingGround.Visualizer
             if (cameraController == null || cameraController.MainVirtualCamera == null) return;
 
             // 计算目标FOV
-            float currentFOV = cameraController.MainVirtualCamera.Lens.FieldOfView;
-            float targetFOV = currentFOV / action.zoomScale;
+            // float currentFOV = cameraController.MainVirtualCamera.Lens.FieldOfView;
+            // float targetFOV = currentFOV / action.zoomScale;
 
-            // 平滑过渡到目标FOV
-            cameraController.ZoomCamera(targetFOV, action.fadeInTime);
+            // 平滑过渡到目标FOV（已禁用，避免晕眩）
+            // cameraController.ZoomCamera(targetFOV, action.fadeInTime);
 
-            Debug.Log($"[CameraActionVisualizer] Zoom applied: scale={action.zoomScale}, targetFOV={targetFOV}");
+            Debug.Log($"[CameraActionVisualizer] Zoom effect disabled to prevent motion sickness");
         }
 
         /// <summary>
@@ -201,8 +201,8 @@ namespace TrainingGround.Visualizer
 
             if (cameraController != null && cameraController.MainVirtualCamera != null)
             {
-                // 恢复FOV
-                cameraController.ZoomCamera(currentState.originalFOV, fadeOutTime);
+                // 恢复FOV（已禁用）
+                // cameraController.ZoomCamera(currentState.originalFOV, fadeOutTime);
 
                 // 恢复位移偏移
                 cameraController.SetFollowOffset(currentState.originalPosition, fadeOutTime);
@@ -241,12 +241,14 @@ namespace TrainingGround.Visualizer
         /// </summary>
         public void QuickZoom(float scale, float duration = 0.5f)
         {
-            if (cameraController != null && cameraController.MainVirtualCamera != null)
-            {
-                float currentFOV = cameraController.MainVirtualCamera.Lens.FieldOfView;
-                float targetFOV = currentFOV / scale;
-                cameraController.ZoomCamera(targetFOV, duration);
-            }
+            // FOV 变化已禁用，避免晕眩
+            // if (cameraController != null && cameraController.MainVirtualCamera != null)
+            // {
+            //     float currentFOV = cameraController.MainVirtualCamera.Lens.FieldOfView;
+            //     float targetFOV = currentFOV / scale;
+            //     cameraController.ZoomCamera(targetFOV, duration);
+            // }
+            Debug.Log("[CameraActionVisualizer] QuickZoom disabled");
         }
 
         #endregion

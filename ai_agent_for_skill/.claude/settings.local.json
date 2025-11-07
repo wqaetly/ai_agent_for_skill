@@ -4,7 +4,8 @@
       "Bash(test:*)",
       "Bash(find:*)",
       "Bash(dotnet build:*)",
-      "SlashCommand(/nkg-unity:compile TrainingGround.Runtime)"
+      "SlashCommand(/nkg-unity:compile TrainingGround.Runtime)",
+      "SlashCommand(/nkg-unity:compile)"
     ],
     "deny": [],
     "ask": []

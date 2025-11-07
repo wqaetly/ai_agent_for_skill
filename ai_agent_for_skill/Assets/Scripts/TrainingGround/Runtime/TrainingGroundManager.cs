@@ -131,6 +131,30 @@ namespace TrainingGround.Runtime
                 player = playerObj.AddComponent<PlayerCharacter>();
             }
 
+            // 添加CharacterController和移动控制器
+            var characterController = playerObj.GetComponent<CharacterController>();
+            if (characterController == null)
+            {
+                characterController = playerObj.AddComponent<CharacterController>();
+                // 配置CharacterController参数（匹配Capsule大小）
+                characterController.height = 2f;
+                characterController.radius = 0.4f;
+                characterController.center = Vector3.zero;
+                characterController.slopeLimit = 45f; // 斜坡限制45度
+                characterController.stepOffset = 0.3f; // 台阶高度0.3
+            }
+
+            var movementController = playerObj.GetComponent<TrainingGround.Entity.PlayerMovementController>();
+            if (movementController == null)
+            {
+                movementController = playerObj.AddComponent<TrainingGround.Entity.PlayerMovementController>();
+                // 传递相机引用给移动控制器
+                if (cameraController != null && cameraController.MainVirtualCamera != null)
+                {
+                    movementController.SetCamera(cameraController.MainVirtualCamera.transform);
+                }
+            }
+
             // 添加SkillPlayer组件
             var skillPlayer = playerObj.GetComponent<SkillPlayer>();
             if (skillPlayer == null)
