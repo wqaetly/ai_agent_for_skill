@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0206652+08:00",
+    "exportTime": "2025-11-10T19:17:07.1778992+08:00",
     "action": {
         "typeName": "AnimationAction",
         "fullTypeName": "SkillSystem.Actions.AnimationAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "播放动画",
         "category": "Visual",
         "description": "AnimationAction是专门用于控制角色动画播放的视觉表现类技能Action。其核心功能是通过Animator组件播放指定的动画片段，支持动画层级切换、归一化时间控制和交叉淡入淡出效果。主要配置参数包括动画剪辑名称(AnimationClip Name)、归一化时间(Normalized Time)、淡入淡出时长(CrossFade Duration)和动画层级(Animation Layer)，其中归一化时间可精确控制动画起始播放位置，交叉淡入淡出确保动画切换平滑过渡。典型使用场景包括：攻击技能动画表现（如剑术连招）、技能释放特效动画（如法术施放）、角色移动状态切换（如行走到奔跑）、受击反馈动画和特殊状态动画（如死亡、复活）。与其他Action的关键区别在于，该Action纯粹用于视觉展示，不涉及伤害计算、控制效果、位移逻辑或游戏状态改变，是技能系统中专门负责动画表现的基础组件。",

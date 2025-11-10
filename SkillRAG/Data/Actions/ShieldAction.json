@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0861015+08:00",
+    "exportTime": "2025-11-10T19:17:07.1911661+08:00",
     "action": {
         "typeName": "ShieldAction",
         "fullTypeName": "SkillSystem.Actions.ShieldAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "属性护盾",
         "category": "Buff",
         "description": "属性缩放护盾Action是一个基于多种角色属性动态计算护盾值的技能组件。核心功能是通过复杂的公式计算护盾值：基础护盾 + 法术强度(Spell Power) × 法强系数 + 生命值(Health) × 生命值系数，支持随技能等级(Level Scaling)自动提升护盾强度。该Action支持配置护盾类型(ShieldType)、伤害过滤(Damage Filter)机制，可阻挡物理伤害(Physical Damage)、魔法伤害(Magical Damage)和纯净伤害(Pure Damage)。具备高级破盾条件设置，包括施法破盾(Break on Spell Cast)、攻击破盾(Break on Attack)、移动破盾(Break on Movement)等特殊机制。典型应用场景包括：赛恩W技能灵魂熔炉(基于最大生命值计算)、塞拉斯W技能(法强和生命值双加成)、莫德凯撒W技能(可刷新的护盾)、塔姆肯奇E技能(厚实表皮)、布隆E技能(坚不可摧)。与其他护盾Action的关键区别在于其多属性动态缩放能力，能够根据角色当前属性实时调整护盾强度，适用于成长型英雄和混合加成的技能设计。",

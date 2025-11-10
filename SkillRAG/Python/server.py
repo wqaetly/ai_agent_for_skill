@@ -109,6 +109,11 @@ async def lifespan(app: FastAPI):
     action_index_result = rag_engine.index_actions(force_rebuild=False)
     logger.info(f"Action index result: {action_index_result}")
 
+    # 构建细粒度索引（REQ-03）
+    logger.info("Building fine-grained index (REQ-03)...")
+    structured_index_result = rag_engine.rebuild_structured_index(force=False)
+    logger.info(f"Structured index result: {structured_index_result}")
+
     # 启动文件监听
     watch_enabled = config.get('skill_indexer', {}).get('watch_enabled', True)
     if watch_enabled:
@@ -592,6 +597,187 @@ async def get_actions_by_category(category: str):
 
     except Exception as e:
         logger.error(f"Error getting actions for category {category}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ REQ-03 结构化查询API路由 ============
+
+class StructuredQueryRequest(BaseModel):
+    """结构化查询请求"""
+    query: str = Field(..., description="查询字符串，如 'DamageAction where baseDamage > 200'")
+    limit: int = Field(100, description="最大返回结果数")
+    include_context: bool = Field(True, description="是否包含上下文信息（技能名、轨道名）")
+
+
+class ActionDetailRequest(BaseModel):
+    """Action详情请求"""
+    skill_file: str = Field(..., description="技能文件名，如 'FlameShockwave.json'")
+    json_path: str = Field(..., description="Action的JSONPath")
+
+
+class StatisticsRequest(BaseModel):
+    """统计请求"""
+    query: Optional[str] = Field(None, description="过滤查询（可选），不指定则统计全部")
+    group_by: str = Field("action_type", description="分组字段: action_type 或 track_name")
+
+
+@app.post("/query_structured", tags=["REQ-03 Structured Query"])
+async def query_skills_structured(request: StructuredQueryRequest):
+    """
+    结构化查询技能Action（REQ-03）
+
+    支持按Action类型、参数条件筛选。
+
+    查询语法示例：
+    - "DamageAction where baseDamage > 200"
+    - "baseDamage between 100 and 300"
+    - "animationClipName contains Attack"
+    - "DamageAction where damageType = Magical and baseDamage > 150"
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="RAG Engine not initialized")
+
+    try:
+        result = rag_engine.query_skills_structured(
+            query_str=request.query,
+            limit=request.limit,
+            include_context=request.include_context
+        )
+
+        return {
+            "status": "success",
+            "data": result,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Structured query error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/query_structured", tags=["REQ-03 Structured Query"])
+async def query_skills_structured_get(
+    q: str = Query(..., description="查询字符串"),
+    limit: int = Query(100, description="最大返回结果数"),
+    context: bool = Query(True, description="是否包含上下文信息")
+):
+    """
+    结构化查询技能Action（GET方法）
+
+    简化版结构化查询接口，适用于快速查询。
+    """
+    request = StructuredQueryRequest(
+        query=q,
+        limit=limit,
+        include_context=context
+    )
+    return await query_skills_structured(request)
+
+
+@app.post("/action_statistics", tags=["REQ-03 Structured Query"])
+async def get_action_statistics(request: StatisticsRequest):
+    """
+    获取Action参数的统计信息（REQ-03）
+
+    可按Action类型、轨道分组统计参数的min/max/avg值。
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="RAG Engine not initialized")
+
+    try:
+        stats = rag_engine.get_action_statistics_structured(
+            query_str=request.query,
+            group_by=request.group_by
+        )
+
+        return {
+            "status": "success",
+            "statistics": stats,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Statistics error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/action_detail", tags=["REQ-03 Structured Query"])
+async def get_action_detail(request: ActionDetailRequest):
+    """
+    获取Action的完整详细信息（REQ-03）
+
+    包含原始JSON数据、行号、上下文等。
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="RAG Engine not initialized")
+
+    try:
+        detail = rag_engine.get_action_detail_structured(
+            skill_file=request.skill_file,
+            json_path=request.json_path
+        )
+
+        if detail is None:
+            raise HTTPException(status_code=404, detail="Action not found")
+
+        return {
+            "status": "success",
+            "action": detail,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Action detail error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/rebuild_structured_index", tags=["REQ-03 Structured Query"])
+async def rebuild_structured_index(force: bool = Body(False, description="强制重建所有文件")):
+    """
+    重建细粒度索引（REQ-03）
+
+    当技能文件修改后，需要重建索引。
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="RAG Engine not initialized")
+
+    try:
+        stats = rag_engine.rebuild_structured_index(force=force)
+
+        return {
+            "status": "success",
+            "index_stats": stats,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Rebuild structured index error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/structured_cache_stats", tags=["REQ-03 Structured Query"])
+async def get_structured_cache_stats():
+    """
+    获取结构化查询缓存的统计信息（REQ-03）
+
+    返回查询缓存的命中率、大小等信息。
+    """
+    if rag_engine is None:
+        raise HTTPException(status_code=503, detail="RAG Engine not initialized")
+
+    try:
+        cache_stats = rag_engine.structured_query_engine.get_cache_stats()
+
+        return {
+            "status": "success",
+            "cache_stats": cache_stats,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Get cache stats error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 

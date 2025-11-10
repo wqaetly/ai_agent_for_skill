@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0974595+08:00",
+    "exportTime": "2025-11-10T19:17:07.1926801+08:00",
     "action": {
         "typeName": "TeleportAction",
         "fullTypeName": "SkillSystem.Actions.TeleportAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "传送",
         "category": "Movement",
         "description": "TeleportAction是一个功能完整的传送位移技能系统，核心功能是实现单位在不同位置之间的瞬间或延迟传送。该Action支持三种传送类型：Instant(瞬间传送)、Delayed(延迟传送)和Channeled(引导传送)，其中引导传送可配置Interruptible(可打断)属性。目标选择方式包括Position(指定位置)、RandomInRange(范围内随机)、NearestAlly(最近友军)、NearestEnemy(最近敌人)和Global(全局传送)。系统提供完整的传送验证机制，包括MinRange(最小距离)和MaxRange(最大距离)限制、LandingSpace(落地空间)检查、AvoidObstacles(避开障碍物)功能。特殊功能支持AffectMultipleUnits(群体传送)，可传送指定半径内的友军或敌军，以及LeavePortal(留下传送门)机制，可创建单向或双向传送门持续一段时间。典型使用场景包括：DOTA2中的闪烁匕首(Blink Dagger)瞬间传送、传送卷轴(Town Portal Scroll)的延迟传送、自然之怒(Nature's Prophet)的全球传送、敌法师(Anti-Mage)的闪烁技能、以及裂魂人(Spirit Breaker)的冲锋传送。与其他位移Action的关键区别在于：纯粹的位置传送，不包含伤害和控制效果，但提供完整的传送验证和特效系统。",

@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0519113+08:00",
+    "exportTime": "2025-11-10T19:17:07.1851389+08:00",
     "action": {
         "typeName": "ControlAction",
         "fullTypeName": "SkillSystem.Actions.ControlAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "控制效果",
         "category": "Control",
         "description": "ControlAction是Unity技能系统中的核心控制类Action，专门用于对目标单位施加8种不同类型的控制效果：眩晕(Stun)使目标无法行动、沉默(Silence)禁止施法、定身(Root)禁止移动、减速(Slow)降低移动速度、恐惧(Fear)强制逃跑、魅惑(Charm)控制敌人、缴械(Disable)禁用攻击和技能、放逐/击飞(Banish)使目标无敌且无法行动。支持配置控制持续时间、控制强度、免疫穿透、叠加行为等高级参数，每种控制类型都有专门的配置选项，如眩晕可设置是否允许部分行动、恐惧可配置移动方向和速度、魅惑可定义行为模式、缴械可选择禁用具体能力类型。具备完整的视觉效果和音效系统，包括施加特效、持续特效和结束特效，支持目标筛选、最大目标数量控制和建筑影响设置。适用于DOTA2/LOL中的各类控制技能，如雷击(眩晕)、石化凝视(定身)、寒冬诅咒(恐惧)、恶魔赦免(沉默)等，通过免疫穿透设置可应对不同免疫状态，叠加系统支持刷新持续时间、增加层数或增强效果强度等多种叠加方式。",

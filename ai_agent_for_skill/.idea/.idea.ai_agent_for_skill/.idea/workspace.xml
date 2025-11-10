@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="" />
+    <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/../.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/../.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/diagnose_actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/diagnose_actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/diagnose_movement_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/diagnose_movement_search.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/rag_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/rag_engine.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_recommend.py" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/test_recommend.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,7 +46,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Runtime/SkillPlayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Runtime/SkillSystemEvents.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Skills/FlameShockwave.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.universal@14.1.0/Runtime/Data/UniversalRenderPipelineAsset.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.universal@14.1.0/Runtime/Data/UniversalRenderPipelineAsset.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -142,6 +151,7 @@
       <workItem from="1762396086250" duration="23659000" />
       <workItem from="1762485152682" duration="13587000" />
       <workItem from="1762507465528" duration="602000" />
+      <workItem from="1762760565986" duration="1228000" />
     </task>
     <servers />
   </component>

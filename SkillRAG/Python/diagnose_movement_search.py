@@ -124,9 +124,7 @@ def main():
     print(f"   推荐 {len(recommendations)} 个Action:")
     for i, rec in enumerate(recommendations, 1):
         print(f"\n   {i}. {rec.get('display_name', 'N/A')} ({rec.get('action_type', 'N/A')})")
-        print(f"      - 综合得分: {rec.get('combined_score', 0):.4f}")
         print(f"      - 语义相似度: {rec.get('semantic_similarity', 0):.4f}")
-        print(f"      - 使用频率: {rec.get('frequency', 0)} 次")
         print(f"      - 分类: {rec.get('category', 'N/A')}")
     
     if len(recommendations) == 0:
@@ -136,9 +134,6 @@ def main():
         # 检查配置
         print("\n   a) 检查配置参数:")
         print(f"      - similarity_threshold: {config['rag'].get('similarity_threshold', 'N/A')}")
-        print(f"      - recommend_semantic_weight: {config['rag'].get('recommend_semantic_weight', 'N/A')}")
-        print(f"      - recommend_usage_weight: {config['rag'].get('recommend_usage_weight', 'N/A')}")
-        print(f"      - recommend_min_similarity: {config['rag'].get('recommend_min_similarity', 'N/A')}")
         
         # 检查技能索引
         print("\n   b) 检查技能索引:")

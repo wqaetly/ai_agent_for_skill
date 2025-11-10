@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0265038+08:00",
+    "exportTime": "2025-11-10T19:17:07.1804278+08:00",
     "action": {
         "typeName": "AreaOfEffectAction",
         "fullTypeName": "SkillSystem.Actions.AreaOfEffectAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "区域效果",
         "category": "Damage",
         "description": "AreaOfEffectAction是一个功能强大的区域效果脚本，用于在指定几何区域内产生各种持续性效果。该Action支持四种不同的区域形状：圆形(Circle)、矩形(Rectangle)、扇形(Sector)和环形(Ring)，每种形状都有专门的参数配置，如扇形角度(Area Angle)和环形内半径(Inner Radius)。核心功能包括伤害(Damage)、治疗(Healing)、增益(Buff)和减益(Debuff)四种效果类型，支持距离衰减(Falloff)和周期性触发(Effect Interval)。典型使用场景包括DOTA2中的地震(Earthshaker余震)、暴雪(Crystal Maiden冰封禁制)、火墙(Jakiro烈焰焚身)和光环类技能。与其他Action的关键区别在于其强大的区域控制和持续作用能力，支持目标筛选(Target Filter)、最大目标限制(Max Targets)和施法者忽略(Ignore Caster)等精细化控制，同时提供完整的视觉效果系统，包括区域标记(Area Visual Effect)和持续特效(Ongoing Effect)。",

@@ -46,7 +46,9 @@ namespace SkillSystem.RAG
         private string recommendContext = "";
         private int recommendTopK = 3;
         private List<EditorRAGClient.ActionRecommendation> recommendations = new List<EditorRAGClient.ActionRecommendation>();
+        private List<EnhancedActionRecommendation> enhancedRecommendations = new List<EnhancedActionRecommendation>();
         private Vector2 recommendScrollPos;
+        private bool useEnhancedRecommendation = true; // 是否使用增强推荐
 
         // UI状态
         private int selectedTab = 0;
@@ -328,6 +330,13 @@ namespace SkillSystem.RAG
             recommendTopK = EditorGUILayout.IntSlider(recommendTopK, 1, 10);
             EditorGUILayout.EndHorizontal();
 
+            // 增强推荐开关
+            useEnhancedRecommendation = EditorGUILayout.Toggle("使用增强推荐", useEnhancedRecommendation);
+            if (!useEnhancedRecommendation)
+            {
+                EditorGUILayout.HelpBox("增强推荐功能已关闭，将使用基础推荐", MessageType.Info);
+            }
+
             EditorGUILayout.Space(5);
 
             // 推荐按钮
@@ -342,8 +351,22 @@ namespace SkillSystem.RAG
 
             EditorGUILayout.Space(10);
 
-            // 推荐结果
-            if (recommendations.Count > 0)
+            // 推荐结果 - 根据是否使用增强推荐来选择展示方式
+            if (useEnhancedRecommendation && enhancedRecommendations.Count > 0)
+            {
+                EditorGUILayout.LabelField($"增强推荐结果 ({enhancedRecommendations.Count})", EditorStyles.boldLabel);
+
+                recommendScrollPos = EditorGUILayout.BeginScrollView(recommendScrollPos);
+
+                foreach (var recommendation in enhancedRecommendations)
+                {
+                    DrawEnhancedRecommendation(recommendation);
+                    EditorGUILayout.Space(5);
+                }
+
+                EditorGUILayout.EndScrollView();
+            }
+            else if (!useEnhancedRecommendation && recommendations.Count > 0)
             {
                 EditorGUILayout.LabelField($"推荐的Action类型 ({recommendations.Count})", EditorStyles.boldLabel);
 
@@ -400,6 +423,122 @@ namespace SkillSystem.RAG
                 EditorGUILayout.Space(2);
                 EditorGUI.indentLevel++;
                 EditorGUILayout.LabelField(recommendation.description, EditorStyles.wordWrappedMiniLabel);
+                EditorGUI.indentLevel--;
+            }
+
+            // 操作按钮
+            EditorGUILayout.Space(3);
+            if (GUILayout.Button($"在编辑器中添加 {recommendation.action_type}", GUILayout.Height(25)))
+            {
+                // TODO: 集成到SkillEditor，自动添加Action
+                ShowNotification(new GUIContent($"添加 {recommendation.action_type} 功能待实现"));
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawEnhancedRecommendation(EnhancedActionRecommendation recommendation)
+        {
+            // 根据验证状态选择box样式
+            GUIStyle boxStyle = recommendation.is_valid ? "box" : "helpBox";
+            EditorGUILayout.BeginVertical(boxStyle);
+
+            // Action类型标题行
+            EditorGUILayout.BeginHorizontal();
+
+            // 显示名称和类型
+            string title = !string.IsNullOrEmpty(recommendation.display_name)
+                ? $"{recommendation.display_name} ({recommendation.action_type})"
+                : recommendation.action_type;
+            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+
+            GUILayout.FlexibleSpace();
+
+            // 最终得分标签（颜色根据得分高低）
+            Color originalColor = GUI.backgroundColor;
+            float score = recommendation.final_score;
+            GUI.backgroundColor = score >= 0.7f ? Color.green :
+                                  score >= 0.4f ? Color.yellow : Color.red;
+            GUILayout.Label($"得分: {score:P0}", EditorStyles.miniButton, GUILayout.Width(80));
+            GUI.backgroundColor = originalColor;
+
+            EditorGUILayout.EndHorizontal();
+
+            // 分类和原始相似度
+            EditorGUILayout.BeginHorizontal();
+            if (!string.IsNullOrEmpty(recommendation.category))
+            {
+                EditorGUILayout.LabelField($"分类: {recommendation.category}", EditorStyles.miniLabel, GUILayout.Width(150));
+            }
+            EditorGUILayout.LabelField($"语义相似度: {recommendation.semantic_similarity:P0}", EditorStyles.miniLabel, GUILayout.Width(150));
+            EditorGUILayout.EndHorizontal();
+
+            // 验证状态
+            if (!recommendation.is_valid && recommendation.validation_issues.Count > 0)
+            {
+                EditorGUILayout.Space(2);
+                EditorGUILayout.HelpBox($"验证问题：{string.Join("; ", recommendation.validation_issues)}", MessageType.Warning);
+            }
+
+            // 描述
+            if (!string.IsNullOrEmpty(recommendation.description))
+            {
+                EditorGUILayout.Space(2);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.LabelField(recommendation.description, EditorStyles.wordWrappedMiniLabel);
+                EditorGUI.indentLevel--;
+            }
+
+            // 推荐理由（可折叠）
+            if (recommendation.reasons.Count > 0)
+            {
+                EditorGUILayout.Space(3);
+                GUIStyle foldoutStyle = new GUIStyle(EditorStyles.foldout);
+                foldoutStyle.fontStyle = FontStyle.Bold;
+
+                bool showReasons = EditorGUILayout.Foldout(true, "推荐理由", foldoutStyle);
+                if (showReasons)
+                {
+                    EditorGUI.indentLevel++;
+                    foreach (var reason in recommendation.reasons)
+                    {
+                        EditorGUILayout.LabelField($"• {reason}", EditorStyles.wordWrappedLabel);
+                    }
+                    EditorGUI.indentLevel--;
+                }
+            }
+
+            // 警告信息
+            if (recommendation.warnings.Count > 0)
+            {
+                EditorGUILayout.Space(3);
+                GUIStyle warningStyle = new GUIStyle(EditorStyles.label);
+                warningStyle.normal.textColor = new Color(1f, 0.5f, 0f);
+                warningStyle.fontStyle = FontStyle.Bold;
+                EditorGUILayout.LabelField("警告", warningStyle);
+
+                EditorGUI.indentLevel++;
+                foreach (var warning in recommendation.warnings)
+                {
+                    EditorGUILayout.LabelField(warning, EditorStyles.wordWrappedLabel);
+                }
+                EditorGUI.indentLevel--;
+            }
+
+            // 使用建议
+            if (recommendation.suggestions.Count > 0)
+            {
+                EditorGUILayout.Space(3);
+                GUIStyle suggestionStyle = new GUIStyle(EditorStyles.label);
+                suggestionStyle.normal.textColor = new Color(0.3f, 0.7f, 1f);
+                suggestionStyle.fontStyle = FontStyle.Bold;
+                EditorGUILayout.LabelField("建议", suggestionStyle);
+
+                EditorGUI.indentLevel++;
+                foreach (var suggestion in recommendation.suggestions)
+                {
+                    EditorGUILayout.LabelField(suggestion, EditorStyles.wordWrappedLabel);
+                }
                 EditorGUI.indentLevel--;
             }
 
@@ -637,6 +776,7 @@ namespace SkillSystem.RAG
             statusMessage = "正在获取推荐...";
             isLoading = true;
             recommendations.Clear();
+            enhancedRecommendations.Clear();
             Repaint();
 
             try
@@ -648,7 +788,24 @@ namespace SkillSystem.RAG
                 });
 
                 recommendations = response.recommendations ?? new List<EditorRAGClient.ActionRecommendation>();
-                statusMessage = $"获得 {recommendations.Count} 个推荐";
+
+                // 使用增强服务
+                if (useEnhancedRecommendation && recommendations.Count > 0)
+                {
+                    var enhancer = ActionRecommendationEnhancer.Instance;
+                    enhancedRecommendations = enhancer.EnhanceRecommendations(
+                        recommendations,
+                        recommendContext,
+                        existingActions: null, // TODO: 可以从当前编辑的技能中获取
+                        filterInvalid: false,
+                        maxResults: recommendTopK
+                    );
+                    statusMessage = $"获得 {enhancedRecommendations.Count} 个增强推荐";
+                }
+                else
+                {
+                    statusMessage = $"获得 {recommendations.Count} 个推荐";
+                }
             }
             catch (Exception e)
             {

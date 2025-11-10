@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0611744+08:00",
+    "exportTime": "2025-11-10T19:17:07.1871449+08:00",
     "action": {
         "typeName": "HealAction",
         "fullTypeName": "SkillSystem.Actions.HealAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "治疗",
         "category": "Support",
         "description": "HealAction是一个专业的治疗恢复类技能脚本，核心功能是为目标单位恢复生命值(Health)或法力值(Mana)，支持瞬间治疗(Instant)和持续治疗(OverTime)两种模式。该Action提供丰富的配置参数，包括基础治疗量(baseHealAmount)、每秒治疗量(healPerSecond)、治疗类型(HealType)选择，以及基于施法者等级(scaleWithCasterLevel)和法术强度(scaleWithSpellPower)的数值缩放系统。独特的过量治疗(Overheal)机制允许将超出最大值的治疗量转换为临时护盾，支持护盾持续时间(overhealShieldDuration)和转换率(overhealConversionRate)配置。目标筛选系统(targetFilter)可精确控制治疗对象，支持优先低生命值(prioritizeLowHealth)的智能治疗逻辑，同时提供完整的视觉特效(healEffect、continuousEffect)和音频效果(healSound)支持。适用于DOTA2中的治疗术、生命汲取、魔法恢复、回血药剂等技能，以及LOL中的索拉卡治疗、琴女回血等辅助类技能，区别于普通的Buff类恢复，提供更精确的数值控制和视觉效果集成。",
@@ -317,6 +317,42 @@
                 "defaultValue": "true",
                 "label": "Prioritize Low Health",
                 "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healVariance",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "",
+                "group": "",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healRadius",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "",
+                "group": "",
                 "infoBox": "",
                 "isArray": false,
                 "isEnum": false,

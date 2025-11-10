@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.0309181+08:00",
+    "exportTime": "2025-11-10T19:17:07.1814328+08:00",
     "action": {
         "typeName": "AttributeScaledDamageAction",
         "fullTypeName": "SkillSystem.Actions.AttributeScaledDamageAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "属性缩放伤害",
         "category": "Damage",
         "description": "属性缩放伤害Action是一个高度灵活的伤害计算系统，核心功能是基于多种角色属性进行伤害缩放，支持复杂的伤害计算公式。该Action允许配置多个属性缩放系数，包括总攻击力(TotalAttackDamage)、额外攻击力(BonusAttackDamage)、法术强度(SpellPower)、生命值等属性，可以精确区分不同属性的贡献比例。典型伤害公式如'基础伤害 + 130%额外攻击力 + 80%法强'，适用于需要多属性混合加成的复杂技能设计。使用场景包括：泰达米尔E技能（基于攻击力缩放）、瑞文R技能（基于额外攻击力强化）、阿狸Q技能（法强与攻击力混合）、盖伦R技能（基于目标已损失生命值）、科加斯R技能（基于自身最大生命值）。关键区别在于支持多种属性同时缩放，而传统伤害Action通常只基于单一属性；支持暴击系统，可配置使用施法者暴击率或固定暴击率；支持伤害浮动和等级成长机制，提供完整的视觉特效和音效配置。",

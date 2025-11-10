@@ -1,11 +1,11 @@
 {
     "version": "1.0",
-    "exportTime": "2025-11-01T18:37:15.1016364+08:00",
+    "exportTime": "2025-11-10T19:17:07.1941913+08:00",
     "action": {
         "typeName": "UnitTypeCappedDamageAction",
         "fullTypeName": "SkillSystem.Actions.UnitTypeCappedDamageAction",
         "namespaceName": "SkillSystem.Actions",
-        "assemblyName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
         "displayName": "类型伤害上限",
         "category": "Damage",
         "description": "这是一个专门针对不同单位类型设置独立伤害上限的伤害计算Action。核心功能是造成基于属性缩放的伤害，并对特定单位类型应用伤害上限，防止对小兵、野怪等非英雄单位造成过高伤害。支持基础伤害、法术强度缩放、最大生命值百分比伤害等多种伤害计算方式，可配置是否随技能等级成长。关键特性是为不同单位类型（英雄、小兵、野怪、建筑、守卫）设置独立的伤害上限值，未配置上限的单位类型不受限制。伤害计算公式为min(基础伤害+属性缩放, 单位类型伤害上限)。典型应用场景包括：赛恩W技能引爆护盾时对小兵野怪的伤害上限、塞拉斯被动对非英雄单位的伤害限制、需要区分PVP和PVE伤害的技能设计。与普通DamageAction的关键区别在于提供了精细化的单位类型伤害控制，特别适合MOBA游戏中需要平衡对英雄和非英雄单位伤害效果的技能。",

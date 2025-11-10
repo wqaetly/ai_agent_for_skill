@@ -125,7 +125,7 @@ def diagnose_actions(actions_dir: str = "../Data/Actions"):
 
 1. AudioAction的description为空，searchText只有3行简单文本
 2. 向量嵌入时，短文本可能产生与查询意外匹配的向量
-3. 即使语义不匹配，如果AudioAction在技能中使用频率高，usage_weight会提升其排名
+3. 语义相似度计算可能受到短文本的影响
 
 💡 解决方案：
 
@@ -134,9 +134,8 @@ def diagnose_actions(actions_dir: str = "../Data/Actions"):
    - 确保searchText包含足够的语义信息
    - 包含关键词、使用场景、相关效果等
 
-方案2：调整RAG算法参数
-   - 提高semantic_weight（从0.6到0.8）
-   - 降低usage_weight（从0.4到0.2）
+方案2：调整相似度阈值
+   - 提高similarity_threshold过滤低相关度结果
    - 添加最低相似度阈值过滤（0.3以下直接过滤）
 
 方案3：改进searchText构建逻辑

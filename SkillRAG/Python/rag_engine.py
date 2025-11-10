@@ -14,6 +14,7 @@ from embeddings import EmbeddingGenerator
 from vector_store import VectorStore
 from skill_indexer import SkillIndexer
 from action_indexer import ActionIndexer
+from structured_query_engine import StructuredQueryEngine
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,15 @@ class RAGEngine:
             action_vector_config,
             embedding_dimension=self.embedding_generator.get_embedding_dimension()
         )
+
+        # 6. 结构化查询引擎（REQ-03）
+        skills_dir = config.get('skill_indexer', {}).get('skills_directory', '../Data/Skills')
+        cache_size = self.rag_config.get('structured_query_cache_size', 100)
+        self.structured_query_engine = StructuredQueryEngine(
+            skills_dir=skills_dir,
+            cache_size=cache_size
+        )
+        logger.info("Structured query engine initialized (REQ-03)")
 
         # 查询缓存（TTL缓存，默认1小时）
         cache_enabled = self.rag_config.get('cache_enabled', True)
@@ -609,6 +619,96 @@ class RAGEngine:
         categories = set(action.get('category', 'Other') for action in actions)
         return sorted(list(categories))
 
+    # ============ REQ-03 结构化查询方法 ============
+
+    def query_skills_structured(
+        self,
+        query_str: str,
+        limit: int = 100,
+        include_context: bool = True
+    ) -> Dict[str, Any]:
+        """
+        结构化查询技能Action（REQ-03）
+
+        支持按Action类型、参数条件筛选。
+
+        Args:
+            query_str: 查询字符串，如 "DamageAction where baseDamage > 200"
+            limit: 最大返回结果数
+            include_context: 是否包含上下文信息（技能名、轨道名）
+
+        Returns:
+            查询结果
+
+        Examples:
+            >>> engine.query_skills_structured("DamageAction where baseDamage > 200")
+            >>> engine.query_skills_structured("baseDamage between 100 and 300")
+            >>> engine.query_skills_structured("animationClipName contains Attack")
+        """
+        return self.structured_query_engine.query(
+            query_str=query_str,
+            limit=limit,
+            include_context=include_context
+        )
+
+    def get_action_statistics_structured(
+        self,
+        query_str: Optional[str] = None,
+        group_by: str = "action_type"
+    ) -> Dict[str, Any]:
+        """
+        获取Action参数的统计信息（REQ-03）
+
+        可按Action类型、轨道分组统计参数的min/max/avg值。
+
+        Args:
+            query_str: 过滤查询（可选），不指定则统计全部
+            group_by: 分组字段，如 "action_type" 或 "track_name"
+
+        Returns:
+            统计信息
+        """
+        return self.structured_query_engine.get_statistics(
+            query_str=query_str,
+            group_by=group_by
+        )
+
+    def get_action_detail_structured(
+        self,
+        skill_file: str,
+        json_path: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        获取Action的完整详细信息（REQ-03）
+
+        包含原始JSON数据、行号、上下文等。
+
+        Args:
+            skill_file: 技能文件名，如 "FlameShockwave.json"
+            json_path: Action的JSONPath
+
+        Returns:
+            完整的Action数据
+        """
+        return self.structured_query_engine.get_action_detail(
+            skill_file=skill_file,
+            json_path=json_path
+        )
+
+    def rebuild_structured_index(self, force: bool = False) -> Dict[str, Any]:
+        """
+        重建细粒度索引（REQ-03）
+
+        当技能文件修改后，需要重建索引。
+
+        Args:
+            force: 强制重建所有文件（默认只更新修改的文件）
+
+        Returns:
+            索引统计信息
+        """
+        return self.structured_query_engine.rebuild_index(force=force)
+
 
 if __name__ == "__main__":
     # 测试代码
@@ -638,7 +738,8 @@ if __name__ == "__main__":
     print("\n=== Recommending Actions ===")
     actions = engine.recommend_actions("造成伤害并击退敌人", top_k=3)
     for i, action in enumerate(actions, 1):
-        print(f"\n{i}. {action['action_type']} (频率: {action['frequency']})")
+        print(f"\n{i}. {action['action_type']} (相似度: {action['semantic_similarity']:.3f})")
+        print(f"   分类: {action['category']}")
 
     # 统计信息
     print("\n=== Statistics ===")

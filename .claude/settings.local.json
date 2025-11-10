@@ -12,7 +12,13 @@
       "Bash(del temp_modify.py)",
       "Bash(python temp_modify_unity.py:*)",
       "Bash(powershell -Command \"Get-Content ''Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs'' | Select-String -Pattern ''ApplyParameterToAction|ApplyAllParameters|ConvertValue'' -Context 2,2\")",
-      "Bash(python fix_inspector.py:*)"
+      "Bash(python fix_inspector.py:*)",
+      "Bash(tee:*)",
+      "Bash(del \"ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\UnityTypeSerializer.cs\" \"ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\UnityTypeSerializer.cs.meta\")",
+      "Bash(python test_structured_query.py:*)",
+      "Bash(python -c:*)",
+      "Bash(python demo_structured_query.py:*)",
+      "Bash(python test_req03_integration.py:*)"
     ],
     "deny": [],
     "ask": []

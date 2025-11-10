@@ -1,0 +1,244 @@
+{
+    "version": "1.0.0",
+    "lastModified": "2025-11-10 20:36:40",
+    "actions": [
+        {
+            "actionType": "DamageAction",
+            "displayName": "伤害",
+            "category": "Damage",
+            "purpose": {
+                "intents": [
+                    "造成伤害",
+                    "攻击",
+                    "输出"
+                ],
+                "scenarios": [
+                    "攻击技能",
+                    "伤害技能",
+                    "输出技能"
+                ],
+                "keywords": [
+                    "伤害",
+                    "攻击",
+                    "打击",
+                    "damage",
+                    "attack"
+                ]
+            },
+            "effect": {
+                "primaryEffect": "Damage",
+                "secondaryEffects": [],
+                "targetType": "Enemy",
+                "rangeType": "Single",
+                "instantaneous": true
+            },
+            "dependency": {
+                "prerequisites": [],
+                "incompatibles": [
+                    "HealAction"
+                ],
+                "synergies": [
+                    "ControlAction",
+                    "BuffAction"
+                ],
+                "followUps": [
+                    "BuffAction",
+                    "AnimationAction"
+                ]
+            },
+            "businessPriority": 1.2000000476837159
+        },
+        {
+            "actionType": "MovementAction",
+            "displayName": "位移",
+            "category": "Movement",
+            "purpose": {
+                "intents": [
+                    "位移",
+                    "移动",
+                    "改变位置"
+                ],
+                "scenarios": [
+                    "冲刺技能",
+                    "闪现",
+                    "位移技能",
+                    "跳跃"
+                ],
+                "keywords": [
+                    "位移",
+                    "移动",
+                    "冲刺",
+                    "闪现",
+                    "跳跃",
+                    "movement",
+                    "dash",
+                    "blink"
+                ]
+            },
+            "effect": {
+                "primaryEffect": "Movement",
+                "secondaryEffects": [],
+                "targetType": "Self",
+                "rangeType": "Single",
+                "instantaneous": false
+            },
+            "dependency": {
+                "prerequisites": [],
+                "incompatibles": [
+                    "ControlAction"
+                ],
+                "synergies": [
+                    "DamageAction",
+                    "AnimationAction"
+                ],
+                "followUps": [
+                    "DamageAction"
+                ]
+            },
+            "businessPriority": 1.0
+        },
+        {
+            "actionType": "ShieldAction",
+            "displayName": "护盾",
+            "category": "Defense",
+            "purpose": {
+                "intents": [
+                    "防护",
+                    "保护",
+                    "吸收伤害"
+                ],
+                "scenarios": [
+                    "防御技能",
+                    "保护技能",
+                    "护盾技能"
+                ],
+                "keywords": [
+                    "护盾",
+                    "防护",
+                    "保护",
+                    "吸收",
+                    "shield",
+                    "protect"
+                ]
+            },
+            "effect": {
+                "primaryEffect": "Shield",
+                "secondaryEffects": [],
+                "targetType": "Self",
+                "rangeType": "Single",
+                "instantaneous": true
+            },
+            "dependency": {
+                "prerequisites": [],
+                "incompatibles": [],
+                "synergies": [
+                    "HealAction",
+                    "BuffAction"
+                ],
+                "followUps": [
+                    "DamageAction"
+                ]
+            },
+            "businessPriority": 1.100000023841858
+        },
+        {
+            "actionType": "HealAction",
+            "displayName": "治疗",
+            "category": "Heal",
+            "purpose": {
+                "intents": [
+                    "治疗",
+                    "恢复",
+                    "回血"
+                ],
+                "scenarios": [
+                    "治疗技能",
+                    "恢复技能",
+                    "回血技能"
+                ],
+                "keywords": [
+                    "治疗",
+                    "恢复",
+                    "回血",
+                    "heal",
+                    "restore"
+                ]
+            },
+            "effect": {
+                "primaryEffect": "Heal",
+                "secondaryEffects": [],
+                "targetType": "Self",
+                "rangeType": "Single",
+                "instantaneous": true
+            },
+            "dependency": {
+                "prerequisites": [],
+                "incompatibles": [
+                    "DamageAction"
+                ],
+                "synergies": [
+                    "ShieldAction",
+                    "BuffAction"
+                ],
+                "followUps": []
+            },
+            "businessPriority": 1.0
+        }
+    ],
+    "rules": [
+        {
+            "ruleName": "Damage_Heal_Exclusive",
+            "ruleType": "Exclusive",
+            "actionTypes": [
+                "DamageAction",
+                "HealAction"
+            ],
+            "description": "同一技能不应该同时对同一目标造成伤害和治疗",
+            "priority": 10,
+            "enabled": true
+        },
+        {
+            "ruleName": "Movement_Not_Knockback",
+            "ruleType": "Exclusive",
+            "actionTypes": [
+                "MovementAction"
+            ],
+            "description": "MovementAction是自主位移，不是被动击退。如需击退效果，应使用ControlAction或专门的击退Action",
+            "priority": 9,
+            "enabled": true
+        },
+        {
+            "ruleName": "Damage_Control_Synergy",
+            "ruleType": "Synergy",
+            "actionTypes": [
+                "DamageAction",
+                "ControlAction"
+            ],
+            "description": "伤害和控制效果是常见的协同组合，如晕眩+伤害",
+            "priority": 5,
+            "enabled": true
+        },
+        {
+            "ruleName": "Shield_Heal_Synergy",
+            "ruleType": "Synergy",
+            "actionTypes": [
+                "ShieldAction",
+                "HealAction"
+            ],
+            "description": "护盾和治疗是常见的防御组合",
+            "priority": 5,
+            "enabled": true
+        },
+        {
+            "ruleName": "Effect_Before_Visual",
+            "ruleType": "Prerequisite",
+            "actionTypes": [
+                "DamageAction",
+                "AnimationAction"
+            ],
+            "description": "动画和特效应该配合实际的技能效果，建议先添加功能Action再添加表现Action",
+            "priority": 3,
+            "enabled": true
+        }
+    ]
+}

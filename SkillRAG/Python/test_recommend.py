@@ -1,6 +1,6 @@
 """
-测试新的综合推荐逻辑
-验证Action推荐是否同时考虑了语义匹配和使用频率
+测试Action推荐逻辑
+验证Action推荐的纯语义匹配效果
 """
 
 import yaml
@@ -25,9 +25,7 @@ def print_recommendation(recommendation, index):
     print(f"分类: {recommendation.get('category', 'N/A')}")
     print(f"功能描述: {recommendation.get('description', 'N/A')}")
     print(f"\n评分详情:")
-    print(f"  - 综合得分: {recommendation['combined_score']:.3f} (0-1)")
-    print(f"  - 语义相似度: {recommendation['semantic_similarity']:.3f}")
-    print(f"  - 使用频率: {recommendation['frequency']} 次")
+    print(f"  - 语义相似度: {recommendation.get('semantic_similarity', 0):.3f}")
 
     if recommendation.get('examples'):
         print(f"\n参数示例:")
@@ -135,18 +133,12 @@ def test_recommendations():
 
     # 显示配置权重
     print(f"\n\n{'='*80}")
-    print("当前推荐权重配置:")
+    print("当前推荐配置:")
     print(f"{'='*80}")
-    semantic_weight = config['rag'].get('recommend_semantic_weight', 0.6)
-    usage_weight = config['rag'].get('recommend_usage_weight', 0.4)
-    min_similarity = config['rag'].get('recommend_min_similarity', 0.0)
-    print(f"  - 语义相似度权重: {semantic_weight:.1%}")
-    print(f"  - 使用频率权重: {usage_weight:.1%}")
-    print(f"  - 最低相似度阈值: {min_similarity:.2f}")
-    print(f"\n说明: 调整这些参数可以改变推荐偏好")
-    print(f"  - 提高semantic_weight: 更重视Action功能的语义匹配")
-    print(f"  - 提高usage_weight: 更重视Action在实际技能中的使用频率")
-    print(f"  - 提高min_similarity: 过滤更多语义不相关的Action")
+    similarity_threshold = config['rag'].get('similarity_threshold', 0.15)
+    print(f"  - 相似度阈值: {similarity_threshold:.2f}")
+    print(f"\n说明: 推荐基于纯语义匹配")
+    print(f"  - 提高similarity_threshold: 过滤更多不相关的Action")
 
     # 显示测试汇总
     print(f"\n\n{'='*80}")
@@ -164,13 +156,13 @@ def test_recommendations():
             print(f"\n⚠️ 有 {failed} 个测试失败，建议检查：")
             print(f"   1. Action的description是否已填充完整")
             print(f"   2. Action索引是否已重建")
-            print(f"   3. 调整config.yaml中的权重参数")
+            print(f"   3. 调整config.yaml中的相似度阈值")
 
 
 if __name__ == "__main__":
     print("="*80)
     print("RAG Action推荐系统测试")
-    print("测试综合推荐逻辑（语义匹配 + 使用频率）")
+    print("测试纯语义推荐逻辑")
     print("="*80)
 
     test_recommendations()
