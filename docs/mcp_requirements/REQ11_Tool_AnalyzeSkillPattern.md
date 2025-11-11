@@ -1,5 +1,7 @@
 # REQ-11 MCP Tool: analyze_skill_pattern
 
+**状态**: [P2-可选] | **优先级**: 低 | **备注**: MVP 后根据需求决定是否实施
+
 ## 背景
 - 需要识别技能模式（Combo/Burst等）来驱动推荐与优化建议。
 

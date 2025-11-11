@@ -1,5 +1,7 @@
 # REQ-06 MCP Tool: get_skill_detail
 
+**状态**: [P0-MVP必需] | **优先级**: 高 | **依赖**: REQ-03, REQ-14, REQ-15
+
 ## 背景
 - LLM需要按需拉取完整技能JSON或聚焦某个轨道的摘要，避免一次性输出。
 

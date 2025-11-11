@@ -1,0 +1,15 @@
+# LangChain/LangGraph 依赖
+# 用于编排层的链式调用和循环优化
+
+# 核心库（使用灵活版本范围）
+langchain>=0.3.7,<0.4.0
+langchain-core>=0.3.17,<0.4.0
+langgraph>=0.2.45,<0.3.0
+
+# LLM Providers
+langchain-openai>=0.2.8,<0.3.0      # OpenAI compatible (DeepSeek)
+langchain-anthropic>=0.2.4,<0.3.0   # Claude
+
+# 工具和辅助
+pydantic>=2.9.0,<3.0.0               # 数据验证
+pydantic-settings>=2.6.0,<3.0.0      # 配置管理

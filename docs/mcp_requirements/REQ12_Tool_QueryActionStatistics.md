@@ -1,5 +1,7 @@
 # REQ-12 MCP Tool: query_action_statistics
 
+**状态**: [P2-可选] | **优先级**: 低 | **备注**: REQ-03 已有基础能力，可延后
+
 ## 背景
 - 需要快速获取Action参数分布，以支撑推理解释与对比分析。
 

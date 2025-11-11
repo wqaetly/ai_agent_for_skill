@@ -1,0 +1,11 @@
+# MCP Server 专用依赖
+# 在 requirements.txt 基础上增加 MCP SDK
+
+# 包含基础依赖
+-r requirements.txt
+
+# MCP 协议 SDK
+mcp>=1.21.0
+
+# 可选：pywin32（Windows 平台，mcp 依赖）
+pywin32>=311; sys_platform == 'win32'

@@ -1,5 +1,7 @@
 # REQ-10 MCP Tool: validate_skill_config
 
+**状态**: [P0-MVP必需] | **优先级**: 高 | **依赖**: REQ-19（核心算法）
+
 ## 背景
 - 技能JSON需要在写回前做约束校验，避免时序/数值错误。
 

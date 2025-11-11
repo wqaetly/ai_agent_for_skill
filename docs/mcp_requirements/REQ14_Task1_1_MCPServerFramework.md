@@ -1,5 +1,7 @@
 # REQ-14 任务1.1 MCP Server框架搭建
 
+**状态**: [P0-MVP必需] | **优先级**: 高 | **时间**: Day 1-2
+
 ## 工作范围
 - 安装mcp-sdk-python，搭建主入口、Tool注册与会话管理。
 - 建立目录结构（tools/core/rag_integration/config/tests）。

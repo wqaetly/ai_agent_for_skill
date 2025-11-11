@@ -78,6 +78,9 @@ namespace SkillSystem.Editor
             inspectorContent.Add(titleLabel);
 
             CreateActionProperties(action, skillData);
+
+            // 添加REQ-04 AI参数助手面板
+            AddSmartActionPanel(action, skillData);
         }
 
         private PropertyTree currentPropertyTree;
@@ -115,6 +118,41 @@ namespace SkillSystem.Editor
                 }
             });
             inspectorContent.Add(odinContainer);
+        }
+
+        /// <summary>
+        /// 添加AI参数助手面板（REQ-04）
+        /// </summary>
+        private void AddSmartActionPanel(ISkillAction action, SkillData skillData)
+        {
+            // 查找当前选中的Track
+            int selectedTrackIndex = editor.GetSelectedTrackIndex();
+            var track = (selectedTrackIndex >= 0 && selectedTrackIndex < skillData.tracks.Count)
+                ? skillData.tracks[selectedTrackIndex]
+                : null;
+
+            if (track == null)
+                return;
+
+            // 使用IMGUIContainer嵌入SmartActionInspectorEnhanced
+            var smartPanelContainer = new IMGUIContainer(() =>
+            {
+                try
+                {
+                    SkillSystem.RAG.SmartActionInspectorEnhanced.DrawSmartPanel(
+                        action,
+                        skillData.skillName,
+                        track.trackName,
+                        selectedTrackIndex
+                    );
+                }
+                catch (System.Exception e)
+                {
+                    GUILayout.Label($"Error drawing smart panel: {e.Message}");
+                }
+            });
+
+            inspectorContent.Add(smartPanelContainer);
         }
 
         private void CreateTrackInspector(SkillTrack track, int trackIndex, int currentFrame)

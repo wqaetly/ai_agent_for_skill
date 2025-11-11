@@ -1,5 +1,7 @@
 # REQ-18 任务2.3 OdinJsonGenerator
 
+**状态**: [P0-MVP必需] | **优先级**: 高 | **时间**: Day 7-8 | **依赖**: REQ-15
+
 ## 工作范围
 - 负责把Action+参数转换为Odin兼容JSON片段，并处理Unity特殊类型。
 

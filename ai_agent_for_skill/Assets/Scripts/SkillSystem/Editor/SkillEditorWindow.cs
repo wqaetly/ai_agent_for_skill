@@ -93,6 +93,11 @@ namespace SkillSystem.Editor
         public int CurrentFrame => currentFrame;
         public float FrameWidth => timelineController?.FrameWidth ?? 20f;
 
+        /// <summary>
+        /// 获取当前选中的轨道索引（REQ-04）
+        /// </summary>
+        public int GetSelectedTrackIndex() => selectedTrackIndex;
+
         private void OnEnable()
         {
             if (currentSkillData == null)

@@ -1,5 +1,7 @@
 # REQ-09 MCP Tool: generate_action_json
 
+**状态**: [P0-MVP必需] | **优先级**: 高 | **依赖**: REQ-18（核心算法）
+
 ## 背景
 - 需要将推理结果转换为Odin序列化JSON片段，保证Unity可直接读取。
 
