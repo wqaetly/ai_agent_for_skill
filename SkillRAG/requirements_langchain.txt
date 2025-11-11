@@ -13,3 +13,7 @@ langchain-anthropic>=0.2.4,<0.3.0   # Claude
 # 工具和辅助
 pydantic>=2.9.0,<3.0.0               # 数据验证
 pydantic-settings>=2.6.0,<3.0.0      # 配置管理
+
+# HTTP 服务器
+fastapi>=0.115.0,<0.116.0            # Web 框架
+uvicorn>=0.32.0,<0.33.0              # ASGI 服务器

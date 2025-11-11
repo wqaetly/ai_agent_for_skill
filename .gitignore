@@ -265,3 +265,13 @@ SkillRAG/Data/skill_index.json
 # Log files
 SkillRAG/Data/*.log
 *.log
+
+# ===========================
+# WebUI
+# ===========================
+# LangGraph server logs
+SkillRAG/langgraph_server.log
+
+# Process ID files
+SkillRAG/.langgraph.pid
+SkillRAG/.webui.pid
