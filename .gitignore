@@ -238,7 +238,7 @@ dmypy.json
 cython_debug/
 
 # ===========================
-# SkillRAG - AI Models & Data
+# skill_agent - AI Models & Data
 # ===========================
 # Model files (large binary files)
 skill_agent/Data/models/**/*.safetensors
@@ -267,7 +267,7 @@ skill_agent/Data/*.log
 *.log
 
 # ===========================
-# WebUI (Next.js)
+# skill_agent - Server
 # ===========================
 # LangGraph server logs
 skill_agent/langgraph_server.log
@@ -276,10 +276,44 @@ skill_agent/langgraph_server.log
 skill_agent/.langgraph.pid
 skill_agent/.webui.pid
 
-# Next.js
+# ===========================
+# WebUI (Next.js)
+# ===========================
+# Dependencies
+webui/node_modules/
+webui/.pnp
+webui/.pnp.js
+webui/.yarn/install-state.gz
+
+# Next.js build output
 webui/.next/
 webui/out/
-webui/node_modules/
-webui/.env*.local
-webui/next-env.d.ts
+
+# Production build
+webui/build/
+
+# Debug
+webui/npm-debug.log*
+webui/yarn-debug.log*
+webui/yarn-error.log*
+
+# Local environment files
+webui/.env.local
+webui/.env.development.local
+webui/.env.test.local
+webui/.env.production.local
+
+# Vercel deployment
 webui/.vercel
+
+# TypeScript cache
+webui/*.tsbuildinfo
+webui/next-env.d.ts
+
+# IDE
+webui/.vscode/
+webui/.idea/
+
+# OS files
+webui/.DS_Store
+webui/Thumbs.db
