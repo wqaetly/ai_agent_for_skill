@@ -1,8 +1,8 @@
-Title: Qwen/Qwen3-Embedding-0.6B · Hugging Face
+Title: Qwen/Qwen3-Embedding-0.6B 路 Hugging Face
 
 URL: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
 
-Summary: We’re on a journey to advance and democratize artificial intelligence through open source and open science.
+Summary: We鈥檙e on a journey to advance and democratize artificial intelligence through open source and open science.
 
 Content:
 **Table of Contents**
@@ -216,7 +216,7 @@ print(scores.tolist())
 # [[0.7620252966880798, 0.14078938961029053], [0.1358368694782257, 0.6013815999031067]]
 ```
 
-📌 **Tip**: We recommend that developers customize the `instruct` according to their specific scenarios, tasks, and languages. Our tests have shown that in most retrieval scenarios, not using an `instruct` on the query side can lead to a drop in retrieval performance by approximately 1% to 5%.
+馃搶 **Tip**: We recommend that developers customize the `instruct` according to their specific scenarios, tasks, and languages. Our tests have shown that in most retrieval scenarios, not using an `instruct` on the query side can lead to a drop in retrieval performance by approximately 1% to 5%.
 
 ### [](#text-embeddings-inference-tei-usage)Text Embeddings Inference (TEI) Usage
 

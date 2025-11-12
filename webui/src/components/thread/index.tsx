@@ -45,6 +45,7 @@ import {
   ArtifactTitle,
   useArtifactContext,
 } from "./artifact";
+import { ServiceStatusPanel } from "@/components/service-status-panel";
 
 function StickyToBottomContent(props: {
   content: ReactNode;
@@ -371,6 +372,7 @@ export function Thread() {
               </div>
 
               <div className="flex items-center gap-4">
+                <ServiceStatusPanel />
                 <div className="flex items-center">
                   <OpenGitHubRepo />
                 </div>
