@@ -42,15 +42,6 @@ const useTypedStream = useStream<
 type StreamContextType = ReturnType<typeof useTypedStream>;
 const StreamContext = createContext<StreamContextType | undefined>(undefined);
 
-// API配置Context
-interface ApiConfigContextType {
-  apiUrl: string;
-  apiKey: string | null;
-}
-const ApiConfigContext = createContext<ApiConfigContextType | undefined>(
-  undefined,
-);
-
 async function sleep(ms = 4000) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -129,11 +120,9 @@ const StreamSession = ({
   }, [apiKey, apiUrl]);
 
   return (
-    <ApiConfigContext.Provider value={{ apiUrl, apiKey }}>
-      <StreamContext.Provider value={streamValue}>
-        {children}
-      </StreamContext.Provider>
-    </ApiConfigContext.Provider>
+    <StreamContext.Provider value={streamValue}>
+      {children}
+    </StreamContext.Provider>
   );
 };
 
@@ -290,15 +279,6 @@ export const useStreamContext = (): StreamContextType => {
   const context = useContext(StreamContext);
   if (context === undefined) {
     throw new Error("useStreamContext must be used within a StreamProvider");
-  }
-  return context;
-};
-
-// Create a custom hook to use the API config context
-export const useApiConfig = (): ApiConfigContextType => {
-  const context = useContext(ApiConfigContext);
-  if (context === undefined) {
-    throw new Error("useApiConfig must be used within a StreamProvider");
   }
   return context;
 };

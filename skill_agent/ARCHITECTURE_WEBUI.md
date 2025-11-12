@@ -1,18 +1,18 @@
 # skill_agent WebUI 架构说明
 
-## 系统架构图
+## 系统架构�?
 
 ```mermaid
 graph TB
-    subgraph "前端层"
+    subgraph "前端�?
         A[agent-chat-ui<br/>Next.js + React<br/>Port: 3000]
     end
-
-    subgraph "服务层"
+    
+    subgraph "服务�?
         B[LangGraph HTTP Server<br/>FastAPI + Uvicorn<br/>Port: 2024]
     end
-
-    subgraph "编排层"
+    
+    subgraph "编排�?
         C[LangGraph Workflows]
         C1[Skill Generation Graph]
         C2[Skill Search Graph]
@@ -21,8 +21,8 @@ graph TB
         C --> C2
         C --> C3
     end
-
-    subgraph "核心层"
+    
+    subgraph "核心�?
         D[skill_agent Core]
         D1[RAG Engine]
         D2[Vector Store]
@@ -33,8 +33,8 @@ graph TB
         D --> D3
         D --> D4
     end
-
-    subgraph "数据层"
+    
+    subgraph "数据�?
         E[Data Storage]
         E1[Skill Index JSON]
         E2[Action Reference]
@@ -43,17 +43,17 @@ graph TB
         E --> E2
         E --> E3
     end
-
+    
     subgraph "外部服务"
         F[DeepSeek API<br/>LLM Service]
     end
-
+    
     A -->|HTTP/SSE| B
     B -->|Invoke| C
     C -->|Call| D
     D -->|Read/Write| E
     C -->|LLM Calls| F
-
+    
     style A fill:#e1f5ff
     style B fill:#fff4e1
     style C fill:#f0e1ff
@@ -62,9 +62,9 @@ graph TB
     style F fill:#ffe1f5
 ```
 
-## 数据流
+## 数据�?
 
-### 1. 技能生成流程
+### 1. 技能生成流�?
 
 ```mermaid
 sequenceDiagram
@@ -74,26 +74,26 @@ sequenceDiagram
     participant Graph as Skill Generation Graph
     participant RAG as RAG Engine
     participant LLM as DeepSeek API
-
-    User->>UI: 输入需求描述
+    
+    User->>UI: 输入需求描�?
     UI->>Server: POST /threads/{id}/runs/stream
-    Server->>Graph: 初始化状态
-
-    Graph->>RAG: 检索相似技能
-    RAG-->>Graph: 返回相似技能列表
-
+    Server->>Graph: 初始化状�?
+    
+    Graph->>RAG: 检索相似技�?
+    RAG-->>Graph: 返回相似技能列�?
+    
     Graph->>LLM: 生成技能JSON
     LLM-->>Graph: 返回生成的JSON
-
+    
     Graph->>Graph: 验证JSON
-
+    
     alt 验证失败
         Graph->>LLM: 修复JSON
         LLM-->>Graph: 返回修复后的JSON
         Graph->>Graph: 重新验证
     end
-
-    Graph-->>Server: 返回最终结果
+    
+    Graph-->>Server: 返回最终结�?
     Server-->>UI: 流式返回事件
     UI-->>User: 显示结果
 ```
@@ -114,13 +114,13 @@ graph LR
 
 ### 前端 (agent-chat-ui)
 - **框架**: Next.js 14 (App Router)
-- **UI库**: React + Tailwind CSS
-- **状态管理**: React Context
+- **UI�?*: React + Tailwind CSS
+- **状态管�?*: React Context
 - **通信**: Server-Sent Events (SSE)
 
 ### 后端 (LangGraph Server)
 - **Web框架**: FastAPI
-- **ASGI服务器**: Uvicorn
+- **ASGI服务�?*: Uvicorn
 - **编排引擎**: LangGraph
 - **LLM框架**: LangChain
 
@@ -130,38 +130,38 @@ graph LR
 - **查询解析**: 自定义解析器
 - **索引**: JSON + Vector Index
 
-## 关键特性
+## 关键特�?
 
 ### 1. 流式响应
 - 使用 Server-Sent Events (SSE) 实现实时流式输出
-- 支持 LangGraph 的`astream` 异步流式处理
+- 支持 LangGraph �?`astream` 异步流式处理
 - 前端实时显示生成过程
 
-### 2. 状态管理
-- LangGraph 使用 TypedDict 定义状态
-- 状态包含`messages` 字段以兼容agent-chat-ui
-- 支持状态持久化和恢复
+### 2. 状态管�?
+- LangGraph 使用 TypedDict 定义状�?
+- 状态包�?`messages` 字段以兼�?agent-chat-ui
+- 支持状态持久化和恢�?
 
-### 3. 多助手模式
-- **skill-generation**: 技能生成助手
-- **skill-search**: 技能搜索助手
-- **skill-detail**: 技能详情助手
+### 3. 多助手模�?
+- **skill-generation**: 技能生成助�?
+- **skill-search**: 技能搜索助�?
+- **skill-detail**: 技能详情助�?
 
 ### 4. 错误处理
-- 自动验证生成的JSON
+- 自动验证生成�?JSON
 - 智能修复错误
-- 最多重试3次
-- 详细的错误日志
+- 最多重�?3 �?
+- 详细的错误日�?
 
 ### 5. RAG 增强
-- 语义搜索相似技能
-- 基于历史技能生成
+- 语义搜索相似技�?
+- 基于历史技能生�?
 - 参数推荐
-- 上下文增强
+- 上下文增�?
 
 ## 部署架构
 
-### 开发环境
+### 开发环�?
 ```
 localhost:3000 (WebUI) ←→ localhost:2024 (LangGraph Server)
 ```
@@ -169,9 +169,9 @@ localhost:3000 (WebUI) ←→ localhost:2024 (LangGraph Server)
 ### 生产环境
 ```
 [Nginx/Caddy]
-    ├── WebUI (Next.js)
-    └── LangGraph Server (FastAPI)
-         └── skill_agent Core
+    ├─�?WebUI (Next.js)
+    └─�?LangGraph Server (FastAPI)
+         └─�?skill_agent Core
 ```
 
 ## 性能优化
@@ -184,10 +184,10 @@ localhost:3000 (WebUI) ←→ localhost:2024 (LangGraph Server)
 ### 2. 并发处理
 - FastAPI 异步处理
 - LangGraph 并行节点
-- 连接池管理
+- 连接池管�?
 
 ### 3. 资源管理
-- 模型懒加载
+- 模型懒加�?
 - 内存限制
 - 请求超时
 
@@ -208,16 +208,16 @@ localhost:3000 (WebUI) ←→ localhost:2024 (LangGraph Server)
 - 身份认证
 - 访问控制
 
-## 扩展性
+## 扩展�?
 
 ### 1. 水平扩展
 - 多个 LangGraph Server 实例
 - 负载均衡
-- 会话粘性
+- 会话粘�?
 
 ### 2. 功能扩展
 - 添加新的 Graph
-- 自定义节点
+- 自定义节�?
 - 插件系统
 
 ### 3. 集成扩展
