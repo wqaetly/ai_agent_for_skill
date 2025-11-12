@@ -5,18 +5,18 @@ using Sirenix.OdinInspector;
 namespace SkillSystem.Actions
 {
     /// <summary>
-    /// 投射物行为脚�?
-    /// 功能概述：创建和控制各种投射物，包括直线弹道、追踪弹道、抛物线弹道等�?
-    /// 支持投射物的生命周期管理、碰撞检测、命中效果触发等功能�?
-    /// 适用于DOTA2中的远程攻击和技能，如普通攻击弹道、魔法球、导弹等投射物技能�?
+    /// 投射物行为脚本
+    /// 功能概述：创建和控制各种投射物，包括直线弹道、追踪弹道、抛物线弹道等。
+    /// 支持投射物的生命周期管理、碰撞检测、命中效果触发等功能。
+    /// 适用于DOTA2中的远程攻击和技能，如普通攻击弹道、魔法球、导弹等投射物技能。
     /// </summary>
     [Serializable]
-    [ActionDisplayName("投射�?)]
+    [ActionDisplayName("投射物")]
     public class ProjectileAction : ISkillAction
     {
         [BoxGroup("Projectile Settings")]
         [LabelText("Projectile Type")]
-        /// <summary>投射物类型，决定投射物的飞行轨迹和行为模�?/summary>
+        /// <summary>投射物类型，决定投射物的飞行轨迹和行为模式</summary>
         public ProjectileType projectileType = ProjectileType.Linear;
 
         [BoxGroup("Projectile Settings")]
@@ -33,13 +33,13 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Visual Settings")]
         [LabelText("Projectile Prefab")]
-        /// <summary>投射物预制体，投射物的视觉表现和物理碰撞�?/summary>
+        /// <summary>投射物预制体，投射物的视觉表现和物理碰撞体</summary>
         public GameObject projectilePrefab;
 
         [BoxGroup("Visual Settings")]
         [LabelText("Projectile Size")]
         [MinValue(0.1f)]
-        /// <summary>投射物尺寸缩放，影响投射物的显示大小和碰撞范�?/summary>
+        /// <summary>投射物尺寸缩放，影响投射物的显示大小和碰撞范围</summary>
         public float projectileSize = 1f;
 
         [BoxGroup("Visual Settings")]
@@ -58,33 +58,33 @@ namespace SkillSystem.Actions
         [LabelText("Tracking Strength")]
         [Range(0f, 1f)]
         [ShowIf("@projectileType == ProjectileType.Homing")]
-        /// <summary>追踪强度，决定追踪投射物的转向能力，1为完全追�?/summary>
+        /// <summary>追踪强度，决定追踪投射物的转向能力，1为完全追踪</summary>
         public float trackingStrength = 0.8f;
 
         [BoxGroup("Tracking Settings")]
         [LabelText("Max Turn Rate")]
         [MinValue(0f)]
         [ShowIf("@projectileType == ProjectileType.Homing")]
-        /// <summary>最大转向速率，追踪投射物每秒最大转向角�?/summary>
+        /// <summary>最大转向速率，追踪投射物每秒最大转向角度</summary>
         public float maxTurnRate = 180f;
 
         [BoxGroup("Pierce Settings")]
         [LabelText("Pierce Count")]
         [MinValue(0)]
-        /// <summary>穿透次数，投射物可以穿透的目标数量�?表示命中第一个目标后消失</summary>
+        /// <summary>穿透次数，投射物可以穿透的目标数量，0表示命中第一个目标后消失</summary>
         public int pierceCount = 0;
 
         [BoxGroup("Pierce Settings")]
         [LabelText("Pierce Damage Reduction")]
         [Range(0f, 1f)]
         [ShowIf("@pierceCount > 0")]
-        /// <summary>穿透伤害衰减，每次穿透后伤害减少的比�?/summary>
+        /// <summary>穿透伤害衰减，每次穿透后伤害减少的比例</summary>
         public float pierceDamageReduction = 0.2f;
 
         [BoxGroup("Collision Settings")]
         [LabelText("Collision Radius")]
         [MinValue(0.1f)]
-        /// <summary>碰撞半径，投射物的有效碰撞检测范�?/summary>
+        /// <summary>碰撞半径，投射物的有效碰撞检测范围</summary>
         public float collisionRadius = 0.5f;
 
         [BoxGroup("Collision Settings")]
@@ -104,7 +104,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Target Settings")]
         [LabelText("Target Position")]
-        /// <summary>目标位置，投射物的飞行终点坐�?/summary>
+        /// <summary>目标位置，投射物的飞行终点坐标</summary>
         public Vector3 targetPosition = Vector3.forward * 10f;
 
         [BoxGroup("Target Settings")]
@@ -134,7 +134,7 @@ namespace SkillSystem.Actions
 
         public override void OnEnter()
         {
-            // 计算发射位置和目标位�?
+            // 计算发射位置和目标位置
             var casterTransform = UnityEngine.Object.FindFirstObjectByType<Transform>();
             if (casterTransform != null)
             {
@@ -161,13 +161,13 @@ namespace SkillSystem.Actions
 
         public override void OnTick(int relativeFrame)
         {
-            // 更新投射物位置和状�?
+            // 更新投射物位置和状态
             if (projectileInstance != null)
             {
                 UpdateProjectilePosition(relativeFrame);
                 CheckCollisions();
 
-                // 检查是否超出最大距�?
+                // 检查是否超出最大距离
                 float currentDistance = Vector3.Distance(actualLaunchPosition, projectileInstance.transform.position);
                 if (currentDistance >= maxRange)
                 {
@@ -187,7 +187,7 @@ namespace SkillSystem.Actions
             Debug.Log($"[ProjectileAction] Projectile action completed");
         }
 
-        /// <summary>创建投射物实�?/summary>
+        /// <summary>创建投射物实例</summary>
         private void CreateProjectile()
         {
             if (projectilePrefab != null)
@@ -216,7 +216,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>更新投射物位�?/summary>
+        /// <summary>更新投射物位置</summary>
         /// <param name="relativeFrame">相对帧数</param>
         private void UpdateProjectilePosition(int relativeFrame)
         {
@@ -255,13 +255,13 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>检查碰�?/summary>
+        /// <summary>检查碰撞</summary>
         private void CheckCollisions()
         {
             if (projectileInstance == null) return;
 
-            // 在实际项目中，这里会执行真正的碰撞检�?
-            // 目前只是模拟检查是否到达目标位�?
+            // 在实际项目中，这里会执行真正的碰撞检测
+            // 目前只是模拟检查是否到达目标位置
             float distanceToTarget = Vector3.Distance(projectileInstance.transform.position, actualTargetPosition);
             if (distanceToTarget <= collisionRadius)
             {
@@ -284,7 +284,7 @@ namespace SkillSystem.Actions
             {
                 currentPierceCount++;
                 Debug.Log($"[ProjectileAction] Projectile pierced target ({currentPierceCount}/{pierceCount})");
-                // 在实际项目中，这里会寻找下一个目�?
+                // 在实际项目中，这里会寻找下一个目标
             }
             else if (destroyOnHit)
             {
@@ -303,11 +303,11 @@ namespace SkillSystem.Actions
         }
     }
 
-    /// <summary>投射物类型枚�?/summary>
+    /// <summary>投射物类型枚举</summary>
     public enum ProjectileType
     {
-        Linear,     // 直线投射�?
+        Linear,     // 直线投射物
         Arc,        // 弧线投射物（抛物线）
-        Homing      // 追踪投射�?
+        Homing      // 追踪投射物
     }
 }

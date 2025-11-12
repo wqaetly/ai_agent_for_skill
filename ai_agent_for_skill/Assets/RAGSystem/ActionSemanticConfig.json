@@ -13,9 +13,9 @@
                     "输出"
                 ],
                 "scenarios": [
-                    "攻击技�?,
-                    "伤害技�?,
-                    "输出技�?
+                    "攻击技能",
+                    "伤害技能",
+                    "输出技能"
                 ],
                 "keywords": [
                     "伤害",
@@ -59,9 +59,9 @@
                     "改变位置"
                 ],
                 "scenarios": [
-                    "冲刺技�?,
+                    "冲刺技能",
                     "闪现",
-                    "位移技�?,
+                    "位移技能",
                     "跳跃"
                 ],
                 "keywords": [
@@ -108,9 +108,9 @@
                     "吸收伤害"
                 ],
                 "scenarios": [
-                    "防御技�?,
-                    "保护技�?,
-                    "护盾技�?
+                    "防御技能",
+                    "保护技能",
+                    "护盾技能"
                 ],
                 "keywords": [
                     "护盾",
@@ -152,9 +152,9 @@
                     "回血"
                 ],
                 "scenarios": [
-                    "治疗技�?,
-                    "恢复技�?,
-                    "回血技�?
+                    "治疗技能",
+                    "恢复技能",
+                    "回血技能"
                 ],
                 "keywords": [
                     "治疗",
@@ -193,7 +193,7 @@
                 "DamageAction",
                 "HealAction"
             ],
-            "description": "同一技能不应该同时对同一目标造成伤害和治�?,
+            "description": "同一技能不应该同时对同一目标造成伤害和治疗",
             "priority": 10,
             "enabled": true
         },
@@ -214,7 +214,7 @@
                 "DamageAction",
                 "ControlAction"
             ],
-            "description": "伤害和控制效果是常见的协同组合，如晕�?伤害",
+            "description": "伤害和控制效果是常见的协同组合，如晕眩+伤害",
             "priority": 5,
             "enabled": true
         },
@@ -225,7 +225,7 @@
                 "ShieldAction",
                 "HealAction"
             ],
-            "description": "护盾和治疗是常见的防御组�?,
+            "description": "护盾和治疗是常见的防御组合",
             "priority": 5,
             "enabled": true
         },

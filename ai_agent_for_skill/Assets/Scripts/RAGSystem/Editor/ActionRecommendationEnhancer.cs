@@ -4,7 +4,8 @@ using UnityEngine;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// Action推荐增强服务 - 整合所有增强功能的门面�?    /// 提供一站式的推荐增强、评分、验证和解释生成服务
+    /// Action推荐增强服务 - 整合所有增强功能的门面类
+    /// 提供一站式的推荐增强、评分、验证和解释生成服务
     /// </summary>
     public class ActionRecommendationEnhancer
     {
@@ -38,10 +39,10 @@ namespace SkillSystem.RAG
         /// 增强推荐列表 - 主要入口方法
         /// </summary>
         /// <param name="recommendations">原始RAG推荐列表</param>
-        /// <param name="context">查询上下�?/param>
+        /// <param name="context">查询上下文</param>
         /// <param name="existingActions">已存在的Action类型</param>
         /// <param name="filterInvalid">是否过滤无效推荐</param>
-        /// <param name="maxResults">最大返回数�?/param>
+        /// <param name="maxResults">最大返回数量</param>
         /// <returns>增强后的推荐列表</returns>
         public List<EnhancedActionRecommendation> EnhanceRecommendations(
             List<EditorRAGClient.ActionRecommendation> recommendations,
@@ -62,7 +63,8 @@ namespace SkillSystem.RAG
             var enhanced = scorer.ScoreRecommendations(recommendations, context, existingActions);
             Debug.Log($"[ActionRecommendationEnhancer] Scored {enhanced.Count} recommendations");
 
-            // 步骤2：生成解�?            foreach (var rec in enhanced)
+            // 步骤2：生成解释
+            foreach (var rec in enhanced)
             {
                 explainer.GenerateExplanation(rec, context, existingActions);
             }
@@ -72,7 +74,8 @@ namespace SkillSystem.RAG
             var filtered = scorer.FilterAndRank(enhanced, filterInvalid, maxResults);
             Debug.Log($"[ActionRecommendationEnhancer] Filtered to {filtered.Count} recommendations");
 
-            // 步骤4：输出统计信�?            var stats = scorer.GetStatistics(filtered);
+            // 步骤4：输出统计信息
+            var stats = scorer.GetStatistics(filtered);
             LogStatistics(stats);
 
             return filtered;
@@ -88,7 +91,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 验证Action组合的合理�?        /// </summary>
+        /// 验证Action组合的合理性
+        /// </summary>
         public bool ValidateActionCombination(List<string> actionTypes, out List<string> issues)
         {
             return validator.ValidateCombination(actionTypes, out issues);
@@ -145,7 +149,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 输出统计信息到日�?        /// </summary>
+        /// 输出统计信息到日志
+        /// </summary>
         private void LogStatistics(Dictionary<string, object> stats)
         {
             if (stats == null || stats.Count == 0)
@@ -176,7 +181,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取Action语义信息（调试用�?        /// </summary>
+        /// 获取Action语义信息（调试用）
+        /// </summary>
         public ActionSemanticInfo GetSemanticInfo(string actionType)
         {
             return registry.GetSemanticInfo(actionType);
@@ -191,7 +197,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 健康检�?- 验证所有组件是否正常工�?        /// </summary>
+        /// 健康检查 - 验证所有组件是否正常工作
+        /// </summary>
         public bool HealthCheck(out string message)
         {
             try
@@ -203,7 +210,8 @@ namespace SkillSystem.RAG
                 if (actions.Count == 0)
                 {
                     message = "Warning: No semantic info registered. Default config may need to be created.";
-                    return true; // 不算错误，只是警�?                }
+                    return true; // 不算错误，只是警告
+                }
 
                 // 检查各组件
                 if (validator == null || scorer == null || explainer == null)

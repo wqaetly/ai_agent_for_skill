@@ -4,7 +4,7 @@ using SkillSystem.Actions;
 namespace TrainingGround.Visualizer
 {
     /// <summary>
-    /// 技能可视化器接�?- 定义如何将Action转换为可视化效果
+    /// 技能可视化器接口 - 定义如何将Action转换为可视化效果
     /// </summary>
     public interface ISkillVisualizer
     {
@@ -24,7 +24,7 @@ namespace TrainingGround.Visualizer
         void VisualizeTick(ISkillAction action, GameObject caster, int relativeFrame);
 
         /// <summary>
-        /// 可视化Action退�?
+        /// 可视化Action退出
         /// </summary>
         void VisualizeExit(ISkillAction action, GameObject caster);
 

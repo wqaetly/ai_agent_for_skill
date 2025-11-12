@@ -5,7 +5,7 @@ using System.Linq;
 namespace TrainingGround.Entity
 {
     /// <summary>
-    /// 实体管理�?- 单例模式管理场景中的所有实�?
+    /// 实体管理器 - 单例模式管理场景中的所有实体
     /// </summary>
     public class EntityManager : MonoBehaviour
     {
@@ -27,7 +27,7 @@ namespace TrainingGround.Entity
             }
         }
 
-        // 实体注册�?
+        // 实体注册表
         private List<IEntity> allEntities = new List<IEntity>();
         private Dictionary<string, IEntity> entitiesByName = new Dictionary<string, IEntity>();
 
@@ -55,7 +55,7 @@ namespace TrainingGround.Entity
 
             allEntities.Add(entity);
 
-            // 按名称注册（如果有重名，添加后缀�?
+            // 按名称注册（如果有重名，添加后缀）
             string name = entity.EntityName;
             int suffix = 1;
             while (entitiesByName.ContainsKey(name))
@@ -91,7 +91,7 @@ namespace TrainingGround.Entity
         #region 实体查询
 
         /// <summary>
-        /// 获取所有实�?
+        /// 获取所有实体
         /// </summary>
         public List<IEntity> GetAllEntities()
         {
@@ -116,7 +116,7 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 获取指定类型的实�?
+        /// 获取指定类型的实体
         /// </summary>
         public List<T> GetEntitiesOfType<T>() where T : class, IEntity
         {
@@ -147,7 +147,7 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 获取范围内的所有实�?
+        /// 获取范围内的所有实体
         /// </summary>
         public List<IEntity> GetEntitiesInRadius(Vector3 center, float radius)
         {
@@ -170,7 +170,7 @@ namespace TrainingGround.Entity
 
         #endregion
 
-        #region 玩家和木桩快捷访�?
+        #region 玩家和木桩快捷访问
 
         /// <summary>
         /// 获取玩家角色（假设只有一个）
@@ -181,7 +181,7 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 获取所有训练木�?
+        /// 获取所有训练木桩
         /// </summary>
         public List<TrainingDummy> GetAllDummies()
         {
@@ -213,10 +213,10 @@ namespace TrainingGround.Entity
 
         #endregion
 
-        #region 调试和统�?
+        #region 调试和统计
 
         /// <summary>
-        /// 打印所有实体信�?
+        /// 打印所有实体信息
         /// </summary>
         [ContextMenu("Print All Entities")]
         public void PrintAllEntities()
@@ -232,7 +232,7 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 重置所有实�?
+        /// 重置所有实体
         /// </summary>
         [ContextMenu("Reset All Entities")]
         public void ResetAllEntities()
@@ -253,7 +253,7 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 清空所有实�?
+        /// 清空所有实体
         /// </summary>
         public void ClearAllEntities()
         {

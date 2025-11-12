@@ -6,9 +6,9 @@ namespace SkillSystem.Actions
 {
     /// <summary>
     /// 资源行为脚本
-    /// 功能概述：管理和操作各种游戏资源，包括生命值、法力值、金币、经验值等�?
-    /// 支持资源消耗、恢复、转换、分享、偷取等多种操作模式�?
-    /// 适用于DOTA2中的资源相关技能，如法力燃烧、吸血光环、黄金法则、经验汲取等资源操作技能�?
+    /// 功能概述：管理和操作各种游戏资源，包括生命值、法力值、金币、经验值等。
+    /// 支持资源消耗、恢复、转换、分享、偷取等多种操作模式。
+    /// 适用于DOTA2中的资源相关技能，如法力燃烧、吸血光环、黄金法则、经验汲取等资源操作技能。
     /// </summary>
     [Serializable]
     [ActionDisplayName("资源操作")]
@@ -16,18 +16,18 @@ namespace SkillSystem.Actions
     {
         [BoxGroup("Resource Settings")]
         [LabelText("Resource Type")]
-        /// <summary>资源类型，指定要操作的资源种�?/summary>
+        /// <summary>资源类型，指定要操作的资源种类</summary>
         public ResourceType resourceType = ResourceType.Health;
 
         [BoxGroup("Resource Settings")]
         [LabelText("Operation Type")]
-        /// <summary>操作类型，定义对资源执行的操作方�?/summary>
+        /// <summary>操作类型，定义对资源执行的操作方式</summary>
         public OperationType operationType = OperationType.Restore;
 
         [BoxGroup("Value Settings")]
         [LabelText("Base Amount")]
         [MinValue(0f)]
-        /// <summary>基础数值，资源操作的原始数�?/summary>
+        /// <summary>基础数值，资源操作的原始数值</summary>
         public float baseAmount = 100f;
 
         [BoxGroup("Value Settings")]
@@ -39,12 +39,12 @@ namespace SkillSystem.Actions
         [LabelText("Percentage")]
         [Range(0f, 1f)]
         [ShowIf("@amountType == AmountType.Percentage")]
-        /// <summary>百分比数值，当使用百分比模式时的比例�?/summary>
+        /// <summary>百分比数值，当使用百分比模式时的比例值</summary>
         public float percentage = 0.5f;
 
         [BoxGroup("Scaling Settings")]
         [LabelText("Scale with Level")]
-        /// <summary>随等级缩放，true时效果会根据施法者等级调�?/summary>
+        /// <summary>随等级缩放，true时效果会根据施法者等级调整</summary>
         public bool scaleWithLevel = false;
 
         [BoxGroup("Scaling Settings")]
@@ -56,44 +56,44 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Scaling Settings")]
         [LabelText("Scale with Attribute")]
-        /// <summary>随属性缩放，true时效果会根据指定属性调�?/summary>
+        /// <summary>随属性缩放，true时效果会根据指定属性调整</summary>
         public bool scaleWithAttribute = false;
 
         [BoxGroup("Scaling Settings")]
         [LabelText("Scaling Attribute")]
         [ShowIf("scaleWithAttribute")]
-        /// <summary>缩放属性类型，用于缩放计算的属�?/summary>
+        /// <summary>缩放属性类型，用于缩放计算的属性</summary>
         public AttributeType scalingAttribute = AttributeType.Damage;
 
         [BoxGroup("Scaling Settings")]
         [LabelText("Attribute Ratio")]
         [Range(0f, 5f)]
         [ShowIf("scaleWithAttribute")]
-        /// <summary>属性缩放比例，属性对效果的影响比�?/summary>
+        /// <summary>属性缩放比例，属性对效果的影响比例</summary>
         public float attributeRatio = 1f;
 
         [BoxGroup("Transfer Settings")]
         [LabelText("Transfer Mode")]
         [ShowIf("@operationType == OperationType.Transfer || operationType == OperationType.Steal")]
-        /// <summary>转移模式，定义资源转移的方式和规�?/summary>
+        /// <summary>转移模式，定义资源转移的方式和规则</summary>
         public TransferMode transferMode = TransferMode.Direct;
 
         [BoxGroup("Transfer Settings")]
         [LabelText("Transfer Efficiency")]
         [Range(0f, 2f)]
         [ShowIf("@(operationType == OperationType.Transfer || operationType == OperationType.Steal) && transferMode != TransferMode.Burn")]
-        /// <summary>转移效率，资源转移时的转换比�?/summary>
+        /// <summary>转移效率，资源转移时的转换比例</summary>
         public float transferEfficiency = 1f;
 
         [BoxGroup("Limit Settings")]
         [LabelText("Respect Maximum")]
-        /// <summary>遵守最大值限制，true时不会超过资源的最大�?/summary>
+        /// <summary>遵守最大值限制，true时不会超过资源的最大值</summary>
         public bool respectMaximum = true;
 
         [BoxGroup("Limit Settings")]
         [LabelText("Allow Overdraft")]
         [ShowIf("@operationType == OperationType.Consume")]
-        /// <summary>允许透支，true时可以消耗超过当前拥有量的资�?/summary>
+        /// <summary>允许透支，true时可以消耗超过当前拥有量的资源</summary>
         public bool allowOverdraft = false;
 
         [BoxGroup("Limit Settings")]
@@ -111,12 +111,12 @@ namespace SkillSystem.Actions
         [LabelText("Application Interval")]
         [MinValue(0.1f)]
         [ShowIf("applyOverTime")]
-        /// <summary>应用间隔，持续操作时每次应用的时间间�?/summary>
+        /// <summary>应用间隔，持续操作时每次应用的时间间隔</summary>
         public float applicationInterval = 1f;
 
         [BoxGroup("Visual Settings")]
         [LabelText("Resource Effect")]
-        /// <summary>资源特效，资源操作时的视觉效�?/summary>
+        /// <summary>资源特效，资源操作时的视觉效果</summary>
         public GameObject resourceEffect;
 
         [BoxGroup("Visual Settings")]
@@ -132,17 +132,17 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Audio Settings")]
         [LabelText("Operation Sound")]
-        /// <summary>操作音效，执行资源操作时的音�?/summary>
+        /// <summary>操作音效，执行资源操作时的音频</summary>
         public AudioClip operationSound;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Success Sound")]
-        /// <summary>成功音效，操作成功时的音频反�?/summary>
+        /// <summary>成功音效，操作成功时的音频反馈</summary>
         public AudioClip successSound;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Failure Sound")]
-        /// <summary>失败音效，操作失败时的音频反�?/summary>
+        /// <summary>失败音效，操作失败时的音频反馈</summary>
         public AudioClip failureSound;
 
         [BoxGroup("Target Settings")]
@@ -153,7 +153,7 @@ namespace SkillSystem.Actions
         [BoxGroup("Target Settings")]
         [LabelText("Max Targets")]
         [MinValue(1)]
-        /// <summary>最大目标数量，同时可以影响的单位数�?/summary>
+        /// <summary>最大目标数量，同时可以影响的单位数量</summary>
         public int maxTargets = 1;
 
         [BoxGroup("Target Settings")]
@@ -268,17 +268,17 @@ namespace SkillSystem.Actions
                     break;
             }
 
-            // 播放效果和音�?
+            // 播放效果和音效
             PlayResourceEffects(operationSuccess);
         }
 
-        /// <summary>计算最终作用数�?/summary>
-        /// <returns>经过各种加成后的最终数�?/returns>
+        /// <summary>计算最终作用数值</summary>
+        /// <returns>经过各种加成后的最终数值</returns>
         private float CalculateFinalAmount()
         {
             float amount = baseAmount;
 
-            // 百分比计�?
+            // 百分比计算
             if (amountType == AmountType.Percentage)
             {
                 float targetMaxResource = GetTargetMaxResource();
@@ -292,7 +292,7 @@ namespace SkillSystem.Actions
                 amount += baseAmount * levelScaling * casterLevel;
             }
 
-            // 属性缩�?
+            // 属性缩放
             if (scaleWithAttribute)
             {
                 float attributeValue = GetCasterAttribute(scalingAttribute);
@@ -307,7 +307,7 @@ namespace SkillSystem.Actions
         /// <returns>操作是否成功</returns>
         private bool RestoreResource(float amount)
         {
-            // 在实际项目中，这里会获取目标单位并恢复对应资�?
+            // 在实际项目中，这里会获取目标单位并恢复对应资源
             float currentResource = GetCurrentResource();
             float maxResource = GetTargetMaxResource();
 
@@ -326,8 +326,8 @@ namespace SkillSystem.Actions
             return false;
         }
 
-        /// <summary>消耗资�?/summary>
-        /// <param name="amount">消耗数�?/param>
+        /// <summary>消耗资源</summary>
+        /// <param name="amount">消耗数量</param>
         /// <returns>操作是否成功</returns>
         private bool ConsumeResource(float amount)
         {
@@ -403,7 +403,7 @@ namespace SkillSystem.Actions
         /// <returns>操作是否成功</returns>
         private bool ConvertResource(float amount)
         {
-            // 例如：生命值转换为法力值，或金币转换为经验�?
+            // 例如：生命值转换为法力值，或金币转换为经验值
             Debug.Log($"[ResourceAction] Converting {amount:F1} {resourceType} to other resource type");
             float convertedAmount = amount * transferEfficiency;
             Debug.Log($"[ResourceAction] Conversion result: {convertedAmount:F1}");
@@ -490,8 +490,8 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>获取最大资源数量（模拟�?/summary>
-        /// <returns>最大资源数�?/returns>
+        /// <summary>获取最大资源数量（模拟）</summary>
+        /// <returns>最大资源数量</returns>
         private float GetTargetMaxResource()
         {
             // 模拟数据
@@ -506,19 +506,19 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>获取施法者等级（模拟�?/summary>
-        /// <returns>施法者等�?/returns>
+        /// <summary>获取施法者等级（模拟）</summary>
+        /// <returns>施法者等级</returns>
         private int GetCasterLevel()
         {
             return 15; // 模拟等级
         }
 
-        /// <summary>获取施法者属性（模拟�?/summary>
-        /// <param name="attribute">属性类�?/param>
-        /// <returns>属性数�?/returns>
+        /// <summary>获取施法者属性（模拟）</summary>
+        /// <param name="attribute">属性类型</param>
+        /// <returns>属性数值</returns>
         private float GetCasterAttribute(AttributeType attribute)
         {
-            // 模拟属性数�?
+            // 模拟属性数据
             switch (attribute)
             {
                 case AttributeType.Damage: return 120f;
@@ -532,43 +532,43 @@ namespace SkillSystem.Actions
     /// <summary>资源类型枚举</summary>
     public enum ResourceType
     {
-        Health,     // 生命�?
-        Mana,       // 法力�?
-        Rage,       // 怒气�?
+        Health,     // 生命值
+        Mana,       // 法力值
+        Rage,       // 怒气值
         Gold,       // 金币
-        Experience  // 经验�?
+        Experience  // 经验值
     }
 
     /// <summary>操作类型枚举</summary>
     public enum OperationType
     {
         Restore,    // 恢复
-        Consume,    // 消�?
+        Consume,    // 消耗
         Transfer,   // 转移
         Steal,      // 偷取
         Share,      // 分享
         Convert     // 转换
     }
 
-    /// <summary>数值类型枚�?/summary>
+    /// <summary>数值类型枚举</summary>
     public enum AmountType
     {
-        Fixed,      // 固定数�?
-        Percentage  // 百分�?
+        Fixed,      // 固定数值
+        Percentage  // 百分比
     }
 
     /// <summary>转移模式枚举</summary>
     public enum TransferMode
     {
         Direct,     // 直接转移
-        Efficient,  // 高效转移（有转换比例�?
-        Burn        // 燃烧（只消耗不转移�?
+        Efficient,  // 高效转移（有转换比例）
+        Burn        // 燃烧（只消耗不转移）
     }
 
     /// <summary>透支惩罚枚举</summary>
     public enum OverdraftPenalty
     {
-        None,       // 无惩�?
+        None,       // 无惩罚
         Damage,     // 造成伤害
         Stun,       // 眩晕
         Debuff      // 减益效果

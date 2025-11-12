@@ -27,7 +27,7 @@ namespace SkillSystem.Actions
         public abstract string GetActionName();
 
         /// <summary>
-        /// 获取Action的显示名称（中文�?
+        /// 获取Action的显示名称（中文）
         /// 优先使用ActionDisplayName特性，如果没有则使用GetActionName()
         /// </summary>
         public virtual string GetDisplayName()

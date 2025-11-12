@@ -1,0 +1,155 @@
+# SkillRAG Configuration File
+# 支持环境变量替换：${ENV_VAR_NAME}
+
+# ==================== 服务器配置 ====================
+server:
+  host: "127.0.0.1"
+
+  # HTTP端口（兼容旧版，降级方案）
+  http_port: 8765
+
+  # Unity RPC端口（新架构主要通信方式）
+  unity_rpc_port: 8766
+
+  # Web UI端口（Gradio界面）
+  web_port: 7860
+
+  reload: false  # 生产环境设为false
+  debug: false
+
+# 嵌入模型配置 - 使用本地模型
+embedding:
+  # 本地模型路径（相对于config.yaml的路径）
+  model_name: "../Data/models/Qwen3-Embedding-0.6B"  # 本地Qwen3模型路径
+  device: "cpu"  # 或 "cuda" 如果有GPU
+  batch_size: 32
+  max_length: 8192  # Qwen3支持32K，设为8192以提高长文本处理能力
+  cache_dir: null  # null表示使用系统默认缓存位置，避免Windows路径问题
+  use_flash_attention: false  # 仅在GPU上启用，CPU不支持
+
+# 向量数据库配置
+vector_store:
+  type: "chroma"  # 可选: chroma, faiss
+  persist_directory: "../Data/vector_db"  # 相对于config.yaml的路径
+  collection_name: "skill_collection"
+  distance_metric: "cosine"  # cosine, l2, ip
+
+# 技能索引配置
+skill_indexer:
+  skills_directory: "../../ai_agent_for_skill/Assets/Skills"  # 相对于config.yaml的路径
+  watch_enabled: true  # 是否启用文件监听
+  index_cache: "../Data/skill_index.json"  # 相对于config.yaml的路径
+
+  # 索引内容配置
+  index_fields:
+    - "skillName"
+    - "skillDescription"
+    - "skillId"
+    - "actions"  # Action类型和参数
+
+  # 是否索引Action详细信息
+  index_action_details: true
+
+  # 自动重建索引间隔（秒），0表示仅在启动和文件变化时
+  auto_reindex_interval: 0
+
+# Action脚本索引配置
+action_indexer:
+  # Unity导出的Action JSON文件目录（每个Action一个文件）
+  actions_directory: "../Data/Actions"  # 相对于config.yaml的路径
+
+  # Action索引缓存路径
+  action_index_cache: "../Data/action_index.json"  # 相对于config.yaml的路径
+
+  # Action向量数据库collection名称（独立于技能collection）
+  collection_name: "action_collection"
+
+# RAG配置
+rag:
+  # 检索参数
+  top_k: 5  # 返回最相似的K个结果
+  similarity_threshold: 0.15  # 相似度阈值（0-1），过滤不相关结果
+
+  # 重排序
+  rerank_enabled: false  # 暂不启用，可扩展
+
+  # 缓存配置
+  cache_enabled: true
+  cache_ttl: 3600  # 缓存生存时间（秒）
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "../Data/rag_server.log"  # 相对于config.yaml的路径
+  max_bytes: 10485760  # 10MB
+  backup_count: 3
+
+# ==================== LLM提供商配置（新架构）====================
+llm_providers:
+  # 默认使用的LLM
+  default: "deepseek"
+
+  # DeepSeek配置（主力）
+  deepseek:
+    enabled: true
+    api_key: "${DEEPSEEK_API_KEY}"
+    base_url: "https://api.deepseek.com/v1"
+    model: "deepseek-chat"
+    temperature: 0.7
+    max_tokens: 4096
+
+  # OpenAI兼容配置（通义千问等）
+  openai_compatible:
+    enabled: false
+    api_key: "${OPENAI_API_KEY}"
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4"
+    temperature: 0.7
+    max_tokens: 4096
+
+  # Claude配置（可选）
+  claude:
+    enabled: false
+    api_key: "${CLAUDE_API_KEY}"
+    base_url: "https://api.anthropic.com/v1"
+    model: "claude-3-5-sonnet-20241022"
+    temperature: 0.7
+    max_tokens: 4096
+
+# ==================== Unity集成配置 ====================
+unity_integration:
+  # RPC超时时间（秒）
+  rpc_timeout: 30
+
+  # 是否记录操作日志
+  log_operations: true
+  log_database: "../../ai_agent_for_skill/Assets/operation_logs.db"
+
+  # Unity RPC暴露的函数
+  exposed_functions:
+    - "CreateSkill"
+    - "UpdateSkill"
+    - "DeleteSkill"
+    - "GetSkillList"
+    - "ValidateConfig"
+    - "ApplyParameters"
+
+# ==================== Web UI配置 ====================
+web_ui:
+  # Gradio主题
+  theme: "soft"  # "soft", "default", "monochrome"
+
+  # 是否启用公开分享
+  share: false
+
+  # 是否启用队列
+  enable_queue: true
+
+  # 最大并发数
+  max_concurrent: 5
+
+  # 对话历史保存路径
+  chat_history_dir: "../Data/chat_history"
+
+  # 每个对话最大轮数
+  max_conversation_turns: 50

@@ -6,30 +6,30 @@ using SkillSystem.Runtime;
 namespace SkillSystem.Actions
 {
     /// <summary>
-    /// 输入检测行为脚�?
-    /// 功能概述：在指定时间窗口内检测玩家输入，并根据配置触发帧跳转或事件�?
-    /// 支持多种按键类型和输入状态检测（按下/抬起/持续按住）�?
-    /// 适用于需要玩家交互控制的技能，如蓄力技能、可中断技能、连续施法等�?
-    /// 典型应用：赛恩W引爆、蔚Q蓄力、卡牌R取消传送、瑞文Q连续施法�?
+    /// 输入检测行为脚本
+    /// 功能概述：在指定时间窗口内检测玩家输入，并根据配置触发帧跳转或事件。
+    /// 支持多种按键类型和输入状态检测（按下/抬起/持续按住）。
+    /// 适用于需要玩家交互控制的技能，如蓄力技能、可中断技能、连续施法等。
+    /// 典型应用：赛恩W引爆、蔚Q蓄力、卡牌R取消传送、瑞文Q连续施法。
     /// </summary>
     [Serializable]
-    [ActionDisplayName("输入检�?)]
+    [ActionDisplayName("输入检测")]
     public class InputDetectionAction : ISkillAction
     {
         [BoxGroup("Input Settings")]
         [LabelText("Input Key")]
-        [InfoBox("监听的按�?)]
-        /// <summary>监听的按键代�?/summary>
+        [InfoBox("监听的按键")]
+        /// <summary>监听的按键代码</summary>
         public KeyCode inputKey = KeyCode.W;
 
         [BoxGroup("Input Settings")]
         [LabelText("Input Type")]
-        /// <summary>输入检测类�?/summary>
+        /// <summary>输入检测类型</summary>
         public InputDetectionType detectionType = InputDetectionType.KeyDown;
 
         [BoxGroup("Input Settings")]
         [LabelText("Alternative Keys")]
-        [InfoBox("可选的备用按键列表，任意一个触发即�?)]
+        [InfoBox("可选的备用按键列表，任意一个触发即可")]
         /// <summary>备用按键列表</summary>
         public KeyCode[] alternativeKeys = new KeyCode[0];
 
@@ -43,14 +43,14 @@ namespace SkillSystem.Actions
         [LabelText("Target Frame")]
         [MinValue(0)]
         [ShowIf("@actionMode == InputActionMode.JumpToFrame")]
-        [InfoBox("跳转的目标帧�?)]
-        /// <summary>跳转目标�?/summary>
+        [InfoBox("跳转的目标帧数")]
+        /// <summary>跳转目标帧</summary>
         public int targetFrame = 90;
 
         [BoxGroup("Action Settings")]
         [LabelText("Stop Skill")]
         [ShowIf("@actionMode == InputActionMode.StopSkill")]
-        /// <summary>是否停止技能播�?/summary>
+        /// <summary>是否停止技能播放</summary>
         public bool stopSkill = true;
 
         [BoxGroup("Action Settings")]
@@ -62,14 +62,14 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Timing Settings")]
         [LabelText("Consume Input")]
-        [InfoBox("检测到输入后是否立即停止检测（避免重复触发�?)]
-        /// <summary>消耗输入，检测到后立即停�?/summary>
+        [InfoBox("检测到输入后是否立即停止检测（避免重复触发）")]
+        /// <summary>消耗输入，检测到后立即停止</summary>
         public bool consumeInput = true;
 
         [BoxGroup("Timing Settings")]
         [LabelText("Cooldown After Trigger")]
         [MinValue(0)]
-        [InfoBox("触发后的冷却时间（帧数），防止连续触�?)]
+        [InfoBox("触发后的冷却时间（帧数），防止连续触发")]
         /// <summary>触发后的冷却帧数</summary>
         public int cooldownFrames = 0;
 
@@ -88,12 +88,12 @@ namespace SkillSystem.Actions
         [BoxGroup("Visual Settings")]
         [LabelText("Input Effect")]
         [InfoBox("检测到输入时播放的视觉效果")]
-        /// <summary>输入检测特�?/summary>
+        /// <summary>输入检测特效</summary>
         public GameObject inputEffect;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Input Sound")]
-        /// <summary>输入检测音�?/summary>
+        /// <summary>输入检测音效</summary>
         public AudioClip inputSound;
 
         [BoxGroup("Debug Settings")]
@@ -102,7 +102,7 @@ namespace SkillSystem.Actions
         /// <summary>调试模式</summary>
         public bool debugMode = true;
 
-        /// <summary>是否已触�?/summary>
+        /// <summary>是否已触发</summary>
         private bool hasTriggered = false;
         /// <summary>冷却剩余帧数</summary>
         private int cooldownRemaining = 0;
@@ -130,20 +130,20 @@ namespace SkillSystem.Actions
 
         public override void OnTick(int relativeFrame)
         {
-            // 冷却中，跳过检�?
+            // 冷却中，跳过检测
             if (cooldownRemaining > 0)
             {
                 cooldownRemaining--;
                 return;
             }
 
-            // 已触发且设置为消耗输入，停止检�?
+            // 已触发且设置为消耗输入，停止检测
             if (hasTriggered && consumeInput)
             {
                 return;
             }
 
-            // 检测输�?
+            // 检测输入
             if (CheckInput())
             {
                 if (debugMode)
@@ -168,7 +168,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>检测输�?/summary>
+        /// <summary>检测输入</summary>
         /// <returns>是否检测到输入</returns>
         private bool CheckInput()
         {
@@ -177,7 +177,7 @@ namespace SkillSystem.Actions
             // 检测主按键
             detected = CheckKey(inputKey);
 
-            // 检测备用按�?
+            // 检测备用按键
             if (!detected && alternativeKeys != null)
             {
                 foreach (var altKey in alternativeKeys)
@@ -193,9 +193,9 @@ namespace SkillSystem.Actions
             return detected;
         }
 
-        /// <summary>检测单个按�?/summary>
+        /// <summary>检测单个按键</summary>
         /// <param name="key">按键代码</param>
-        /// <returns>是否满足检测条�?/returns>
+        /// <returns>是否满足检测条件</returns>
         private bool CheckKey(KeyCode key)
         {
             switch (detectionType)
@@ -230,7 +230,7 @@ namespace SkillSystem.Actions
             ExecuteAction();
         }
 
-        /// <summary>执行对应的动�?/summary>
+        /// <summary>执行对应的动作</summary>
         private void ExecuteAction()
         {
             switch (actionMode)
@@ -269,7 +269,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>播放特效和音�?/summary>
+        /// <summary>播放特效和音效</summary>
         private void PlayEffects()
         {
             if (inputEffect != null)
@@ -303,7 +303,7 @@ namespace SkillSystem.Actions
         }
     }
 
-    /// <summary>输入检测类型枚�?/summary>
+    /// <summary>输入检测类型枚举</summary>
     public enum InputDetectionType
     {
         KeyDown,    // 按键按下（单次触发）
@@ -315,8 +315,8 @@ namespace SkillSystem.Actions
     public enum InputActionMode
     {
         JumpToFrame,        // 跳转到指定帧
-        StopSkill,          // 停止技能播�?
-        TriggerCondition,   // 触发条件（供外部逻辑判断�?
+        StopSkill,          // 停止技能播放
+        TriggerCondition,   // 触发条件（供外部逻辑判断）
         NotifyOnly          // 仅通知，不执行其他操作
     }
 }

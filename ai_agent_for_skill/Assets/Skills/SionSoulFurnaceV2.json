@@ -2,7 +2,7 @@
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
     "skillName": "Soul Furnace V2 (Input Controlled)",
-    "skillDescription": "赛恩获得护盾，持�?秒�?秒后可按W键引爆护盾造成范围魔法伤害。此版本支持玩家手动控制引爆时机�?,
+    "skillDescription": "赛恩获得护盾，持续6秒。3秒后可按W键引爆护盾造成范围魔法伤害。此版本支持玩家手动控制引爆时机。",
     "totalDuration": 180,
     "frameRate": 30,
     "tracks": {

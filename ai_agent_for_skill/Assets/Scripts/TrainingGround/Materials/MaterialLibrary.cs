@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace TrainingGround.Materials
 {
     /// <summary>
-    /// 材质�?- 提供预配置的URP兼容材质
+    /// 材质库 - 提供预配置的URP兼容材质
     /// 避免运行时重复创建材质，提升性能
     /// </summary>
     public class MaterialLibrary : MonoBehaviour
@@ -130,7 +130,7 @@ namespace TrainingGround.Materials
         #region 特效材质
 
         /// <summary>
-        /// 获取AOE范围指示材质（半透明�?
+        /// 获取AOE范围指示材质（半透明）
         /// </summary>
         public Material GetAOEIndicatorMaterial(Color color, float alpha = 0.3f)
         {
@@ -148,7 +148,7 @@ namespace TrainingGround.Materials
         }
 
         /// <summary>
-        /// 获取默认AOE材质（红色半透明�?
+        /// 获取默认AOE材质（红色半透明）
         /// </summary>
         public Material GetDefaultAOEMaterial()
         {
@@ -156,7 +156,7 @@ namespace TrainingGround.Materials
         }
 
         /// <summary>
-        /// 获取投射物材�?
+        /// 获取投射物材质
         /// </summary>
         public Material GetProjectileMaterial(Color color, float metallic = 0.5f)
         {
@@ -177,7 +177,7 @@ namespace TrainingGround.Materials
         }
 
         /// <summary>
-        /// 获取默认投射物材质（橙色�?
+        /// 获取默认投射物材质（橙色）
         /// </summary>
         public Material GetDefaultProjectileMaterial()
         {
@@ -185,7 +185,7 @@ namespace TrainingGround.Materials
         }
 
         /// <summary>
-        /// 获取粒子材质（用于拖尾等�?
+        /// 获取粒子材质（用于拖尾等）
         /// </summary>
         public Material GetParticleMaterial(Color color)
         {
@@ -220,7 +220,7 @@ namespace TrainingGround.Materials
 
             Material mat = CreateLitMaterial(color, 0.8f, 0.9f);
             mat.EnableKeyword("_EMISSION");
-            mat.SetColor("_EmissionColor", color * 2f); // 强发�?
+            mat.SetColor("_EmissionColor", color * 2f); // 强发光
 
             materialCache[key] = mat;
 
@@ -267,7 +267,7 @@ namespace TrainingGround.Materials
             // 设置渲染队列为透明
             mat.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
 
-            // 启用关键�?
+            // 启用关键字
             mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
 
@@ -275,7 +275,7 @@ namespace TrainingGround.Materials
         }
 
         /// <summary>
-        /// 创建Unlit材质（无光照�?
+        /// 创建Unlit材质（无光照）
         /// </summary>
         private Material CreateUnlitMaterial(Color color)
         {
@@ -338,7 +338,7 @@ namespace TrainingGround.Materials
         }
 
         /// <summary>
-        /// 创建溶解材质（用于死亡效果等�?
+        /// 创建溶解材质（用于死亡效果等）
         /// </summary>
         public Material CreateDissolveMaterial(Color color)
         {

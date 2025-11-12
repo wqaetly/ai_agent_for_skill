@@ -6,13 +6,13 @@ namespace SkillSystem.Actions
 {
     /// <summary>
     /// 控制行为脚本
-    /// 功能概述：对目标单位施加各种控制效果，包括眩晕、沉默、定身、减速、恐惧等�?
-    /// 支持控制强度调节、持续时间管理、免疫检测、控制层级等功能�?
-    /// 适用于DOTA2中的控制技能，如雷击、石化凝视、寒冬诅咒、恶魔赦免等控制类技能�?
+    /// 功能概述：对目标单位施加各种控制效果，包括眩晕、沉默、定身、减速、恐惧等。
+    /// 支持控制强度调节、持续时间管理、免疫检测、控制层级等功能。
+    /// 适用于DOTA2中的控制技能，如雷击、石化凝视、寒冬诅咒、恶魔赦免等控制类技能。
     /// </summary>
     [Serializable]
     [ActionDisplayName("控制效果")]
-    [ActionDescription("对目标施加控制效果，支持8种控制类型：眩晕(Stun)使目标无法行动、沉�?Silence)禁止施法、定�?Root)禁止移动、减�?Slow)降低移动速度、恐�?Fear)强制逃跑、魅�?Charm)控制敌人、缴�?Disable)禁用攻击和技能、放�?击飞(Banish)使目标无敌且无法行动。可配置持续时间、控制强度、免疫穿透、叠加行为等。常用于眩晕技能、击飞效果、沉默法术、减速debuff等各类控制技能�?)]
+    [ActionDescription("对目标施加控制效果，支持8种控制类型：眩晕(Stun)使目标无法行动、沉默(Silence)禁止施法、定身(Root)禁止移动、减速(Slow)降低移动速度、恐惧(Fear)强制逃跑、魅惑(Charm)控制敌人、缴械(Disable)禁用攻击和技能、放逐/击飞(Banish)使目标无敌且无法行动。可配置持续时间、控制强度、免疫穿透、叠加行为等。常用于眩晕技能、击飞效果、沉默法术、减速debuff等各类控制技能。")]
     public class ControlAction : ISkillAction
     {
         [BoxGroup("Control Settings")]
@@ -23,7 +23,7 @@ namespace SkillSystem.Actions
         [BoxGroup("Control Settings")]
         [LabelText("Control Duration")]
         [MinValue(0f)]
-        /// <summary>控制持续时间，单位为秒，控制效果的作用时�?/summary>
+        /// <summary>控制持续时间，单位为秒，控制效果的作用时长</summary>
         public float controlDuration = 2f;
 
         [BoxGroup("Control Settings")]
@@ -36,13 +36,13 @@ namespace SkillSystem.Actions
         [BoxGroup("Stun Settings")]
         [LabelText("Allow Actions During Stun")]
         [ShowIf("@controlType == ControlType.Stun")]
-        /// <summary>眩晕期间允许行动，false时完全无法行动，true时允许部分行�?/summary>
+        /// <summary>眩晕期间允许行动，false时完全无法行动，true时允许部分行动</summary>
         public bool allowActionsDuringStun = false;
 
         [BoxGroup("Fear Settings")]
         [LabelText("Fear Direction")]
         [ShowIf("@controlType == ControlType.Fear")]
-        /// <summary>恐惧方向，恐惧效果中单位移动的方�?/summary>
+        /// <summary>恐惧方向，恐惧效果中单位移动的方向</summary>
         public FearDirection fearDirection = FearDirection.AwayFromCaster;
 
         [BoxGroup("Fear Settings")]
@@ -73,7 +73,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Dispel Settings")]
         [LabelText("Dispel Priority")]
-        /// <summary>驱散优先级，决定在驱散时的处理顺�?/summary>
+        /// <summary>驱散优先级，决定在驱散时的处理顺序</summary>
         public DispelPriority dispelPriority = DispelPriority.Normal;
 
         [BoxGroup("Stack Settings")]
@@ -91,7 +91,7 @@ namespace SkillSystem.Actions
         [LabelText("Max Stacks")]
         [MinValue(1)]
         [ShowIf("@stackable && stackBehavior == StackBehavior.IncreaseStacks")]
-        /// <summary>最大叠加层数，允许的最大叠加数�?/summary>
+        /// <summary>最大叠加层数，允许的最大叠加数量</summary>
         public int maxStacks = 3;
 
         [BoxGroup("Immunity Settings")]
@@ -111,17 +111,17 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Visual Settings")]
         [LabelText("Apply Effect")]
-        /// <summary>施加特效，控制生效时的瞬间视觉效�?/summary>
+        /// <summary>施加特效，控制生效时的瞬间视觉效果</summary>
         public GameObject applyEffect;
 
         [BoxGroup("Visual Settings")]
         [LabelText("End Effect")]
-        /// <summary>结束特效，控制结束时的视觉效�?/summary>
+        /// <summary>结束特效，控制结束时的视觉效果</summary>
         public GameObject endEffect;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Control Apply Sound")]
-        /// <summary>控制施加音效，控制生效时的音�?/summary>
+        /// <summary>控制施加音效，控制生效时的音频</summary>
         public AudioClip controlApplySound;
 
         [BoxGroup("Audio Settings")]
@@ -137,7 +137,7 @@ namespace SkillSystem.Actions
         [BoxGroup("Target Settings")]
         [LabelText("Max Targets")]
         [MinValue(1)]
-        /// <summary>最大目标数量，同时可以控制的单位数�?/summary>
+        /// <summary>最大目标数量，同时可以控制的单位数量</summary>
         public int maxTargets = 1;
 
         [BoxGroup("Target Settings")]
@@ -147,9 +147,9 @@ namespace SkillSystem.Actions
 
         /// <summary>控制特效实例，持续特效的GameObject引用</summary>
         private GameObject controlEffectInstance;
-        /// <summary>控制结束时间，控制效果消失的时间�?/summary>
+        /// <summary>控制结束时间，控制效果消失的时间戳</summary>
         private float controlEndTime;
-        /// <summary>控制是否处于激活状�?/summary>
+        /// <summary>控制是否处于激活状态</summary>
         private bool isControlActive;
 
         public override string GetActionName()
@@ -177,7 +177,7 @@ namespace SkillSystem.Actions
 
             float currentTime = Time.time;
 
-            // 检查控制是否结�?
+            // 检查控制是否结束
             if (currentTime >= controlEndTime)
             {
                 Debug.Log($"[ControlAction] {controlType} control expired");
@@ -185,11 +185,11 @@ namespace SkillSystem.Actions
                 return;
             }
 
-            // 更新控制状�?
+            // 更新控制状态
             UpdateControlEffect(relativeFrame);
 
-            // 状态监�?
-            if (relativeFrame % 30 == 0) // 每秒输出一�?
+            // 状态监控
+            if (relativeFrame % 30 == 0) // 每秒输出一次
             {
                 float remainingTime = controlEndTime - currentTime;
                 Debug.Log($"[ControlAction] {controlType} active, remaining: {remainingTime:F1}s");
@@ -205,15 +205,15 @@ namespace SkillSystem.Actions
             Debug.Log($"[ControlAction] Control action completed");
         }
 
-        /// <summary>应用控制效果到目�?/summary>
+        /// <summary>应用控制效果到目标</summary>
         /// <returns>是否成功应用控制</returns>
         private bool ApplyControl()
         {
-            // 在实际项目中，这里会�?
+            // 在实际项目中，这里会：
             // 1. 获取目标单位
-            // 2. 检查免疫状�?
-            // 3. 检查抗�?
-            // 4. 应用具体的控制效�?
+            // 2. 检查免疫状态
+            // 3. 检查抗性
+            // 4. 应用具体的控制效果
 
             Debug.Log($"[ControlAction] Checking control application:");
             Debug.Log($"  - Type: {controlType}");
@@ -221,7 +221,7 @@ namespace SkillSystem.Actions
             Debug.Log($"  - Bypass Magic Immunity: {bypassMagicImmunity}");
             Debug.Log($"  - Bypass Control Immunity: {bypassControlImmunity}");
 
-            // 模拟免疫检�?
+            // 模拟免疫检查
             if (!bypassMagicImmunity && CheckMagicImmunity())
             {
                 Debug.Log("[ControlAction] Target is magic immune, control blocked");
@@ -239,7 +239,7 @@ namespace SkillSystem.Actions
             return true;
         }
 
-        /// <summary>应用具体的控制效�?/summary>
+        /// <summary>应用具体的控制效果</summary>
         private void ApplySpecificControl()
         {
             switch (controlType)
@@ -301,7 +301,7 @@ namespace SkillSystem.Actions
         /// <summary>更新恐惧移动</summary>
         private void UpdateFearMovement()
         {
-            // 在实际项目中，这里会控制单位朝指定方向移�?
+            // 在实际项目中，这里会控制单位朝指定方向移动
             Vector3 moveDirection = CalculateFearDirection();
             Debug.Log($"[ControlAction] Fear movement direction: {moveDirection}");
         }
@@ -314,7 +314,7 @@ namespace SkillSystem.Actions
             {
                 case FearDirection.AwayFromCaster:
                     // 计算远离施法者的方向
-                    var casterPos = Vector3.zero; // 获取施法者位�?
+                    var casterPos = Vector3.zero; // 获取施法者位置
                     var targetPos = Vector3.zero; // 获取目标位置
                     return (targetPos - casterPos).normalized;
 
@@ -330,7 +330,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>应用减速效�?/summary>
+        /// <summary>应用减速效果</summary>
         private void ApplySlowEffect()
         {
             // 在实际项目中，这里会持续应用移动速度减少
@@ -393,22 +393,22 @@ namespace SkillSystem.Actions
                 }
             }
 
-            // 在实际项目中，这里会恢复目标的正常状�?
+            // 在实际项目中，这里会恢复目标的正常状态
         }
 
-        /// <summary>检查魔法免�?/summary>
+        /// <summary>检查魔法免疫</summary>
         /// <returns>是否具有魔法免疫</returns>
         private bool CheckMagicImmunity()
         {
-            // 模拟魔法免疫检�?
+            // 模拟魔法免疫检查
             return UnityEngine.Random.value < 0.1f; // 10%概率免疫
         }
 
-        /// <summary>检查控制免�?/summary>
+        /// <summary>检查控制免疫</summary>
         /// <returns>是否具有控制免疫</returns>
         private bool CheckControlImmunity()
         {
-            // 模拟控制免疫检�?
+            // 模拟控制免疫检查
             return UnityEngine.Random.value < 0.05f; // 5%概率免疫
         }
 
@@ -426,17 +426,17 @@ namespace SkillSystem.Actions
         Stun,       // 眩晕
         Silence,    // 沉默
         Root,       // 定身
-        Slow,       // 减�?
+        Slow,       // 减速
         Fear,       // 恐惧
         Charm,      // 魅惑
         Disable,    // 缴械
-        Banish      // 放�?
+        Banish      // 放逐
     }
 
     /// <summary>恐惧方向枚举</summary>
     public enum FearDirection
     {
-        AwayFromCaster, // 远离施法�?
+        AwayFromCaster, // 远离施法者
         Random,         // 随机方向
         TowardsBase     // 朝向基地
     }
@@ -445,7 +445,7 @@ namespace SkillSystem.Actions
     public enum CharmBehavior
     {
         AttackAllies,   // 攻击队友
-        FollowCaster,   // 跟随施法�?
+        FollowCaster,   // 跟随施法者
         Idle            // 无法行动
     }
 
@@ -455,12 +455,12 @@ namespace SkillSystem.Actions
     {
         None = 0,
         Attacks = 1 << 0,   // 攻击
-        Spells = 1 << 1,    // 技�?
+        Spells = 1 << 1,    // 技能
         Items = 1 << 2,     // 物品
         All = ~0            // 全部
     }
 
-    /// <summary>驱散优先级枚�?/summary>
+    /// <summary>驱散优先级枚举</summary>
     public enum DispelPriority
     {
         Low,        // 低优先级

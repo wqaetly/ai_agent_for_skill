@@ -7,7 +7,8 @@ using UnityEngine;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// 参数推理引擎 - 基于上下文和统计推断参数�?    /// 核心功能：统计推理、置信度计算、多备选值、Unity类型支持
+    /// 参数推理引擎 - 基于上下文和统计推断参数值
+    /// 核心功能：统计推理、置信度计算、多备选值、Unity类型支持
     /// </summary>
     public class ParameterInferencer
     {
@@ -21,7 +22,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 推断Action的所有参�?        /// </summary>
+        /// 推断Action的所有参数
+        /// </summary>
         /// <param name="actionType">Action类型</param>
         /// <param name="context">技能上下文</param>
         /// <param name="referenceSkills">参考技能列表（可选）</param>
@@ -39,7 +41,8 @@ namespace SkillSystem.RAG
                 timestamp = DateTime.Now
             };
 
-            // 获取Action类型的所有字�?            Type type = FindActionType(actionType);
+            // 获取Action类型的所有字段
+            Type type = FindActionType(actionType);
             if (type == null)
             {
                 Debug.LogError($"[ParameterInferencer] Action type '{actionType}' not found");
@@ -94,7 +97,8 @@ namespace SkillSystem.RAG
                 isUnityType = IsUnitySpecialType(parameterType)
             };
 
-            // 从统计数据推�?            var stats = statisticsCache.GetStatistics(actionType, parameterName);
+            // 从统计数据推断
+            var stats = statisticsCache.GetStatistics(actionType, parameterName);
             if (stats != null && stats.sampleCount > 0)
             {
                 inference = InferFromStatistics(inference, stats, context);
@@ -110,7 +114,8 @@ namespace SkillSystem.RAG
             if (min.HasValue) inference.recommendedMin = min.Value;
             if (max.HasValue) inference.recommendedMax = max.Value;
 
-            // 添加参考技�?            if (referenceSkills != null && referenceSkills.Count > 0)
+            // 添加参考技能
+            if (referenceSkills != null && referenceSkills.Count > 0)
             {
                 inference.referenceSkills.AddRange(referenceSkills.Take(3));
             }
@@ -143,7 +148,8 @@ namespace SkillSystem.RAG
             // 推理理由
             inference.inferenceReason = $"基于{stats.sampleCount}个样本的统计分析，中位数为{stats.median:F2}";
 
-            // 如果置信度低，标注需要人工确�?            if (inference.confidence < 0.7f)
+            // 如果置信度低，标注需要人工确认
+            if (inference.confidence < 0.7f)
             {
                 inference.requiresManualConfirmation = true;
                 inference.inferenceReason += $"（置信度{inference.confidence:P0}较低，建议人工确认）";
@@ -162,22 +168,25 @@ namespace SkillSystem.RAG
             Type parameterType,
             SkillContextFeatures context)
         {
-            // 获取默认�?            var defaultValue = dependencyGraph.GetDefaultValue(actionType, parameterName);
+            // 获取默认值
+            var defaultValue = dependencyGraph.GetDefaultValue(actionType, parameterName);
             if (defaultValue != null)
             {
                 inference.recommendedValue = defaultValue;
                 inference.confidence = 0.5f;
-                inference.inferenceReason = "使用系统默认�?;
+                inference.inferenceReason = "使用系统默认值";
             }
             else
             {
-                // 根据类型设置默认�?                inference.recommendedValue = GetTypeDefaultValue(parameterType);
+                // 根据类型设置默认值
+                inference.recommendedValue = GetTypeDefaultValue(parameterType);
                 inference.confidence = 0.3f;
                 inference.inferenceReason = "使用类型默认值（无统计数据）";
                 inference.requiresManualConfirmation = true;
             }
 
-            // 对于Unity特殊类型，提供示例�?            if (IsUnitySpecialType(parameterType))
+            // 对于Unity特殊类型，提供示例值
+            if (IsUnitySpecialType(parameterType))
             {
                 inference.alternativeValues = GetUnityTypeExamples(parameterType);
             }
@@ -198,7 +207,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取Unity类型的示例�?        /// </summary>
+        /// 获取Unity类型的示例值
+        /// </summary>
         private List<object> GetUnityTypeExamples(Type type)
         {
             if (type == typeof(Vector3))
@@ -206,7 +216,9 @@ namespace SkillSystem.RAG
                 return new List<object>
                 {
                     new Vector3(0, 0, 1),   // 向前
-                    new Vector3(0, 0, 5),   // 向前5�?                    new Vector3(0, 0, 10)   // 向前10�?                };
+                    new Vector3(0, 0, 5),   // 向前5米
+                    new Vector3(0, 0, 10)   // 向前10米
+                };
             }
             else if (type == typeof(Vector2))
             {
@@ -238,7 +250,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取类型的默认�?        /// </summary>
+        /// 获取类型的默认值
+        /// </summary>
         private object GetTypeDefaultValue(Type type)
         {
             if (type == typeof(float)) return 0f;
@@ -267,7 +280,8 @@ namespace SkillSystem.RAG
                     return type;
             }
 
-            // 尝试不带命名空间的查�?            foreach (var assembly in assemblies)
+            // 尝试不带命名空间的查找
+            foreach (var assembly in assemblies)
             {
                 foreach (var type in assembly.GetTypes())
                 {
@@ -280,7 +294,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 批量推断多个Action的参�?        /// </summary>
+        /// 批量推断多个Action的参数
+        /// </summary>
         public List<ParameterInferenceResult> InferParametersForActions(
             List<string> actionTypes,
             SkillContextFeatures context)
@@ -310,14 +325,23 @@ namespace SkillSystem.RAG
     }
 
     /// <summary>
-    /// 单个参数的推理结�?    /// </summary>
+    /// 单个参数的推理结果
+    /// </summary>
     [Serializable]
     public class ParameterInference
     {
-        public string parameterName;                        // 参数�?        public string parameterType;                        // 参数类型
-        public object recommendedValue;                     // 推荐�?        public List<object> alternativeValues = new List<object>();  // 备选�?        public float confidence;                            // 置信度（0-1�?        public float recommendedMin;                        // 推荐最小�?        public float recommendedMax;                        // 推荐最大�?        public string inferenceReason;                      // 推理理由
-        public bool requiresManualConfirmation;             // 是否需要人工确�?        public bool isUnityType;                            // 是否为Unity特殊类型
-        public List<string> referenceSkills = new List<string>(); // 参考技�?    }
+        public string parameterName;                        // 参数名
+        public string parameterType;                        // 参数类型
+        public object recommendedValue;                     // 推荐值
+        public List<object> alternativeValues = new List<object>();  // 备选值
+        public float confidence;                            // 置信度（0-1）
+        public float recommendedMin;                        // 推荐最小值
+        public float recommendedMax;                        // 推荐最大值
+        public string inferenceReason;                      // 推理理由
+        public bool requiresManualConfirmation;             // 是否需要人工确认
+        public bool isUnityType;                            // 是否为Unity特殊类型
+        public List<string> referenceSkills = new List<string>(); // 参考技能
+    }
 
     /// <summary>
     /// 参数统计缓存 - 存储历史技能的参数统计信息
@@ -334,7 +358,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 初始化模拟统计数�?        /// </summary>
+        /// 初始化模拟统计数据
+        /// </summary>
         private void InitializeMockData()
         {
             // DamageAction.baseDamage 统计
@@ -399,7 +424,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 更新统计信息（用于学习新样本�?        /// </summary>
+        /// 更新统计信息（用于学习新样本）
+        /// </summary>
         public void UpdateStatistics(string actionType, string parameterName, float value)
         {
             string key = $"{actionType}.{parameterName}";
@@ -407,7 +433,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 从文件加载统计数�?        /// </summary>
+        /// 从文件加载统计数据
+        /// </summary>
         public bool LoadFromFile(string filePath)
         {
             // TODO: 实现从JSON文件加载
@@ -415,7 +442,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 保存统计数据到文�?        /// </summary>
+        /// 保存统计数据到文件
+        /// </summary>
         public bool SaveToFile(string filePath)
         {
             // TODO: 实现保存到JSON文件
@@ -432,5 +460,12 @@ namespace SkillSystem.RAG
         public string actionType;
         public string parameterName;
         public int sampleCount;                 // 样本数量
-        public float mean;                      // 平均�?        public float median;                    // 中位�?        public float standardDeviation;         // 标准�?        public float min;                       // 最小�?        public float max;                       // 最大�?        public float percentile25;              // 25%分位数（P25�?        public float percentile75;              // 75%分位数（P75�?    }
+        public float mean;                      // 平均值
+        public float median;                    // 中位数
+        public float standardDeviation;         // 标准差
+        public float min;                       // 最小值
+        public float max;                       // 最大值
+        public float percentile25;              // 25%分位数（P25）
+        public float percentile75;              // 75%分位数（P75）
+    }
 }

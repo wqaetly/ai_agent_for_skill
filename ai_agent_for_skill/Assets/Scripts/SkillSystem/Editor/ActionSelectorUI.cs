@@ -23,7 +23,7 @@ namespace SkillSystem.Editor
             // 获取所有Action类型并按类别分组
             var actionsByCategory = ActionSelector.GetActionTypesByCategory();
 
-            // 构建GenericSelector的数�?
+            // 构建GenericSelector的数据
             var selectorItems = new List<GenericSelectorItem<Type>>();
 
             foreach (var category in actionsByCategory)
@@ -65,7 +65,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 显示简化的Action选择弹窗（不分类�?
+        /// 显示简化的Action选择弹窗（不分类）
         /// </summary>
         /// <param name="onActionSelected">选择Action后的回调</param>
         /// <param name="targetFrame">目标帧数（用于显示）</param>
@@ -74,7 +74,7 @@ namespace SkillSystem.Editor
             // 获取所有Action类型
             var allActionTypes = ActionSelector.GetAllActionTypes();
 
-            // 构建GenericSelector的数�?
+            // 构建GenericSelector的数据
             var selectorItems = allActionTypes.Select(kvp =>
                 new GenericSelectorItem<Type>(kvp.Key, kvp.Value));
 
@@ -150,7 +150,7 @@ namespace SkillSystem.Editor
 
                 if (selectedType == null)
                 {
-                    // 选择�?More Actions..."，显示完整列�?
+                    // 选择了"More Actions..."，显示完整列表
                     ShowActionSelector(onActionSelected, targetFrame);
                 }
                 else
@@ -164,11 +164,11 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 获取Action的显示名�?
+        /// 获取Action的显示名称
         /// </summary>
         private static string GetActionDisplayName(Type actionType)
         {
-            // 移除"Action"后缀，使名称更清�?
+            // 移除"Action"后缀，使名称更清晰
             string name = actionType.Name;
             if (name.EndsWith("Action"))
             {
@@ -180,7 +180,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 为驼峰命名添加空�?
+        /// 为驼峰命名添加空格
         /// </summary>
         private static string AddSpacesToPascalCase(string text)
         {

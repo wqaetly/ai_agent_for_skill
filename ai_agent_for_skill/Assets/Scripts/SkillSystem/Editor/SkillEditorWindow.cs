@@ -9,15 +9,15 @@ using SkillSystem.Actions;
 namespace SkillSystem.Editor
 {
     /// <summary>
-    /// 技能编辑器主窗�?- 核心编辑器逻辑和组件协�?
-    /// 职责：窗口管理、组件协调、数据管理、选择状态管�?
+    /// 技能编辑器主窗口 - 核心编辑器逻辑和组件协调
+    /// 职责：窗口管理、组件协调、数据管理、选择状态管理
     /// </summary>
     public class SkillEditorWindow : EditorWindow
     {
         // 常量配置
         private const float MIN_INSPECTOR_WIDTH = 200f;
         private const float MAX_INSPECTOR_WIDTH = 500f;
-        private const int AUTO_FIT_DELAY_MS = 50; // UI完全刷新后执行fit的延迟时�?
+        private const int AUTO_FIT_DELAY_MS = 50; // UI完全刷新后执行fit的延迟时间
 
         [MenuItem("Tools/Skill Editor")]
         public static void OpenWindow()
@@ -86,7 +86,7 @@ namespace SkillSystem.Editor
         // 滚动同步标志位，防止双向绑定导致无限递归
         private bool isSyncingScroll = false;
 
-        // 未保存更改标�?
+        // 未保存更改标志
         private new bool hasUnsavedChanges = false;
 
         public SkillData CurrentSkillData => currentSkillData;
@@ -94,7 +94,7 @@ namespace SkillSystem.Editor
         public float FrameWidth => timelineController?.FrameWidth ?? 20f;
 
         /// <summary>
-        /// 获取当前选中的轨道索引（REQ-04�?
+        /// 获取当前选中的轨道索引（REQ-04）
         /// </summary>
         public int GetSelectedTrackIndex() => selectedTrackIndex;
 
@@ -105,19 +105,19 @@ namespace SkillSystem.Editor
                 CreateNewSkill();
             }
 
-            // 订阅编辑器更新事�?
+            // 订阅编辑器更新事件
             EditorApplication.update += OnEditorUpdate;
         }
 
         private void OnDisable()
         {
-            // 取消编辑器更新事件订�?
+            // 取消编辑器更新事件订阅
             EditorApplication.update -= OnEditorUpdate;
 
             // Clean up resources when window is disabled
             actionInspector?.Dispose();
 
-            // 取消事件订阅，防止内存泄�?
+            // 取消事件订阅，防止内存泄漏
             if (skillExecutor != null)
             {
                 skillExecutor.OnFrameChanged -= OnExecutorFrameChanged;
@@ -136,11 +136,11 @@ namespace SkillSystem.Editor
             if (hasUnsavedChanges && currentSkillData != null)
             {
                 int option = EditorUtility.DisplayDialogComplex(
-                    "未保存更�?,
-                    $"技�?'{currentSkillData.skillName}' 有未保存的更改，是否保存�?,
+                    "未保存更改",
+                    $"技能 '{currentSkillData.skillName}' 有未保存的更改，是否保存？",
                     "保存",
                     "取消",
-                    "不保�?
+                    "不保存"
                 );
 
                 switch (option)
@@ -149,9 +149,9 @@ namespace SkillSystem.Editor
                         SaveSkill();
                         break;
                     case 1: // 取消
-                        // 用户取消，但窗口已经在销毁中，无法阻�?
+                        // 用户取消，但窗口已经在销毁中，无法阻止
                         break;
-                    case 2: // 不保�?
+                    case 2: // 不保存
                         // 什么也不做
                         break;
                 }
@@ -197,7 +197,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 编辑器更新回调，仅在窗口启用时执�?
+        /// 编辑器更新回调，仅在窗口启用时执行
         /// </summary>
         private void OnEditorUpdate()
         {
@@ -275,7 +275,7 @@ namespace SkillSystem.Editor
             skillExecutor.OnActionTicked += OnActionTicked;
             skillExecutor.OnActionExited += OnActionExited;
 
-            // 连接到训练场可视化系�?
+            // 连接到训练场可视化系统
             ConnectToTrainingGroundVisualizer();
             skillExecutor.OnSkillStarted += OnSkillExecutionStarted;
             skillExecutor.OnSkillStopped += OnSkillExecutionStopped;
@@ -351,7 +351,7 @@ namespace SkillSystem.Editor
                 timelineTracks.Add(trackRow);
 
                 // Create action elements for this track
-                // 防御性检查：track.actions 可能在反序列化时�?null
+                // 防御性检查：track.actions 可能在反序列化时为 null
                 if (track.actions != null)
                 {
                     for (int actionIndex = 0; actionIndex < track.actions.Count; actionIndex++)
@@ -412,7 +412,7 @@ namespace SkillSystem.Editor
 
             // Select new action
             var track = currentSkillData.tracks[trackIndex];
-            // 防御性检查：track.actions �?action 可能�?null
+            // 防御性检查：track.actions 和 action 可能为 null
             if (track.actions != null && actionIndex < track.actions.Count)
             {
                 var action = track.actions[actionIndex];
@@ -430,11 +430,11 @@ namespace SkillSystem.Editor
             if (selectedTrackIndex >= 0 && selectedActionIndex >= 0)
             {
                 var track = currentSkillData.tracks[selectedTrackIndex];
-                // 防御性检查：track.actions 可能�?null
+                // 防御性检查：track.actions 可能为 null
                 if (track.actions != null && selectedActionIndex < track.actions.Count)
                 {
                     var action = track.actions[selectedActionIndex];
-                    // 防御性检查：action 可能�?null
+                    // 防御性检查：action 可能为 null
                     if (action != null && actionElements.ContainsKey(action))
                     {
                         actionElements[action].SetSelected(false);
@@ -542,7 +542,7 @@ namespace SkillSystem.Editor
         public void MarkDirty()
         {
             hasUnsavedChanges = true;
-            // 可选：在窗口标题显�?* 标记
+            // 可选：在窗口标题显示 * 标记
             titleContent = new GUIContent(hasUnsavedChanges ? "Skill Editor *" : "Skill Editor");
         }
 
@@ -568,7 +568,7 @@ namespace SkillSystem.Editor
             if (trackIndex >= 0 && trackIndex < currentSkillData.tracks.Count)
             {
                 var track = currentSkillData.tracks[trackIndex];
-                // 防御性检查：track.actions 可能�?null
+                // 防御性检查：track.actions 可能为 null
                 if (track.actions == null) return;
 
                 if (actionIndex >= 0 && actionIndex < track.actions.Count)
@@ -576,7 +576,7 @@ namespace SkillSystem.Editor
                     var action = track.actions[actionIndex];
 
                     // Remove from action elements dictionary
-                    // 防御性检查：action 可能�?null
+                    // 防御性检查：action 可能为 null
                     if (action != null && actionElements.ContainsKey(action))
                     {
                         actionElements.Remove(action);
@@ -589,7 +589,7 @@ namespace SkillSystem.Editor
                     for (int i = actionIndex; i < track.actions.Count; i++)
                     {
                         var remainingAction = track.actions[i];
-                        // 防御性检查：remainingAction 可能�?null
+                        // 防御性检查：remainingAction 可能为 null
                         if (remainingAction != null && actionElements.ContainsKey(remainingAction))
                         {
                             actionElements[remainingAction].UpdateIndices(trackIndex, i);
@@ -629,7 +629,7 @@ namespace SkillSystem.Editor
             selectedActionIndex = -1;
             currentFrame = 0;
 
-            // 清除未保存更改标�?
+            // 清除未保存更改标志
             hasUnsavedChanges = false;
             titleContent = new GUIContent("Skill Editor");
 
@@ -680,7 +680,7 @@ namespace SkillSystem.Editor
                     selectedActionIndex = -1;
                     currentFrame = 0;
 
-                    // 清除未保存更改标�?
+                    // 清除未保存更改标志
                     hasUnsavedChanges = false;
                     titleContent = new GUIContent("Skill Editor");
 
@@ -702,7 +702,7 @@ namespace SkillSystem.Editor
                 string path = SkillDataSerializer.GetSkillFilePath(currentSkillData.skillName);
                 SkillDataSerializer.SaveToFile(currentSkillData, path);
 
-                // 清除未保存更改标�?
+                // 清除未保存更改标志
                 hasUnsavedChanges = false;
                 titleContent = new GUIContent("Skill Editor");
             }
@@ -717,7 +717,7 @@ namespace SkillSystem.Editor
                 {
                     SkillDataSerializer.SaveToFile(currentSkillData, path);
 
-                    // 清除未保存更改标�?
+                    // 清除未保存更改标志
                     hasUnsavedChanges = false;
                     titleContent = new GUIContent("Skill Editor");
                 }
@@ -815,7 +815,7 @@ namespace SkillSystem.Editor
                 actionElements[action].SetExecutionState(true, false);
             }
 
-            // 转发到训练场可视化系�?
+            // 转发到训练场可视化系统
             ForwardToTrainingGroundVisualizer(action, "Enter", 0);
         }
 
@@ -827,7 +827,7 @@ namespace SkillSystem.Editor
                 actionElements[action].SetExecutionState(true, true);
             }
 
-            // 转发到训练场可视化系�?
+            // 转发到训练场可视化系统
             ForwardToTrainingGroundVisualizer(action, "Tick", relativeFrame);
         }
 
@@ -839,19 +839,19 @@ namespace SkillSystem.Editor
                 actionElements[action].SetExecutionState(false, false);
             }
 
-            // 转发到训练场可视化系�?
+            // 转发到训练场可视化系统
             ForwardToTrainingGroundVisualizer(action, "Exit", 0);
         }
 
         #region 训练场可视化系统集成
 
         /// <summary>
-        /// 连接到训练场可视化系�?
+        /// 连接到训练场可视化系统
         /// </summary>
         private void ConnectToTrainingGroundVisualizer()
         {
             // 这个方法在InitializeSkillExecutor时被调用
-            // 实际的转发逻辑在ForwardToTrainingGroundVisualizer�?
+            // 实际的转发逻辑在ForwardToTrainingGroundVisualizer中
             Debug.Log("[SkillEditorWindow] Ready to forward events to TrainingGround Visualizer");
         }
 
@@ -860,14 +860,14 @@ namespace SkillSystem.Editor
         /// </summary>
         private void ForwardToTrainingGroundVisualizer(ISkillAction action, string eventType, int relativeFrame)
         {
-            // 只在训练场运行时且有可视化管理器时转�?
+            // 只在训练场运行时且有可视化管理器时转发
             if (!Application.isPlaying) return;
 
             // 查找场景中的SkillVisualizerManager
             var visualizerManager = Object.FindFirstObjectByType<TrainingGround.Visualizer.SkillVisualizerManager>();
             if (visualizerManager == null) return;
 
-            // 根据事件类型调用对应的方�?
+            // 根据事件类型调用对应的方法
             switch (eventType)
             {
                 case "Enter":
@@ -900,9 +900,9 @@ namespace SkillSystem.Editor
 
         private void OnExecutionError(string error)
         {
-            // 显示执行错误给用�?
+            // 显示执行错误给用户
             Debug.LogError($"[技能编辑器] {error}");
-            EditorUtility.DisplayDialog("技能执行错�?, error, "确定");
+            EditorUtility.DisplayDialog("技能执行错误", error, "确定");
         }
 
         // Public methods for controlling execution
@@ -923,7 +923,7 @@ namespace SkillSystem.Editor
         public bool IsSkillExecuting => skillExecutor?.IsExecuting ?? false;
 
         /// <summary>
-        /// 在技能加载后自动调用fit功能，展示完整技能配置全�?
+        /// 在技能加载后自动调用fit功能，展示完整技能配置全貌
         /// 使用延迟执行确保UI完全渲染后再进行fit操作
         /// </summary>
         private void AutoFitTimelineAfterLoad()
@@ -931,13 +931,13 @@ namespace SkillSystem.Editor
             if (timelineController != null)
             {
                 // 使用schedule.Execute延迟执行，确保RefreshUI完成后再fit
-                // 这样可以确保timeline尺寸和布局都已经正确更�?
+                // 这样可以确保timeline尺寸和布局都已经正确更新
                 rootElement.schedule.Execute(() =>
                 {
                     // 直接调用TimelineController的FitTimelineToWindow方法
                     // 这会自动计算最佳缩放比例并重置滚动位置
                     FitTimelineToWindow();
-                }).ExecuteLater(AUTO_FIT_DELAY_MS); // 延迟执行，确保UI完全刷新后执�?
+                }).ExecuteLater(AUTO_FIT_DELAY_MS); // 延迟执行，确保UI完全刷新后执行
             }
         }
 

@@ -4,7 +4,8 @@ using UnityEngine.InputSystem;
 namespace TrainingGround.Entity
 {
     /// <summary>
-    /// 玩家角色移动控制�?    /// 纯Transform控制的WASD八向移动，支持相机相对移动和Shift奔跑
+    /// 玩家角色移动控制器
+    /// 纯Transform控制的WASD八向移动，支持相机相对移动和Shift奔跑
     /// </summary>
     public class PlayerMovementController : MonoBehaviour
     {
@@ -22,10 +23,11 @@ namespace TrainingGround.Entity
 
         private void Start()
         {
-            // 检查并移除CharacterController（已废弃，改用纯Transform控制�?            var cc = GetComponent<CharacterController>();
+            // 检查并移除CharacterController（已废弃，改用纯Transform控制）
+            var cc = GetComponent<CharacterController>();
             if (cc != null)
             {
-                Debug.LogWarning("[PlayerMovementController] 检测到CharacterController组件，已自动移除。现在使用纯Transform控制�?);
+                Debug.LogWarning("[PlayerMovementController] 检测到CharacterController组件，已自动移除。现在使用纯Transform控制。");
                 Destroy(cc);
             }
 
@@ -43,7 +45,7 @@ namespace TrainingGround.Entity
                 }
             }
 
-            Debug.Log($"[PlayerMovementController] 初始化完�?- isMovementEnabled: {isMovementEnabled}");
+            Debug.Log($"[PlayerMovementController] 初始化完成 - isMovementEnabled: {isMovementEnabled}");
         }
 
         private void LateUpdate()
@@ -59,17 +61,20 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 处理移动输入（WASD + Shift奔跑�?        /// </summary>
+        /// 处理移动输入（WASD + Shift奔跑）
+        /// </summary>
         private void HandleMovementInput()
         {
-            // 检查键盘是否可�?            if (Keyboard.current == null)
+            // 检查键盘是否可用
+            if (Keyboard.current == null)
             {
                 currentVelocity = Vector3.zero;
                 Debug.LogWarning("[PlayerMovementController] Keyboard.current is null!");
                 return;
             }
 
-            // 获取WASD输入（使用新 Input System�?            float horizontal = 0f;
+            // 获取WASD输入（使用新 Input System）
+            float horizontal = 0f;
             float vertical = 0f;
 
             if (Keyboard.current.wKey.isPressed) vertical += 1f;
@@ -111,7 +116,8 @@ namespace TrainingGround.Entity
                     cameraRight = Vector3.right;
                 }
 
-                // 计算最终移动方向（相机前向 * 垂直输入 + 相机右向 * 水平输入�?                moveDirection = (cameraForward * vertical + cameraRight * horizontal).normalized;
+                // 计算最终移动方向（相机前向 * 垂直输入 + 相机右向 * 水平输入）
+                moveDirection = (cameraForward * vertical + cameraRight * horizontal).normalized;
 
                 // 角色朝向移动方向（平滑旋转）
                 if (moveDirection.magnitude > 0.1f)
@@ -124,7 +130,8 @@ namespace TrainingGround.Entity
                 bool isRunning = Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
                 float currentSpeed = isRunning ? runSpeed : walkSpeed;
 
-                // 执行移动（直接修改Transform.position�?                Vector3 oldPos = transform.position;
+                // 执行移动（直接修改Transform.position）
+                Vector3 oldPos = transform.position;
                 Vector3 movement = moveDirection * currentSpeed * Time.deltaTime;
                 transform.position += movement;
                 Vector3 newPos = transform.position;
@@ -145,7 +152,8 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 设置相机引用（由TrainingGroundManager调用�?        /// </summary>
+        /// 设置相机引用（由TrainingGroundManager调用）
+        /// </summary>
         public void SetCamera(Transform camera)
         {
             cameraTransform = camera;

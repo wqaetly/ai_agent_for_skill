@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// RAG服务HTTP客户�?
+    /// RAG服务HTTP客户端
     /// 负责与Python RAG服务通信
     /// </summary>
     public class RAGClient
@@ -17,11 +17,11 @@ namespace SkillSystem.RAG
         private int timeout;
 
         /// <summary>
-        /// 构造函�?
+        /// 构造函数
         /// </summary>
         /// <param name="host">服务器地址</param>
-        /// <param name="port">服务器端�?/param>
-        /// <param name="timeout">请求超时时间（秒�?/param>
+        /// <param name="port">服务器端口</param>
+        /// <param name="timeout">请求超时时间（秒）</param>
         public RAGClient(string host = "127.0.0.1", int port = 8765, int timeout = 30)
         {
             this.baseUrl = $"http://{host}:{port}";
@@ -83,11 +83,11 @@ namespace SkillSystem.RAG
         [Serializable]
         public class ActionRecommendation
         {
-            public string action_type;              // Action类型名（如DamageAction�?
-            public string display_name;             // 显示名称（如"伤害"�?
-            public string category;                 // 分类（如"Damage"�?
+            public string action_type;              // Action类型名（如DamageAction）
+            public string display_name;             // 显示名称（如"伤害"）
+            public string category;                 // 分类（如"Damage"）
             public string description;              // 功能描述
-            public float semantic_similarity;       // 语义相似度（0-1�?
+            public float semantic_similarity;       // 语义相似度（0-1）
         }
 
         [Serializable]
@@ -124,7 +124,7 @@ namespace SkillSystem.RAG
         #region API方法
 
         /// <summary>
-        /// 健康检�?
+        /// 健康检查
         /// </summary>
         public IEnumerator CheckHealth(Action<bool, string> callback)
         {
@@ -155,7 +155,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 搜索技�?
+        /// 搜索技能
         /// </summary>
         public IEnumerator SearchSkills(
             string query,

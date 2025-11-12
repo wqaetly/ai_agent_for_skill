@@ -8,8 +8,10 @@ using Sirenix.Serialization;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// 参数粒度增强�?- REQ-02 主门面类
-    /// 整合上下文装配、参数推理、依赖验证、类型序列化等功�?    /// 提供完整的参数填充粒度增强服�?    /// </summary>
+    /// 参数粒度增强器 - REQ-02 主门面类
+    /// 整合上下文装配、参数推理、依赖验证、类型序列化等功能
+    /// 提供完整的参数填充粒度增强服务
+    /// </summary>
     public class ParameterGranularityEnhancer
     {
         private static ParameterGranularityEnhancer instance;
@@ -36,10 +38,12 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 增强Action推荐结果，添加参数推断信�?        /// 这是主要的对外接�?        /// </summary>
+        /// 增强Action推荐结果，添加参数推断信息
+        /// 这是主要的对外接口
+        /// </summary>
         /// <param name="recommendation">RAG推荐的Action</param>
         /// <param name="skillData">技能数据（用于提取上下文）</param>
-        /// <returns>增强后的推荐结果，包含参数推�?/returns>
+        /// <returns>增强后的推荐结果，包含参数推断</returns>
         public EnhancedParameterRecommendation EnhanceActionRecommendation(
             EnhancedActionRecommendation recommendation,
             SkillData skillData)
@@ -76,10 +80,12 @@ namespace SkillSystem.RAG
                 // 依赖验证结果
                 dependencyValidation = inferenceResult.validationResult,
 
-                // 生成时间�?                timestamp = DateTime.Now
+                // 生成时间戳
+                timestamp = DateTime.Now
             };
 
-            // 4. 生成Odin友好的输�?            enhanced.odinFriendlyParameters = GenerateOdinOutput(inferenceResult);
+            // 4. 生成Odin友好的输出
+            enhanced.odinFriendlyParameters = GenerateOdinOutput(inferenceResult);
 
             // 5. 生成推荐摘要
             enhanced.recommendationSummary = GenerateSummary(enhanced);
@@ -108,7 +114,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 生成Odin友好的参数输�?        /// </summary>
+        /// 生成Odin友好的参数输出
+        /// </summary>
         private Dictionary<string, object> GenerateOdinOutput(ParameterInferenceResult inferenceResult)
         {
             var output = new Dictionary<string, object>();
@@ -118,7 +125,8 @@ namespace SkillSystem.RAG
                 if (paramInference.recommendedValue == null)
                     continue;
 
-                // Odin原生支持所有Unity类型，直接输出对象即�?                output[paramInference.parameterName] = paramInference.recommendedValue;
+                // Odin原生支持所有Unity类型，直接输出对象即可
+                output[paramInference.parameterName] = paramInference.recommendedValue;
             }
 
             return output;
@@ -135,11 +143,11 @@ namespace SkillSystem.RAG
             var highConfidence = enhanced.parameterInferences.Where(p => p.confidence >= 0.7f).ToList();
             if (highConfidence.Count > 0)
             {
-                summary += $"�?高置信度参数 ({highConfidence.Count}�?:\n";
+                summary += $"✓ 高置信度参数 ({highConfidence.Count}个):\n";
                 foreach (var param in highConfidence)
                 {
                     var valueStr = FormatParameterValue(param);
-                    summary += $"  �?{param.parameterName} = {valueStr} (置信�? {param.confidence:P0})\n";
+                    summary += $"  • {param.parameterName} = {valueStr} (置信度: {param.confidence:P0})\n";
                 }
                 summary += "\n";
             }
@@ -148,11 +156,11 @@ namespace SkillSystem.RAG
             var needsConfirmation = enhanced.parameterInferences.Where(p => p.requiresManualConfirmation).ToList();
             if (needsConfirmation.Count > 0)
             {
-                summary += $"�?需要人工确�?({needsConfirmation.Count}�?:\n";
+                summary += $"⚠ 需要人工确认 ({needsConfirmation.Count}个):\n";
                 foreach (var param in needsConfirmation)
                 {
                     var valueStr = FormatParameterValue(param);
-                    summary += $"  �?{param.parameterName} = {valueStr}\n";
+                    summary += $"  • {param.parameterName} = {valueStr}\n";
                     summary += $"    原因: {param.inferenceReason}\n";
                 }
                 summary += "\n";
@@ -161,10 +169,10 @@ namespace SkillSystem.RAG
             // 依赖关系警告
             if (enhanced.dependencyValidation != null && enhanced.dependencyValidation.issues.Count > 0)
             {
-                summary += $"�?依赖关系提示 ({enhanced.dependencyValidation.issues.Count}�?:\n";
+                summary += $"⚡ 依赖关系提示 ({enhanced.dependencyValidation.issues.Count}个):\n";
                 foreach (var issue in enhanced.dependencyValidation.issues)
                 {
-                    string icon = issue.severity == IssueSeverity.Error ? "�? : "�?;
+                    string icon = issue.severity == IssueSeverity.Error ? "❌" : "⚠";
                     summary += $"  {icon} {issue.message}\n";
                 }
                 summary += "\n";
@@ -174,7 +182,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 格式化参数值显�?        /// </summary>
+        /// 格式化参数值显示
+        /// </summary>
         private string FormatParameterValue(ParameterInference param)
         {
             if (param.recommendedValue == null)
@@ -182,9 +191,11 @@ namespace SkillSystem.RAG
 
             if (param.isUnityType)
             {
-                // Unity类型使用原生ToString()，已经足够清�?                var value = param.recommendedValue;
+                // Unity类型使用原生ToString()，已经足够清晰
+                var value = param.recommendedValue;
 
-                // 针对特殊类型添加语义化描�?                if (value is Vector3 v3)
+                // 针对特殊类型添加语义化描述
+                if (value is Vector3 v3)
                 {
                     string desc = v3.ToString("F2");
                     if (v3 == Vector3.zero) desc += " [原点]";
@@ -212,7 +223,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取参数的依赖关系报�?        /// </summary>
+        /// 获取参数的依赖关系报告
+        /// </summary>
         public string GetDependencyReport(string actionType)
         {
             return dependencyGraph.GenerateDependencyReport(actionType);
@@ -227,20 +239,21 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取参数推荐的详细说�?        /// </summary>
+        /// 获取参数推荐的详细说明
+        /// </summary>
         public string GetParameterRecommendationDetail(ParameterInference param)
         {
             var detail = $"参数: {param.parameterName}\n";
             detail += $"类型: {param.parameterType}\n";
-            detail += $"推荐�? {FormatParameterValue(param)}\n";
-            detail += $"置信�? {param.confidence:P0}\n";
+            detail += $"推荐值: {FormatParameterValue(param)}\n";
+            detail += $"置信度: {param.confidence:P0}\n";
 
             if (param.alternativeValues.Count > 0)
             {
-                detail += "\n备选�?\n";
+                detail += "\n备选值:\n";
                 foreach (var altValue in param.alternativeValues)
                 {
-                    detail += $"  �?{altValue}\n";
+                    detail += $"  • {altValue}\n";
                 }
             }
 
@@ -251,7 +264,7 @@ namespace SkillSystem.RAG
 
             if (param.referenceSkills.Count > 0)
             {
-                detail += $"\n参考技�? {string.Join(", ", param.referenceSkills)}\n";
+                detail += $"\n参考技能: {string.Join(", ", param.referenceSkills)}\n";
             }
 
             return detail;
@@ -259,7 +272,8 @@ namespace SkillSystem.RAG
 
         /// <summary>
         /// 导出推荐结果为JSON（用于外部工具）
-        /// 使用Odin Serializer与SkillDataSerializer保持一�?        /// </summary>
+        /// 使用Odin Serializer与SkillDataSerializer保持一致
+        /// </summary>
         public string ExportToJson(EnhancedParameterRecommendation enhanced)
         {
             if (enhanced == null)
@@ -304,7 +318,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 健康检�?        /// </summary>
+        /// 健康检查
+        /// </summary>
         public bool HealthCheck(out string message)
         {
             try
@@ -315,7 +330,7 @@ namespace SkillSystem.RAG
                     return false;
                 }
 
-                message = "参数粒度增强器运行正�?;
+                message = "参数粒度增强器运行正常";
                 return true;
             }
             catch (Exception e)
@@ -327,7 +342,8 @@ namespace SkillSystem.RAG
     }
 
     /// <summary>
-    /// 增强的参数推荐结�?    /// 包含完整的参数推理、依赖验证、上下文信息
+    /// 增强的参数推荐结果
+    /// 包含完整的参数推理、依赖验证、上下文信息
     /// </summary>
     [Serializable]
     public class EnhancedParameterRecommendation
@@ -351,12 +367,14 @@ namespace SkillSystem.RAG
         // 依赖验证结果
         public ValidationResult dependencyValidation;
 
-        // Odin友好的输�?        public Dictionary<string, object> odinFriendlyParameters = new Dictionary<string, object>();
+        // Odin友好的输出
+        public Dictionary<string, object> odinFriendlyParameters = new Dictionary<string, object>();
 
         // 推荐摘要
         public string recommendationSummary;
 
-        // 时间�?        public DateTime timestamp;
+        // 时间戳
+        public DateTime timestamp;
 
         /// <summary>
         /// 获取高置信度参数数量

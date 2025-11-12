@@ -39,7 +39,7 @@ namespace TrainingGround.Runtime
         private SkillTimelinePanel timelinePanel;
         private TrainingGroundCameraController cameraController;
 
-        // 初始化标�?
+        // 初始化标志
         private bool isInitialized = false;
 
         void Awake()
@@ -47,7 +47,7 @@ namespace TrainingGround.Runtime
             // 初始化EntityManager
             entityManager = EntityManager.Instance;
 
-            // 获取或创建主摄像�?
+            // 获取或创建主摄像机
             if (mainCamera == null)
             {
                 mainCamera = UnityEngine.Camera.main;
@@ -65,20 +65,20 @@ namespace TrainingGround.Runtime
 
         void Start()
         {
-            // 防止重复初始�?
+            // 防止重复初始化
             if (isInitialized) return;
 
-            // 自动设置训练�?
+            // 自动设置训练场
             SetupTrainingGround();
         }
 
         /// <summary>
-        /// 设置训练�?- 创建玩家、木桩、UI�?
+        /// 设置训练场 - 创建玩家、木桩、UI等
         /// </summary>
         [ContextMenu("Setup Training Ground")]
         public void SetupTrainingGround()
         {
-            // 防止重复初始�?
+            // 防止重复初始化
             if (isInitialized) return;
 
             Debug.Log("[TrainingGroundManager] Setting up training ground...");
@@ -95,7 +95,7 @@ namespace TrainingGround.Runtime
                 CreateDummies(initialDummyCount);
             }
 
-            // 设置可视化系�?
+            // 设置可视化系统
             SetupVisualizationSystem();
 
             // 设置UI系统
@@ -103,7 +103,7 @@ namespace TrainingGround.Runtime
 
             Debug.Log($"[TrainingGroundManager] Training ground setup complete! Player: {player != null}, Dummies: {dummies.Count}");
 
-            // 标记为已初始�?
+            // 标记为已初始化
             isInitialized = true;
         }
 
@@ -136,11 +136,11 @@ namespace TrainingGround.Runtime
             if (characterController == null)
             {
                 characterController = playerObj.AddComponent<CharacterController>();
-                // 配置CharacterController参数（匹配Capsule大小�?
+                // 配置CharacterController参数（匹配Capsule大小）
                 characterController.height = 2f;
                 characterController.radius = 0.4f;
                 characterController.center = Vector3.zero;
-                characterController.slopeLimit = 45f; // 斜坡限制45�?
+                characterController.slopeLimit = 45f; // 斜坡限制45度
                 characterController.stepOffset = 0.3f; // 台阶高度0.3
             }
 
@@ -148,7 +148,7 @@ namespace TrainingGround.Runtime
             if (movementController == null)
             {
                 movementController = playerObj.AddComponent<TrainingGround.Entity.PlayerMovementController>();
-                // 传递相机引用给移动控制�?
+                // 传递相机引用给移动控制器
                 if (cameraController != null && cameraController.MainVirtualCamera != null)
                 {
                     movementController.SetCamera(cameraController.MainVirtualCamera.transform);
@@ -162,7 +162,7 @@ namespace TrainingGround.Runtime
                 skillPlayer = playerObj.AddComponent<SkillPlayer>();
             }
 
-            // 添加血�?
+            // 添加血条
             var healthBar = playerObj.GetComponentInChildren<EntityHealthBar>();
             if (healthBar == null)
             {
@@ -228,7 +228,7 @@ namespace TrainingGround.Runtime
 
             dummies.Add(dummy);
 
-            // 添加血�?
+            // 添加血条
             var healthBar = dummyObj.GetComponentInChildren<EntityHealthBar>();
             if (healthBar == null)
             {
@@ -262,7 +262,7 @@ namespace TrainingGround.Runtime
             var renderer = player.GetComponent<Renderer>();
             if (renderer != null)
             {
-                // 使用MaterialLibrary提供的玩家材�?
+                // 使用MaterialLibrary提供的玩家材质
                 renderer.material = MaterialLibrary.Instance.GetDefaultPlayerMaterial();
             }
 
@@ -278,7 +278,7 @@ namespace TrainingGround.Runtime
             var renderer = dummy.GetComponent<Renderer>();
             if (renderer != null)
             {
-                // 使用MaterialLibrary提供的敌人材�?
+                // 使用MaterialLibrary提供的敌人材质
                 renderer.material = MaterialLibrary.Instance.GetDefaultEnemyMaterial();
             }
 
@@ -301,7 +301,7 @@ namespace TrainingGround.Runtime
                 cameraController = cameraControllerObj.AddComponent<TrainingGroundCameraController>();
             }
 
-            // 确保相机控制器设置为俯视角模�?
+            // 确保相机控制器设置为俯视角模式
             cameraController.SwitchToTopDownView();
 
             Debug.Log("[TrainingGroundManager] Camera controller setup complete - TopDown mode activated");
@@ -337,7 +337,7 @@ namespace TrainingGround.Runtime
                 damageNumberPool = poolObj.AddComponent<DamageNumberPool>();
             }
 
-            // 创建SkillTimelinePanel - 添加空值和销毁检�?
+            // 创建SkillTimelinePanel - 添加空值和销毁检查
             if (uiCanvas != null && uiCanvas.transform != null && player != null)
             {
                 var skillPlayer = player.GetComponent<SkillPlayer>();
@@ -399,7 +399,7 @@ namespace TrainingGround.Runtime
         #region 公共接口
 
         /// <summary>
-        /// 播放技�?
+        /// 播放技能
         /// </summary>
         public void PlaySkill(string skillFilePath)
         {
@@ -416,19 +416,19 @@ namespace TrainingGround.Runtime
                 return;
             }
 
-            // 设置目标为第一个木�?
+            // 设置目标为第一个木桩
             if (dummies.Count > 0 && dummies[0] != null)
             {
                 player.SetTarget(dummies[0]);
             }
 
-            // 播放技�?
+            // 播放技能
             skillPlayer.LoadAndPlaySkill(skillFilePath);
             Debug.Log($"[TrainingGroundManager] Playing skill: {skillFilePath}");
         }
 
         /// <summary>
-        /// 播放技能（从JSON�?
+        /// 播放技能（从JSON）
         /// </summary>
         public void PlaySkillFromJson(string jsonData)
         {
@@ -451,13 +451,13 @@ namespace TrainingGround.Runtime
                 player.SetTarget(dummies[0]);
             }
 
-            // 播放技�?
+            // 播放技能
             skillPlayer.LoadAndPlaySkillFromJson(jsonData);
             Debug.Log("[TrainingGroundManager] Playing skill from JSON");
         }
 
         /// <summary>
-        /// 重置所有木�?
+        /// 重置所有木桩
         /// </summary>
         [ContextMenu("Reset All Dummies")]
         public void ResetAllDummies()
@@ -486,7 +486,7 @@ namespace TrainingGround.Runtime
         }
 
         /// <summary>
-        /// 获取木桩的伤害统�?
+        /// 获取木桩的伤害统计
         /// </summary>
         public void PrintDummyStatistics()
         {

@@ -6,15 +6,15 @@ using System.Collections;
 namespace TrainingGround.Visualizer
 {
     /// <summary>
-    /// 镜头效果可视化器 - 实现CameraAction的镜头效�?
-    /// 使用Cinemachine Impulse实现专业的震屏效�?
+    /// 镜头效果可视化器 - 实现CameraAction的镜头效果
+    /// 使用Cinemachine Impulse实现专业的震屏效果
     /// </summary>
     public class CameraActionVisualizer : SkillVisualizerBase<CameraAction>
     {
         private CinemachineImpulseSource impulseSource;
         private Camera.TrainingGroundCameraController cameraController;
 
-        // 当前效果状�?
+        // 当前效果状态
         private struct CameraEffectState
         {
             public Vector3 originalPosition;
@@ -35,7 +35,7 @@ namespace TrainingGround.Visualizer
                 ConfigureImpulseSource();
             }
 
-            // 查找相机控制�?
+            // 查找相机控制器
             cameraController = FindObjectOfType<Camera.TrainingGroundCameraController>();
         }
 
@@ -55,7 +55,7 @@ namespace TrainingGround.Visualizer
         {
             Debug.Log($"[CameraActionVisualizer] Applying camera effects from {caster.name}");
 
-            // 保存当前相机状�?
+            // 保存当前相机状态
             SaveCameraState();
 
             // 应用震屏效果
@@ -85,8 +85,8 @@ namespace TrainingGround.Visualizer
 
         protected override void OnVisualizeTick(CameraAction action, GameObject caster, int relativeFrame)
         {
-            // 镜头效果在Tick中持续更�?
-            // 大部分效果由Cinemachine自动处理，这里可以添加自定义的持续效�?
+            // 镜头效果在Tick中持续更新
+            // 大部分效果由Cinemachine自动处理，这里可以添加自定义的持续效果
         }
 
         protected override void OnVisualizeExit(CameraAction action, GameObject caster)
@@ -105,7 +105,7 @@ namespace TrainingGround.Visualizer
             if (impulseSource == null) return;
 
             // 配置震屏参数
-            impulseSource.ImpulseDefinition.ImpulseDuration = action.duration / 60f; // 转换帧到�?
+            impulseSource.ImpulseDefinition.ImpulseDuration = action.duration / 60f; // 转换帧到秒
 
             // 根据强度生成Impulse
             Vector3 velocity = Random.insideUnitSphere * action.shakeIntensity;
@@ -168,7 +168,7 @@ namespace TrainingGround.Visualizer
         }
 
         /// <summary>
-        /// 保存当前相机状�?
+        /// 保存当前相机状态
         /// </summary>
         private void SaveCameraState()
         {
@@ -193,7 +193,7 @@ namespace TrainingGround.Visualizer
         }
 
         /// <summary>
-        /// 恢复相机状�?
+        /// 恢复相机状态
         /// </summary>
         private void RestoreCameraState(float fadeOutTime)
         {
@@ -201,7 +201,7 @@ namespace TrainingGround.Visualizer
 
             if (cameraController != null && cameraController.MainVirtualCamera != null)
             {
-                // 恢复FOV（已禁用�?
+                // 恢复FOV（已禁用）
                 // cameraController.ZoomCamera(currentState.originalFOV, fadeOutTime);
 
                 // 恢复位移偏移
@@ -215,17 +215,17 @@ namespace TrainingGround.Visualizer
 
         public override void Cleanup()
         {
-            // 确保清理时恢复相机状�?
+            // 确保清理时恢复相机状态
             if (currentState.isActive)
             {
                 RestoreCameraState(0.2f);
             }
         }
 
-        #region 公共接口 - 提供给技能系统调�?
+        #region 公共接口 - 提供给技能系统调用
 
         /// <summary>
-        /// 快速触发震屏效果（不依赖CameraAction�?
+        /// 快速触发震屏效果（不依赖CameraAction）
         /// </summary>
         public void QuickShake(float intensity = 1f)
         {
@@ -237,7 +237,7 @@ namespace TrainingGround.Visualizer
         }
 
         /// <summary>
-        /// 快速缩放（不依赖CameraAction�?
+        /// 快速缩放（不依赖CameraAction）
         /// </summary>
         public void QuickZoom(float scale, float duration = 0.5f)
         {

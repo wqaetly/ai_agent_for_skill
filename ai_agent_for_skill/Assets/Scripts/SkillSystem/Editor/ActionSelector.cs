@@ -9,7 +9,7 @@ using Sirenix.OdinInspector.Editor;
 namespace SkillSystem.Editor
 {
     /// <summary>
-    /// Action选择�?- 基于反射的动态Action类型发现和选择
+    /// Action选择器 - 基于反射的动态Action类型发现和选择
     /// 职责：自动发现所有ISkillAction实现类，提供可扩展的选择UI
     /// </summary>
     public static class ActionSelector
@@ -43,7 +43,7 @@ namespace SkillSystem.Editor
             {
                 try
                 {
-                    // 查找所有继承自ISkillAction的类�?
+                    // 查找所有继承自ISkillAction的类型
                     var actionTypes = assembly.GetTypes()
                         .Where(t => t.IsSubclassOf(typeof(ISkillAction)) &&
                                    !t.IsAbstract &&
@@ -82,7 +82,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 获取Action的显示名�?
+        /// 获取Action的显示名称
         /// </summary>
         private static string GetActionDisplayName(Type actionType)
         {
@@ -93,7 +93,7 @@ namespace SkillSystem.Editor
                 return displayNameAttribute.DisplayName;
             }
 
-            // 移除"Action"后缀，使名称更清�?
+            // 移除"Action"后缀，使名称更清晰
             string name = actionType.Name;
             if (name.EndsWith("Action"))
             {
@@ -105,7 +105,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 为驼峰命名添加空�?
+        /// 为驼峰命名添加空格
         /// </summary>
         private static string AddSpacesToPascalCase(string text)
         {
@@ -172,7 +172,7 @@ namespace SkillSystem.Editor
                 categorized[category].Add(actionType);
             }
 
-            // 按类别名称排�?
+            // 按类别名称排序
             var sortedCategories = new Dictionary<string, List<Type>>();
             foreach (var category in categorized.Keys.OrderBy(k => k))
             {

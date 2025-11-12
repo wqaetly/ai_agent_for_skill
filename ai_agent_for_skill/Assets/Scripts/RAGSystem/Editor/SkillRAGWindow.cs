@@ -964,11 +964,11 @@ namespace SkillSystem.RAG
 
                 // 构建服务器脚本路径
                 // Application.dataPath = .../ai_agent_for_skill/ai_agent_for_skill/Assets
-                // 我们需要到上上级目录 .../ai_agent_for_skill/ 才能找到 skill_agent/
+                // 我们需要到上上级目录 .../ai_agent_for_skill/ 才能找到 SkillRAG/
                 string assetsPath = Application.dataPath;  // .../ai_agent_for_skill/Assets
                 string unityProjectPath = Directory.GetParent(assetsPath).FullName;  // .../ai_agent_for_skill
                 string rootPath = Directory.GetParent(unityProjectPath).FullName;  // .../
-                string serverScriptPath = Path.Combine(rootPath, "skill_agent", "Python", "server.py");
+                string serverScriptPath = Path.Combine(rootPath, "SkillRAG", "Python", "server.py");
 
                 // 标准化路径
                 serverScriptPath = Path.GetFullPath(serverScriptPath);
@@ -982,7 +982,7 @@ namespace SkillSystem.RAG
                         $"Assets路径: {assetsPath}\n" +
                         $"Unity项目路径: {unityProjectPath}\n" +
                         $"根路径: {rootPath}\n\n" +
-                        "请确保skill_agent目录与ai_agent_for_skill目录在同一级",
+                        "请确保SkillRAG目录与ai_agent_for_skill目录在同一级",
                         "确定");
                     return;
                 }

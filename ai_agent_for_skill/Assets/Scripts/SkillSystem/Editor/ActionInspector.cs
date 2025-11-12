@@ -121,7 +121,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 添加AI参数助手面板（REQ-04�?
+        /// 添加AI参数助手面板（REQ-04）
         /// </summary>
         private void AddSmartActionPanel(ISkillAction action, SkillData skillData)
         {
@@ -187,7 +187,7 @@ namespace SkillSystem.Editor
             inspectorContent.Add(enabledToggle);
 
             // Usage instructions
-            var instructionsLabel = new Label("�?How to add Actions:");
+            var instructionsLabel = new Label("✨ How to add Actions:");
             instructionsLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
             instructionsLabel.style.color = new Color(0.8f, 0.9f, 1.0f);
             instructionsLabel.style.marginBottom = 3;
@@ -264,13 +264,13 @@ namespace SkillSystem.Editor
 
         private void CreateActionsList(SkillTrack track, int trackIndex)
         {
-            // 防御性检查：track.actions 可能在反序列化时�?null
+            // 防御性检查：track.actions 可能在反序列化时为 null
             if (track.actions == null) return;
 
             for (int i = 0; i < track.actions.Count; i++)
             {
                 var action = track.actions[i];
-                // 防御性检查：action 可能�?null
+                // 防御性检查：action 可能为 null
                 if (action == null) continue;
                 var actionContainer = new VisualElement();
                 actionContainer.style.flexDirection = FlexDirection.Row;

@@ -10,7 +10,7 @@ namespace SkillSystem.Editor
 {
     /// <summary>
     /// 时间轴控制器 - 负责时间轴UI的渲染和交互
-    /// 职责：标尺显示、缩放控制、滚动管理、游标操�?
+    /// 职责：标尺显示、缩放控制、滚动管理、游标操作
     /// </summary>
     public class TimelineController
     {
@@ -91,7 +91,7 @@ namespace SkillSystem.Editor
             if (fitButton != null)
                 fitButton.clicked += FitTimelineToWindow;
 
-            // Timeline ruler drag events - 让整个标尺区域支持拖�?
+            // Timeline ruler drag events - 让整个标尺区域支持拖拽
             if (timelineRuler != null)
             {
                 timelineRuler.RegisterCallback<MouseDownEvent>(OnTimelineRulerMouseDown);
@@ -123,13 +123,13 @@ namespace SkillSystem.Editor
         {
             timelineRuler.Clear();
 
-            // 计算刻度密度，避免标记过�?
+            // 计算刻度密度，避免标记过密
             int displayInterval = CalculateDisplayInterval(frameWidth);
 
             // 确保最后一帧总是显示
             var displayedFrames = new HashSet<int>();
 
-            // 按间隔显示刻�?
+            // 按间隔显示刻度
             for (int frame = 0; frame <= skillData.totalDuration; frame += displayInterval)
             {
                 var marker = CreateFrameMarker(frame, frame % 5 == 0);
@@ -137,7 +137,7 @@ namespace SkillSystem.Editor
                 displayedFrames.Add(frame);
             }
 
-            // 特殊处理：确保最后一帧总是显示（如果还没有显示的话�?
+            // 特殊处理：确保最后一帧总是显示（如果还没有显示的话）
             if (!displayedFrames.Contains(skillData.totalDuration))
             {
                 var lastFrameMarker = CreateFrameMarker(skillData.totalDuration, skillData.totalDuration % 5 == 0);
@@ -173,7 +173,7 @@ namespace SkillSystem.Editor
             marker.style.left = frame * frameWidth;
             marker.style.position = Position.Absolute;
 
-            // 为刻度标记添加拖拽支�?
+            // 为刻度标记添加拖拽支持
             marker.RegisterCallback<MouseDownEvent>(evt => OnFrameMarkerMouseDown(evt, frame));
             marker.RegisterCallback<MouseMoveEvent>(OnFrameMarkerMouseMove);
             marker.RegisterCallback<MouseUpEvent>(OnFrameMarkerMouseUp);
@@ -255,13 +255,13 @@ namespace SkillSystem.Editor
 
         private void FitTimelineToWindow()
         {
-            // 真正的Fit功能：让所有内容都能在当前窗口中可�?
+            // 真正的Fit功能：让所有内容都能在当前窗口中可见
             if (timelineTracksScroll != null && editor.CurrentSkillData != null)
             {
                 var skillData = editor.CurrentSkillData;
 
-                // 获取ScrollView的可用宽度用于水平缩�?
-                float availableWidth = timelineTracksScroll.resolvedStyle.width - 20f; // 减去垂直滚动条宽�?
+                // 获取ScrollView的可用宽度用于水平缩放
+                float availableWidth = timelineTracksScroll.resolvedStyle.width - 20f; // 减去垂直滚动条宽度
 
                 // 计算水平缩放：让整个技能时长适配宽度
                 float optimalZoom = CalculateFitZoomLevel(availableWidth, baseFrameWidth, skillData.totalDuration);
@@ -273,13 +273,13 @@ namespace SkillSystem.Editor
                 }
                 SetZoomLevel(optimalZoom);
 
-                // 重置滚动位置�?，确保显示完整内�?
+                // 重置滚动位置到0，确保显示完整内容
                 ResetScrollersToZero();
             }
         }
 
         /// <summary>
-        /// 公共方法：调用fit功能展示完整时间�?
+        /// 公共方法：调用fit功能展示完整时间轴
         /// </summary>
         public void FitToWindow()
         {
@@ -299,13 +299,13 @@ namespace SkillSystem.Editor
 
         private void UpdateAllTrackHeights()
         {
-            // 更新轨道容器的高�?
+            // 更新轨道容器的高度
             if (editor.CurrentSkillData != null)
             {
                 UpdateTimelineSize(editor.CurrentSkillData);
             }
 
-            // 通知编辑器更新轨道显�?
+            // 通知编辑器更新轨道显示
             editor.UpdateTracks();
         }
 
@@ -331,7 +331,7 @@ namespace SkillSystem.Editor
                 isDraggingFromRuler = true;
                 timelineRuler.CaptureMouse();
 
-                // 计算精确的帧位置（支持小数），用于流畅拖�?
+                // 计算精确的帧位置（支持小数），用于流畅拖拽
                 float exactFrame = evt.localMousePosition.x / frameWidth;
                 int clickedFrame = Mathf.RoundToInt(exactFrame);
 
@@ -421,10 +421,10 @@ namespace SkillSystem.Editor
         {
             if (evt.button == 0) // Left click only
             {
-                // 防止与其他拖拽冲�?
+                // 防止与其他拖拽冲突
                 if (isDraggingCursorRuler || isDraggingFromRuler) return;
 
-                // 直接设置到该帧，然后开始拖�?
+                // 直接设置到该帧，然后开始拖拽
                 editor.SetCurrentFrame(markerFrame);
 
                 // 开始从刻度标记拖拽
@@ -439,14 +439,14 @@ namespace SkillSystem.Editor
         {
             if (isDraggingFromRuler)
             {
-                // 获取标尺容器，用于坐标转�?
+                // 获取标尺容器，用于坐标转换
                 var ruler = timelineRuler;
                 if (ruler != null)
                 {
-                    // 将鼠标位置转换到标尺坐标�?
+                    // 将鼠标位置转换到标尺坐标系
                     Vector2 localPos = ruler.WorldToLocal(evt.mousePosition);
 
-                    // 精确计算帧位�?
+                    // 精确计算帧位置
                     float exactFrame = localPos.x / frameWidth;
                     int targetFrame = Mathf.RoundToInt(exactFrame);
 
@@ -494,7 +494,7 @@ namespace SkillSystem.Editor
             // 关键修复：直接更新ScrollView的content container
             if (timelineTracksScroll != null)
             {
-                // 强制更新content container - 这是ScrollView内容大小的关�?
+                // 强制更新content container - 这是ScrollView内容大小的关键
                 var contentContainer = timelineTracksScroll.contentContainer;
                 if (contentContainer != null)
                 {
@@ -503,7 +503,7 @@ namespace SkillSystem.Editor
                     contentContainer.MarkDirtyRepaint();
                 }
 
-                // 确保ScrollView本身也知道新的内容大�?
+                // 确保ScrollView本身也知道新的内容大小
                 timelineTracksScroll.MarkDirtyRepaint();
             }
 
@@ -516,7 +516,7 @@ namespace SkillSystem.Editor
             // 正确地将滚动条重置到0位置
             if (timelineTracksScroll != null)
             {
-                // 使用延迟执行确保布局更新完成后再重置滚动�?
+                // 使用延迟执行确保布局更新完成后再重置滚动条
                 timelineTracksScroll.schedule.Execute(() =>
                 {
                     if (timelineTracksScroll.horizontalScroller != null)
@@ -530,7 +530,7 @@ namespace SkillSystem.Editor
                 });
             }
 
-            // 同步重置track headers的垂直滚�?
+            // 同步重置track headers的垂直滚动
             if (trackHeadersScroll != null)
             {
                 trackHeadersScroll.schedule.Execute(() =>

@@ -30,7 +30,7 @@ namespace TrainingGround.Visualizer
 
         private void ExecuteHealVisualization(HealAction action, GameObject caster)
         {
-            // 计算治疗�?
+            // 计算治疗量
             float healAmount = action.baseHealAmount;
 
             // 添加治疗浮动

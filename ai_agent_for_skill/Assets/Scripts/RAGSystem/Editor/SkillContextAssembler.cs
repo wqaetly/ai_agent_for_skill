@@ -9,7 +9,7 @@ using SkillSystem.Actions;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// 技能上下文装配�?- 从技能数据中提取特征用于参数推理
+    /// 技能上下文装配器 - 从技能数据中提取特征用于参数推理
     /// 负责提取描述、标签、帧位、已有Action等上下文信息
     /// </summary>
     public class SkillContextAssembler
@@ -17,7 +17,7 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 组装完整的技能上下文
         /// </summary>
-        /// <param name="skillData">技能数�?/param>
+        /// <param name="skillData">技能数据</param>
         /// <returns>技能上下文特征</returns>
         public static SkillContextFeatures AssembleContext(SkillData skillData)
         {
@@ -43,12 +43,14 @@ namespace SkillSystem.RAG
             // 提取已有的Action信息
             context.existingActions = ExtractExistingActions(skillData);
 
-            // 分析技能阶段分�?            context.phaseDistribution = AnalyzePhaseDistribution(context.existingActions, skillData.totalDuration);
+            // 分析技能阶段分布
+            context.phaseDistribution = AnalyzePhaseDistribution(context.existingActions, skillData.totalDuration);
 
             // 统计Action类型使用频率
             context.actionTypeFrequency = CountActionTypeFrequency(context.existingActions);
 
-            // 分析技能意图（从描述和Action组合推断�?            context.inferredIntents = InferSkillIntents(skillData.skillDescription, context.existingActions);
+            // 分析技能意图（从描述和Action组合推断）
+            context.inferredIntents = InferSkillIntents(skillData.skillDescription, context.existingActions);
 
             Debug.Log($"[SkillContextAssembler] Assembled context for skill '{context.skillName}': {context.existingActions.Count} actions, {context.tags.Count} tags");
 
@@ -56,7 +58,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 从描述中提取标签关键�?        /// </summary>
+        /// 从描述中提取标签关键词
+        /// </summary>
         private static List<string> ExtractTagsFromDescription(string description)
         {
             if (string.IsNullOrEmpty(description))
@@ -68,7 +71,7 @@ namespace SkillSystem.RAG
                 "伤害", "治疗", "护盾", "位移", "控制", "增益", "减益",
                 "召唤", "buff", "debuff", "dot", "aoe", "单体", "群体",
                 "物理", "魔法", "纯粹", "暴击", "吸血", "冲刺", "闪现",
-                "眩晕", "减�?, "沉默", "击退", "击飞", "隐身", "无敌"
+                "眩晕", "减速", "沉默", "击退", "击飞", "隐身", "无敌"
             };
 
             foreach (var keyword in keywords)
@@ -116,13 +119,15 @@ namespace SkillSystem.RAG
                 }
             }
 
-            // 按帧位排�?            result = result.OrderBy(a => a.frame).ToList();
+            // 按帧位排序
+            result = result.OrderBy(a => a.frame).ToList();
 
             return result;
         }
 
         /// <summary>
-        /// 提取Action的参数信�?        /// </summary>
+        /// 提取Action的参数信息
+        /// </summary>
         private static Dictionary<string, object> ExtractActionParameters(ISkillAction action)
         {
             var parameters = new Dictionary<string, object>();
@@ -153,7 +158,8 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 分析技能阶段分�?        /// 将技能时间线分为前期(0-33%)、中�?33-66%)、后�?66-100%)
+        /// 分析技能阶段分布
+        /// 将技能时间线分为前期(0-33%)、中期(33-66%)、后期(66-100%)
         /// </summary>
         private static Dictionary<string, int> AnalyzePhaseDistribution(List<ExistingActionInfo> actions, int totalDuration)
         {
@@ -199,43 +205,44 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 推断技能意图（攻击�?防御�?辅助�?控制�?位移型）
+        /// 推断技能意图（攻击型/防御型/辅助型/控制型/位移型）
         /// </summary>
         private static List<string> InferSkillIntents(string description, List<ExistingActionInfo> actions)
         {
             var intents = new HashSet<string>();
 
-            // 从描述推�?            if (!string.IsNullOrEmpty(description))
+            // 从描述推断
+            if (!string.IsNullOrEmpty(description))
             {
                 if (description.Contains("伤害") || description.Contains("攻击"))
-                    intents.Add("攻击�?);
+                    intents.Add("攻击型");
                 if (description.Contains("治疗") || description.Contains("恢复"))
-                    intents.Add("防御�?);
+                    intents.Add("防御型");
                 if (description.Contains("护盾") || description.Contains("防御"))
-                    intents.Add("防御�?);
+                    intents.Add("防御型");
                 if (description.Contains("位移") || description.Contains("冲刺") || description.Contains("闪现"))
-                    intents.Add("位移�?);
-                if (description.Contains("控制") || description.Contains("眩晕") || description.Contains("减�?))
-                    intents.Add("控制�?);
+                    intents.Add("位移型");
+                if (description.Contains("控制") || description.Contains("眩晕") || description.Contains("减速"))
+                    intents.Add("控制型");
                 if (description.Contains("增益") || description.Contains("buff"))
-                    intents.Add("辅助�?);
+                    intents.Add("辅助型");
             }
 
             // 从Action类型推断
             foreach (var action in actions)
             {
                 if (action.actionType.Contains("Damage"))
-                    intents.Add("攻击�?);
+                    intents.Add("攻击型");
                 if (action.actionType.Contains("Heal"))
-                    intents.Add("防御�?);
+                    intents.Add("防御型");
                 if (action.actionType.Contains("Shield"))
-                    intents.Add("防御�?);
+                    intents.Add("防御型");
                 if (action.actionType.Contains("Movement") || action.actionType.Contains("Teleport"))
-                    intents.Add("位移�?);
+                    intents.Add("位移型");
                 if (action.actionType.Contains("Control") || action.actionType.Contains("Stun"))
-                    intents.Add("控制�?);
+                    intents.Add("控制型");
                 if (action.actionType.Contains("Buff"))
-                    intents.Add("辅助�?);
+                    intents.Add("辅助型");
             }
 
             return intents.ToList();
@@ -246,9 +253,9 @@ namespace SkillSystem.RAG
         /// </summary>
         public static string BuildContextSummaryForQuery(SkillContextFeatures context)
         {
-            var summary = $"技能名�? {context.skillName}\n";
-            summary += $"技能描�? {context.skillDescription}\n";
-            summary += $"持续时间: {context.durationInSeconds:F2}�?({context.totalDuration}�?\n";
+            var summary = $"技能名称: {context.skillName}\n";
+            summary += $"技能描述: {context.skillDescription}\n";
+            summary += $"持续时间: {context.durationInSeconds:F2}秒 ({context.totalDuration}帧)\n";
 
             if (context.tags.Count > 0)
             {
@@ -257,15 +264,15 @@ namespace SkillSystem.RAG
 
             if (context.inferredIntents.Count > 0)
             {
-                summary += $"技能类�? {string.Join(", ", context.inferredIntents)}\n";
+                summary += $"技能类型: {string.Join(", ", context.inferredIntents)}\n";
             }
 
             if (context.existingActions.Count > 0)
             {
-                summary += $"\n已有Action ({context.existingActions.Count}�?:\n";
+                summary += $"\n已有Action ({context.existingActions.Count}个):\n";
                 foreach (var action in context.existingActions)
                 {
-                    summary += $"  - [{action.frame}帧] {action.displayName} (持续{action.duration}�?\n";
+                    summary += $"  - [{action.frame}帧] {action.displayName} (持续{action.duration}帧)\n";
                 }
             }
 
@@ -284,10 +291,15 @@ namespace SkillSystem.RAG
         public string skillName;
         public string skillDescription;
 
-        // 时间线信�?        public int totalDuration;           // 总帧�?        public int frameRate;               // 帧率
-        public float durationInSeconds;     // 总秒�?
+        // 时间线信息
+        public int totalDuration;           // 总帧数
+        public int frameRate;               // 帧率
+        public float durationInSeconds;     // 总秒数
+
         // 语义特征
-        public List<string> tags = new List<string>();              // 标签关键�?        public List<string> inferredIntents = new List<string>();   // 推断的技能意�?
+        public List<string> tags = new List<string>();              // 标签关键词
+        public List<string> inferredIntents = new List<string>();   // 推断的技能意图
+
         // 已有Action信息
         public List<ExistingActionInfo> existingActions = new List<ExistingActionInfo>();
 
@@ -302,7 +314,11 @@ namespace SkillSystem.RAG
     [Serializable]
     public class ExistingActionInfo
     {
-        public string actionType;                           // Action类型�?        public string displayName;                          // 显示名称
-        public int frame;                                   // 起始�?        public int duration;                                // 持续帧数
-        public string trackName;                            // 所在轨道名�?        public Dictionary<string, object> parameters;       // 参数�?    }
+        public string actionType;                           // Action类型名
+        public string displayName;                          // 显示名称
+        public int frame;                                   // 起始帧
+        public int duration;                                // 持续帧数
+        public string trackName;                            // 所在轨道名称
+        public Dictionary<string, object> parameters;       // 参数值
+    }
 }

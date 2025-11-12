@@ -9,7 +9,8 @@ namespace SkillSystem.RAG.Tests
 {
     /// <summary>
     /// 参数粒度增强功能单元测试
-    /// 验证 REQ-02 的各项功�?    /// </summary>
+    /// 验证 REQ-02 的各项功能
+    /// </summary>
     public class ParameterGranularityTests
     {
         private SkillData testSkillData;
@@ -17,17 +18,18 @@ namespace SkillSystem.RAG.Tests
         [SetUp]
         public void Setup()
         {
-            // 创建测试用的技能数�?            testSkillData = new SkillData
+            // 创建测试用的技能数据
+            testSkillData = new SkillData
             {
-                skillName = "测试技�?,
-                skillDescription = "一个包含伤害和位移的测试技�?,
+                skillName = "测试技能",
+                skillDescription = "一个包含伤害和位移的测试技能",
                 totalDuration = 60,
                 frameRate = 30,
                 tracks = new List<SkillTrack>
                 {
                     new SkillTrack
                     {
-                        trackName = "主轨�?,
+                        trackName = "主轨道",
                         enabled = true,
                         actions = new List<ISkillAction>
                         {
@@ -61,7 +63,7 @@ namespace SkillSystem.RAG.Tests
 
             // Assert
             Assert.IsNotNull(context);
-            Assert.AreEqual("测试技�?, context.skillName);
+            Assert.AreEqual("测试技能", context.skillName);
             Assert.AreEqual(60, context.totalDuration);
             Assert.AreEqual(30, context.frameRate);
             Assert.AreEqual(2f, context.durationInSeconds, 0.01f);
@@ -164,7 +166,8 @@ namespace SkillSystem.RAG.Tests
             Assert.IsNotNull(result);
             Assert.Greater(result.parameterInferences.Count, 0);
 
-            // 验证baseDamage参数被推�?            var baseDamageInference = result.parameterInferences.Find(p => p.parameterName == "baseDamage");
+            // 验证baseDamage参数被推断
+            var baseDamageInference = result.parameterInferences.Find(p => p.parameterName == "baseDamage");
             Assert.IsNotNull(baseDamageInference);
             Assert.IsNotNull(baseDamageInference.recommendedValue);
         }
@@ -288,7 +291,8 @@ namespace SkillSystem.RAG.Tests
             // Assert
             var baseDamageInference = result.parameterInferences.Find(p => p.parameterName == "baseDamage");
             Assert.IsNotNull(baseDamageInference);
-            // 统计数据存在时应该有备选�?            if (baseDamageInference.confidence > 0.5f)
+            // 统计数据存在时应该有备选值
+            if (baseDamageInference.confidence > 0.5f)
             {
                 Assert.Greater(baseDamageInference.alternativeValues.Count, 0);
             }
