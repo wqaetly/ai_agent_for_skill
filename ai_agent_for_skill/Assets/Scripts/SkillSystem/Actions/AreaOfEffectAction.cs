@@ -6,9 +6,9 @@ namespace SkillSystem.Actions
 {
     /// <summary>
     /// 范围效果行为脚本
-    /// 功能概述：在指定区域内产生各种效果，包括伤害、治疗、Buff施加等。
-    /// 支持多种形状的作用区域（圆形、矩形、扇形、环形），以及渐变效果和持续作用。
-    /// 适用于DOTA2中的AOE技能，如地震、暴雪、火墙、光环效果等区域性技能。
+    /// 功能概述：在指定区域内产生各种效果，包括伤害、治疗、Buff施加等�?
+    /// 支持多种形状的作用区域（圆形、矩形、扇形、环形），以及渐变效果和持续作用�?
+    /// 适用于DOTA2中的AOE技能，如地震、暴雪、火墙、光环效果等区域性技能�?
     /// </summary>
     [Serializable]
     [ActionDisplayName("区域效果")]
@@ -16,7 +16,7 @@ namespace SkillSystem.Actions
     {
         [BoxGroup("Area Settings")]
         [LabelText("Area Shape")]
-        /// <summary>作用区域形状，决定AOE效果的几何形状</summary>
+        /// <summary>作用区域形状，决定AOE效果的几何形�?/summary>
         public AreaShape areaShape = AreaShape.Circle;
 
         [BoxGroup("Area Settings")]
@@ -36,7 +36,7 @@ namespace SkillSystem.Actions
         [LabelText("Area Angle")]
         [Range(0f, 360f)]
         [ShowIf("@areaShape == AreaShape.Sector")]
-        /// <summary>扇形角度，仅扇形区域使用，定义扇形的开口角度</summary>
+        /// <summary>扇形角度，仅扇形区域使用，定义扇形的开口角�?/summary>
         public float areaAngle = 90f;
 
         [BoxGroup("Position Settings")]
@@ -51,7 +51,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Position Settings")]
         [LabelText("Follow Caster")]
-        /// <summary>跟随施法者，true时AOE区域会跟随施法者移动</summary>
+        /// <summary>跟随施法者，true时AOE区域会跟随施法者移�?/summary>
         public bool followCaster = false;
 
         [BoxGroup("Effect Settings")]
@@ -62,14 +62,14 @@ namespace SkillSystem.Actions
         [BoxGroup("Effect Settings")]
         [LabelText("Effect Value")]
         [MinValue(0f)]
-        /// <summary>效果数值，根据效果类型可能是伤害值、治疗量等</summary>
+        /// <summary>效果数值，根据效果类型可能是伤害值、治疗量�?/summary>
         public float effectValue = 100f;
 
         [BoxGroup("Effect Settings")]
         [LabelText("Effect Interval")]
         [MinValue(0f)]
-        [InfoBox("效果触发间隔，0表示只触发一次")]
-        /// <summary>效果间隔时间，单位为秒，决定AOE效果的触发频率</summary>
+        [InfoBox("效果触发间隔�?表示只触发一�?)]
+        /// <summary>效果间隔时间，单位为秒，决定AOE效果的触发频�?/summary>
         public float effectInterval = 1f;
 
         /// <summary>跳动频率别名，用于Visualizer兼容</summary>
@@ -83,13 +83,13 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Falloff Settings")]
         [LabelText("Use Distance Falloff")]
-        /// <summary>使用距离衰减，true时效果强度会随距离中心的距离而衰减</summary>
+        /// <summary>使用距离衰减，true时效果强度会随距离中心的距离而衰�?/summary>
         public bool useDistanceFalloff = false;
 
         [BoxGroup("Falloff Settings")]
         [LabelText("Falloff Curve")]
         [ShowIf("useDistanceFalloff")]
-        /// <summary>衰减曲线，定义效果强度随距离变化的曲线</summary>
+        /// <summary>衰减曲线，定义效果强度随距离变化的曲�?/summary>
         public AnimationCurve falloffCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);
 
         [BoxGroup("Visual Settings")]
@@ -99,24 +99,24 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Visual Settings")]
         [LabelText("Ongoing Effect")]
-        /// <summary>持续视觉效果，在AOE持续期间播放的特效</summary>
+        /// <summary>持续视觉效果，在AOE持续期间播放的特�?/summary>
         public GameObject ongoingEffect;
 
         [BoxGroup("Target Settings")]
         [LabelText("Target Filter")]
-        /// <summary>目标筛选器，决定AOE效果影响哪些类型的单位</summary>
+        /// <summary>目标筛选器，决定AOE效果影响哪些类型的单�?/summary>
         public TargetFilter targetFilter = TargetFilter.Enemy;
 
         [BoxGroup("Target Settings")]
         [LabelText("Max Targets")]
         [MinValue(0)]
-        [InfoBox("最大影响目标数，0表示无限制")]
-        /// <summary>最大目标数量，限制AOE效果同时影响的单位数量</summary>
+        [InfoBox("最大影响目标数�?表示无限�?)]
+        /// <summary>最大目标数量，限制AOE效果同时影响的单位数�?/summary>
         public int maxTargets = 0;
 
         [BoxGroup("Target Settings")]
         [LabelText("Ignore Caster")]
-        /// <summary>忽略施法者，true时AOE效果不会影响施法者自身</summary>
+        /// <summary>忽略施法者，true时AOE效果不会影响施法者自�?/summary>
         public bool ignoreCaster = true;
 
         /// <summary>影响施法者别名，用于Visualizer兼容</summary>
@@ -128,7 +128,7 @@ namespace SkillSystem.Actions
         private GameObject areaEffectInstance;
         /// <summary>持续效果实例，生成的持续特效GameObject引用</summary>
         private GameObject ongoingEffectInstance;
-        /// <summary>下次效果触发时间，用于控制效果间隔</summary>
+        /// <summary>下次效果触发时间，用于控制效果间�?/summary>
         private float nextEffectTime;
 
         public override string GetActionName()
@@ -152,14 +152,14 @@ namespace SkillSystem.Actions
             Debug.Log($"[AOEAction] Creating {areaShape} AOE at {actualCenterPosition} with size {areaSize}");
 
             CreateVisualEffects();
-            nextEffectTime = 0f; // 立即触发第一次效果
+            nextEffectTime = 0f; // 立即触发第一次效�?
         }
 
         public override void OnTick(int relativeFrame)
         {
             float currentTime = relativeFrame * Time.fixedDeltaTime;
 
-            // 跟随施法者
+            // 跟随施法�?
             if (followCaster)
             {
                 var casterTransform = UnityEngine.Object.FindFirstObjectByType<Transform>();
@@ -170,7 +170,7 @@ namespace SkillSystem.Actions
                 }
             }
 
-            // 检查是否需要触发效果
+            // 检查是否需要触发效�?
             if (currentTime >= nextEffectTime)
             {
                 ApplyAreaEffect();
@@ -181,7 +181,7 @@ namespace SkillSystem.Actions
                 }
                 else
                 {
-                    nextEffectTime = float.MaxValue; // 只触发一次
+                    nextEffectTime = float.MaxValue; // 只触发一�?
                 }
             }
         }
@@ -245,11 +245,11 @@ namespace SkillSystem.Actions
         {
             Debug.Log($"[AOEAction] Applying {effectType} effect (Value: {effectValue}) in {areaShape} area");
 
-            // 在实际项目中，这里会：
-            // 1. 获取区域内的所有目标
+            // 在实际项目中，这里会�?
+            // 1. 获取区域内的所有目�?
             // 2. 根据目标筛选器过滤目标
             // 3. 应用距离衰减（如果启用）
-            // 4. 对每个有效目标应用效果
+            // 4. 对每个有效目标应用效�?
 
             // 模拟获取区域内目标的过程
             var targets = GetTargetsInArea();
@@ -277,13 +277,13 @@ namespace SkillSystem.Actions
         /// <returns>区域内的目标数组</returns>
         private Transform[] GetTargetsInArea()
         {
-            // 在实际项目中，这里会根据区域形状进行精确的碰撞检测
+            // 在实际项目中，这里会根据区域形状进行精确的碰撞检�?
             // 目前返回模拟数据
             return new Transform[0];
         }
 
-        /// <summary>检查点是否在指定形状的区域内</summary>
-        /// <param name="point">要检查的点</param>
+        /// <summary>检查点是否在指定形状的区域�?/summary>
+        /// <param name="point">要检查的�?/param>
         /// <returns>是否在区域内</returns>
         private bool IsPointInArea(Vector3 point)
         {

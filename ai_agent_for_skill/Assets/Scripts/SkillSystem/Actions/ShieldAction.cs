@@ -6,9 +6,9 @@ namespace SkillSystem.Actions
 {
     /// <summary>
     /// 护盾行为脚本
-    /// 功能概述：为目标单位提供各种类型的护盾保护，包括物理护盾、魔法护盾、吸收护盾等。
-    /// 支持护盾值设置、持续时间管理、护盾类型配置、破盾反馈等功能。
-    /// 适用于DOTA2中的防护技能，如魔法护盾、骨骼护甲、困兽之斗、林肯法球等护盾类技能。
+    /// 功能概述：为目标单位提供各种类型的护盾保护，包括物理护盾、魔法护盾、吸收护盾等�?
+    /// 支持护盾值设置、持续时间管理、护盾类型配置、破盾反馈等功能�?
+    /// 适用于DOTA2中的防护技能，如魔法护盾、骨骼护甲、困兽之斗、林肯法球等护盾类技能�?
     /// </summary>
     [Serializable]
     [ActionDisplayName("护盾")]
@@ -16,30 +16,30 @@ namespace SkillSystem.Actions
     {
         [BoxGroup("Shield Settings")]
         [LabelText("Shield Type")]
-        /// <summary>护盾类型，决定护盾的防护机制和特性</summary>
+        /// <summary>护盾类型，决定护盾的防护机制和特�?/summary>
         public ShieldType shieldType = ShieldType.Absorption;
 
         [BoxGroup("Shield Settings")]
         [LabelText("Shield Amount")]
         [MinValue(0f)]
-        /// <summary>护盾数值，护盾可以吸收的伤害总量或提供的防护数值</summary>
+        /// <summary>护盾数值，护盾可以吸收的伤害总量或提供的防护数�?/summary>
         public float shieldAmount = 200f;
 
         [BoxGroup("Shield Settings")]
         [LabelText("Shield Duration")]
         [MinValue(0f)]
-        [InfoBox("护盾持续时间，0表示直到被破坏为止")]
-        /// <summary>护盾持续时间，单位为秒，超时后护盾自动消失</summary>
+        [InfoBox("护盾持续时间�?表示直到被破坏为�?)]
+        /// <summary>护盾持续时间，单位为秒，超时后护盾自动消�?/summary>
         public float shieldDuration = 15f;
 
         [BoxGroup("Damage Filter")]
         [LabelText("Block Physical Damage")]
-        /// <summary>阻挡物理伤害，true时护盾可以防护物理伤害</summary>
+        /// <summary>阻挡物理伤害，true时护盾可以防护物理伤�?/summary>
         public bool blockPhysicalDamage = true;
 
         [BoxGroup("Damage Filter")]
         [LabelText("Block Magical Damage")]
-        /// <summary>阻挡魔法伤害，true时护盾可以防护魔法伤害</summary>
+        /// <summary>阻挡魔法伤害，true时护盾可以防护魔法伤�?/summary>
         public bool blockMagicalDamage = true;
 
         [BoxGroup("Damage Filter")]
@@ -63,7 +63,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Advanced Settings")]
         [LabelText("Reflect Damage")]
-        /// <summary>反射伤害，true时护盾会将部分伤害反射给攻击者</summary>
+        /// <summary>反射伤害，true时护盾会将部分伤害反射给攻击�?/summary>
         public bool reflectDamage = false;
 
         [BoxGroup("Advanced Settings")]
@@ -75,7 +75,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Refresh Settings")]
         [LabelText("Refreshable")]
-        /// <summary>可刷新，true时重复施加护盾会刷新而不是叠加</summary>
+        /// <summary>可刷新，true时重复施加护盾会刷新而不是叠�?/summary>
         public bool refreshable = true;
 
         [BoxGroup("Refresh Settings")]
@@ -108,7 +108,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Visual Settings")]
         [LabelText("Shield Effect")]
-        /// <summary>护盾视觉效果，护盾存在时的持续特效</summary>
+        /// <summary>护盾视觉效果，护盾存在时的持续特�?/summary>
         public GameObject shieldEffect;
 
         [BoxGroup("Visual Settings")]
@@ -119,12 +119,12 @@ namespace SkillSystem.Actions
         [BoxGroup("Visual Settings")]
         [LabelText("Reflect Effect")]
         [ShowIf("reflectDamage")]
-        /// <summary>反射特效，反射伤害时播放的视觉效果</summary>
+        /// <summary>反射特效，反射伤害时播放的视觉效�?/summary>
         public GameObject reflectEffect;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Shield Apply Sound")]
-        /// <summary>护盾施加音效，护盾生效时的音频</summary>
+        /// <summary>护盾施加音效，护盾生效时的音�?/summary>
         public AudioClip shieldApplySound;
 
         [BoxGroup("Audio Settings")]
@@ -140,14 +140,14 @@ namespace SkillSystem.Actions
         [BoxGroup("Target Settings")]
         [LabelText("Max Targets")]
         [MinValue(1)]
-        /// <summary>最大目标数量，同时可以保护的单位数量</summary>
+        /// <summary>最大目标数量，同时可以保护的单位数�?/summary>
         public int maxTargets = 1;
 
         /// <summary>护盾效果实例，生成的视觉效果引用</summary>
         private GameObject shieldEffectInstance;
         /// <summary>当前护盾剩余值，护盾还能吸收的伤害量</summary>
         private float currentShieldAmount;
-        /// <summary>护盾结束时间，护盾消失的时间戳</summary>
+        /// <summary>护盾结束时间，护盾消失的时间�?/summary>
         private float shieldEndTime;
 
         public override string GetActionName()
@@ -177,7 +177,7 @@ namespace SkillSystem.Actions
         {
             float currentTime = Time.time;
 
-            // 检查护盾是否过期
+            // 检查护盾是否过�?
             if (shieldDuration > 0f && currentTime >= shieldEndTime)
             {
                 Debug.Log("[ShieldAction] Shield expired due to timeout");
@@ -185,8 +185,8 @@ namespace SkillSystem.Actions
                 return;
             }
 
-            // 检查护盾状态
-            if (relativeFrame % 30 == 0) // 每秒检查一次
+            // 检查护盾状�?
+            if (relativeFrame % 30 == 0) // 每秒检查一�?
             {
                 float remainingTime = shieldEndTime - currentTime;
                 Debug.Log($"[ShieldAction] Shield status - Amount: {currentShieldAmount:F1}, Time: {remainingTime:F1}s");
@@ -198,7 +198,7 @@ namespace SkillSystem.Actions
 
         public override void OnExit()
         {
-            // 清理护盾效果（如果还存在）
+            // 清理护盾效果（如果还存在�?
             if (shieldEffectInstance != null)
             {
                 RemoveShield();
@@ -207,10 +207,10 @@ namespace SkillSystem.Actions
             Debug.Log("[ShieldAction] Shield action completed");
         }
 
-        /// <summary>应用护盾到目标</summary>
+        /// <summary>应用护盾到目�?/summary>
         private void ApplyShield()
         {
-            // 在实际项目中，这里会：
+            // 在实际项目中，这里会�?
             // 1. 获取目标单位
             // 2. 检查是否已有相同类型的护盾
             // 3. 根据刷新/叠加规则处理
@@ -266,7 +266,7 @@ namespace SkillSystem.Actions
             // 在实际项目中，这里会注销伤害处理回调
         }
 
-        /// <summary>护盾被破坏时的处理</summary>
+        /// <summary>护盾被破坏时的处�?/summary>
         private void OnShieldBroken()
         {
             Debug.Log("[ShieldAction] Shield broken!");
@@ -293,7 +293,7 @@ namespace SkillSystem.Actions
         /// <summary>处理伤害吸收</summary>
         /// <param name="incomingDamage">incoming damage amount</param>
         /// <param name="damageType">damage type</param>
-        /// <returns>实际受到的伤害</returns>
+        /// <returns>实际受到的伤�?/returns>
         public float ProcessDamage(float incomingDamage, DamageType damageType)
         {
             // 检查护盾是否能阻挡这种伤害类型
@@ -313,7 +313,7 @@ namespace SkillSystem.Actions
 
             if (!canBlock)
             {
-                return incomingDamage; // 护盾不能阻挡此类型伤害
+                return incomingDamage; // 护盾不能阻挡此类型伤�?
             }
 
             float actualDamage = incomingDamage;
@@ -364,14 +364,14 @@ namespace SkillSystem.Actions
             return actualDamage;
         }
 
-        /// <summary>检查破盾条件</summary>
+        /// <summary>检查破盾条�?/summary>
         private void CheckBreakConditions()
         {
-            // 在实际项目中，这里会检查各种破盾条件
+            // 在实际项目中，这里会检查各种破盾条�?
             // 目前仅为示例逻辑
             if (breakOnSpellCast || breakOnAttack || breakOnMovement)
             {
-                // 模拟条件检测
+                // 模拟条件检�?
                 if (UnityEngine.Random.value < 0.001f) // 很低的概率触发，仅作示例
                 {
                     Debug.Log("[ShieldAction] Shield broken due to break condition");
@@ -392,7 +392,7 @@ namespace SkillSystem.Actions
     public enum ShieldType
     {
         Absorption,      // 吸收型护盾，直接吸收伤害
-        DamageReduction, // 减伤型护盾，按比例减少伤害
+        DamageReduction, // 减伤型护盾，按比例减少伤�?
         Block           // 阻挡型护盾，完全阻挡一定次数的攻击
     }
 }

@@ -1,0 +1,390 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1921712+08:00",
+    "action": {
+        "typeName": "SummonAction",
+        "fullTypeName": "SkillSystem.Actions.SummonAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "召唤",
+        "category": "Other",
+        "description": "SummonAction是Unity技能系统中专门用于召唤各类单位的核心组件，能够在指定位置创建生物、建筑、陷阱或图腾等召唤物。该Action支持丰富的配置选项，包括召唤数量控制（summonCount）、最大召唤限制（maxSummons）、多种位置生成模式（预定义位置summonPositions或随机位置randomRange），以及地面检测（checkGround）确保召唤物正确放置。召唤物的生命周期管理提供三种模式：定时消失（Timed）、基于生命值（Health）和永久存在（Permanent），同时支持属性继承系统（inheritCasterStats），召唤物可以按比例继承召唤者的攻击力（damageInheritance）和生命值（healthInheritance）。AI行为系统（AIBehavior）定义了召唤物的自动行为模式，包括跟随召唤者（FollowCaster）、主动攻击（Aggressive）、防御模式（Defensive）和静止不动（Stationary），并配备攻击范围（attackRange）和跟随距离（followDistance）参数。视觉和音频效果系统支持召唤特效（summonEffect）、消失特效（despawnEffect）和召唤音效（summonSound），增强游戏表现力。适用于DOTA2中的先知树人、狼人召唤狼、影魔分身、各种守卫技能，以及需要临时单位协助战斗、设置陷阱或建造临时防御工事的各种场景�?,
+        "searchText": "召唤\nSummonAction是Unity技能系统中专门用于召唤各类单位的核心组件，能够在指定位置创建生物、建筑、陷阱或图腾等召唤物。该Action支持丰富的配置选项，包括召唤数量控制（summonCount）、最大召唤限制（maxSummons）、多种位置生成模式（预定义位置summonPositions或随机位置randomRange），以及地面检测（checkGround）确保召唤物正确放置。召唤物的生命周期管理提供三种模式：定时消失（Timed）、基于生命值（Health）和永久存在（Permanent），同时支持属性继承系统（inheritCasterStats），召唤物可以按比例继承召唤者的攻击力（damageInheritance）和生命值（healthInheritance）。AI行为系统（AIBehavior）定义了召唤物的自动行为模式，包括跟随召唤者（FollowCaster）、主动攻击（Aggressive）、防御模式（Defensive）和静止不动（Stationary），并配备攻击范围（attackRange）和跟随距离（followDistance）参数。视觉和音频效果系统支持召唤特效（summonEffect）、消失特效（despawnEffect）和召唤音效（summonSound），增强游戏表现力。适用于DOTA2中的先知树人、狼人召唤狼、影魔分身、各种守卫技能，以及需要临时单位协助战斗、设置陷阱或建造临时防御工事的各种场景。\n关键�? 召唤,summon,召唤�?召唤生物,单位生成,spawn,creature,building,trap,totem,AI行为,属性继�?生命周期,数量限制,位置生成,召唤特效,DOTA2召唤技能\n分类: Other\n类型: SummonAction",
+        "parameters": [
+            {
+                "name": "summonType",
+                "type": "SummonType",
+                "defaultValue": "Creature",
+                "label": "Summon Type",
+                "group": "Summon Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Creature",
+                    "Building",
+                    "Trap",
+                    "Totem"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "summonPrefab",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Summon Prefab",
+                "group": "Summon Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "summonCount",
+                "type": "int",
+                "defaultValue": "1",
+                "label": "Summon Count",
+                "group": "Summon Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxSummons",
+                "type": "int",
+                "defaultValue": "5",
+                "label": "Max Summons",
+                "group": "Summon Settings",
+                "infoBox": "最大召唤物数量限制�?表示无限�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "summonPositions",
+                "type": "Vector3[]",
+                "defaultValue": "[1 items]",
+                "label": "Summon Positions",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": true,
+                "isEnum": false,
+                "elementType": "Vector3",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useRandomPositions",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Use Random Positions",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "randomRange",
+                "type": "float",
+                "defaultValue": "3",
+                "label": "Random Range",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "checkGround",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Check Ground",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "lifetimeMode",
+                "type": "LifetimeMode",
+                "defaultValue": "Timed",
+                "label": "Lifetime Mode",
+                "group": "Lifetime Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Timed",
+                    "Health",
+                    "Permanent"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "lifetimeDuration",
+                "type": "float",
+                "defaultValue": "30",
+                "label": "Lifetime Duration",
+                "group": "Lifetime Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healthPoints",
+                "type": "float",
+                "defaultValue": "100",
+                "label": "Health Points",
+                "group": "Lifetime Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "inheritCasterStats",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Inherit Caster Stats",
+                "group": "Inheritance Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageInheritance",
+                "type": "float",
+                "defaultValue": "0.5",
+                "label": "Damage Inheritance",
+                "group": "Inheritance Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "healthInheritance",
+                "type": "float",
+                "defaultValue": "0.3",
+                "label": "Health Inheritance",
+                "group": "Inheritance Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "aiBehavior",
+                "type": "AIBehavior",
+                "defaultValue": "FollowCaster",
+                "label": "AI Behavior",
+                "group": "Behavior Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "FollowCaster",
+                    "Aggressive",
+                    "Defensive",
+                    "Stationary"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "attackRange",
+                "type": "float",
+                "defaultValue": "5",
+                "label": "Attack Range",
+                "group": "Behavior Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "followDistance",
+                "type": "float",
+                "defaultValue": "3",
+                "label": "Follow Distance",
+                "group": "Behavior Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "summonEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Summon Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "despawnEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Despawn Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "summonSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Summon Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,337 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1804278+08:00",
+    "action": {
+        "typeName": "AreaOfEffectAction",
+        "fullTypeName": "SkillSystem.Actions.AreaOfEffectAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "区域效果",
+        "category": "Damage",
+        "description": "AreaOfEffectAction是一个功能强大的区域效果脚本，用于在指定几何区域内产生各种持续性效果。该Action支持四种不同的区域形状：圆形(Circle)、矩�?Rectangle)、扇�?Sector)和环�?Ring)，每种形状都有专门的参数配置，如扇形角度(Area Angle)和环形内半径(Inner Radius)。核心功能包括伤�?Damage)、治�?Healing)、增�?Buff)和减�?Debuff)四种效果类型，支持距离衰�?Falloff)和周期性触�?Effect Interval)。典型使用场景包括DOTA2中的地震(Earthshaker余震)、暴�?Crystal Maiden冰封禁制)、火�?Jakiro烈焰焚身)和光环类技能。与其他Action的关键区别在于其强大的区域控制和持续作用能力，支持目标筛�?Target Filter)、最大目标限�?Max Targets)和施法者忽�?Ignore Caster)等精细化控制，同时提供完整的视觉效果系统，包括区域标�?Area Visual Effect)和持续特�?Ongoing Effect)�?,
+        "searchText": "区域效果\nAreaOfEffectAction是一个功能强大的区域效果脚本，用于在指定几何区域内产生各种持续性效果。该Action支持四种不同的区域形状：圆形(Circle)、矩�?Rectangle)、扇�?Sector)和环�?Ring)，每种形状都有专门的参数配置，如扇形角度(Area Angle)和环形内半径(Inner Radius)。核心功能包括伤�?Damage)、治�?Healing)、增�?Buff)和减�?Debuff)四种效果类型，支持距离衰�?Falloff)和周期性触�?Effect Interval)。典型使用场景包括DOTA2中的地震(Earthshaker余震)、暴�?Crystal Maiden冰封禁制)、火�?Jakiro烈焰焚身)和光环类技能。与其他Action的关键区别在于其强大的区域控制和持续作用能力，支持目标筛�?Target Filter)、最大目标限�?Max Targets)和施法者忽�?Ignore Caster)等精细化控制，同时提供完整的视觉效果系统，包括区域标�?Area Visual Effect)和持续特�?Ongoing Effect)。\n关键�? AOE,区域效果,范围伤害,光环,持续效果,AreaOfEffect,圆形区域,扇形区域,环形区域,距离衰减,目标筛�?视觉效果,DOTA2技�?暴雪,地震,火墙\n分类: Damage\n类型: AreaOfEffectAction",
+        "parameters": [
+            {
+                "name": "areaShape",
+                "type": "AreaShape",
+                "defaultValue": "Circle",
+                "label": "Area Shape",
+                "group": "Area Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Circle",
+                    "Rectangle",
+                    "Sector",
+                    "Ring"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "areaSize",
+                "type": "float",
+                "defaultValue": "5",
+                "label": "Area Size",
+                "group": "Area Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "innerRadius",
+                "type": "float",
+                "defaultValue": "2",
+                "label": "Inner Radius",
+                "group": "Area Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "areaAngle",
+                "type": "float",
+                "defaultValue": "90",
+                "label": "Area Angle",
+                "group": "Area Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "360"
+                }
+            },
+            {
+                "name": "centerPosition",
+                "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
+                "label": "Center Position",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useRelativePosition",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Use Relative Position",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "followCaster",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Follow Caster",
+                "group": "Position Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectType",
+                "type": "AOEEffectType",
+                "defaultValue": "Damage",
+                "label": "Effect Type",
+                "group": "Effect Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Damage",
+                    "Healing",
+                    "Buff",
+                    "Debuff"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectValue",
+                "type": "float",
+                "defaultValue": "100",
+                "label": "Effect Value",
+                "group": "Effect Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectInterval",
+                "type": "float",
+                "defaultValue": "1",
+                "label": "Effect Interval",
+                "group": "Effect Settings",
+                "infoBox": "效果触发间隔�?表示只触发一�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useDistanceFalloff",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Use Distance Falloff",
+                "group": "Falloff Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "falloffCurve",
+                "type": "AnimationCurve",
+                "defaultValue": "UnityEngine.AnimationCurve",
+                "label": "Falloff Curve",
+                "group": "Falloff Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "areaVisualEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Area Visual Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "ongoingEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Ongoing Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "defaultValue": "Enemy",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "defaultValue": "0",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "infoBox": "最大影响目标数�?表示无限�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "ignoreCaster",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Ignore Caster",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

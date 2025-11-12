@@ -1,0 +1,88 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1778992+08:00",
+    "action": {
+        "typeName": "AnimationAction",
+        "fullTypeName": "SkillSystem.Actions.AnimationAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "播放动画",
+        "category": "Visual",
+        "description": "AnimationAction是专门用于控制角色动画播放的视觉表现类技能Action。其核心功能是通过Animator组件播放指定的动画片段，支持动画层级切换、归一化时间控制和交叉淡入淡出效果。主要配置参数包括动画剪辑名�?AnimationClip Name)、归一化时�?Normalized Time)、淡入淡出时�?CrossFade Duration)和动画层�?Animation Layer)，其中归一化时间可精确控制动画起始播放位置，交叉淡入淡出确保动画切换平滑过渡。典型使用场景包括：攻击技能动画表现（如剑术连招）、技能释放特效动画（如法术施放）、角色移动状态切换（如行走到奔跑）、受击反馈动画和特殊状态动画（如死亡、复活）。与其他Action的关键区别在于，该Action纯粹用于视觉展示，不涉及伤害计算、控制效果、位移逻辑或游戏状态改变，是技能系统中专门负责动画表现的基础组件�?,
+        "searchText": "播放动画\nAnimationAction是专门用于控制角色动画播放的视觉表现类技能Action。其核心功能是通过Animator组件播放指定的动画片段，支持动画层级切换、归一化时间控制和交叉淡入淡出效果。主要配置参数包括动画剪辑名�?AnimationClip Name)、归一化时�?Normalized Time)、淡入淡出时�?CrossFade Duration)和动画层�?Animation Layer)，其中归一化时间可精确控制动画起始播放位置，交叉淡入淡出确保动画切换平滑过渡。典型使用场景包括：攻击技能动画表现（如剑术连招）、技能释放特效动画（如法术施放）、角色移动状态切换（如行走到奔跑）、受击反馈动画和特殊状态动画（如死亡、复活）。与其他Action的关键区别在于，该Action纯粹用于视觉展示，不涉及伤害计算、控制效果、位移逻辑或游戏状态改变，是技能系统中专门负责动画表现的基础组件。\n关键�? 动画播放,Animation,Animator,CrossFade,动画层级,归一化时�?视觉表现,技能特�?攻击动画,移动动画\n分类: Visual\n类型: AnimationAction",
+        "parameters": [
+            {
+                "name": "animationClipName",
+                "type": "string",
+                "defaultValue": "\"Attack01\"",
+                "label": "Animation Clip Name",
+                "group": "",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "normalizedTime",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "Normalized Time",
+                "group": "",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "crossFadeDuration",
+                "type": "float",
+                "defaultValue": "0.1",
+                "label": "Cross Fade Duration",
+                "group": "",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "animationLayer",
+                "type": "int",
+                "defaultValue": "0",
+                "label": "Animation Layer",
+                "group": "",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

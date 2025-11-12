@@ -5,31 +5,31 @@ using Sirenix.OdinInspector;
 namespace SkillSystem.Actions
 {
     /// <summary>
-    /// 传送行为脚本
-    /// 功能概述：实现各种传送效果，包括瞬间传送、延迟传送、群体传送、双向传送等。
-    /// 支持传送条件检查、传送动画、传送限制、传送反馈等功能。
-    /// 适用于DOTA2中的传送技能，如闪烁、传送卷轴、自然之怒、时空断裂等传送类技能。
+    /// 传送行为脚�?
+    /// 功能概述：实现各种传送效果，包括瞬间传送、延迟传送、群体传送、双向传送等�?
+    /// 支持传送条件检查、传送动画、传送限制、传送反馈等功能�?
+    /// 适用于DOTA2中的传送技能，如闪烁、传送卷轴、自然之怒、时空断裂等传送类技能�?
     /// </summary>
     [Serializable]
-    [ActionDisplayName("传送")]
+    [ActionDisplayName("传�?)]
     public class TeleportAction : ISkillAction
     {
         [BoxGroup("Teleport Settings")]
         [LabelText("Teleport Type")]
-        /// <summary>传送类型，决定传送的实现方式和特性</summary>
+        /// <summary>传送类型，决定传送的实现方式和特�?/summary>
         public TeleportType teleportType = TeleportType.Instant;
 
         [BoxGroup("Teleport Settings")]
         [LabelText("Cast Time")]
         [MinValue(0f)]
         [ShowIf("@teleportType != TeleportType.Instant")]
-        /// <summary>施法时间，延迟传送的准备时间，单位为秒</summary>
+        /// <summary>施法时间，延迟传送的准备时间，单位为�?/summary>
         public float castTime = 3f;
 
         [BoxGroup("Teleport Settings")]
         [LabelText("Interruptible")]
         [ShowIf("@teleportType == TeleportType.Channeled")]
-        /// <summary>可打断，true时传送过程可以被伤害或控制技能打断</summary>
+        /// <summary>可打断，true时传送过程可以被伤害或控制技能打�?/summary>
         public bool interruptible = true;
 
         [BoxGroup("Target Settings")]
@@ -40,7 +40,7 @@ namespace SkillSystem.Actions
         [BoxGroup("Target Settings")]
         [LabelText("Target Position")]
         [ShowIf("@targetSelection == TargetSelection.Position")]
-        /// <summary>目标位置，传送的目的地坐标</summary>
+        /// <summary>目标位置，传送的目的地坐�?/summary>
         public Vector3 targetPosition = Vector3.forward * 10f;
 
         [BoxGroup("Target Settings")]
@@ -64,7 +64,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Range Settings")]
         [LabelText("Range Check Mode")]
-        /// <summary>距离检查模式，决定如何计算和限制传送距离</summary>
+        /// <summary>距离检查模式，决定如何计算和限制传送距�?/summary>
         public RangeCheckMode rangeCheckMode = RangeCheckMode.Direct;
 
         [BoxGroup("Validation Settings")]
@@ -76,37 +76,37 @@ namespace SkillSystem.Actions
         [LabelText("Landing Radius")]
         [MinValue(0.1f)]
         [ShowIf("checkLandingSpace")]
-        /// <summary>落地半径，检查落地空间时的单位碰撞半径</summary>
+        /// <summary>落地半径，检查落地空间时的单位碰撞半�?/summary>
         public float landingRadius = 1f;
 
         [BoxGroup("Validation Settings")]
         [LabelText("Avoid Obstacles")]
-        /// <summary>避开障碍物，true时自动寻找附近可用的落地点</summary>
+        /// <summary>避开障碍物，true时自动寻找附近可用的落地�?/summary>
         public bool avoidObstacles = true;
 
         [BoxGroup("Validation Settings")]
         [LabelText("Max Search Distance")]
         [MinValue(0f)]
         [ShowIf("avoidObstacles")]
-        /// <summary>最大搜索距离，寻找替代落地点时的搜索范围</summary>
+        /// <summary>最大搜索距离，寻找替代落地点时的搜索范�?/summary>
         public float maxSearchDistance = 3f;
 
         [BoxGroup("Group Settings")]
         [LabelText("Affect Multiple Units")]
-        /// <summary>影响多个单位，true时可以传送多个单位</summary>
+        /// <summary>影响多个单位，true时可以传送多个单�?/summary>
         public bool affectMultipleUnits = false;
 
         [BoxGroup("Group Settings")]
         [LabelText("Affected Units")]
         [ShowIf("affectMultipleUnits")]
-        /// <summary>影响的单位类型，定义哪些类型的单位会被传送</summary>
+        /// <summary>影响的单位类型，定义哪些类型的单位会被传�?/summary>
         public AffectedUnits affectedUnits = AffectedUnits.Allies;
 
         [BoxGroup("Group Settings")]
         [LabelText("Affect Radius")]
         [MinValue(0f)]
         [ShowIf("affectMultipleUnits")]
-        /// <summary>影响半径，群体传送时的作用范围</summary>
+        /// <summary>影响半径，群体传送时的作用范�?/summary>
         public float affectRadius = 5f;
 
         [BoxGroup("Special Effects")]
@@ -129,38 +129,38 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Visual Settings")]
         [LabelText("Cast Effect")]
-        /// <summary>施法特效，开始传送时的视觉效果</summary>
+        /// <summary>施法特效，开始传送时的视觉效�?/summary>
         public GameObject castEffect;
 
         [BoxGroup("Visual Settings")]
         [LabelText("Teleport Out Effect")]
-        /// <summary>传送离开特效，从原位置消失时的视觉效果</summary>
+        /// <summary>传送离开特效，从原位置消失时的视觉效�?/summary>
         public GameObject teleportOutEffect;
 
         [BoxGroup("Visual Settings")]
         [LabelText("Teleport In Effect")]
-        /// <summary>传送到达特效，在目标位置出现时的视觉效果</summary>
+        /// <summary>传送到达特效，在目标位置出现时的视觉效�?/summary>
         public GameObject teleportInEffect;
 
         [BoxGroup("Visual Settings")]
         [LabelText("Portal Effect")]
         [ShowIf("leavePortal")]
-        /// <summary>传送门特效，传送门的持续视觉效果</summary>
+        /// <summary>传送门特效，传送门的持续视觉效�?/summary>
         public GameObject portalEffect;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Cast Sound")]
-        /// <summary>施法音效，开始传送时的音频</summary>
+        /// <summary>施法音效，开始传送时的音�?/summary>
         public AudioClip castSound;
 
         [BoxGroup("Audio Settings")]
         [LabelText("Teleport Sound")]
-        /// <summary>传送音效，传送完成时的音频</summary>
+        /// <summary>传送音效，传送完成时的音�?/summary>
         public AudioClip teleportSound;
 
-        /// <summary>原始位置，记录传送前的位置</summary>
+        /// <summary>原始位置，记录传送前的位�?/summary>
         private Vector3 originalPosition;
-        /// <summary>实际目标位置，经过验证和调整后的最终传送位置</summary>
+        /// <summary>实际目标位置，经过验证和调整后的最终传送位�?/summary>
         private Vector3 actualTargetPosition;
         /// <summary>传送开始时间，用于计算延迟传送的时间</summary>
         private float teleportStartTime;
@@ -191,14 +191,14 @@ namespace SkillSystem.Actions
                 return;
             }
 
-            // 验证传送条件
+            // 验证传送条�?
             if (!ValidateTeleport())
             {
                 Debug.LogWarning("[TeleportAction] Teleport validation failed, aborting");
                 return;
             }
 
-            // 开始传送过程
+            // 开始传送过�?
             StartTeleport();
         }
 
@@ -212,7 +212,7 @@ namespace SkillSystem.Actions
             switch (teleportType)
             {
                 case TeleportType.Instant:
-                    // 瞬间传送已在OnEnter中完成
+                    // 瞬间传送已在OnEnter中完�?
                     break;
 
                 case TeleportType.Delayed:
@@ -254,7 +254,7 @@ namespace SkillSystem.Actions
         {
             if (isTeleporting)
             {
-                // 如果传送还未完成，尝试完成或取消
+                // 如果传送还未完成，尝试完成或取�?
                 if (teleportType == TeleportType.Instant)
                 {
                     ExecuteTeleport();
@@ -269,7 +269,7 @@ namespace SkillSystem.Actions
         }
 
         /// <summary>计算目标位置</summary>
-        /// <returns>是否成功计算出有效目标位置</returns>
+        /// <returns>是否成功计算出有效目标位�?/returns>
         private bool CalculateTargetPosition()
         {
             Vector3 basePosition = originalPosition;
@@ -299,7 +299,7 @@ namespace SkillSystem.Actions
                     break;
 
                 case TargetSelection.Global:
-                    actualTargetPosition = targetPosition; // 全局传送忽略距离限制
+                    actualTargetPosition = targetPosition; // 全局传送忽略距离限�?
                     break;
 
                 default:
@@ -310,13 +310,13 @@ namespace SkillSystem.Actions
             return true;
         }
 
-        /// <summary>验证传送是否可行</summary>
-        /// <returns>传送是否有效</returns>
+        /// <summary>验证传送是否可�?/summary>
+        /// <returns>传送是否有�?/returns>
         private bool ValidateTeleport()
         {
             float distance = Vector3.Distance(originalPosition, actualTargetPosition);
 
-            // 距离检查
+            // 距离检�?
             if (targetSelection != TargetSelection.Global)
             {
                 if (distance < minRange)
@@ -332,7 +332,7 @@ namespace SkillSystem.Actions
                 }
             }
 
-            // 落地空间检查
+            // 落地空间检�?
             if (checkLandingSpace && !ValidateLandingSpace())
             {
                 if (avoidObstacles)
@@ -362,7 +362,7 @@ namespace SkillSystem.Actions
         /// <returns>落地位置是否可用</returns>
         private bool ValidateLandingSpace()
         {
-            // 在实际项目中，这里会进行碰撞检测
+            // 在实际项目中，这里会进行碰撞检�?
             Collider[] overlapping = Physics.OverlapSphere(actualTargetPosition, landingRadius);
             bool hasObstacle = overlapping.Length > 0;
 
@@ -374,7 +374,7 @@ namespace SkillSystem.Actions
         /// <returns>可用的替代位置，如果没有找到则返回Vector3.zero</returns>
         private Vector3 FindAlternateLandingPosition()
         {
-            int attempts = 8; // 尝试8个方向
+            int attempts = 8; // 尝试8个方�?
             float searchStep = maxSearchDistance / 3f;
 
             for (int ring = 1; ring <= 3; ring++)
@@ -398,7 +398,7 @@ namespace SkillSystem.Actions
             return Vector3.zero;
         }
 
-        /// <summary>开始传送过程</summary>
+        /// <summary>开始传送过�?/summary>
         private void StartTeleport()
         {
             isTeleporting = true;
@@ -425,7 +425,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>执行传送</summary>
+        /// <summary>执行传�?/summary>
         private void ExecuteTeleport()
         {
             if (!isTeleporting) return;
@@ -438,10 +438,10 @@ namespace SkillSystem.Actions
                 UnityEngine.Object.Instantiate(teleportOutEffect, originalPosition, Quaternion.identity);
             }
 
-            // 移动单位到目标位置
+            // 移动单位到目标位�?
             PerformTeleportation();
 
-            // 播放传送到达特效
+            // 播放传送到达特�?
             if (teleportInEffect != null)
             {
                 UnityEngine.Object.Instantiate(teleportInEffect, actualTargetPosition, Quaternion.identity);
@@ -461,7 +461,7 @@ namespace SkillSystem.Actions
             isTeleporting = false;
         }
 
-        /// <summary>执行实际的传送操作</summary>
+        /// <summary>执行实际的传送操�?/summary>
         private void PerformTeleportation()
         {
             var casterTransform = GetCasterTransform();
@@ -469,7 +469,7 @@ namespace SkillSystem.Actions
             {
                 casterTransform.position = actualTargetPosition;
 
-                // 群体传送
+                // 群体传�?
                 if (affectMultipleUnits)
                 {
                     TeleportNearbyUnits();
@@ -480,7 +480,7 @@ namespace SkillSystem.Actions
         /// <summary>传送附近的单位</summary>
         private void TeleportNearbyUnits()
         {
-            // 在实际项目中，这里会获取范围内的友军并传送
+            // 在实际项目中，这里会获取范围内的友军并传�?
             Debug.Log($"[TeleportAction] Group teleport - affecting {affectedUnits} within {affectRadius} units");
         }
 
@@ -497,7 +497,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>取消传送</summary>
+        /// <summary>取消传�?/summary>
         private void CancelTeleport()
         {
             if (!isTeleporting) return;
@@ -505,11 +505,11 @@ namespace SkillSystem.Actions
             Debug.Log("[TeleportAction] Teleport cancelled");
             isTeleporting = false;
 
-            // 在实际项目中，这里可能会有取消传送的特效和音效
+            // 在实际项目中，这里可能会有取消传送的特效和音�?
         }
 
         /// <summary>检查传送是否被打断</summary>
-        /// <returns>是否被打断</returns>
+        /// <returns>是否被打�?/returns>
         private bool CheckInterruption()
         {
             // 在实际项目中，这里会检查是否受到伤害或控制效果
@@ -518,25 +518,25 @@ namespace SkillSystem.Actions
 
         /// <summary>
         /// 获取技能施法者的Transform
-        /// 优先查找Player对象，其次查找带有SkillPlayer组件的对象
+        /// 优先查找Player对象，其次查找带有SkillPlayer组件的对�?
         /// </summary>
         private Transform GetCasterTransform()
         {
-            // 方案1：查找名为Player的GameObject（训练场标准设置）
+            // 方案1：查找名为Player的GameObject（训练场标准设置�?
             GameObject playerObj = GameObject.Find("Player");
             if (playerObj != null)
             {
                 return playerObj.transform;
             }
 
-            // 方案2：查找带有SkillPlayer组件的对象
+            // 方案2：查找带有SkillPlayer组件的对�?
             var skillPlayer = UnityEngine.Object.FindFirstObjectByType<SkillSystem.Runtime.SkillPlayer>();
             if (skillPlayer != null)
             {
                 return skillPlayer.transform;
             }
 
-            // 方案3：查找带有Player标签的对象
+            // 方案3：查找带有Player标签的对�?
             playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
             {
@@ -548,25 +548,25 @@ namespace SkillSystem.Actions
         }
     }
 
-    /// <summary>传送类型枚举</summary>
+    /// <summary>传送类型枚�?/summary>
     public enum TeleportType
     {
-        Instant,    // 瞬间传送
-        Delayed,    // 延迟传送
-        Channeled   // 引导传送
+        Instant,    // 瞬间传�?
+        Delayed,    // 延迟传�?
+        Channeled   // 引导传�?
     }
 
     /// <summary>目标选择枚举</summary>
     public enum TargetSelection
     {
         Position,       // 指定位置
-        RandomInRange,  // 范围内随机
-        NearestAlly,    // 最近友军
-        NearestEnemy,   // 最近敌人
-        Global          // 全局传送
+        RandomInRange,  // 范围内随�?
+        NearestAlly,    // 最近友�?
+        NearestEnemy,   // 最近敌�?
+        Global          // 全局传�?
     }
 
-    /// <summary>距离检查模式枚举</summary>
+    /// <summary>距离检查模式枚�?/summary>
     public enum RangeCheckMode
     {
         Direct,     // 直线距离

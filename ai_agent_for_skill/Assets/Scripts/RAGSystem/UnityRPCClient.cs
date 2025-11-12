@@ -11,28 +11,26 @@ using UnityEngine;
 namespace RAGSystem
 {
     /// <summary>
-    /// Unity RPC客户端
-    /// 基于JSON-RPC 2.0协议与Python服务器通信
+    /// Unity RPC客户�?    /// 基于JSON-RPC 2.0协议与Python服务器通信
     /// </summary>
     public class UnityRPCClient : MonoBehaviour
     {
         // ==================== 配置 ====================
 
-        [Header("RPC服务器配置")]
+        [Header("RPC服务器配�?)]
         [SerializeField] private string serverHost = "127.0.0.1";
         [SerializeField] private int serverPort = 8766;
         [SerializeField] private int connectTimeout = 5000; // 毫秒
         [SerializeField] private int requestTimeout = 30000; // 毫秒
 
-        // ==================== 状态 ====================
+        // ==================== 状�?====================
 
         private TcpClient tcpClient;
         private NetworkStream networkStream;
         private bool isConnected = false;
         private CancellationTokenSource cancellationTokenSource;
 
-        // 请求映射（ID -> TaskCompletionSource）
-        private Dictionary<string, UniTaskCompletionSource<JObject>> pendingRequests =
+        // 请求映射（ID -> TaskCompletionSource�?        private Dictionary<string, UniTaskCompletionSource<JObject>> pendingRequests =
             new Dictionary<string, UniTaskCompletionSource<JObject>>();
 
         // ==================== Unity生命周期 ====================
@@ -68,8 +66,7 @@ namespace RAGSystem
         // ==================== 连接管理 ====================
 
         /// <summary>
-        /// 连接到RPC服务器
-        /// </summary>
+        /// 连接到RPC服务�?        /// </summary>
         public async UniTask ConnectAsync()
         {
             if (isConnected)
@@ -146,7 +143,7 @@ namespace RAGSystem
         /// <summary>
         /// 调用RPC方法
         /// </summary>
-        /// <param name="method">方法名</param>
+        /// <param name="method">方法�?/param>
         /// <param name="params">参数（可选）</param>
         /// <returns>结果</returns>
         public async UniTask<JObject> CallAsync(string method, object @params = null)
@@ -174,11 +171,9 @@ namespace RAGSystem
 
             try
             {
-                // 发送请求
-                await SendMessageAsync(request);
+                // 发送请�?                await SendMessageAsync(request);
 
-                // 等待响应（带超时）
-                var responseTask = tcs.Task;
+                // 等待响应（带超时�?                var responseTask = tcs.Task;
                 var timeoutTask = UniTask.Delay(requestTimeout);
 
                 var completedTask = await UniTask.WhenAny(responseTask, timeoutTask);
@@ -199,9 +194,8 @@ namespace RAGSystem
         }
 
         /// <summary>
-        /// 发送通知（不等待响应）
-        /// </summary>
-        /// <param name="method">方法名</param>
+        /// 发送通知（不等待响应�?        /// </summary>
+        /// <param name="method">方法�?/param>
         /// <param name="params">参数</param>
         public async UniTask NotifyAsync(string method, object @params = null)
         {
@@ -224,8 +218,7 @@ namespace RAGSystem
         // ==================== 消息传输 ====================
 
         /// <summary>
-        /// 发送JSON消息（长度前缀协议）
-        /// </summary>
+        /// 发送JSON消息（长度前缀协议�?        /// </summary>
         private async UniTask SendMessageAsync(object message)
         {
             string json = JsonConvert.SerializeObject(message);
@@ -235,8 +228,7 @@ namespace RAGSystem
             byte[] lengthPrefix = BitConverter.GetBytes(data.Length);
             if (BitConverter.IsLittleEndian)
             {
-                Array.Reverse(lengthPrefix); // 转为大端序
-            }
+                Array.Reverse(lengthPrefix); // 转为大端�?            }
 
             await networkStream.WriteAsync(lengthPrefix, 0, 4);
             await networkStream.WriteAsync(data, 0, data.Length);
@@ -246,8 +238,7 @@ namespace RAGSystem
         }
 
         /// <summary>
-        /// 接收JSON消息（长度前缀协议）
-        /// </summary>
+        /// 接收JSON消息（长度前缀协议�?        /// </summary>
         private async UniTask<JObject> ReceiveMessageAsync()
         {
             // 读取4字节长度
@@ -261,8 +252,7 @@ namespace RAGSystem
 
             if (BitConverter.IsLittleEndian)
             {
-                Array.Reverse(lengthBuffer); // 大端序转小端序
-            }
+                Array.Reverse(lengthBuffer); // 大端序转小端�?            }
             int length = BitConverter.ToInt32(lengthBuffer, 0);
 
             // 读取JSON数据
@@ -359,8 +349,7 @@ namespace RAGSystem
         // ==================== 便捷API ====================
 
         /// <summary>
-        /// Ping服务器
-        /// </summary>
+        /// Ping服务�?        /// </summary>
         public async UniTask<bool> PingAsync()
         {
             try
@@ -376,15 +365,14 @@ namespace RAGSystem
         }
 
         /// <summary>
-        /// 获取服务器信息
-        /// </summary>
+        /// 获取服务器信�?        /// </summary>
         public async UniTask<JObject> GetServerInfoAsync()
         {
             var response = await CallAsync("get_server_info");
             return response["result"] as JObject;
         }
 
-        // ==================== 属性 ====================
+        // ==================== 属�?====================
 
         public bool IsConnected => isConnected;
     }

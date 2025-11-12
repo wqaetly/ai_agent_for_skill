@@ -17,7 +17,7 @@ namespace TrainingGround.Visualizer
 
         protected override void OnVisualizeTick(DamageAction action, GameObject caster, int relativeFrame)
         {
-            // 在第一帧执行伤害
+            // 在第一帧执行伤�?
             if (relativeFrame == 0)
             {
                 ExecuteDamageVisualization(action, caster);
@@ -26,12 +26,12 @@ namespace TrainingGround.Visualizer
 
         protected override void OnVisualizeExit(DamageAction action, GameObject caster)
         {
-            // 伤害行为通常没有退出时的清理
+            // 伤害行为通常没有退出时的清�?
         }
 
         private void ExecuteDamageVisualization(DamageAction action, GameObject caster)
         {
-            // 计算最终伤害
+            // 计算最终伤�?
             float finalDamage = CalculateDamage(action);
 
             // 获取目标
@@ -75,7 +75,7 @@ namespace TrainingGround.Visualizer
         {
             var targets = new System.Collections.Generic.List<IEntity>();
 
-            // 获取施法者的目标（从PlayerCharacter获取）
+            // 获取施法者的目标（从PlayerCharacter获取�?
             var playerCharacter = caster.GetComponent<PlayerCharacter>();
             var primaryTarget = playerCharacter?.GetCurrentTarget();
 
@@ -143,12 +143,12 @@ namespace TrainingGround.Visualizer
         private void ShowDamageNumber(IEntity target, float damage, SkillSystem.Actions.DamageType damageType)
         {
             // 使用DamageNumber UI系统显示飘字
-            Vector3 position = target.GetPosition() + Vector3.up * 2f; // 在目标头顶显示
+            Vector3 position = target.GetPosition() + Vector3.up * 2f; // 在目标头顶显�?
 
             // 根据伤害类型选择颜色
             Color color = GetDamageTypeColor(damageType);
 
-            // 创建飘字（需要DamageNumberPool组件）
+            // 创建飘字（需要DamageNumberPool组件�?
             var pool = Object.FindObjectOfType<DamageNumberPool>();
             if (pool != null)
             {

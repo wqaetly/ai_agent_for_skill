@@ -6,18 +6,18 @@ namespace SkillSystem.Actions
 {
     /// <summary>
     /// 移动行为脚本
-    /// 功能概述：控制角色的位置移动，支持多种移动模式，包括线性移动、弧线移动、
-    /// 自定义曲线移动和瞬间传送。可以配置移动速度、目标位置、朝向等参数。
-    /// 适用于DOTA2中的位移技能，如闪烁、跳跃攻击、冲刺等技能。
+    /// 功能概述：控制角色的位置移动，支持多种移动模式，包括线性移动、弧线移动�?
+    /// 自定义曲线移动和瞬间传送。可以配置移动速度、目标位置、朝向等参数�?
+    /// 适用于DOTA2中的位移技能，如闪烁、跳跃攻击、冲刺等技能�?
     /// </summary>
     [Serializable]
     [ActionDisplayName("位移")]
-    [ActionDescription("控制角色位移。支持4种移动类型：线性移动(Linear)直线前进、弧线移动(Arc)跳跃式移动、曲线移动(Curve)自定义轨迹、瞬移(Instant)瞬间传送。可配置移动速度、目标位置、相对/绝对坐标、面向方向等。常用于冲刺技能、闪现、跳跃攻击、位移突进等需要改变角色位置的技能。纯粹位移，不包含伤害和控制效果。")]
+    [ActionDescription("控制角色位移。支�?种移动类型：线性移�?Linear)直线前进、弧线移�?Arc)跳跃式移动、曲线移�?Curve)自定义轨迹、瞬�?Instant)瞬间传送。可配置移动速度、目标位置、相�?绝对坐标、面向方向等。常用于冲刺技能、闪现、跳跃攻击、位移突进等需要改变角色位置的技能。纯粹位移，不包含伤害和控制效果�?)]
     public class MovementAction : ISkillAction
     {
         [BoxGroup("Movement Settings")]
         [LabelText("Movement Type")]
-        /// <summary>移动类型，决定角色移动的轨迹模式（线性/弧线/曲线/瞬移）</summary>
+        /// <summary>移动类型，决定角色移动的轨迹模式（线�?弧线/曲线/瞬移�?/summary>
         public MovementType movementType = MovementType.Linear;
 
         [BoxGroup("Movement Settings")]
@@ -29,7 +29,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Target Settings")]
         [LabelText("Target Position")]
-        /// <summary>目标位置坐标，角色将移动到的最终位置</summary>
+        /// <summary>目标位置坐标，角色将移动到的最终位�?/summary>
         public Vector3 targetPosition = Vector3.zero;
 
         [BoxGroup("Target Settings")]
@@ -53,12 +53,12 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Advanced Settings")]
         [LabelText("Face Movement Direction")]
-        /// <summary>朝向移动方向，true时角色会自动转向移动的方向</summary>
+        /// <summary>朝向移动方向，true时角色会自动转向移动的方�?/summary>
         public bool faceMovementDirection = true;
 
         [BoxGroup("Advanced Settings")]
         [LabelText("Allow Movement Cancel")]
-        [InfoBox("允许被其他行为打断移动")]
+        [InfoBox("允许被其他行为打断移�?)]
         /// <summary>允许移动取消，true时移动可以被其他技能或行为打断</summary>
         public bool allowMovementCancel = false;
 
@@ -67,18 +67,18 @@ namespace SkillSystem.Actions
         /// <summary>忽略碰撞，true时移动过程中不进行碰撞检测，可穿越障碍物</summary>
         public bool ignoreCollision = false;
 
-        /// <summary>移动距离，用于Visualizer兼容（基于targetPosition计算）</summary>
+        /// <summary>移动距离，用于Visualizer兼容（基于targetPosition计算�?/summary>
         public float distance => targetPosition.magnitude;
 
-        /// <summary>起始位置，记录移动开始时的世界坐标</summary>
+        /// <summary>起始位置，记录移动开始时的世界坐�?/summary>
         private Vector3 startPosition;
-        /// <summary>实际目标位置，经过相对位置计算后的最终目标世界坐标</summary>
+        /// <summary>实际目标位置，经过相对位置计算后的最终目标世界坐�?/summary>
         private Vector3 actualTargetPosition;
         /// <summary>总移动距离，起始位置到目标位置的直线距离</summary>
         private float totalDistance;
-        /// <summary>PlayerMovementController缓存，用于技能期间临时禁用</summary>
+        /// <summary>PlayerMovementController缓存，用于技能期间临时禁�?/summary>
         private TrainingGround.Entity.PlayerMovementController playerMovement;
-        /// <summary>移动控制器原始启用状态</summary>
+        /// <summary>移动控制器原始启用状�?/summary>
         private bool wasMovementEnabled;
 
         public override string GetActionName()
@@ -93,7 +93,7 @@ namespace SkillSystem.Actions
             {
                 startPosition = transform.position;
 
-                // 禁用玩家移动控制以避免冲突
+                // 禁用玩家移动控制以避免冲�?
                 playerMovement = transform.GetComponent<TrainingGround.Entity.PlayerMovementController>();
                 if (playerMovement != null)
                 {
@@ -105,7 +105,7 @@ namespace SkillSystem.Actions
                 // 计算实际目标位置
                 if (useRelativePosition)
                 {
-                    // 相对位置：基于角色当前朝向
+                    // 相对位置：基于角色当前朝�?
                     Vector3 forward = transform.forward;
                     Vector3 right = transform.right;
                     actualTargetPosition = startPosition +
@@ -122,7 +122,7 @@ namespace SkillSystem.Actions
 
                 Debug.Log($"[MovementAction] Started {movementType} movement from {startPosition} to {actualTargetPosition}");
 
-                // 瞬间传送
+                // 瞬间传�?
                 if (movementType == MovementType.Instant)
                 {
                     transform.position = actualTargetPosition;
@@ -181,7 +181,7 @@ namespace SkillSystem.Actions
         }
 
         /// <summary>根据进度计算当前位置坐标</summary>
-        /// <param name="progress">移动进度，0-1之间的值</param>
+        /// <param name="progress">移动进度�?-1之间的�?/param>
         /// <returns>计算出的当前位置坐标</returns>
         private Vector3 CalculatePosition(float progress)
         {
@@ -206,25 +206,25 @@ namespace SkillSystem.Actions
 
         /// <summary>
         /// 获取技能施法者的Transform
-        /// 优先查找Player对象，其次查找带有SkillPlayer组件的对象
+        /// 优先查找Player对象，其次查找带有SkillPlayer组件的对�?
         /// </summary>
         private Transform GetCasterTransform()
         {
-            // 方案1：查找名为Player的GameObject（训练场标准设置）
+            // 方案1：查找名为Player的GameObject（训练场标准设置�?
             GameObject playerObj = GameObject.Find("Player");
             if (playerObj != null)
             {
                 return playerObj.transform;
             }
 
-            // 方案2：查找带有SkillPlayer组件的对象
+            // 方案2：查找带有SkillPlayer组件的对�?
             var skillPlayer = UnityEngine.Object.FindFirstObjectByType<SkillSystem.Runtime.SkillPlayer>();
             if (skillPlayer != null)
             {
                 return skillPlayer.transform;
             }
 
-            // 方案3：查找带有Player标签的对象
+            // 方案3：查找带有Player标签的对�?
             playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null)
             {
@@ -239,13 +239,13 @@ namespace SkillSystem.Actions
     /// <summary>移动类型枚举</summary>
     public enum MovementType
     {
-        Linear,         // 线性移动
-        Arc,            // 弧线移动（抛物线）
-        Curve,          // 自定义曲线移动
-        Instant,        // 瞬间传送
-        Dash,           // 冲刺（用于Visualizer）
-        Teleport,       // 传送（用于Visualizer）
-        TowardsTarget,  // 朝向目标（用于Visualizer）
-        Knockback       // 击退（用于Visualizer）
+        Linear,         // 线性移�?
+        Arc,            // 弧线移动（抛物线�?
+        Curve,          // 自定义曲线移�?
+        Instant,        // 瞬间传�?
+        Dash,           // 冲刺（用于Visualizer�?
+        Teleport,       // 传送（用于Visualizer�?
+        TowardsTarget,  // 朝向目标（用于Visualizer�?
+        Knockback       // 击退（用于Visualizer�?
     }
 }

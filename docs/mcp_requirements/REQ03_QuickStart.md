@@ -1,11 +1,8 @@
-# REQ-03 快速开始指南
-
-## 5分钟快速体验
-
-### 步骤1：安装依赖
-
+# REQ-03 快速开始指�?
+## 5分钟快速体�?
+### 步骤1：安装依�?
 ```bash
-cd SkillRAG/Python
+cd skill_agent/Python
 pip install ijson
 ```
 
@@ -16,8 +13,7 @@ pip install ijson
 python -c "from fine_grained_indexer import build_fine_grained_index; print(build_fine_grained_index(force_rebuild=True))"
 ```
 
-**预期输出**：
-```
+**预期输出**�?```
 {
   'total_files': 9,
   'indexed_files': 9,
@@ -43,8 +39,7 @@ for action in result['results'][:3]:
     print(f"- {action['skill_name']}: {action['summary']}")
 ```
 
-### 步骤4：运行完整测试
-
+### 步骤4：运行完整测�?
 ```bash
 python test_structured_query.py
 ```
@@ -63,8 +58,7 @@ query_skills("DamageAction")
 query_skills("MovementAction")
 ```
 
-### 2. 数值比较查询
-
+### 2. 数值比较查�?
 ```python
 # 伤害 > 200
 query_skills("DamageAction where baseDamage > 200")
@@ -72,28 +66,25 @@ query_skills("DamageAction where baseDamage > 200")
 # 移动速度 < 10
 query_skills("MovementAction where moveSpeed < 10")
 
-# 伤害在100-300之间
+# 伤害�?00-300之间
 query_skills("baseDamage between 100 and 300")
 ```
 
-### 3. 字符串查询
-
+### 3. 字符串查�?
 ```python
-# 动画名包含"Attack"
+# 动画名包�?Attack"
 query_skills("animationClipName contains 'Attack'")
 
-# 伤害类型为魔法
-query_skills("DamageAction where damageType = 'Magical'")
+# 伤害类型为魔�?query_skills("DamageAction where damageType = 'Magical'")
 ```
 
 ### 4. 组合条件查询
 
 ```python
-# 魔法伤害且伤害>150
+# 魔法伤害且伤�?150
 query_skills("DamageAction where damageType = 'Magical' and baseDamage > 150")
 
-# 范围伤害且范围>3米
-query_skills("DamageAction where damageRadius > 3 and baseDamage > 100")
+# 范围伤害且范�?3�?query_skills("DamageAction where damageRadius > 3 and baseDamage > 100")
 ```
 
 ---
@@ -110,7 +101,7 @@ engine = StructuredQueryEngine()
 # 按Action类型统计
 stats = engine.get_statistics(group_by="action_type")
 
-print(f"总Action数: {stats['total_actions']}")
+print(f"总Action�? {stats['total_actions']}")
 
 for action_type, data in stats['groups'].items():
     print(f"\n{action_type}:")
@@ -124,8 +115,7 @@ for action_type, data in stats['groups'].items():
 ### 2. 过滤统计
 
 ```python
-# 只统计DamageAction的参数分布
-stats = engine.get_statistics(
+# 只统计DamageAction的参数分�?stats = engine.get_statistics(
     query_str="DamageAction",
     group_by="action_type"
 )
@@ -155,10 +145,10 @@ if result['results']:
     print("完整Action数据:")
     print(detail['data'])
 
-    print("\n上下文信息:")
+    print("\n上下文信�?")
     print(detail['context'])
 
-    print(f"\n所在行号: {action['line_number']}")
+    print(f"\n所在行�? {action['line_number']}")
 ```
 
 ---
@@ -172,7 +162,7 @@ engine = StructuredQueryEngine()
 
 # 查看缓存统计
 stats = engine.get_cache_stats()
-print(f"缓存命中率: {stats['query_cache']['hit_rate']:.2%}")
+print(f"缓存命中�? {stats['query_cache']['hit_rate']:.2%}")
 
 # 清空缓存
 engine.clear_cache()
@@ -186,8 +176,7 @@ print(f"重建索引: {rebuild_stats['total_actions']} 个Action")
 
 ## MCP集成（可选）
 
-### 1. 安装MCP库
-
+### 1. 安装MCP�?
 ```bash
 pip install mcp
 ```
@@ -198,8 +187,7 @@ pip install mcp
 python mcp_server_structured_query.py
 ```
 
-### 3. 在Claude Desktop中配置
-
+### 3. 在Claude Desktop中配�?
 编辑 `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
@@ -208,7 +196,7 @@ python mcp_server_structured_query.py
     "skill-structured-query": {
       "command": "python",
       "args": [
-        "E:/Study/wqaetly/ai_agent_for_skill/SkillRAG/Python/mcp_server_structured_query.py"
+        "E:/Study/wqaetly/ai_agent_for_skill/skill_agent/Python/mcp_server_structured_query.py"
       ]
     }
   }
@@ -220,11 +208,10 @@ python mcp_server_structured_query.py
 在Claude Desktop中：
 
 ```
-使用 query_skills_structured 工具查询所有伤害大于200的DamageAction
+使用 query_skills_structured 工具查询所有伤害大�?00的DamageAction
 ```
 
-Claude会自动调用MCP工具并返回结果。
-
+Claude会自动调用MCP工具并返回结果�?
 ---
 
 ## Python API完整示例
@@ -246,16 +233,16 @@ result = engine.query(
     use_cache=True
 )
 
-print(f"查询结果: {result['total_matches']} 个匹配")
+print(f"查询结果: {result['total_matches']} 个匹�?)
 print(f"查询耗时: {result['query_time_ms']}ms")
 print(f"缓存命中: {result['cache_hit']}")
 
 # 2. 遍历结果
 for action in result['results']:
-    print(f"\n技能: {action['skill_name']}")
+    print(f"\n技�? {action['skill_name']}")
     print(f"轨道: {action['track_name']}")
     print(f"类型: {action['action_type']}")
-    print(f"帧位置: {action['frame']}")
+    print(f"帧位�? {action['frame']}")
     print(f"参数: {action['parameters']}")
     print(f"摘要: {action['summary']}")
     print(f"行号: {action['line_number']}")
@@ -282,7 +269,7 @@ if result['results']:
 
 # 5. 缓存管理
 cache_stats = engine.get_cache_stats()
-print(f"\n缓存命中率: {cache_stats['query_cache']['hit_rate']:.2%}")
+print(f"\n缓存命中�? {cache_stats['query_cache']['hit_rate']:.2%}")
 ```
 
 ---
@@ -321,30 +308,25 @@ for query in queries:
 
 **错误**：`FileNotFoundError: fine_grained_index.json not found`
 
-**解决**：
-```python
+**解决**�?```python
 from fine_grained_indexer import build_fine_grained_index
 build_fine_grained_index(force_rebuild=True)
 ```
 
-### 问题2：技能目录路径错误
-
+### 问题2：技能目录路径错�?
 **错误**：`FileNotFoundError: 技能目录不存在`
 
-**解决**：
-```python
+**解决**�?```python
 # 使用绝对路径
 engine = StructuredQueryEngine(
     skills_dir="E:/Study/wqaetly/ai_agent_for_skill/ai_agent_for_skill/Assets/Skills"
 )
 ```
 
-### 问题3：查询语法错误
+### 问题3：查询语法错�?
+**错误**：查询返�?结果
 
-**错误**：查询返回0结果
-
-**解决**：检查查询语法
-```python
+**解决**：检查查询语�?```python
 # 正确
 "DamageAction where baseDamage > 200"
 
@@ -352,16 +334,10 @@ engine = StructuredQueryEngine(
 "DamageAction where baseDamage>200"
 
 # 错误（字符串需要引号）
-"DamageAction where damageType = Magical"  # ✗
-"DamageAction where damageType = 'Magical'"  # ✓
-```
+"DamageAction where damageType = Magical"  # �?"DamageAction where damageType = 'Magical'"  # �?```
 
-### 问题4：查询性能慢
-
-**解决**：
-1. 启用缓存（默认已启用）
-2. 减少返回结果数量（设置limit）
-3. 清理过期缓存
+### 问题4：查询性能�?
+**解决**�?1. 启用缓存（默认已启用�?2. 减少返回结果数量（设置limit�?3. 清理过期缓存
 
 ```python
 # 限制结果数量
@@ -373,65 +349,55 @@ engine.clear_cache()
 
 ---
 
-## 支持的参数类型
-
+## 支持的参数类�?
 | 类型 | 示例 | 查询语法 |
 |------|------|---------|
-| 数值 | `baseDamage: 150` | `baseDamage > 100` |
-| 字符串 | `damageType: "Magical"` | `damageType = 'Magical'` |
+| 数�?| `baseDamage: 150` | `baseDamage > 100` |
+| 字符�?| `damageType: "Magical"` | `damageType = 'Magical'` |
 | 布尔 | `enabled: true` | `enabled = true` |
 | 区间 | `baseDamage: 100-300` | `baseDamage between 100 and 300` |
 | 包含 | `animationClipName: "Attack_01"` | `animationClipName contains 'Attack'` |
 
 ---
 
-## 最佳实践
-
+## 最佳实�?
 ### 1. 索引管理
-- 技能文件修改后自动检测更新（基于MD5）
-- 定期重建索引（`force=True`）以确保一致性
-- 监控索引大小和构建时间
-
+- 技能文件修改后自动检测更新（基于MD5�?- 定期重建索引（`force=True`）以确保一致�?- 监控索引大小和构建时�?
 ### 2. 查询优化
 - 优先使用具体的Action类型过滤
 - 合理设置limit避免返回大量结果
 - 启用缓存（默认）以提升性能
 
 ### 3. 性能监控
-- 定期检查缓存命中率（> 70%为佳）
-- 监控查询延迟（< 500ms）
-- 大型查询使用异步执行
+- 定期检查缓存命中率�? 70%为佳�?- 监控查询延迟�? 500ms�?- 大型查询使用异步执行
 
 ---
 
-## 下一步学习
-
+## 下一步学�?
 1. [REQ-03实现文档](REQ03_Implementation.md) - 深入了解架构设计
 2. [MCP开发计划](../MCP_Development_Plan.md) - 完整MCP集成方案
-3. [测试脚本](../../SkillRAG/Python/test_structured_query.py) - 查看更多示例
+3. [测试脚本](../../skill_agent/Python/test_structured_query.py) - 查看更多示例
 
 ---
 
 ## 常见问题
 
-**Q: 如何查询所有技能的统计信息？**
+**Q: 如何查询所有技能的统计信息�?*
 ```python
 stats = engine.get_statistics(group_by="action_type")
 ```
 
-**Q: 如何查找特定技能文件中的所有Action？**
+**Q: 如何查找特定技能文件中的所有Action�?*
 ```python
-# 使用文件名过滤（需在结果中过滤）
-result = engine.query("DamageAction", limit=1000)
+# 使用文件名过滤（需在结果中过滤�?result = engine.query("DamageAction", limit=1000)
 flame_actions = [a for a in result['results'] if a['skill_file'] == 'FlameShockwave.json']
 ```
 
 **Q: 支持OR逻辑吗？**
 ```
-当前只支持AND逻辑。OR查询可以通过多次查询合并结果实现。
-```
+当前只支持AND逻辑。OR查询可以通过多次查询合并结果实现�?```
 
-**Q: 如何导出查询结果为JSON？**
+**Q: 如何导出查询结果为JSON�?*
 ```python
 import json
 
@@ -443,4 +409,4 @@ with open("query_result.json", "w", encoding="utf-8") as f:
 
 ---
 
-**完成！** 你现在已经掌握了REQ-03的基本使用方法。
+**完成�?* 你现在已经掌握了REQ-03的基本使用方法�?

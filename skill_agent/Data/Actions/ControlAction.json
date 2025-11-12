@@ -1,0 +1,466 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1851389+08:00",
+    "action": {
+        "typeName": "ControlAction",
+        "fullTypeName": "SkillSystem.Actions.ControlAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "控制效果",
+        "category": "Control",
+        "description": "ControlAction是Unity技能系统中的核心控制类Action，专门用于对目标单位施加8种不同类型的控制效果：眩�?Stun)使目标无法行动、沉�?Silence)禁止施法、定�?Root)禁止移动、减�?Slow)降低移动速度、恐�?Fear)强制逃跑、魅�?Charm)控制敌人、缴�?Disable)禁用攻击和技能、放�?击飞(Banish)使目标无敌且无法行动。支持配置控制持续时间、控制强度、免疫穿透、叠加行为等高级参数，每种控制类型都有专门的配置选项，如眩晕可设置是否允许部分行动、恐惧可配置移动方向和速度、魅惑可定义行为模式、缴械可选择禁用具体能力类型。具备完整的视觉效果和音效系统，包括施加特效、持续特效和结束特效，支持目标筛选、最大目标数量控制和建筑影响设置。适用于DOTA2/LOL中的各类控制技能，如雷�?眩晕)、石化凝�?定身)、寒冬诅�?恐惧)、恶魔赦�?沉默)等，通过免疫穿透设置可应对不同免疫状态，叠加系统支持刷新持续时间、增加层数或增强效果强度等多种叠加方式�?,
+        "searchText": "控制效果\nControlAction是Unity技能系统中的核心控制类Action，专门用于对目标单位施加8种不同类型的控制效果：眩�?Stun)使目标无法行动、沉�?Silence)禁止施法、定�?Root)禁止移动、减�?Slow)降低移动速度、恐�?Fear)强制逃跑、魅�?Charm)控制敌人、缴�?Disable)禁用攻击和技能、放�?击飞(Banish)使目标无敌且无法行动。支持配置控制持续时间、控制强度、免疫穿透、叠加行为等高级参数，每种控制类型都有专门的配置选项，如眩晕可设置是否允许部分行动、恐惧可配置移动方向和速度、魅惑可定义行为模式、缴械可选择禁用具体能力类型。具备完整的视觉效果和音效系统，包括施加特效、持续特效和结束特效，支持目标筛选、最大目标数量控制和建筑影响设置。适用于DOTA2/LOL中的各类控制技能，如雷�?眩晕)、石化凝�?定身)、寒冬诅�?恐惧)、恶魔赦�?沉默)等，通过免疫穿透设置可应对不同免疫状态，叠加系统支持刷新持续时间、增加层数或增强效果强度等多种叠加方式。\n关键�? 控制效果,眩晕,沉默,定身,减�?恐惧,魅惑,缴械,放�?ControlAction,Stun,Silence,Root,Slow,Fear,Charm,Disable,Banish,免疫穿�?叠加控制,DOTA2控制技能\n分类: Control\n类型: ControlAction",
+        "parameters": [
+            {
+                "name": "controlType",
+                "type": "ControlType",
+                "defaultValue": "Stun",
+                "label": "Control Type",
+                "group": "Control Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Stun",
+                    "Silence",
+                    "Root",
+                    "Slow",
+                    "Fear",
+                    "Charm",
+                    "Disable",
+                    "Banish"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "controlDuration",
+                "type": "float",
+                "defaultValue": "2",
+                "label": "Control Duration",
+                "group": "Control Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "controlStrength",
+                "type": "float",
+                "defaultValue": "0.5",
+                "label": "Control Strength",
+                "group": "Control Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "allowActionsDuringStun",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Allow Actions During Stun",
+                "group": "Stun Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "fearDirection",
+                "type": "FearDirection",
+                "defaultValue": "AwayFromCaster",
+                "label": "Fear Direction",
+                "group": "Fear Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "AwayFromCaster",
+                    "Random",
+                    "TowardsBase"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "fearMovementSpeed",
+                "type": "float",
+                "defaultValue": "1.5",
+                "label": "Fear Movement Speed",
+                "group": "Fear Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "2"
+                }
+            },
+            {
+                "name": "charmBehavior",
+                "type": "CharmBehavior",
+                "defaultValue": "AttackAllies",
+                "label": "Charm Behavior",
+                "group": "Charm Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "AttackAllies",
+                    "FollowCaster",
+                    "Idle"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "disabledAbilities",
+                "type": "DisabledAbilities",
+                "defaultValue": "Attacks, Spells",
+                "label": "Disabled Abilities",
+                "group": "Disable Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "None",
+                    "Attacks",
+                    "Spells",
+                    "Items",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "dispelResistance",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "Dispel Resistance",
+                "group": "Dispel Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "dispelPriority",
+                "type": "DispelPriority",
+                "defaultValue": "Normal",
+                "label": "Dispel Priority",
+                "group": "Dispel Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Low",
+                    "Normal",
+                    "High"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "stackable",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Stackable",
+                "group": "Stack Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "stackBehavior",
+                "type": "StackBehavior",
+                "defaultValue": "RefreshDuration",
+                "label": "Stack Behavior",
+                "group": "Stack Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "RefreshDuration",
+                    "IncreaseStacks",
+                    "IncreaseStrength"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxStacks",
+                "type": "int",
+                "defaultValue": "3",
+                "label": "Max Stacks",
+                "group": "Stack Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "bypassMagicImmunity",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Bypass Magic Immunity",
+                "group": "Immunity Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "bypassControlImmunity",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Bypass Control Immunity",
+                "group": "Immunity Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "controlEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Control Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "applyEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Apply Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "endEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "End Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "controlApplySound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Control Apply Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "controlLoopSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Control Loop Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "defaultValue": "Enemy",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "defaultValue": "1",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "affectBuildings",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Affect Buildings",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

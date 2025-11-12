@@ -3,7 +3,7 @@ using System;
 namespace SkillSystem.Actions
 {
     /// <summary>
-    /// Action显示名称特性
+    /// Action显示名称特�?
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class ActionDisplayNameAttribute : Attribute
@@ -17,7 +17,7 @@ namespace SkillSystem.Actions
     }
 
     /// <summary>
-    /// Action类别特性
+    /// Action类别特�?
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class ActionCategoryAttribute : Attribute

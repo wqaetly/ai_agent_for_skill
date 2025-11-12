@@ -11,7 +11,7 @@ using TrainingGround.PostProcessing;
 namespace TrainingGround.Editor
 {
     /// <summary>
-    /// URP配置验证工具 - 检查训练场系统的配置完整性
+    /// URP配置验证工具 - 检查训练场系统的配置完整�?
     /// </summary>
     public class URPConfigurationValidator : EditorWindow
     {
@@ -32,7 +32,7 @@ namespace TrainingGround.Editor
             EditorGUILayout.Space();
 
             EditorGUILayout.HelpBox(
-                "此工具检查训练场系统的配置是否正确，并提供一键修复功能。",
+                "此工具检查训练场系统的配置是否正确，并提供一键修复功能�?,
                 MessageType.Info
             );
 
@@ -43,18 +43,18 @@ namespace TrainingGround.Editor
 
             EditorGUILayout.Space();
 
-            // 开始滚动视图
+            // 开始滚动视�?
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
-            // 1. 检查URP包
+            // 1. 检查URP�?
             CheckURPPackage();
             EditorGUILayout.Space();
 
-            // 2. 检查Cinemachine包
+            // 2. 检查Cinemachine�?
             CheckCinemachinePackage();
             EditorGUILayout.Space();
 
-            // 3. 检查渲染管线设置
+            // 3. 检查渲染管线设�?
             CheckRenderPipeline();
             EditorGUILayout.Space();
 
@@ -70,7 +70,7 @@ namespace TrainingGround.Editor
             CheckMaterialLibrary();
             EditorGUILayout.Space();
 
-            // 7. 检查后期处理
+            // 7. 检查后期处�?
             CheckPostProcessing();
             EditorGUILayout.Space();
 
@@ -78,8 +78,8 @@ namespace TrainingGround.Editor
 
             EditorGUILayout.Space();
 
-            // 一键修复按钮
-            if (GUILayout.Button("尝试自动修复所有问题", GUILayout.Height(30)))
+            // 一键修复按�?
+            if (GUILayout.Button("尝试自动修复所有问�?, GUILayout.Height(30)))
             {
                 AutoFixAllIssues();
             }
@@ -87,12 +87,12 @@ namespace TrainingGround.Editor
 
         private void CheckURPPackage()
         {
-            EditorGUILayout.LabelField("1. URP包检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("1. URP包检�?, EditorStyles.boldLabel);
 
             var pipeline = GraphicsSettings.currentRenderPipeline;
             if (pipeline is UniversalRenderPipelineAsset)
             {
-                DrawSuccess("URP渲染管线已正确配置");
+                DrawSuccess("URP渲染管线已正确配�?);
 
                 if (showDetailedInfo)
                 {
@@ -111,7 +111,7 @@ namespace TrainingGround.Editor
 
         private void CheckCinemachinePackage()
         {
-            EditorGUILayout.LabelField("2. Cinemachine包检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("2. Cinemachine包检�?, EditorStyles.boldLabel);
 
             // 检查Cinemachine类型是否存在
             var cinemachineType = System.Type.GetType("Unity.Cinemachine.CinemachineCamera, Unity.Cinemachine");
@@ -121,7 +121,7 @@ namespace TrainingGround.Editor
             }
             else
             {
-                DrawError("Cinemachine包未安装！");
+                DrawError("Cinemachine包未安装�?);
                 if (GUILayout.Button("打开Package Manager"))
                 {
                     UnityEditor.PackageManager.UI.Window.Open("com.unity.cinemachine");
@@ -131,7 +131,7 @@ namespace TrainingGround.Editor
 
         private void CheckRenderPipeline()
         {
-            EditorGUILayout.LabelField("3. 渲染管线设置检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("3. 渲染管线设置检�?, EditorStyles.boldLabel);
 
             var pipeline = GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
             if (pipeline != null)
@@ -139,13 +139,13 @@ namespace TrainingGround.Editor
                 // 使用反射获取私有字段
                 var serializedObject = new SerializedObject(pipeline);
 
-                // 检查关键设置
+                // 检查关键设�?
                 var requireDepthTexture = serializedObject.FindProperty("m_RequireDepthTexture");
                 var requireOpaqueTexture = serializedObject.FindProperty("m_RequireOpaqueTexture");
 
                 if (requireDepthTexture != null && requireDepthTexture.boolValue)
                 {
-                    DrawSuccess("Depth Texture已启用");
+                    DrawSuccess("Depth Texture已启�?);
                 }
                 else
                 {
@@ -161,36 +161,36 @@ namespace TrainingGround.Editor
             }
             else
             {
-                DrawError("未找到URP Asset！");
+                DrawError("未找到URP Asset�?);
             }
         }
 
         private void CheckMainCamera()
         {
-            EditorGUILayout.LabelField("4. 主相机检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("4. 主相机检�?, EditorStyles.boldLabel);
 
             var mainCamera = UnityEngine.Camera.main;
             if (mainCamera == null)
             {
-                DrawError("未找到主相机！");
-                if (GUILayout.Button("创建主相机"))
+                DrawError("未找到主相机�?);
+                if (GUILayout.Button("创建主相�?))
                 {
                     CreateMainCamera();
                 }
                 return;
             }
 
-            DrawSuccess($"找到主相机: {mainCamera.name}");
+            DrawSuccess($"找到主相�? {mainCamera.name}");
 
             // 检查CinemachineBrain
             var brain = mainCamera.GetComponent<CinemachineBrain>();
             if (brain != null)
             {
-                DrawSuccess("CinemachineBrain已添加");
+                DrawSuccess("CinemachineBrain已添�?);
             }
             else
             {
-                DrawWarning("CinemachineBrain未添加");
+                DrawWarning("CinemachineBrain未添�?);
                 if (GUILayout.Button("添加CinemachineBrain"))
                 {
                     mainCamera.gameObject.AddComponent<CinemachineBrain>();
@@ -204,28 +204,28 @@ namespace TrainingGround.Editor
             {
                 if (cameraData.renderPostProcessing)
                 {
-                    DrawSuccess("后期处理已启用");
+                    DrawSuccess("后期处理已启�?);
                 }
                 else
                 {
-                    DrawWarning("后期处理未启用");
+                    DrawWarning("后期处理未启�?);
                 }
             }
         }
 
         private void CheckTrainingGroundComponents()
         {
-            EditorGUILayout.LabelField("5. 训练场组件检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("5. 训练场组件检�?, EditorStyles.boldLabel);
 
             // 检查TrainingGroundManager
             var manager = FindFirstObjectByType<TrainingGroundManager>();
             if (manager != null)
             {
-                DrawSuccess($"TrainingGroundManager已添加: {manager.name}");
+                DrawSuccess($"TrainingGroundManager已添�? {manager.name}");
             }
             else
             {
-                DrawWarning("TrainingGroundManager未找到");
+                DrawWarning("TrainingGroundManager未找�?);
                 if (GUILayout.Button("创建TrainingGroundManager"))
                 {
                     CreateTrainingGroundManager();
@@ -236,11 +236,11 @@ namespace TrainingGround.Editor
             var cameraController = FindFirstObjectByType<Camera.TrainingGroundCameraController>();
             if (cameraController != null)
             {
-                DrawSuccess($"CameraController已添加: {cameraController.name}");
+                DrawSuccess($"CameraController已添�? {cameraController.name}");
             }
             else
             {
-                DrawWarning("CameraController未找到");
+                DrawWarning("CameraController未找�?);
                 if (GUILayout.Button("创建CameraController"))
                 {
                     CreateCameraController();
@@ -250,15 +250,15 @@ namespace TrainingGround.Editor
 
         private void CheckMaterialLibrary()
         {
-            EditorGUILayout.LabelField("6. 材质库检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("6. 材质库检�?, EditorStyles.boldLabel);
 
-            // MaterialLibrary是单例，会在运行时自动创建
+            // MaterialLibrary是单例，会在运行时自动创�?
             DrawSuccess("MaterialLibrary将在运行时自动初始化");
         }
 
         private void CheckPostProcessing()
         {
-            EditorGUILayout.LabelField("7. 后期处理检查", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("7. 后期处理检�?, EditorStyles.boldLabel);
 
             // 检查Volume
             var volumes = FindObjectsByType<Volume>(FindObjectsSortMode.None);
@@ -290,7 +290,7 @@ namespace TrainingGround.Editor
         {
             bool hasFixed = false;
 
-            // 修复主相机
+            // 修复主相�?
             var mainCamera = UnityEngine.Camera.main;
             if (mainCamera != null)
             {
@@ -313,7 +313,7 @@ namespace TrainingGround.Editor
                 hasFixed = true;
             }
 
-            // 创建缺失的组件
+            // 创建缺失的组�?
             if (FindFirstObjectByType<TrainingGroundManager>() == null)
             {
                 CreateTrainingGroundManager();
@@ -334,12 +334,12 @@ namespace TrainingGround.Editor
 
             if (hasFixed)
             {
-                EditorUtility.DisplayDialog("修复完成", "已尝试修复所有检测到的问题。\n请重新运行验证检查。", "确定");
+                EditorUtility.DisplayDialog("修复完成", "已尝试修复所有检测到的问题。\n请重新运行验证检查�?, "确定");
                 Repaint();
             }
             else
             {
-                EditorUtility.DisplayDialog("无需修复", "所有配置都正常！", "确定");
+                EditorUtility.DisplayDialog("无需修复", "所有配置都正常�?, "确定");
             }
         }
 
@@ -366,7 +366,7 @@ namespace TrainingGround.Editor
             var managerObj = new GameObject("TrainingGroundManager");
             managerObj.AddComponent<TrainingGroundManager>();
             Selection.activeGameObject = managerObj;
-            Debug.Log("[URPValidator] TrainingGroundManager已创建");
+            Debug.Log("[URPValidator] TrainingGroundManager已创�?);
         }
 
         private void CreateCameraController()
@@ -374,7 +374,7 @@ namespace TrainingGround.Editor
             var controllerObj = new GameObject("CameraController");
             controllerObj.AddComponent<Camera.TrainingGroundCameraController>();
             Selection.activeGameObject = controllerObj;
-            Debug.Log("[URPValidator] CameraController已创建");
+            Debug.Log("[URPValidator] CameraController已创�?);
         }
 
         private void CreatePostProcessingManager()
@@ -382,7 +382,7 @@ namespace TrainingGround.Editor
             var managerObj = new GameObject("PostProcessingManager");
             managerObj.AddComponent<PostProcessingManager>();
             Selection.activeGameObject = managerObj;
-            Debug.Log("[URPValidator] PostProcessingManager已创建");
+            Debug.Log("[URPValidator] PostProcessingManager已创�?);
         }
 
         #endregion
@@ -392,7 +392,7 @@ namespace TrainingGround.Editor
         private void DrawSuccess(string message)
         {
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("✓", GUILayout.Width(20));
+            GUILayout.Label("�?, GUILayout.Width(20));
             EditorGUILayout.LabelField(message, EditorStyles.helpBox);
             EditorGUILayout.EndHorizontal();
         }
@@ -400,7 +400,7 @@ namespace TrainingGround.Editor
         private void DrawWarning(string message)
         {
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("⚠", GUILayout.Width(20));
+            GUILayout.Label("�?, GUILayout.Width(20));
             EditorGUILayout.HelpBox(message, MessageType.Warning);
             EditorGUILayout.EndHorizontal();
         }
@@ -408,7 +408,7 @@ namespace TrainingGround.Editor
         private void DrawError(string message)
         {
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("✗", GUILayout.Width(20));
+            GUILayout.Label("�?, GUILayout.Width(20));
             EditorGUILayout.HelpBox(message, MessageType.Error);
             EditorGUILayout.EndHorizontal();
         }

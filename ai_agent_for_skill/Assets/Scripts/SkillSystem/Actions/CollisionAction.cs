@@ -5,7 +5,7 @@ using Sirenix.OdinInspector;
 namespace SkillSystem.Actions
 {
     [Serializable]
-    [ActionDisplayName("碰撞检测")]
+    [ActionDisplayName("碰撞检�?)]
     public class CollisionAction : ISkillAction
     {
         [SerializeField]

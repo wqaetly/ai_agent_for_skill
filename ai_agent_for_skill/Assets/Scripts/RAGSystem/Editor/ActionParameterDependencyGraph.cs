@@ -6,8 +6,7 @@ using UnityEngine;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// Action参数依赖图 - 管理参数间的依赖、互斥、条件必填关系
-    /// </summary>
+    /// Action参数依赖�?- 管理参数间的依赖、互斥、条件必填关�?    /// </summary>
     public class ActionParameterDependencyGraph
     {
         private Dictionary<string, List<ParameterDependencyRule>> rulesByActionType;
@@ -21,8 +20,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 初始化默认依赖规则
-        /// </summary>
+        /// 初始化默认依赖规�?        /// </summary>
         private void InitializeDefaultRules()
         {
             // DamageAction规则
@@ -33,7 +31,7 @@ namespace SkillSystem.RAG
                 sourceParameter = "damageType",
                 sourceValue = "Physical",
                 targetParameter = "lifeStealPercentage",
-                explanation = "物理伤害类型时，生命偷取才有效"
+                explanation = "物理伤害类型时，生命偷取才有�?
             });
 
             RegisterRule(new ParameterDependencyRule
@@ -43,7 +41,7 @@ namespace SkillSystem.RAG
                 sourceParameter = "damageType",
                 sourceValue = "Magical",
                 targetParameter = "spellVampPercentage",
-                explanation = "魔法伤害类型时，法术吸血才有效"
+                explanation = "魔法伤害类型时，法术吸血才有�?
             });
 
             RegisterRule(new ParameterDependencyRule
@@ -63,7 +61,7 @@ namespace SkillSystem.RAG
                 targetParameter = "baseDamage",
                 minValue = 1f,
                 maxValue = 10000f,
-                explanation = "基础伤害应在合理范围内"
+                explanation = "基础伤害应在合理范围�?
             });
 
             // MovementAction规则
@@ -104,7 +102,7 @@ namespace SkillSystem.RAG
                 targetParameter = "movementSpeed",
                 minValue = 0f,
                 maxValue = 2000f,
-                explanation = "移动速度应在合理范围内"
+                explanation = "移动速度应在合理范围�?
             });
 
             // HealAction规则
@@ -145,8 +143,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取指定Action类型的所有依赖规则
-        /// </summary>
+        /// 获取指定Action类型的所有依赖规�?        /// </summary>
         public List<ParameterDependencyRule> GetRulesForAction(string actionType)
         {
             if (rulesByActionType.ContainsKey(actionType))
@@ -207,14 +204,12 @@ namespace SkillSystem.RAG
         /// </summary>
         private ValidationIssue ValidateConditionalRequired(ParameterDependencyRule rule, Dictionary<string, object> parameters)
         {
-            // 检查源参数是否存在且等于指定值
-            if (parameters.ContainsKey(rule.sourceParameter))
+            // 检查源参数是否存在且等于指定�?            if (parameters.ContainsKey(rule.sourceParameter))
             {
                 var sourceValue = parameters[rule.sourceParameter];
                 if (sourceValue != null && sourceValue.ToString() == rule.sourceValue)
                 {
-                    // 条件满足，检查目标参数是否存在
-                    if (!parameters.ContainsKey(rule.targetParameter) || parameters[rule.targetParameter] == null)
+                    // 条件满足，检查目标参数是否存�?                    if (!parameters.ContainsKey(rule.targetParameter) || parameters[rule.targetParameter] == null)
                     {
                         return new ValidationIssue
                         {
@@ -235,24 +230,22 @@ namespace SkillSystem.RAG
         /// </summary>
         private ValidationIssue ValidateExclusive(ParameterDependencyRule rule, Dictionary<string, object> parameters)
         {
-            // 检查源参数是否存在且等于指定值
-            if (parameters.ContainsKey(rule.sourceParameter))
+            // 检查源参数是否存在且等于指定�?            if (parameters.ContainsKey(rule.sourceParameter))
             {
                 var sourceValue = parameters[rule.sourceParameter];
                 if (sourceValue != null && sourceValue.ToString() == rule.sourceValue)
                 {
-                    // 条件满足，检查目标参数是否不应该有值
-                    if (parameters.ContainsKey(rule.targetParameter))
+                    // 条件满足，检查目标参数是否不应该有�?                    if (parameters.ContainsKey(rule.targetParameter))
                     {
                         var targetValue = parameters[rule.targetParameter];
-                        // 对于数值类型，检查是否不为0
+                        // 对于数值类型，检查是否不�?
                         if (targetValue != null && !IsZeroValue(targetValue))
                         {
                             return new ValidationIssue
                             {
                                 severity = IssueSeverity.Warning,
                                 parameterName = rule.targetParameter,
-                                message = $"当{rule.sourceParameter}={rule.sourceValue}时，{rule.targetParameter}应该为0或不设置",
+                                message = $"当{rule.sourceParameter}={rule.sourceValue}时，{rule.targetParameter}应该�?或不设置",
                                 explanation = rule.explanation
                             };
                         }
@@ -308,8 +301,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 检查值是否为零值
-        /// </summary>
+        /// 检查值是否为零�?        /// </summary>
         private bool IsZeroValue(object value)
         {
             if (value == null)
@@ -327,8 +319,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取参数的默认值建议
-        /// </summary>
+        /// 获取参数的默认值建�?        /// </summary>
         public object GetDefaultValue(string actionType, string parameterName)
         {
             var rules = GetRulesForAction(actionType);
@@ -340,8 +331,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取参数的推荐范围
-        /// </summary>
+        /// 获取参数的推荐范�?        /// </summary>
         public (float? min, float? max) GetRecommendedRange(string actionType, string parameterName)
         {
             var rules = GetRulesForAction(actionType);
@@ -391,7 +381,7 @@ namespace SkillSystem.RAG
                 case DependencyRuleType.ConditionalRequired: return "条件必填";
                 case DependencyRuleType.Exclusive: return "互斥约束";
                 case DependencyRuleType.RangeConstraint: return "范围约束";
-                case DependencyRuleType.DefaultValue: return "默认值";
+                case DependencyRuleType.DefaultValue: return "默认�?;
                 default: return type.ToString();
             }
         }
@@ -406,12 +396,7 @@ namespace SkillSystem.RAG
         public string actionType;                   // Action类型
         public DependencyRuleType ruleType;         // 规则类型
         public string sourceParameter;              // 源参数名
-        public string sourceValue;                  // 源参数值（条件）
-        public string targetParameter;              // 目标参数名
-        public object defaultValue;                 // 默认值（用于DefaultValue类型）
-        public float? minValue;                     // 最小值（用于RangeConstraint类型）
-        public float? maxValue;                     // 最大值（用于RangeConstraint类型）
-        public string explanation;                  // 规则说明
+        public string sourceValue;                  // 源参数值（条件�?        public string targetParameter;              // 目标参数�?        public object defaultValue;                 // 默认值（用于DefaultValue类型�?        public float? minValue;                     // 最小值（用于RangeConstraint类型�?        public float? maxValue;                     // 最大值（用于RangeConstraint类型�?        public string explanation;                  // 规则说明
     }
 
     /// <summary>
@@ -420,10 +405,8 @@ namespace SkillSystem.RAG
     public enum DependencyRuleType
     {
         ConditionalRequired,    // 条件必填：当A=x时，B必填
-        Exclusive,              // 互斥：当A=x时，B应该为空或0
-        DefaultValue,           // 默认值：B未设置时，使用默认值
-        RangeConstraint         // 范围约束：B应在[min, max]范围内
-    }
+        Exclusive,              // 互斥：当A=x时，B应该为空�?
+        DefaultValue,           // 默认值：B未设置时，使用默认�?        RangeConstraint         // 范围约束：B应在[min, max]范围�?    }
 
     /// <summary>
     /// 参数约束信息
@@ -437,8 +420,7 @@ namespace SkillSystem.RAG
         public object defaultValue;
         public float? minValue;
         public float? maxValue;
-        public List<string> allowedValues;          // 枚举类型的允许值
-    }
+        public List<string> allowedValues;          // 枚举类型的允许�?    }
 
     /// <summary>
     /// 验证结果

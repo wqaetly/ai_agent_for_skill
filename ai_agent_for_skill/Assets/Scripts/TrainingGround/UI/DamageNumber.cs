@@ -5,7 +5,7 @@ using TMPro;
 namespace TrainingGround.UI
 {
     /// <summary>
-    /// 伤害数字组件 - 单个飘字（商业级动画效果）
+    /// 伤害数字组件 - 单个飘字（商业级动画效果�?
     /// </summary>
     public class DamageNumber : MonoBehaviour
     {
@@ -63,7 +63,7 @@ namespace TrainingGround.UI
                 startPosition += randomOffset;
             }
 
-            // 使用RectTransform设置位置（适用于WorldSpace Canvas）
+            // 使用RectTransform设置位置（适用于WorldSpace Canvas�?
             var rectTransform = GetComponent<RectTransform>();
             if (rectTransform != null)
             {
@@ -85,7 +85,7 @@ namespace TrainingGround.UI
             // 配置视觉样式
             if (isCritical)
             {
-                // 暴击：大号、粗体、描边
+                // 暴击：大号、粗体、描�?
                 textMesh.fontSize = 52;
                 textMesh.fontStyle = FontStyles.Bold;
                 startScale = 1.3f;
@@ -98,7 +98,7 @@ namespace TrainingGround.UI
             }
             else if (isHeal)
             {
-                // 治疗：中号、粗体、轻微描边
+                // 治疗：中号、粗体、轻微描�?
                 textMesh.fontSize = 44;
                 textMesh.fontStyle = FontStyles.Bold;
                 startScale = 1.1f;
@@ -123,7 +123,7 @@ namespace TrainingGround.UI
                 }
             }
 
-            // 初始缩放为0（弹出动画）
+            // 初始缩放�?（弹出动画）
             if (enableScaleAnimation)
             {
                 transform.localScale = Vector3.zero;
@@ -141,7 +141,7 @@ namespace TrainingGround.UI
             elapsedTime += Time.deltaTime;
             float normalizedTime = elapsedTime / lifetime;
 
-            // 弹出动画（前20%时间）
+            // 弹出动画（前20%时间�?
             if (enableScaleAnimation && normalizedTime < 0.2f)
             {
                 float popT = normalizedTime / 0.2f;
@@ -169,7 +169,7 @@ namespace TrainingGround.UI
                 transform.position = currentPosition;
             }
 
-            // 淡出效果（后30%时间）
+            // 淡出效果（后30%时间�?
             if (elapsedTime >= lifetime - fadeOutTime)
             {
                 float fadeT = (elapsedTime - (lifetime - fadeOutTime)) / fadeOutTime;

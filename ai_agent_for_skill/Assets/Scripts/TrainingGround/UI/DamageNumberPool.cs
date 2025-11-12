@@ -5,15 +5,15 @@ using TMPro;
 namespace TrainingGround.UI
 {
     /// <summary>
-    /// 伤害数字对象池 - 管理伤害飘字的创建和回收
+    /// 伤害数字对象�?- 管理伤害飘字的创建和回收
     /// </summary>
     public class DamageNumberPool : MonoBehaviour
     {
-        [Header("预制体设置")]
+        [Header("预制体设�?)]
         [SerializeField] private GameObject damageNumberPrefab;
         [SerializeField] private Transform poolContainer;
 
-        [Header("对象池设置")]
+        [Header("对象池设�?)]
         [SerializeField] private int initialPoolSize = 20;
         [SerializeField] private int maxPoolSize = 100;
 
@@ -22,14 +22,14 @@ namespace TrainingGround.UI
 
         void Awake()
         {
-            // 如果没有指定容器，创建一个
+            // 如果没有指定容器，创建一�?
             if (poolContainer == null)
             {
                 poolContainer = new GameObject("DamageNumberPool").transform;
                 poolContainer.SetParent(transform);
             }
 
-            // 如果没有预制体，创建默认预制体
+            // 如果没有预制体，创建默认预制�?
             if (damageNumberPrefab == null)
             {
                 damageNumberPrefab = CreateDefaultPrefab();
@@ -129,7 +129,7 @@ namespace TrainingGround.UI
         }
 
         /// <summary>
-        /// 创建默认预制体（如果用户没有提供）
+        /// 创建默认预制体（如果用户没有提供�?
         /// </summary>
         private GameObject CreateDefaultPrefab()
         {
@@ -156,7 +156,7 @@ namespace TrainingGround.UI
             var scaler = prefab.AddComponent<UnityEngine.UI.CanvasScaler>();
             scaler.dynamicPixelsPerUnit = 10;
 
-            // 创建Text子对象
+            // 创建Text子对�?
             GameObject textObject = new GameObject("Text");
             textObject.transform.SetParent(prefab.transform, false);
 
@@ -185,7 +185,7 @@ namespace TrainingGround.UI
         }
 
         /// <summary>
-        /// 清空对象池
+        /// 清空对象�?
         /// </summary>
         public void ClearPool()
         {

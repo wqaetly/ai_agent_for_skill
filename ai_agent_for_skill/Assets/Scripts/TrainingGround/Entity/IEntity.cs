@@ -8,12 +8,12 @@ namespace TrainingGround.Entity
     /// </summary>
     public interface IEntity
     {
-        // 基础属性
+        // 基础属�?
         GameObject GameObject { get; }
         Transform Transform { get; }
         string EntityName { get; }
 
-        // 生命值系统
+        // 生命值系�?
         float CurrentHealth { get; }
         float MaxHealth { get; }
         float HealthPercentage { get; }
@@ -22,7 +22,7 @@ namespace TrainingGround.Entity
         float CurrentShield { get; }
         float MaxShield { get; }
 
-        // 资源系统（蓝量/能量）
+        // 资源系统（蓝�?能量�?
         float CurrentResource { get; }
         float MaxResource { get; }
 
@@ -41,7 +41,7 @@ namespace TrainingGround.Entity
         void SetPosition(Vector3 position);
         void ApplyKnockback(Vector3 direction, float force);
 
-        // 状态
+        // 状�?
         bool IsAlive { get; }
         bool IsStunned { get; }
         bool IsInvulnerable { get; }
@@ -75,7 +75,7 @@ namespace TrainingGround.Entity
     {
         Positive,   // 增益
         Negative,   // 减益
-        Neutral     // 中性
+        Neutral     // 中�?
     }
 
     /// <summary>

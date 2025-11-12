@@ -9,16 +9,13 @@ using UnityEngine;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// 智能Action检查器增强版（REQ-04）
-    /// 提供参数推荐、差异对比、验证和一键应用功能
-    /// </summary>
+    /// 智能Action检查器增强版（REQ-04�?    /// 提供参数推荐、差异对比、验证和一键应用功�?    /// </summary>
     public static class SmartActionInspectorEnhanced
     {
         private static EditorRAGClient ragClient;
         private static bool isInitialized = false;
 
-        // UI状态
-        private static bool showSmartPanel = true;
+        // UI状�?        private static bool showSmartPanel = true;
         private static Vector2 scrollPos;
         private static bool isLoading = false;
         private static string currentActionType = "";
@@ -33,16 +30,14 @@ namespace SkillSystem.RAG
         // 差异数据
         private static EditorRAGClient.CompareParametersResponse comparisonResult;
 
-        // 操作历史栈（用于撤销）
-        private static Stack<ParameterSnapshot> undoStack = new Stack<ParameterSnapshot>();
+        // 操作历史栈（用于撤销�?        private static Stack<ParameterSnapshot> undoStack = new Stack<ParameterSnapshot>();
         private const int MAX_UNDO_HISTORY = 20;
 
         // 会话ID
         private static string sessionId;
 
         /// <summary>
-        /// 参数快照（用于撤销）
-        /// </summary>
+        /// 参数快照（用于撤销�?        /// </summary>
         private class ParameterSnapshot
         {
             public string ActionType;
@@ -51,8 +46,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 初始化
-        /// </summary>
+        /// 初始�?        /// </summary>
         public static void Initialize()
         {
             if (isInitialized)
@@ -81,12 +75,10 @@ namespace SkillSystem.RAG
 
             EditorGUILayout.Space(10);
 
-            // 主面板
-            EditorGUILayout.BeginVertical("box");
+            // 主面�?            EditorGUILayout.BeginVertical("box");
 
-            // 标题栏
-            EditorGUILayout.BeginHorizontal();
-            showSmartPanel = EditorGUILayout.Foldout(showSmartPanel, "🤖 AI参数助手（REQ-04）", true, EditorStyles.foldoutHeader);
+            // 标题�?            EditorGUILayout.BeginHorizontal();
+            showSmartPanel = EditorGUILayout.Foldout(showSmartPanel, "🤖 AI参数助手（REQ-04�?, true, EditorStyles.foldoutHeader);
 
             GUI.enabled = !isLoading;
             if (GUILayout.Button("刷新推荐", EditorStyles.miniButton, GUILayout.Width(70)))
@@ -108,7 +100,7 @@ namespace SkillSystem.RAG
 
                 if (isLoading)
                 {
-                    EditorGUILayout.LabelField("⏳ 正在加载AI推荐...", EditorStyles.miniLabel);
+                    EditorGUILayout.LabelField("�?正在加载AI推荐...", EditorStyles.miniLabel);
                 }
                 else if (currentRecommendations != null && currentRecommendations.count > 0)
                 {
@@ -130,7 +122,7 @@ namespace SkillSystem.RAG
         /// </summary>
         private static void DrawRecommendationsPanel(SkillSystem.Actions.ISkillAction action)
         {
-            EditorGUILayout.LabelField($"找到 {currentRecommendations.count} 个推荐配置:", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField($"找到 {currentRecommendations.count} 个推荐配�?", EditorStyles.boldLabel);
             EditorGUILayout.Space(3);
 
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.MaxHeight(400));
@@ -147,8 +139,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 绘制单个推荐项
-        /// </summary>
+        /// 绘制单个推荐�?        /// </summary>
         private static void DrawRecommendationItem(
             SkillSystem.Actions.ISkillAction action,
             EditorRAGClient.ParameterRecommendation recommendation,
@@ -157,18 +148,16 @@ namespace SkillSystem.RAG
         {
             try
             {
-                // 选中时高亮显示
-                Color originalColor = GUI.backgroundColor;
+                // 选中时高亮显�?                Color originalColor = GUI.backgroundColor;
                 if (isSelected)
                     GUI.backgroundColor = new Color(0.5f, 0.8f, 1.0f);
 
                 EditorGUILayout.BeginVertical("box");
                 GUI.backgroundColor = originalColor;
 
-                // 标题行
-                EditorGUILayout.BeginHorizontal();
+                // 标题�?                EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField($"#{index + 1} {recommendation.source_skill}", EditorStyles.boldLabel);
-                EditorGUILayout.LabelField($"相似度: {recommendation.similarity:P0}", GUILayout.Width(80));
+                EditorGUILayout.LabelField($"相似�? {recommendation.similarity:P0}", GUILayout.Width(80));
                 EditorGUILayout.EndHorizontal();
 
                 // 来源信息
@@ -195,14 +184,13 @@ namespace SkillSystem.RAG
                         EditorGUILayout.BeginHorizontal();
                         EditorGUILayout.LabelField(param.Key, GUILayout.Width(120));
 
-                        // 显示当前值 vs 推荐值
-                        var currentValue = currentParams.ContainsKey(param.Key) ? currentParams[param.Key] : null;
+                        // 显示当前�?vs 推荐�?                        var currentValue = currentParams.ContainsKey(param.Key) ? currentParams[param.Key] : null;
                         bool isDifferent = currentValue == null || !currentValue.Equals(param.Value);
 
                         if (isDifferent)
                             GUI.contentColor = new Color(1f, 0.8f, 0.3f);
 
-                        EditorGUILayout.LabelField($"{currentValue} → {param.Value}", EditorStyles.miniLabel);
+                        EditorGUILayout.LabelField($"{currentValue} �?{param.Value}", EditorStyles.miniLabel);
 
                         GUI.contentColor = Color.white;
                         EditorGUILayout.EndHorizontal();
@@ -213,10 +201,9 @@ namespace SkillSystem.RAG
 
                 EditorGUILayout.Space(2);
 
-                // 操作按钮行
-                EditorGUILayout.BeginHorizontal();
+                // 操作按钮�?                EditorGUILayout.BeginHorizontal();
 
-                if (GUILayout.Button(isSelected ? "✓ 已选择" : "查看详情", EditorStyles.miniButton))
+                if (GUILayout.Button(isSelected ? "�?已选择" : "查看详情", EditorStyles.miniButton))
                 {
                     // 延迟到下一帧修改选择状态，避免GUI结构在同一帧内变化
                     int newIndex = isSelected ? -1 : index;
@@ -229,7 +216,7 @@ namespace SkillSystem.RAG
                 }
 
                 GUI.enabled = isSelected;
-                if (GUILayout.Button("✓ 应用此配置", EditorStyles.miniButtonMid))
+                if (GUILayout.Button("�?应用此配�?, EditorStyles.miniButtonMid))
                 {
                     ApplyRecommendation(action, recommendation).Forget();
                 }
@@ -246,14 +233,12 @@ namespace SkillSystem.RAG
 
                 EditorGUILayout.EndHorizontal();
 
-                // 显示差异对比（如果已选择）
-                if (isSelected && comparisonResult != null)
+                // 显示差异对比（如果已选择�?                if (isSelected && comparisonResult != null)
                 {
                     DrawComparisonResult();
                 }
 
-                // 显示验证结果（如果已验证）
-                if (isSelected && validationResult != null)
+                // 显示验证结果（如果已验证�?                if (isSelected && validationResult != null)
                 {
                     DrawValidationResult();
                 }
@@ -285,7 +270,7 @@ namespace SkillSystem.RAG
                 };
 
                 GUI.contentColor = riskColor;
-                EditorGUILayout.LabelField($"风险等级: {comparisonResult.risk_level.ToUpper()} ({comparisonResult.total_changes} 处变化)", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"风险等级: {comparisonResult.risk_level.ToUpper()} ({comparisonResult.total_changes} 处变�?", EditorStyles.boldLabel);
                 GUI.contentColor = Color.white;
 
                 EditorGUILayout.Space(2);
@@ -303,12 +288,12 @@ namespace SkillSystem.RAG
                             "high" => "🔴",
                             "medium" => "🟡",
                             "low" => "🟢",
-                            _ => "⚪"
+                            _ => "�?
                         };
 
                         EditorGUILayout.LabelField(indicator, GUILayout.Width(20));
                         EditorGUILayout.LabelField(diff.field, GUILayout.Width(100));
-                        EditorGUILayout.LabelField($"{diff.current} → {diff.recommended}", EditorStyles.miniLabel);
+                        EditorGUILayout.LabelField($"{diff.current} �?{diff.recommended}", EditorStyles.miniLabel);
 
                         EditorGUILayout.EndHorizontal();
                     }
@@ -328,19 +313,18 @@ namespace SkillSystem.RAG
             try
             {
                 EditorGUILayout.BeginVertical("box");
-                EditorGUILayout.LabelField("✓ 参数验证结果", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("�?参数验证结果", EditorStyles.boldLabel);
 
-                // 验证状态
-                if (validationResult.valid)
+                // 验证状�?                if (validationResult.valid)
                 {
                     GUI.contentColor = Color.green;
-                    EditorGUILayout.LabelField("✓ 参数验证通过", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("�?参数验证通过", EditorStyles.boldLabel);
                     GUI.contentColor = Color.white;
                 }
                 else
                 {
                     GUI.contentColor = Color.red;
-                    EditorGUILayout.LabelField("✗ 参数验证失败", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("�?参数验证失败", EditorStyles.boldLabel);
                     GUI.contentColor = Color.white;
                 }
 
@@ -348,7 +332,7 @@ namespace SkillSystem.RAG
                 if (validationResult.errors != null && validationResult.errors.Count > 0)
                 {
                     EditorGUILayout.Space(2);
-                    EditorGUILayout.LabelField("❌ 错误:", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("�?错误:", EditorStyles.boldLabel);
                     foreach (var error in validationResult.errors)
                     {
                         EditorGUILayout.HelpBox($"{error.field}: {error.message}", MessageType.Error);
@@ -373,7 +357,7 @@ namespace SkillSystem.RAG
                     EditorGUILayout.LabelField("💡 建议:", EditorStyles.boldLabel);
                     foreach (var suggestion in validationResult.suggestions)
                     {
-                        EditorGUILayout.LabelField($"• {suggestion.field}: {suggestion.reason}", EditorStyles.wordWrappedMiniLabel);
+                        EditorGUILayout.LabelField($"�?{suggestion.field}: {suggestion.reason}", EditorStyles.wordWrappedMiniLabel);
                     }
                 }
             }
@@ -403,8 +387,7 @@ namespace SkillSystem.RAG
 
             try
             {
-                // 构建上下文
-                var context = new EditorRAGClient.ActionContext
+                // 构建上下�?                var context = new EditorRAGClient.ActionContext
                 {
                     skill_name = skillName,
                     track_name = trackName,
@@ -422,7 +405,7 @@ namespace SkillSystem.RAG
                 );
 
                 currentRecommendations = response;
-                Debug.Log($"[SmartActionInspectorEnhanced] 获取到 {response.count} 个推荐");
+                Debug.Log($"[SmartActionInspectorEnhanced] 获取�?{response.count} 个推�?);
             }
             catch (Exception e)
             {
@@ -436,8 +419,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 对比当前参数和推荐参数
-        /// </summary>
+        /// 对比当前参数和推荐参�?        /// </summary>
         private static async UniTaskVoid CompareWithCurrent(
             SkillSystem.Actions.ISkillAction action,
             EditorRAGClient.ParameterRecommendation recommendation)
@@ -454,9 +436,8 @@ namespace SkillSystem.RAG
                 );
 
                 comparisonResult = response;
-                validationResult = null;  // 清空之前的验证结果
-
-                Debug.Log($"[SmartActionInspectorEnhanced] 参数对比完成: {response.total_changes} 处差异");
+                validationResult = null;  // 清空之前的验证结�?
+                Debug.Log($"[SmartActionInspectorEnhanced] 参数对比完成: {response.total_changes} 处差�?);
             }
             catch (Exception e)
             {
@@ -500,11 +481,9 @@ namespace SkillSystem.RAG
         {
             try
             {
-                // 保存当前参数到撤销栈
-                SaveToUndoStack(action);
+                // 保存当前参数到撤销�?                SaveToUndoStack(action);
 
-                // 应用新参数
-                var oldParams = ExtractActionParameters(action);
+                // 应用新参�?                var oldParams = ExtractActionParameters(action);
                 ApplyParametersToAction(action, recommendation.parameters);
 
                 Debug.Log($"[SmartActionInspectorEnhanced] 参数已应用，来源: {recommendation.source_skill}");
@@ -524,8 +503,7 @@ namespace SkillSystem.RAG
                 comparisonResult = null;
                 validationResult = null;
 
-                // 注意：不需要SetDirty，因为ActionInspector会处理刷新
-                // ISkillAction不继承自UnityEngine.Object
+                // 注意：不需要SetDirty，因为ActionInspector会处理刷�?                // ISkillAction不继承自UnityEngine.Object
 
                 EditorUtility.DisplayDialog("成功", "参数已成功应用！", "确定");
             }
@@ -537,8 +515,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 撤销最后一次更改
-        /// </summary>
+        /// 撤销最后一次更�?        /// </summary>
         private static void UndoLastChange(SkillSystem.Actions.ISkillAction action)
         {
             if (undoStack.Count == 0)
@@ -549,21 +526,18 @@ namespace SkillSystem.RAG
             if (snapshot.ActionType == action.GetType().Name)
             {
                 ApplyParametersToAction(action, snapshot.Parameters);
-                Debug.Log($"[SmartActionInspectorEnhanced] 已撤销到 {snapshot.Timestamp}");
+                Debug.Log($"[SmartActionInspectorEnhanced] 已撤销�?{snapshot.Timestamp}");
 
-                // 注意：不需要SetDirty，因为ActionInspector会处理刷新
-                // ISkillAction不继承自UnityEngine.Object
+                // 注意：不需要SetDirty，因为ActionInspector会处理刷�?                // ISkillAction不继承自UnityEngine.Object
             }
             else
             {
                 Debug.LogWarning("[SmartActionInspectorEnhanced] Action类型不匹配，无法撤销");
-                undoStack.Push(snapshot);  // 放回栈
-            }
+                undoStack.Push(snapshot);  // 放回�?            }
         }
 
         /// <summary>
-        /// 保存到撤销栈
-        /// </summary>
+        /// 保存到撤销�?        /// </summary>
         private static void SaveToUndoStack(SkillSystem.Actions.ISkillAction action)
         {
             var snapshot = new ParameterSnapshot
@@ -575,8 +549,7 @@ namespace SkillSystem.RAG
 
             undoStack.Push(snapshot);
 
-            // 限制栈大小
-            if (undoStack.Count > MAX_UNDO_HISTORY)
+            // 限制栈大�?            if (undoStack.Count > MAX_UNDO_HISTORY)
             {
                 var tempStack = new Stack<ParameterSnapshot>(undoStack.Reverse().Take(MAX_UNDO_HISTORY));
                 undoStack = new Stack<ParameterSnapshot>(tempStack.Reverse());
@@ -584,8 +557,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 提取Action的参数
-        /// </summary>
+        /// 提取Action的参�?        /// </summary>
         private static Dictionary<string, object> ExtractActionParameters(SkillSystem.Actions.ISkillAction action)
         {
             var parameters = new Dictionary<string, object>();
@@ -637,8 +609,7 @@ namespace SkillSystem.RAG
                         continue;
                     }
 
-                    // 尝试设置属性
-                    var property = type.GetProperty(param.Key, BindingFlags.Public | BindingFlags.Instance);
+                    // 尝试设置属�?                    var property = type.GetProperty(param.Key, BindingFlags.Public | BindingFlags.Instance);
                     if (property != null && property.CanWrite)
                     {
                         var convertedValue = Convert.ChangeType(param.Value, property.PropertyType);
@@ -653,8 +624,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取Action的frame值
-        /// </summary>
+        /// 获取Action的frame�?        /// </summary>
         private static int GetActionFrame(SkillSystem.Actions.ISkillAction action)
         {
             var field = action.GetType().GetField("frame", BindingFlags.Public | BindingFlags.Instance);
@@ -675,7 +645,7 @@ namespace SkillSystem.RAG
             validationResult = null;
             selectedRecommendationIndex = -1;
             undoStack.Clear();
-            Debug.Log("[SmartActionInspectorEnhanced] 缓存已清空");
+            Debug.Log("[SmartActionInspectorEnhanced] 缓存已清�?);
         }
     }
 }

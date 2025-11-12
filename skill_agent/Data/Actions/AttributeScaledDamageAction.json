@@ -1,0 +1,349 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1814328+08:00",
+    "action": {
+        "typeName": "AttributeScaledDamageAction",
+        "fullTypeName": "SkillSystem.Actions.AttributeScaledDamageAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "属性缩放伤�?,
+        "category": "Damage",
+        "description": "属性缩放伤害Action是一个高度灵活的伤害计算系统，核心功能是基于多种角色属性进行伤害缩放，支持复杂的伤害计算公式。该Action允许配置多个属性缩放系数，包括总攻击力(TotalAttackDamage)、额外攻击力(BonusAttackDamage)、法术强�?SpellPower)、生命值等属性，可以精确区分不同属性的贡献比例。典型伤害公式如'基础伤害 + 130%额外攻击�?+ 80%法强'，适用于需要多属性混合加成的复杂技能设计。使用场景包括：泰达米尔E技能（基于攻击力缩放）、瑞文R技能（基于额外攻击力强化）、阿狸Q技能（法强与攻击力混合）、盖伦R技能（基于目标已损失生命值）、科加斯R技能（基于自身最大生命值）。关键区别在于支持多种属性同时缩放，而传统伤害Action通常只基于单一属性；支持暴击系统，可配置使用施法者暴击率或固定暴击率；支持伤害浮动和等级成长机制，提供完整的视觉特效和音效配置�?,
+        "searchText": "属性缩放伤害\n属性缩放伤害Action是一个高度灵活的伤害计算系统，核心功能是基于多种角色属性进行伤害缩放，支持复杂的伤害计算公式。该Action允许配置多个属性缩放系数，包括总攻击力(TotalAttackDamage)、额外攻击力(BonusAttackDamage)、法术强�?SpellPower)、生命值等属性，可以精确区分不同属性的贡献比例。典型伤害公式如'基础伤害 + 130%额外攻击�?+ 80%法强'，适用于需要多属性混合加成的复杂技能设计。使用场景包括：泰达米尔E技能（基于攻击力缩放）、瑞文R技能（基于额外攻击力强化）、阿狸Q技能（法强与攻击力混合）、盖伦R技能（基于目标已损失生命值）、科加斯R技能（基于自身最大生命值）。关键区别在于支持多种属性同时缩放，而传统伤害Action通常只基于单一属性；支持暴击系统，可配置使用施法者暴击率或固定暴击率；支持伤害浮动和等级成长机制，提供完整的视觉特效和音效配置。\n关键�? 属性伤�?缩放伤害,多属性加�?AttributeScaling,伤害计算,暴击系统,泰达米尔E,瑞文R,额外攻击�?法术强度,生命值缩�?DamageScaling,混合伤害\n分类: Damage\n类型: AttributeScaledDamageAction",
+        "parameters": [
+            {
+                "name": "baseDamage",
+                "type": "float",
+                "defaultValue": "75",
+                "label": "Base Damage",
+                "group": "Damage Settings",
+                "infoBox": "基础伤害�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageType",
+                "type": "DamageType",
+                "defaultValue": "Physical",
+                "label": "Damage Type",
+                "group": "Damage Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Physical",
+                    "Magical",
+                    "Pure"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageVariance",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "Damage Variance",
+                "group": "Damage Settings",
+                "infoBox": "伤害浮动范围�?.1表示±10%的伤害浮�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "0.5"
+                }
+            },
+            {
+                "name": "scaleWithLevel",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Scale with Level",
+                "group": "Scaling Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damagePerLevel",
+                "type": "float",
+                "defaultValue": "30",
+                "label": "Damage Per Level",
+                "group": "Scaling Settings",
+                "infoBox": "每级增加的基础伤害",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "attributeScalings",
+                "type": "AttributeScaling[]",
+                "defaultValue": "[2 items]",
+                "label": "Attribute Scalings",
+                "group": "Scaling Settings",
+                "infoBox": "属性缩放配置，可以添加多个不同属性的缩放",
+                "isArray": true,
+                "isEnum": false,
+                "elementType": "AttributeScaling",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "canCritical",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Can Critical",
+                "group": "Critical Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useCasterCritChance",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Use Caster Crit Chance",
+                "group": "Critical Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "fixedCriticalChance",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "Fixed Critical Chance",
+                "group": "Critical Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "criticalMultiplier",
+                "type": "float",
+                "defaultValue": "2",
+                "label": "Critical Multiplier",
+                "group": "Critical Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "defaultValue": "Enemy",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "defaultValue": "5",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageRadius",
+                "type": "float",
+                "defaultValue": "3",
+                "label": "Damage Radius",
+                "group": "Target Settings",
+                "infoBox": "伤害半径�?表示单体伤害",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Damage Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "criticalEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Critical Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectColor",
+                "type": "Color",
+                "defaultValue": "RGBA(1.00, 0.50, 0.00, 1.00)",
+                "label": "Effect Color",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "hitSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Hit Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "criticalSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Critical Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,344 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1891619+08:00",
+    "action": {
+        "typeName": "ProjectileAction",
+        "fullTypeName": "SkillSystem.Actions.ProjectileAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "投射�?,
+        "category": "Damage",
+        "description": "ProjectileAction是一个专业的投射物控制系统，用于创建和管理各种飞行轨迹的投射物。核心功能包括支持直�?Linear)、抛物线(Arc)和追�?Homing)三种弹道类型，每种类型都有专门的参数配置：直线投射物以恒定速度飞行，抛物线投射物可设置弧线高度(Arc Height)，追踪投射物具备追踪强度(Tracking Strength)和最大转向速率(Max Turn Rate)参数。系统还支持穿透机�?Pierce)，可设置穿透次数和伤害衰减，以及完整的视觉效果管理包括投射物预制体、尺寸缩放、拖尾特效和命中特效。典型使用场景包括：DOTA2中的远程英雄普通攻击弹道、魔法飞弹技能如莉娜的光击阵、追踪导弹类技能如矮人直升机的火箭弹幕、抛物线投掷物如炼金术士的不稳定化合物，以及具备穿透能力的箭矢如风行者的大招。与简单移动Action不同，本系统专门针对投射物场景优化，包含完整的碰撞检测、生命周期管理和多弹道类型支持�?,
+        "searchText": "投射物\nProjectileAction是一个专业的投射物控制系统，用于创建和管理各种飞行轨迹的投射物。核心功能包括支持直�?Linear)、抛物线(Arc)和追�?Homing)三种弹道类型，每种类型都有专门的参数配置：直线投射物以恒定速度飞行，抛物线投射物可设置弧线高度(Arc Height)，追踪投射物具备追踪强度(Tracking Strength)和最大转向速率(Max Turn Rate)参数。系统还支持穿透机�?Pierce)，可设置穿透次数和伤害衰减，以及完整的视觉效果管理包括投射物预制体、尺寸缩放、拖尾特效和命中特效。典型使用场景包括：DOTA2中的远程英雄普通攻击弹道、魔法飞弹技能如莉娜的光击阵、追踪导弹类技能如矮人直升机的火箭弹幕、抛物线投掷物如炼金术士的不稳定化合物，以及具备穿透能力的箭矢如风行者的大招。与简单移动Action不同，本系统专门针对投射物场景优化，包含完整的碰撞检测、生命周期管理和多弹道类型支持。\n关键�? 投射�?弹道,Projectile,导弹,飞弹,弹道系统,追踪导弹,抛物�?直线飞行,穿透攻�?远程攻击,弹道效果,飞行�?弹道计算,弹道轨迹,弹道类型,弹道速度,弹道范围,弹道碰撞,弹道特效\n分类: Damage\n类型: ProjectileAction",
+        "parameters": [
+            {
+                "name": "projectileType",
+                "type": "ProjectileType",
+                "defaultValue": "Linear",
+                "label": "Projectile Type",
+                "group": "Projectile Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Linear",
+                    "Arc",
+                    "Homing"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "projectileSpeed",
+                "type": "float",
+                "defaultValue": "1000",
+                "label": "Projectile Speed",
+                "group": "Projectile Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxRange",
+                "type": "float",
+                "defaultValue": "1000",
+                "label": "Max Range",
+                "group": "Projectile Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "projectilePrefab",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Projectile Prefab",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "projectileSize",
+                "type": "float",
+                "defaultValue": "1",
+                "label": "Projectile Size",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0.100000001490116",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "trailEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Trail Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "arcHeight",
+                "type": "float",
+                "defaultValue": "5",
+                "label": "Arc Height",
+                "group": "Ballistic Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "trackingStrength",
+                "type": "float",
+                "defaultValue": "0.8",
+                "label": "Tracking Strength",
+                "group": "Tracking Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "maxTurnRate",
+                "type": "float",
+                "defaultValue": "180",
+                "label": "Max Turn Rate",
+                "group": "Tracking Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "pierceCount",
+                "type": "int",
+                "defaultValue": "0",
+                "label": "Pierce Count",
+                "group": "Pierce Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "pierceDamageReduction",
+                "type": "float",
+                "defaultValue": "0.2",
+                "label": "Pierce Damage Reduction",
+                "group": "Pierce Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "collisionRadius",
+                "type": "float",
+                "defaultValue": "0.5",
+                "label": "Collision Radius",
+                "group": "Collision Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0.100000001490116",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "hitEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Hit Effect",
+                "group": "Collision Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "destroyOnHit",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Destroy on Hit",
+                "group": "Collision Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "launchPosition",
+                "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
+                "label": "Launch Position",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetPosition",
+                "type": "Vector3",
+                "defaultValue": "(0, 0, 10)",
+                "label": "Target Position",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useWorldPosition",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Use World Position",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageOnHit",
+                "type": "float",
+                "defaultValue": "0",
+                "label": "",
+                "group": "",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

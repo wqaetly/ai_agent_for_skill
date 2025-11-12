@@ -84,7 +84,7 @@ namespace SkillSystem.Editor
                     }
                     else
                     {
-                        // 编辑器预览模式，只重置状态
+                        // 编辑器预览模式，只重置状�?
                         action.ResetLifecycleState();
                     }
                     OnActionExited?.Invoke(action);
@@ -154,12 +154,12 @@ namespace SkillSystem.Editor
             {
                 if (!track.enabled) continue;
 
-                // 防御性检查：track.actions 可能在反序列化时为 null
+                // 防御性检查：track.actions 可能在反序列化时�?null
                 if (track.actions == null) continue;
 
                 foreach (var action in track.actions)
                 {
-                    // 防御性检查：action 可能为 null
+                    // 防御性检查：action 可能�?null
                     if (action == null) continue;
 
                     if (action.IsActiveAtFrame(currentFrame))
@@ -268,7 +268,7 @@ namespace SkillSystem.Editor
                     }
                     else
                     {
-                        // 编辑器预览模式，只重置状态
+                        // 编辑器预览模式，只重置状�?
                         action.ResetLifecycleState();
                     }
                 }
@@ -285,12 +285,12 @@ namespace SkillSystem.Editor
             {
                 foreach (var track in currentSkillData.tracks)
                 {
-                    // 防御性检查：track.actions 可能在反序列化时为 null
+                    // 防御性检查：track.actions 可能在反序列化时�?null
                     if (track.actions == null) continue;
 
                     foreach (var action in track.actions)
                     {
-                        // 防御性检查：action 可能为 null
+                        // 防御性检查：action 可能�?null
                         if (action == null) continue;
 
                         action.ResetLifecycleState();

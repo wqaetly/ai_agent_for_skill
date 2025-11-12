@@ -7,8 +7,8 @@ using SkillSystem.Data;
 namespace SkillSystem.Editor
 {
     /// <summary>
-    /// 播放控制器 - 负责技能播放和帧控制
-    /// 职责：播放/暂停控制、帧数控制、播放状态管理、时长管理
+    /// 播放控制�?- 负责技能播放和帧控�?
+    /// 职责：播�?暂停控制、帧数控制、播放状态管理、时长管�?
     /// </summary>
     public class PlaybackController
     {
@@ -181,12 +181,12 @@ namespace SkillSystem.Editor
             // Clamp actions that extend beyond new duration
             foreach (var track in skillData.tracks)
             {
-                // 防御性检查：track.actions 可能在反序列化时为 null
+                // 防御性检查：track.actions 可能在反序列化时�?null
                 if (track.actions == null) continue;
 
                 foreach (var action in track.actions)
                 {
-                    // 防御性检查：action 可能为 null
+                    // 防御性检查：action 可能�?null
                     if (action == null) continue;
 
                     if (action.frame >= newDuration)

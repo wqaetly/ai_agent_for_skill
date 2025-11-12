@@ -37,7 +37,12 @@
       "Bash(done)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:docs.langchain.com)"
+      "WebFetch(domain:docs.langchain.com)",
+      "Bash(timeout 10 bash:*)",
+      "Bash(curl:*)",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force ''webui\\.git''\")",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force ''webui\\.github''\")",
+      "Bash(where:*)"
     ],
     "deny": [],
     "ask": []

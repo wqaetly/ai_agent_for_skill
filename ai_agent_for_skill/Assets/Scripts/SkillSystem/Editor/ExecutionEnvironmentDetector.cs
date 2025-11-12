@@ -8,11 +8,9 @@ namespace SkillSystem.Editor
     /// </summary>
     public static class ExecutionEnvironmentDetector
     {
-        // 调试开关 - 设置为true可以看到详细的执行日志
-        private static readonly bool EnableDebugLog = true;
+        // 调试开�?- 设置为true可以看到详细的执行日�?        private static readonly bool EnableDebugLog = true;
 
-        // 编辑器预览模式开关 - 允许在编辑器中预览技能效果（位移、动画等）
-        // 默认为 false，避免默认托管角色移动，用户可以通过技能编辑器 UI 手动启用
+        // 编辑器预览模式开�?- 允许在编辑器中预览技能效果（位移、动画等�?        // 默认�?false，避免默认托管角色移动，用户可以通过技能编辑器 UI 手动启用
         public static bool EnableEditorPreview = false;
 
         /// <summary>
@@ -36,11 +34,9 @@ namespace SkillSystem.Editor
                 return true;
             }
 
-            // 方案2：运行时模式下的检查
-            if (Application.isPlaying)
+            // 方案2：运行时模式下的检�?            if (Application.isPlaying)
             {
-                // 如果在训练场，需要检查训练场状态
-                if (IsInTrainingGround())
+                // 如果在训练场，需要检查训练场状�?                if (IsInTrainingGround())
                 {
                     bool shouldExecute = ShouldExecuteInTrainingGround();
                     if (EnableDebugLog)
@@ -58,8 +54,7 @@ namespace SkillSystem.Editor
                 return true;
             }
 
-            // 编辑器预览模式检查
-            if (EnableEditorPreview)
+            // 编辑器预览模式检�?            if (EnableEditorPreview)
             {
                 if (EnableDebugLog)
                 {
@@ -82,8 +77,7 @@ namespace SkillSystem.Editor
         /// <returns>如果在训练场运行时应该执行返回true，否则返回false</returns>
         public static bool ShouldExecuteInTrainingGround()
         {
-            // 非运行时不执行
-            if (!Application.isPlaying)
+            // 非运行时不执�?            if (!Application.isPlaying)
                 return false;
 
             // 查找训练场管理器
@@ -102,8 +96,7 @@ namespace SkillSystem.Editor
                 Debug.Log("[ExecutionEnvironmentDetector] 找到训练场管理器，允许执行Action");
             }
 
-            // 检查训练场是否在播放状态
-            // TODO: 可以根据TrainingGroundManager的具体状态字段来判断
+            // 检查训练场是否在播放状�?            // TODO: 可以根据TrainingGroundManager的具体状态字段来判断
             // 例如：return trainingGroundManager.IsPlaying;
             return true;
         }
@@ -126,9 +119,7 @@ namespace SkillSystem.Editor
         }
 
         /// <summary>
-        /// 检查当前场景是否为训练场场景（基于场景名称）
-        /// 这是一个备选的检测方案，作为补充检测手段
-        /// </summary>
+        /// 检查当前场景是否为训练场场景（基于场景名称�?        /// 这是一个备选的检测方案，作为补充检测手�?        /// </summary>
         /// <returns>是训练场场景返回true，否则返回false</returns>
         private static bool IsInTrainingGroundScene()
         {
@@ -141,7 +132,7 @@ namespace SkillSystem.Editor
 
                 if (EnableDebugLog && isTrainingScene)
                 {
-                    Debug.Log($"[ExecutionEnvironmentDetector] 检测到训练场场景: {sceneName}");
+                    Debug.Log($"[ExecutionEnvironmentDetector] 检测到训练场场�? {sceneName}");
                 }
 
                 return isTrainingScene;
@@ -150,7 +141,7 @@ namespace SkillSystem.Editor
             {
                 if (EnableDebugLog)
                 {
-                    Debug.LogWarning($"[ExecutionEnvironmentDetector] 场景名称检测失败: {ex.Message}");
+                    Debug.LogWarning($"[ExecutionEnvironmentDetector] 场景名称检测失�? {ex.Message}");
                 }
                 return false;
             }

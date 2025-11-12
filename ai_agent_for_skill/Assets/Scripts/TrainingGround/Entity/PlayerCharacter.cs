@@ -7,11 +7,11 @@ using SkillSystem.Data;
 namespace TrainingGround.Entity
 {
     /// <summary>
-    /// 玩家角色 - 技能施放者
+    /// 玩家角色 - 技能施放�?
     /// </summary>
     public class PlayerCharacter : MonoBehaviour, IEntity
     {
-        [Header("基础属性")]
+        [Header("基础属�?)]
         [SerializeField] private string entityName = "Player";
         [SerializeField] private float maxHealth = 2000f;
         [SerializeField] private float maxShield = 500f;
@@ -21,7 +21,7 @@ namespace TrainingGround.Entity
         [SerializeField] private float resourceRegenPerSecond = 50f;
         [SerializeField] private float healthRegenPerSecond = 10f;
 
-        [Header("技能系统")]
+        [Header("技能系�?)]
         [SerializeField] private SkillPlayer skillPlayer;
 
         // 实体接口实现
@@ -29,7 +29,7 @@ namespace TrainingGround.Entity
         public Transform Transform => transform;
         public string EntityName => entityName;
 
-        // 生命值
+        // 生命�?
         private float currentHealth;
         public float CurrentHealth => currentHealth;
         public float MaxHealth => maxHealth;
@@ -45,7 +45,7 @@ namespace TrainingGround.Entity
         public float CurrentResource => currentResource;
         public float MaxResource => maxResource;
 
-        // 状态
+        // 状�?
         public bool IsAlive => currentHealth > 0;
         private bool isStunned = false;
         public bool IsStunned => isStunned;
@@ -59,7 +59,7 @@ namespace TrainingGround.Entity
 
         void Awake()
         {
-            // 初始化
+            // 初始�?
             currentHealth = maxHealth;
             currentShield = 0f;
             currentResource = maxResource;
@@ -88,7 +88,7 @@ namespace TrainingGround.Entity
             RegenerateResources();
         }
 
-        #region 伤害和治疗
+        #region 伤害和治�?
 
         public void TakeDamage(float amount, DamageType damageType, Vector3 sourcePosition)
         {
@@ -110,7 +110,7 @@ namespace TrainingGround.Entity
 
             Debug.Log($"[PlayerCharacter] {entityName} took {amount:F1} {damageType} damage (HP: {currentHealth:F0}/{maxHealth:F0})");
 
-            // 死亡检查
+            // 死亡检�?
             if (!IsAlive)
             {
                 OnDeath();
@@ -208,7 +208,7 @@ namespace TrainingGround.Entity
 
         #endregion
 
-        #region 位置和移动
+        #region 位置和移�?
 
         public Vector3 GetPosition()
         {
@@ -228,10 +228,10 @@ namespace TrainingGround.Entity
 
         #endregion
 
-        #region 技能系统
+        #region 技能系�?
 
         /// <summary>
-        /// 消耗资源（蓝量/能量）
+        /// 消耗资源（蓝量/能量�?
         /// </summary>
         public bool ConsumeResource(float amount)
         {
@@ -273,7 +273,7 @@ namespace TrainingGround.Entity
         }
 
         /// <summary>
-        /// 施放技能
+        /// 施放技�?
         /// </summary>
         public void CastSkill(SkillData skillData, IEntity target = null)
         {
@@ -286,12 +286,12 @@ namespace TrainingGround.Entity
             // 设置目标
             currentTarget = target;
 
-            // 加载并播放技能
+            // 加载并播放技�?
             // 注意：需要将SkillData序列化为JSON或直接使用LoadSkillFromJson
             Debug.Log($"[PlayerCharacter] Casting skill: {skillData?.skillName ?? "Unknown"}");
 
-            // TODO: 集成资源消耗检查
-            // 这里需要扩展SkillData支持资源消耗字段
+            // TODO: 集成资源消耗检�?
+            // 这里需要扩展SkillData支持资源消耗字�?
         }
 
         /// <summary>

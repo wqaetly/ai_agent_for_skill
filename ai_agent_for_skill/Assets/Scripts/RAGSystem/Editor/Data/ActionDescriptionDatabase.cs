@@ -1,4 +1,4 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
@@ -7,14 +7,14 @@ using Sirenix.OdinInspector;
 namespace SkillSystem.Editor.Data
 {
     /// <summary>
-    /// Actionæè¿°æ•°æ®åº“ - ScriptableObject
-    /// å­˜å‚¨æ‰€æœ‰Actionçš„æè¿°ä¿¡æ¯ï¼Œä¾›RAGç³»ç»Ÿä½¿ç”¨
+    /// ActionÃèÊöÊı¾İ¿â - ScriptableObject
+    /// ´æ´¢ËùÓĞActionµÄÃèÊöĞÅÏ¢£¬¹©RAGÏµÍ³Ê¹ÓÃ
     /// </summary>
     [CreateAssetMenu(fileName = "ActionDescriptionDatabase", menuName = "Skill System/Action Description Database")]
     public class ActionDescriptionDatabase : ScriptableObject
     {
-        [Title("Actionæè¿°æ•°æ®åº“")]
-        [InfoBox("æ­¤æ•°æ®åº“å­˜å‚¨æ‰€æœ‰Actionçš„æè¿°ä¿¡æ¯\n- AIè‡ªåŠ¨ç”Ÿæˆçš„æè¿°å¯ä»¥è¢«ç­–åˆ’æ‰‹åŠ¨ä¼˜åŒ–\n- ä¿®æ”¹åéœ€è¦é‡æ–°å¯¼å‡ºAction JSONå¹¶é‡å»ºRAGç´¢å¼•", InfoMessageType.Warning)]
+        [Title("ActionÃèÊöÊı¾İ¿â")]
+        [InfoBox("´ËÊı¾İ¿â´æ´¢ËùÓĞActionµÄÃèÊöĞÅÏ¢\n- AI×Ô¶¯Éú³ÉµÄÃèÊö¿ÉÒÔ±»²ß»®ÊÖ¶¯ÓÅ»¯\n- ĞŞ¸ÄºóĞèÒªÖØĞÂµ¼³öAction JSON²¢ÖØ½¨RAGË÷Òı", InfoMessageType.Warning)]
         [ListDrawerSettings(
             ShowIndexLabels = true,
             ListElementLabelName = "typeName",
@@ -25,16 +25,16 @@ namespace SkillSystem.Editor.Data
         [Searchable]
         public List<ActionDescriptionData> actions = new List<ActionDescriptionData>();
 
-        [FoldoutGroup("å…ƒæ•°æ®")] [ReadOnly] public int totalActions;
+        [FoldoutGroup("ÔªÊı¾İ")] [ReadOnly] public int totalActions;
 
-        [FoldoutGroup("å…ƒæ•°æ®")] [ReadOnly] public int aiGeneratedCount;
+        [FoldoutGroup("ÔªÊı¾İ")] [ReadOnly] public int aiGeneratedCount;
 
-        [FoldoutGroup("å…ƒæ•°æ®")] [ReadOnly] public int manuallyEditedCount;
+        [FoldoutGroup("ÔªÊı¾İ")] [ReadOnly] public int manuallyEditedCount;
 
-        [FoldoutGroup("å…ƒæ•°æ®")] [ReadOnly] public string lastUpdateTime;
+        [FoldoutGroup("ÔªÊı¾İ")] [ReadOnly] public string lastUpdateTime;
 
         /// <summary>
-        /// æ ¹æ®ç±»å‹åè·å–æè¿°æ•°æ®
+        /// ¸ù¾İÀàĞÍÃû»ñÈ¡ÃèÊöÊı¾İ
         /// </summary>
         public ActionDescriptionData GetDescriptionByType(string typeName)
         {
@@ -42,14 +42,14 @@ namespace SkillSystem.Editor.Data
         }
 
         /// <summary>
-        /// æ·»åŠ æˆ–æ›´æ–°Actionæè¿°
+        /// Ìí¼Ó»ò¸üĞÂActionÃèÊö
         /// </summary>
         public void AddOrUpdateAction(ActionDescriptionData data)
         {
             var existing = actions.Find(a => a.typeName == data.typeName);
             if (existing != null)
             {
-                // æ›´æ–°ç°æœ‰æ•°æ®
+                // ¸üĞÂÏÖÓĞÊı¾İ
                 existing.displayName = data.displayName;
                 existing.category = data.category;
                 existing.description = data.description;
@@ -58,7 +58,7 @@ namespace SkillSystem.Editor.Data
             }
             else
             {
-                // æ·»åŠ æ–°æ•°æ®
+                // Ìí¼ÓĞÂÊı¾İ
                 actions.Add(data);
             }
 
@@ -66,7 +66,7 @@ namespace SkillSystem.Editor.Data
         }
 
         /// <summary>
-        /// æ›´æ–°å…ƒæ•°æ®
+        /// ¸üĞÂÔªÊı¾İ
         /// </summary>
         public void UpdateMetadata()
         {
@@ -77,7 +77,7 @@ namespace SkillSystem.Editor.Data
         }
 
         /// <summary>
-        /// æ¸…ç†ä¸å­˜åœ¨çš„Action
+        /// ÇåÀí²»´æÔÚµÄAction
         /// </summary>
         public void CleanupMissingActions(List<string> validTypeNames)
         {

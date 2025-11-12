@@ -148,8 +148,7 @@ namespace TrainingGround.UI
 
             if (mainCamera != null)
             {
-                // 平滑旋转，避免突然转向
-                Quaternion targetRotation = mainCamera.transform.rotation;
+                // 平滑旋转，避免突然转�?                Quaternion targetRotation = mainCamera.transform.rotation;
                 healthBarRoot.rotation = Quaternion.Slerp(healthBarRoot.rotation, targetRotation, Time.deltaTime * positionSmoothSpeed);
             }
         }
@@ -248,8 +247,7 @@ namespace TrainingGround.UI
 
             ownsHealthBarRoot = true;
 
-            // 名字文本（在最顶部）
-            GameObject nameObj = CreateUIElement("EntityName", healthBarRoot);
+            // 名字文本（在最顶部�?            GameObject nameObj = CreateUIElement("EntityName", healthBarRoot);
             entityNameText = nameObj.AddComponent<TextMeshProUGUI>();
             entityNameText.fontSize = 12f;
             entityNameText.alignment = TextAlignmentOptions.Center;
@@ -259,15 +257,13 @@ namespace TrainingGround.UI
             entityNameText.overflowMode = TextOverflowModes.Ellipsis;
             SetupRectTransform(nameObj.GetComponent<RectTransform>(), new Vector2(0f, 1f), new Vector2(1f, 1.28f), Vector2.zero, Vector2.zero);
 
-            // 血条背景
-            GameObject healthBg = CreateUIElement("HealthBarBg", healthBarRoot);
+            // 血条背�?            GameObject healthBg = CreateUIElement("HealthBarBg", healthBarRoot);
             var healthBgRect = healthBg.GetComponent<RectTransform>();
             SetupRectTransform(healthBgRect, new Vector2(0f, 0.35f), new Vector2(1f, 0.95f), Vector2.zero, Vector2.zero);
             var healthBgImage = healthBg.AddComponent<Image>();
             healthBgImage.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
 
-            // 血条填充
-            GameObject healthFillObj = CreateUIElement("HealthBarFill", healthBg.transform);
+            // 血条填�?            GameObject healthFillObj = CreateUIElement("HealthBarFill", healthBg.transform);
             healthBarFill = healthFillObj.AddComponent<Image>();
             healthBarFill.color = new Color(0.2f, 0.8f, 0.2f, 1f);
             healthBarFill.type = Image.Type.Filled;
@@ -289,8 +285,7 @@ namespace TrainingGround.UI
             shieldBarFill.fillAmount = 0f;
             SetupRectTransform(shieldFillObj.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            // 血量文字（覆盖在血条上）
-            GameObject healthTextObj = CreateUIElement("HealthText", healthBg.transform);
+            // 血量文字（覆盖在血条上�?            GameObject healthTextObj = CreateUIElement("HealthText", healthBg.transform);
             healthText = healthTextObj.AddComponent<TextMeshProUGUI>();
             healthText.fontSize = 11f;
             healthText.alignment = TextAlignmentOptions.Center;
@@ -302,15 +297,13 @@ namespace TrainingGround.UI
             healthTextOutline.effectDistance = new Vector2(1f, -1f);
             SetupRectTransform(healthTextObj.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            // 资源条背景
-            resourceBarContainer = CreateUIElement("ResourceBar", healthBarRoot);
+            // 资源条背�?            resourceBarContainer = CreateUIElement("ResourceBar", healthBarRoot);
             var resourceBgRect = resourceBarContainer.GetComponent<RectTransform>();
             SetupRectTransform(resourceBgRect, new Vector2(0f, 0.05f), new Vector2(1f, 0.30f), Vector2.zero, Vector2.zero);
             var resourceBgImage = resourceBarContainer.AddComponent<Image>();
             resourceBgImage.color = new Color(0.15f, 0.15f, 0.2f, 0.9f);
 
-            // 资源条填充
-            GameObject resourceFillObj = CreateUIElement("ResourceBarFill", resourceBarContainer.transform);
+            // 资源条填�?            GameObject resourceFillObj = CreateUIElement("ResourceBarFill", resourceBarContainer.transform);
             resourceBarFill = resourceFillObj.AddComponent<Image>();
             resourceBarFill.color = new Color(0.3f, 0.5f, 1f, 1f);
             resourceBarFill.type = Image.Type.Filled;
@@ -319,8 +312,7 @@ namespace TrainingGround.UI
             resourceBarFill.fillAmount = 0f;
             SetupRectTransform(resourceFillObj.GetComponent<RectTransform>(), Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
 
-            // 资源文字（覆盖在资源条上）
-            GameObject resourceTextObj = CreateUIElement("ResourceText", resourceBarContainer.transform);
+            // 资源文字（覆盖在资源条上�?            GameObject resourceTextObj = CreateUIElement("ResourceText", resourceBarContainer.transform);
             resourceText = resourceTextObj.AddComponent<TextMeshProUGUI>();
             resourceText.fontSize = 9f;
             resourceText.alignment = TextAlignmentOptions.Center;

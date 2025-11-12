@@ -7,7 +7,7 @@ using TrainingGround.Entity;
 namespace TrainingGround.UI
 {
     /// <summary>
-    /// Buff图标显示 - 显示实体的所有Buff状态
+    /// Buff图标显示 - 显示实体的所有Buff状�?
     /// </summary>
     public class BuffIconDisplay : MonoBehaviour
     {
@@ -26,7 +26,7 @@ namespace TrainingGround.UI
 
         void Awake()
         {
-            // 如果没有容器，创建一个
+            // 如果没有容器，创建一�?
             if (iconContainer == null)
             {
                 GameObject containerObj = new GameObject("IconContainer");
@@ -43,7 +43,7 @@ namespace TrainingGround.UI
                 layoutGroup.childForceExpandHeight = false;
             }
 
-            // 如果没有预制体，创建默认预制体
+            // 如果没有预制体，创建默认预制�?
             if (buffIconPrefab == null)
             {
                 buffIconPrefab = CreateDefaultBuffIconPrefab();
@@ -97,7 +97,7 @@ namespace TrainingGround.UI
                 }
                 else
                 {
-                    // 创建新图标
+                    // 创建新图�?
                     if (activeIcons.Count < maxVisibleBuffs)
                     {
                         CreateBuffIcon(buff);
@@ -165,7 +165,7 @@ namespace TrainingGround.UI
             var bgImage = prefab.AddComponent<Image>();
             bgImage.color = new Color(0.2f, 0.2f, 0.2f, 0.8f);
 
-            // 堆叠数文本
+            // 堆叠数文�?
             GameObject stackTextObj = new GameObject("StackText");
             stackTextObj.transform.SetParent(prefab.transform, false);
             var stackRect = stackTextObj.AddComponent<RectTransform>();
@@ -180,7 +180,7 @@ namespace TrainingGround.UI
             stackText.color = Color.white;
             stackText.fontStyle = FontStyles.Bold;
 
-            // 倒计时文本
+            // 倒计时文�?
             GameObject timerTextObj = new GameObject("TimerText");
             timerTextObj.transform.SetParent(prefab.transform, false);
             var timerRect = timerTextObj.AddComponent<RectTransform>();
@@ -231,19 +231,19 @@ namespace TrainingGround.UI
         {
             currentBuff = buff;
 
-            // 更新颜色（根据Buff类型）
+            // 更新颜色（根据Buff类型�?
             if (backgroundImage != null)
             {
                 backgroundImage.color = GetBuffTypeColor(buff.buffType);
             }
 
-            // 更新堆叠数
+            // 更新堆叠�?
             if (stackText != null)
             {
                 stackText.text = buff.stackCount > 1 ? buff.stackCount.ToString() : "";
             }
 
-            // 更新倒计时
+            // 更新倒计�?
             if (timerText != null)
             {
                 timerText.text = buff.remainingTime > 0 ? buff.remainingTime.ToString("F0") : "";

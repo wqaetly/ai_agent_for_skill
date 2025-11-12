@@ -1,0 +1,340 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1901737+08:00",
+    "action": {
+        "typeName": "ResourceDependentHealAction",
+        "fullTypeName": "SkillSystem.Actions.ResourceDependentHealAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "资源治疗",
+        "category": "Heal",
+        "description": "ResourceDependentHealAction是一个基于资源消耗的治疗技能脚本，核心功能是消耗指定资源（怒气Rage、法力Mana等）并根据消耗量计算治疗量。该Action支持两种消耗模式：消耗所有资�?ConsumeMode.All)或固定数�?ConsumeMode.Fixed)，治疗类型可选择恢复生命�?Health)或法力�?Mana)。治疗量计算公式为：(基础�?+ 基础法强系数 * 法强) + (每资源�?+ 每资源法强系�?* 法强) * 消耗资源量，支持技能等级缩�?Scale with Level)和法术强度加�?Spell Power)。典型应用场景包括：泰达米尔的Q技能（消耗怒气回血）、吸血术（消耗法力按比例回血）、自残换血技能、能量转化治疗、怒气爆发回血等。与其他治疗Action的关键区别在于治疗量完全依赖于资源消耗量，资源越多治疗效果越强，实现了资源与治疗效果的动态平衡�?,
+        "searchText": "资源治疗\nResourceDependentHealAction是一个基于资源消耗的治疗技能脚本，核心功能是消耗指定资源（怒气Rage、法力Mana等）并根据消耗量计算治疗量。该Action支持两种消耗模式：消耗所有资�?ConsumeMode.All)或固定数�?ConsumeMode.Fixed)，治疗类型可选择恢复生命�?Health)或法力�?Mana)。治疗量计算公式为：(基础�?+ 基础法强系数 * 法强) + (每资源�?+ 每资源法强系�?* 法强) * 消耗资源量，支持技能等级缩�?Scale with Level)和法术强度加�?Spell Power)。典型应用场景包括：泰达米尔的Q技能（消耗怒气回血）、吸血术（消耗法力按比例回血）、自残换血技能、能量转化治疗、怒气爆发回血等。与其他治疗Action的关键区别在于治疗量完全依赖于资源消耗量，资源越多治疗效果越强，实现了资源与治疗效果的动态平衡。\n关键�? 资源治疗,消耗回血,怒气治疗,法力治疗,ResourceDependentHeal,Heal,Rage Heal,Mana Heal,泰达米尔Q,吸血�?Resource Consumption,Spell Power Scaling,Level Scaling\n分类: Heal\n类型: ResourceDependentHealAction",
+        "parameters": [
+            {
+                "name": "resourceType",
+                "type": "ResourceType",
+                "defaultValue": "Rage",
+                "label": "Resource Type",
+                "group": "Resource Settings",
+                "infoBox": "要消耗的资源类型",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Health",
+                    "Mana",
+                    "Rage",
+                    "Gold",
+                    "Experience"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "consumeMode",
+                "type": "ConsumeMode",
+                "defaultValue": "All",
+                "label": "Consume Mode",
+                "group": "Resource Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "All",
+                    "Fixed"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "fixedConsumeAmount",
+                "type": "float",
+                "defaultValue": "50",
+                "label": "Fixed Amount",
+                "group": "Resource Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healType",
+                "type": "HealType",
+                "defaultValue": "Health",
+                "label": "Heal Type",
+                "group": "Heal Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Health",
+                    "Mana",
+                    "Both"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "baseHeal",
+                "type": "float",
+                "defaultValue": "30",
+                "label": "Base Heal",
+                "group": "Heal Settings",
+                "infoBox": "基础治疗量（不依赖资源消耗）",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "perResourceHeal",
+                "type": "float",
+                "defaultValue": "0.5",
+                "label": "Per Resource Heal",
+                "group": "Heal Settings",
+                "infoBox": "每单位消耗资源的治疗�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "scaleWithLevel",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Scale with Level",
+                "group": "Scaling Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "baseHealPerLevel",
+                "type": "float",
+                "defaultValue": "10",
+                "label": "Base Heal Per Level",
+                "group": "Scaling Settings",
+                "infoBox": "每级基础治疗量增加�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "perResourceHealPerLevel",
+                "type": "float",
+                "defaultValue": "0.45",
+                "label": "Per Resource Heal Per Level",
+                "group": "Scaling Settings",
+                "infoBox": "每级每资源治疗量增加�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "baseSpellPowerRatio",
+                "type": "float",
+                "defaultValue": "0.3",
+                "label": "Base Spell Power Ratio",
+                "group": "Spell Power Settings",
+                "infoBox": "基础治疗的法强系数（例如0.3表示30%法强�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "5"
+                }
+            },
+            {
+                "name": "perResourceSpellPowerRatio",
+                "type": "float",
+                "defaultValue": "0.012",
+                "label": "Per Resource Spell Power Ratio",
+                "group": "Spell Power Settings",
+                "infoBox": "每资源治疗的法强系数（例�?.012表示1.2%法强�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "0",
+                    "max": "1"
+                }
+            },
+            {
+                "name": "healEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Heal Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "resourceConsumeEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Resource Consume Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectColor",
+                "type": "Color",
+                "defaultValue": "RGBA(1.00, 0.30, 0.30, 1.00)",
+                "label": "Effect Color",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "healSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Heal Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "resourceConsumeSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Resource Consume Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "defaultValue": "Self",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

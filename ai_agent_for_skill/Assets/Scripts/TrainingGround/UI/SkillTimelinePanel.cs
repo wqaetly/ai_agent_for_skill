@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace TrainingGround.UI
 {
     /// <summary>
-    /// 技能时间轴面板 - 显示技能播放进度和Action时间点
+    /// 技能时间轴面板 - 显示技能播放进度和Action时间�?
     /// </summary>
     public class SkillTimelinePanel : MonoBehaviour
     {
@@ -37,7 +37,7 @@ namespace TrainingGround.UI
                 canvasGroup = gameObject.AddComponent<CanvasGroup>();
             }
 
-            // 如果没有SkillPlayer，尝试查找
+            // 如果没有SkillPlayer，尝试查�?
             if (targetSkillPlayer == null)
             {
                 targetSkillPlayer = FindObjectOfType<SkillPlayer>();
@@ -66,7 +66,7 @@ namespace TrainingGround.UI
 
         void Update()
         {
-            // 更新进度条
+            // 更新进度�?
             UpdateProgressBar();
 
             // 自动隐藏逻辑
@@ -92,7 +92,7 @@ namespace TrainingGround.UI
             canvasGroup.alpha = 1f;
             hideTimer = 0f;
 
-            // 设置技能名称
+            // 设置技能名�?
             if (skillNameText != null)
             {
                 skillNameText.text = skillData.skillName;
@@ -115,7 +115,7 @@ namespace TrainingGround.UI
             // 清理Action标记
             ClearActionMarkers();
 
-            // 重置进度条
+            // 重置进度�?
             if (progressSlider != null)
             {
                 progressSlider.value = 0;
@@ -124,7 +124,7 @@ namespace TrainingGround.UI
 
         private void OnFrameChanged(int currentFrame)
         {
-            // 在UpdateProgressBar中处理
+            // 在UpdateProgressBar中处�?
         }
 
         private void UpdateProgressBar()
@@ -135,7 +135,7 @@ namespace TrainingGround.UI
             int currentFrame = targetSkillPlayer.CurrentFrame;
             int totalFrames = targetSkillPlayer.CurrentSkillData.totalDuration;
 
-            // 更新进度条
+            // 更新进度�?
             if (progressSlider != null)
             {
                 progressSlider.value = currentFrame;
@@ -182,7 +182,7 @@ namespace TrainingGround.UI
             float normalizedPosition = (float)action.frame / totalFrames;
             rectTransform.anchorMin = new Vector2(normalizedPosition, 0f);
             rectTransform.anchorMax = new Vector2(normalizedPosition, 1f);
-            rectTransform.sizeDelta = new Vector2(2f, 0f); // 2像素宽的线
+            rectTransform.sizeDelta = new Vector2(2f, 0f); // 2像素宽的�?
             rectTransform.anchoredPosition = Vector2.zero;
 
             // 添加图片
@@ -229,7 +229,7 @@ namespace TrainingGround.UI
 
         public void SetTargetSkillPlayer(SkillPlayer player)
         {
-            // 取消旧订阅
+            // 取消旧订�?
             if (targetSkillPlayer != null)
             {
                 targetSkillPlayer.OnSkillStarted -= OnSkillStarted;
@@ -239,7 +239,7 @@ namespace TrainingGround.UI
 
             targetSkillPlayer = player;
 
-            // 订阅新事件
+            // 订阅新事�?
             if (targetSkillPlayer != null && enabled)
             {
                 targetSkillPlayer.OnSkillStarted += OnSkillStarted;

@@ -1,0 +1,187 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1876506+08:00",
+    "action": {
+        "typeName": "MovementAction",
+        "fullTypeName": "SkillSystem.Actions.MovementAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "位移",
+        "category": "Movement",
+        "description": "MovementAction是Unity技能系统中专门处理角色位置移动的核心组件，支持四种不同的移动模式：线性移�?Linear)实现直线平滑移动、弧线移�?Arc)创建抛物线跳跃效果、曲线移�?Curve)通过自定义动画曲线控制移动轨迹、瞬�?Instant)实现瞬间传送。该Action提供丰富的配置参数，包括移动速度、目标位置（支持相对坐标和绝对坐标）、弧线高度、朝向控制等。关键特性包括允许移动取消、忽略碰撞检测、自动面向移动方向等。适用于DOTA2和LOL中的各类位移技能，如闪�?Blink)、跳�?Jump Attack)、冲�?Charge)、冲�?Dash)、突�?Lunge)等。与其他Action的区别在于纯粹处理位置移动，不包含任何伤害计算或控制效果，可以与其他伤害、视觉效果Action组合使用�?,
+        "searchText": "位移\nMovementAction是Unity技能系统中专门处理角色位置移动的核心组件，支持四种不同的移动模式：线性移�?Linear)实现直线平滑移动、弧线移�?Arc)创建抛物线跳跃效果、曲线移�?Curve)通过自定义动画曲线控制移动轨迹、瞬�?Instant)实现瞬间传送。该Action提供丰富的配置参数，包括移动速度、目标位置（支持相对坐标和绝对坐标）、弧线高度、朝向控制等。关键特性包括允许移动取消、忽略碰撞检测、自动面向移动方向等。适用于DOTA2和LOL中的各类位移技能，如闪�?Blink)、跳�?Jump Attack)、冲�?Charge)、冲�?Dash)、突�?Lunge)等。与其他Action的区别在于纯粹处理位置移动，不包含任何伤害计算或控制效果，可以与其他伤害、视觉效果Action组合使用。\n关键�? 位移,移动,movement,teleport,闪现,blink,冲刺,dash,跳跃,jump,冲锋,charge,突进,lunge,弧线移动,arc movement,线性移�?linear movement,曲线移动,curve movement,瞬间传�?instant teleport\n分类: Movement\n类型: MovementAction",
+        "parameters": [
+            {
+                "name": "movementType",
+                "type": "MovementType",
+                "defaultValue": "Linear",
+                "label": "Movement Type",
+                "group": "Movement Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Linear",
+                    "Arc",
+                    "Curve",
+                    "Instant",
+                    "Dash",
+                    "Teleport",
+                    "TowardsTarget",
+                    "Knockback"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "movementSpeed",
+                "type": "float",
+                "defaultValue": "500",
+                "label": "Movement Speed",
+                "group": "Movement Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetPosition",
+                "type": "Vector3",
+                "defaultValue": "(0, 0, 0)",
+                "label": "Target Position",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useRelativePosition",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Use Relative Position",
+                "group": "Target Settings",
+                "infoBox": "如果为true，目标位置相对于当前位置",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "arcHeight",
+                "type": "float",
+                "defaultValue": "2",
+                "label": "Arc Height",
+                "group": "Arc Movement",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "movementCurve",
+                "type": "AnimationCurve",
+                "defaultValue": "UnityEngine.AnimationCurve",
+                "label": "Movement Curve",
+                "group": "Curve Movement",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "faceMovementDirection",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Face Movement Direction",
+                "group": "Advanced Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "allowMovementCancel",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Allow Movement Cancel",
+                "group": "Advanced Settings",
+                "infoBox": "允许被其他行为打断移�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "ignoreCollision",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Ignore Collision",
+                "group": "Advanced Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

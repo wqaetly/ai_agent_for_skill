@@ -1,0 +1,1458 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-11-10T18:54:36.508530",
+    "last_updated": "2025-11-11T11:54:17.482255",
+    "total_files": 0,
+    "total_actions": 0
+  },
+  "files": {
+    "..\\..\\ai_agent_for_skill\\Assets\\Skills\\FlameShockwave.json": {
+      "file_hash": "256ab7359a714e89cdf748c4611cc714",
+      "skill_name": "Flame Shockwave",
+      "total_actions": 13,
+      "last_modified": "2025-10-27T15:50:38.352463",
+      "tracks": [
+        {
+          "track_name": "Animation Track",
+          "track_index": 0,
+          "track_path": "tracks.$rcontent[0]",
+          "actions": [
+            {
+              "action_type": "AnimationAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[0]",
+              "line_number": 24,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "CastSpell",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.2,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?- Êí≠Êîæ: CastSpell"
+            },
+            {
+              "action_type": "AnimationAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[1]",
+              "line_number": 35,
+              "frame": 30,
+              "duration": 60,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "ChannelSpell",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?0Â∏?- ÊåÅÁª≠60Â∏?- Êí≠Êîæ: ChannelSpell"
+            }
+          ]
+        },
+        {
+          "track_name": "Movement Track",
+          "track_index": 1,
+          "track_path": "tracks.$rcontent[1]",
+          "actions": [
+            {
+              "action_type": "ControlAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[0]",
+              "line_number": 59,
+              "frame": 0,
+              "duration": 45,
+              "parameters": {
+                "enabled": true,
+                "controlType": 0,
+                "intensity": 1.0,
+                "affectedControls": 15
+              },
+              "summary": "[Movement Track] - Á¨?Â∏?- ÊåÅÁª≠45Â∏?- 0 0Áß?
+            },
+            {
+              "action_type": "MovementAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[1]",
+              "line_number": 69,
+              "frame": 45,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "movementType": 2,
+                "direction": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                "speed": 8.0,
+                "distance": 4.0
+              },
+              "summary": "[Movement Track] - Á¨?5Â∏?- ÊåÅÁª≠30Â∏?- ÁßªÂä®ÈÄüÂ∫¶8.0"
+            }
+          ]
+        },
+        {
+          "track_name": "Effect Track",
+          "track_index": 2,
+          "track_path": "tracks.$rcontent[2]",
+          "actions": [
+            {
+              "action_type": "ProjectileAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[0]",
+              "line_number": 98,
+              "frame": 45,
+              "duration": 1,
+              "parameters": {
+                "enabled": true,
+                "projectileType": 1,
+                "speed": 15.0,
+                "maxDistance": 12.0,
+                "piercing": true,
+                "damage": 80,
+                "effectName": "FlameProjectile"
+              },
+              "summary": "[Effect Track] - Á¨?5Â∏?- ÊåÅÁª≠1Â∏?
+            },
+            {
+              "action_type": "AreaOfEffectAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[1]",
+              "line_number": 111,
+              "frame": 75,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "shape": 1,
+                "radius": 6.0,
+                "position": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 8
+                },
+                "damage": 120,
+                "tickInterval": 5,
+                "effectName": "FlameExplosion"
+              },
+              "summary": "[Effect Track] - Á¨?5Â∏?- ÊåÅÁª≠30Â∏?
+            },
+            {
+              "action_type": "BuffAction",
+              "action_index": 2,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[2]",
+              "line_number": 129,
+              "frame": 75,
+              "duration": 90,
+              "parameters": {
+                "enabled": true,
+                "buffType": 2,
+                "damagePerTick": 15,
+                "tickInterval": 30,
+                "stackable": true,
+                "maxStacks": 3,
+                "effectName": "BurnDebuff"
+              },
+              "summary": "[Effect Track] - Á¨?5Â∏?- ÊåÅÁª≠90Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Audio Track",
+          "track_index": 3,
+          "track_path": "tracks.$rcontent[3]",
+          "actions": [
+            {
+              "action_type": "AudioAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[0]",
+              "line_number": 155,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "flame_cast",
+                "volume": 0.8,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 5.0,
+                "maxDistance": 20.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.1,
+                "fadeOutTime": 0.2,
+                "priority": 200
+              },
+              "summary": "[Audio Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?
+            },
+            {
+              "action_type": "AudioAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[1]",
+              "line_number": 179,
+              "frame": 45,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "flame_whoosh",
+                "volume": 0.9,
+                "pitch": 1.2,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 2
+                },
+                "minDistance": 3.0,
+                "maxDistance": 15.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.05,
+                "fadeOutTime": 0.3,
+                "priority": 180
+              },
+              "summary": "[Audio Track] - Á¨?5Â∏?- ÊåÅÁª≠30Â∏?
+            },
+            {
+              "action_type": "AudioAction",
+              "action_index": 2,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[2]",
+              "line_number": 203,
+              "frame": 75,
+              "duration": 45,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "flame_explosion",
+                "volume": 1.0,
+                "pitch": 0.9,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 8
+                },
+                "minDistance": 8.0,
+                "maxDistance": 30.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.5,
+                "priority": 220
+              },
+              "summary": "[Audio Track] - Á¨?5Â∏?- ÊåÅÁª≠45Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Camera Track",
+          "track_index": 4,
+          "track_path": "tracks.$rcontent[4]",
+          "actions": [
+            {
+              "action_type": "CameraAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[4].actions.$rcontent[0]",
+              "line_number": 240,
+              "frame": 45,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "shakeIntensity": 0.5,
+                "zoomScale": 1.0,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "rotationOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "fadeInTime": 0.1,
+                "fadeOutTime": 0.3,
+                "shakeFrequency": 15.0,
+                "followCaster": true,
+                "affectMainCamera": true
+              },
+              "summary": "[Camera Track] - Á¨?5Â∏?- ÊåÅÁª≠30Â∏?
+            },
+            {
+              "action_type": "CameraAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[4].actions.$rcontent[1]",
+              "line_number": 266,
+              "frame": 75,
+              "duration": 15,
+              "parameters": {
+                "enabled": true,
+                "shakeIntensity": 0.8,
+                "zoomScale": 1.2,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0.5
+                },
+                "rotationOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.5,
+                "shakeFrequency": 20.0,
+                "followCaster": false,
+                "affectMainCamera": true
+              },
+              "summary": "[Camera Track] - Á¨?5Â∏?- ÊåÅÁª≠15Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Resource Track",
+          "track_index": 5,
+          "track_path": "tracks.$rcontent[5]",
+          "actions": [
+            {
+              "action_type": "ResourceAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[5].actions.$rcontent[0]",
+              "line_number": 305,
+              "frame": 0,
+              "duration": 1,
+              "parameters": {
+                "enabled": true,
+                "resourceType": 0,
+                "amount": -100,
+                "percentage": false
+              },
+              "summary": "[Resource Track] - Á¨?Â∏?- ÊåÅÁª≠1Â∏?
+            }
+          ]
+        }
+      ]
+    },
+    "..\\..\\ai_agent_for_skill\\Assets\\Skills\\RivenBrokenWings.json": {
+      "file_hash": "1cad6aa68527b35da7a4316f4062fd5d",
+      "skill_name": "Broken Wings",
+      "total_actions": 14,
+      "last_modified": "2025-11-07T12:12:59.221476",
+      "tracks": [
+        {
+          "track_name": "Animation Track",
+          "track_index": 0,
+          "track_path": "tracks.$rcontent[0]",
+          "actions": [
+            {
+              "action_type": "AnimationAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[0]",
+              "line_number": 24,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "RivenQ1",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?- Êí≠Êîæ: RivenQ1"
+            },
+            {
+              "action_type": "AnimationAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[1]",
+              "line_number": 35,
+              "frame": 100,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "RivenQ2",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?00Â∏?- ÊåÅÁª≠30Â∏?- Êí≠Êîæ: RivenQ2"
+            },
+            {
+              "action_type": "AnimationAction",
+              "action_index": 2,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[2]",
+              "line_number": 46,
+              "frame": 200,
+              "duration": 40,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "RivenQ3",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?00Â∏?- ÊåÅÁª≠40Â∏?- Êí≠Êîæ: RivenQ3"
+            }
+          ]
+        },
+        {
+          "track_name": "Movement Track",
+          "track_index": 1,
+          "track_path": "tracks.$rcontent[1]",
+          "actions": [
+            {
+              "action_type": "MovementAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[0]",
+              "line_number": 70,
+              "frame": 5,
+              "duration": 20,
+              "parameters": {
+                "enabled": true,
+                "movementType": 1,
+                "movementSpeed": 10.0,
+                "targetPosition": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 3.5
+                },
+                "useRelativePosition": true,
+                "faceMovementDirection": true,
+                "allowMovementCancel": false,
+                "ignoreCollision": false
+              },
+              "summary": "[Movement Track] - Á¨?Â∏?- ÊåÅÁª≠20Â∏?- ÁßªÂä®ÈÄüÂ∫¶?"
+            },
+            {
+              "action_type": "MovementAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[1]",
+              "line_number": 89,
+              "frame": 105,
+              "duration": 20,
+              "parameters": {
+                "enabled": true,
+                "movementType": 1,
+                "movementSpeed": 10.0,
+                "targetPosition": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 3.5
+                },
+                "useRelativePosition": true,
+                "faceMovementDirection": true,
+                "allowMovementCancel": false,
+                "ignoreCollision": false
+              },
+              "summary": "[Movement Track] - Á¨?05Â∏?- ÊåÅÁª≠20Â∏?- ÁßªÂä®ÈÄüÂ∫¶?"
+            },
+            {
+              "action_type": "MovementAction",
+              "action_index": 2,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[2]",
+              "line_number": 108,
+              "frame": 205,
+              "duration": 25,
+              "parameters": {
+                "enabled": true,
+                "movementType": 1,
+                "movementSpeed": 12.0,
+                "targetPosition": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 4.0
+                },
+                "useRelativePosition": true,
+                "arcHeight": 2.0,
+                "faceMovementDirection": true,
+                "allowMovementCancel": false,
+                "ignoreCollision": false
+              },
+              "summary": "[Movement Track] - Á¨?05Â∏?- ÊåÅÁª≠25Â∏?- ÁßªÂä®ÈÄüÂ∫¶?"
+            }
+          ]
+        },
+        {
+          "track_name": "Damage Track",
+          "track_index": 2,
+          "track_path": "tracks.$rcontent[2]",
+          "actions": [
+            {
+              "action_type": "DamageAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[0]",
+              "line_number": 141,
+              "frame": 15,
+              "duration": 5,
+              "parameters": {
+                "enabled": true,
+                "baseDamage": 45,
+                "damageType": 0,
+                "scalingFactor": 0.65,
+                "criticalChance": 0.0,
+                "criticalMultiplier": 1.0,
+                "penetration": 0,
+                "range": 2.0,
+                "targetType": 1,
+                "ignoreArmor": false
+              },
+              "summary": "[Damage Track] - Á¨?5Â∏?- ÊåÅÁª≠5Â∏?- ÈÄ†Êàê45ÁÇ?‰º§ÂÆ≥"
+            },
+            {
+              "action_type": "DamageAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[1]",
+              "line_number": 157,
+              "frame": 115,
+              "duration": 5,
+              "parameters": {
+                "enabled": true,
+                "baseDamage": 45,
+                "damageType": 0,
+                "scalingFactor": 0.65,
+                "targetType": 1,
+                "criticalChance": 0.0,
+                "criticalMultiplier": 1.0,
+                "penetration": 0,
+                "range": 2.0,
+                "ignoreArmor": false
+              },
+              "summary": "[Damage Track] - Á¨?15Â∏?- ÊåÅÁª≠5Â∏?- ÈÄ†Êàê45ÁÇ?‰º§ÂÆ≥"
+            },
+            {
+              "action_type": "DamageAction",
+              "action_index": 2,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[2]",
+              "line_number": 173,
+              "frame": 220,
+              "duration": 5,
+              "parameters": {
+                "enabled": true,
+                "baseDamage": 45,
+                "damageType": 0,
+                "scalingFactor": 0.65,
+                "targetType": 2,
+                "criticalChance": 0.0,
+                "criticalMultiplier": 1.0,
+                "penetration": 0,
+                "range": 3.0,
+                "ignoreArmor": false
+              },
+              "summary": "[Damage Track] - Á¨?20Â∏?- ÊåÅÁª≠5Â∏?- ÈÄ†Êàê45ÁÇ?‰º§ÂÆ≥"
+            }
+          ]
+        },
+        {
+          "track_name": "Area Effect Track",
+          "track_index": 3,
+          "track_path": "tracks.$rcontent[3]",
+          "actions": [
+            {
+              "action_type": "AreaOfEffectAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[0]",
+              "line_number": 202,
+              "frame": 220,
+              "duration": 10,
+              "parameters": {
+                "enabled": true,
+                "shape": 0,
+                "radius": 3.0,
+                "position": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 4
+                },
+                "damage": 0,
+                "tickInterval": 1,
+                "effectName": "RivenQ3Area"
+              },
+              "summary": "[Area Effect Track] - Á¨?20Â∏?- ÊåÅÁª≠10Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Control Track",
+          "track_index": 4,
+          "track_path": "tracks.$rcontent[4]",
+          "actions": [
+            {
+              "action_type": "ControlAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[4].actions.$rcontent[0]",
+              "line_number": 233,
+              "frame": 220,
+              "duration": 23,
+              "parameters": {
+                "enabled": true,
+                "controlType": 2,
+                "intensity": 1.0,
+                "affectedControls": 15
+              },
+              "summary": "[Control Track] - Á¨?20Â∏?- ÊåÅÁª≠23Â∏?- 2 0Áß?
+            }
+          ]
+        },
+        {
+          "track_name": "Audio Track",
+          "track_index": 5,
+          "track_path": "tracks.$rcontent[5]",
+          "actions": [
+            {
+              "action_type": "AudioAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[5].actions.$rcontent[0]",
+              "line_number": 256,
+              "frame": 5,
+              "duration": 20,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "riven_q1",
+                "volume": 0.8,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 3.0,
+                "maxDistance": 15.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.05,
+                "fadeOutTime": 0.1,
+                "priority": 180
+              },
+              "summary": "[Audio Track] - Á¨?Â∏?- ÊåÅÁª≠20Â∏?
+            },
+            {
+              "action_type": "AudioAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[5].actions.$rcontent[1]",
+              "line_number": 280,
+              "frame": 105,
+              "duration": 20,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "riven_q2",
+                "volume": 0.8,
+                "pitch": 1.1,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 3.0,
+                "maxDistance": 15.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.05,
+                "fadeOutTime": 0.1,
+                "priority": 180
+              },
+              "summary": "[Audio Track] - Á¨?05Â∏?- ÊåÅÁª≠20Â∏?
+            },
+            {
+              "action_type": "AudioAction",
+              "action_index": 2,
+              "json_path": "tracks.$rcontent[5].actions.$rcontent[2]",
+              "line_number": 304,
+              "frame": 205,
+              "duration": 35,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "riven_q3",
+                "volume": 1.0,
+                "pitch": 0.9,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 5.0,
+                "maxDistance": 20.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.3,
+                "priority": 200
+              },
+              "summary": "[Audio Track] - Á¨?05Â∏?- ÊåÅÁª≠35Â∏?
+            }
+          ]
+        }
+      ]
+    },
+    "..\\..\\ai_agent_for_skill\\Assets\\Skills\\SionSoulFurnace.json": {
+      "file_hash": "831e9f99168b8eab8cbfe5d78a805da9",
+      "skill_name": "Soul Furnace",
+      "total_actions": 5,
+      "last_modified": "2025-10-27T20:00:10.785888",
+      "tracks": [
+        {
+          "track_name": "Shield Track",
+          "track_index": 0,
+          "track_path": "tracks.$rcontent[0]",
+          "actions": [
+            {
+              "action_type": "AttributeScaledShieldAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[0]",
+              "line_number": 24,
+              "frame": 0,
+              "duration": 180,
+              "parameters": {
+                "enabled": true,
+                "baseShieldAmount": 60.0,
+                "shieldDuration": 6.0,
+                "scaleWithLevel": true,
+                "shieldPerLevel": 15.0,
+                "spellPowerRatio": 0.4,
+                "healthRatio": 0.08,
+                "healthRatioPerLevel": 0.02,
+                "useCurrentHealth": true,
+                "shieldType": 0,
+                "blockPhysicalDamage": true,
+                "blockMagicalDamage": true,
+                "blockPureDamage": false,
+                "refreshable": true,
+                "breakOnSpellCast": false,
+                "breakOnAttack": false,
+                "breakOnMovement": false,
+                "shieldEffect": null,
+                "breakEffect": null,
+                "effectColor": {
+                  "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 0.5,
+                  "g": 0.8,
+                  "b": 1.0,
+                  "a": 0.6
+                },
+                "shieldApplySound": null,
+                "shieldBreakSound": null,
+                "targetFilter": 0
+              },
+              "summary": "[Shield Track] - Á¨?Â∏?- ÊåÅÁª≠180Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Explosion Damage Track",
+          "track_index": 1,
+          "track_path": "tracks.$rcontent[1]",
+          "actions": [
+            {
+              "action_type": "UnitTypeCappedDamageAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[0]",
+              "line_number": 72,
+              "frame": 90,
+              "duration": 1,
+              "parameters": {
+                "enabled": true,
+                "baseDamage": 40.0,
+                "damageType": 1,
+                "scaleWithLevel": true,
+                "damagePerLevel": 25.0,
+                "spellPowerRatio": 0.4,
+                "maxHealthRatio": 0.14,
+                "useTargetMaxHealth": false,
+                "damageCaps": {
+                  "$id": 9,
+                  "$type": "9|SkillSystem.Actions.UnitTypeDamageCap[], Assembly-CSharp",
+                  "$rlength": 2,
+                  "$rcontent": [
+                    {
+                      "$type": "10|SkillSystem.Actions.UnitTypeDamageCap, Assembly-CSharp",
+                      "unitType": 1,
+                      "damageCap": 400.0
+                    },
+                    {
+                      "$type": "10|SkillSystem.Actions.UnitTypeDamageCap, Assembly-CSharp",
+                      "unitType": 2,
+                      "damageCap": 400.0
+                    }
+                  ]
+                },
+                "targetFilter": 1,
+                "maxTargets": 10,
+                "damageRadius": 5.0,
+                "damageEffect": null,
+                "cappedDamageEffect": null,
+                "effectColor": {
+                  "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 1.0,
+                  "g": 0.3,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "hitSound": null,
+                "cappedHitSound": null
+              },
+              "summary": "[Explosion Damage Track] - Á¨?0Â∏?- ÊåÅÁª≠1Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Animation Track",
+          "track_index": 2,
+          "track_path": "tracks.$rcontent[2]",
+          "actions": [
+            {
+              "action_type": "AnimationAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[0]",
+              "line_number": 130,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "SionSoulFurnace",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?- Êí≠Êîæ: SionSoulFurnace"
+            }
+          ]
+        },
+        {
+          "track_name": "Audio Track",
+          "track_index": 3,
+          "track_path": "tracks.$rcontent[3]",
+          "actions": [
+            {
+              "action_type": "AudioAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[0]",
+              "line_number": 154,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "sion_soul_furnace_cast",
+                "volume": 0.9,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "17|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 3.0,
+                "maxDistance": 15.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.2,
+                "priority": 180
+              },
+              "summary": "[Audio Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?
+            },
+            {
+              "action_type": "AudioAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[1]",
+              "line_number": 178,
+              "frame": 90,
+              "duration": 15,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "sion_soul_furnace_explosion",
+                "volume": 1.0,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "17|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 5.0,
+                "maxDistance": 20.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.3,
+                "priority": 200
+              },
+              "summary": "[Audio Track] - Á¨?0Â∏?- ÊåÅÁª≠15Â∏?
+            }
+          ]
+        }
+      ]
+    },
+    "..\\..\\ai_agent_for_skill\\Assets\\Skills\\SionSoulFurnaceV2.json": {
+      "file_hash": "435e9b6c6eb1134091ed82a56e03a7c5",
+      "skill_name": "Soul Furnace V2 (Input Controlled)",
+      "total_actions": 6,
+      "last_modified": "2025-10-27T20:13:22.459329",
+      "tracks": [
+        {
+          "track_name": "Shield Track",
+          "track_index": 0,
+          "track_path": "tracks.$rcontent[0]",
+          "actions": [
+            {
+              "action_type": "AttributeScaledShieldAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[0]",
+              "line_number": 24,
+              "frame": 0,
+              "duration": 180,
+              "parameters": {
+                "enabled": true,
+                "baseShieldAmount": 60.0,
+                "shieldDuration": 6.0,
+                "scaleWithLevel": true,
+                "shieldPerLevel": 15.0,
+                "spellPowerRatio": 0.4,
+                "healthRatio": 0.08,
+                "healthRatioPerLevel": 0.02,
+                "useCurrentHealth": true,
+                "shieldType": 0,
+                "blockPhysicalDamage": true,
+                "blockMagicalDamage": true,
+                "blockPureDamage": false,
+                "refreshable": true,
+                "breakOnSpellCast": false,
+                "breakOnAttack": false,
+                "breakOnMovement": false,
+                "shieldEffect": null,
+                "breakEffect": null,
+                "effectColor": {
+                  "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 0.5,
+                  "g": 0.8,
+                  "b": 1.0,
+                  "a": 0.6
+                },
+                "shieldApplySound": null,
+                "shieldBreakSound": null,
+                "targetFilter": 0
+              },
+              "summary": "[Shield Track] - Á¨?Â∏?- ÊåÅÁª≠180Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Input Detection Track",
+          "track_index": 1,
+          "track_path": "tracks.$rcontent[1]",
+          "actions": [
+            {
+              "action_type": "InputDetectionAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[0]",
+              "line_number": 72,
+              "frame": 90,
+              "duration": 90,
+              "parameters": {
+                "enabled": true,
+                "inputKey": 87,
+                "detectionType": 0,
+                "alternativeKeys": [],
+                "actionMode": 0,
+                "targetFrame": 180,
+                "stopSkill": false,
+                "conditionName": "SionWExplosion",
+                "consumeInput": true,
+                "cooldownFrames": 0,
+                "showInputPrompt": true,
+                "promptText": "Press W to explode",
+                "inputEffect": null,
+                "inputSound": null,
+                "debugMode": true
+              },
+              "summary": "[Input Detection Track] - Á¨?0Â∏?- ÊåÅÁª≠90Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Explosion Damage Track",
+          "track_index": 2,
+          "track_path": "tracks.$rcontent[2]",
+          "actions": [
+            {
+              "action_type": "UnitTypeCappedDamageAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[0]",
+              "line_number": 106,
+              "frame": 180,
+              "duration": 1,
+              "parameters": {
+                "enabled": true,
+                "baseDamage": 40.0,
+                "damageType": 1,
+                "scaleWithLevel": true,
+                "damagePerLevel": 25.0,
+                "spellPowerRatio": 0.4,
+                "maxHealthRatio": 0.14,
+                "useTargetMaxHealth": false,
+                "damageCaps": {
+                  "$id": 12,
+                  "$type": "12|SkillSystem.Actions.UnitTypeDamageCap[], Assembly-CSharp",
+                  "$rlength": 2,
+                  "$rcontent": [
+                    {
+                      "$type": "13|SkillSystem.Actions.UnitTypeDamageCap, Assembly-CSharp",
+                      "unitType": 1,
+                      "damageCap": 400.0
+                    },
+                    {
+                      "$type": "13|SkillSystem.Actions.UnitTypeDamageCap, Assembly-CSharp",
+                      "unitType": 2,
+                      "damageCap": 400.0
+                    }
+                  ]
+                },
+                "targetFilter": 1,
+                "maxTargets": 10,
+                "damageRadius": 5.0,
+                "damageEffect": null,
+                "cappedDamageEffect": null,
+                "effectColor": {
+                  "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 1.0,
+                  "g": 0.3,
+                  "b": 0.0,
+                  "a": 1.0
+                },
+                "hitSound": null,
+                "cappedHitSound": null
+              },
+              "summary": "[Explosion Damage Track] - Á¨?80Â∏?- ÊåÅÁª≠1Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Animation Track",
+          "track_index": 3,
+          "track_path": "tracks.$rcontent[3]",
+          "actions": [
+            {
+              "action_type": "AnimationAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[0]",
+              "line_number": 164,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "SionSoulFurnace",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?- Êí≠Êîæ: SionSoulFurnace"
+            }
+          ]
+        },
+        {
+          "track_name": "Audio Track",
+          "track_index": 4,
+          "track_path": "tracks.$rcontent[4]",
+          "actions": [
+            {
+              "action_type": "AudioAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[4].actions.$rcontent[0]",
+              "line_number": 188,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "sion_soul_furnace_cast",
+                "volume": 0.9,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "20|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 3.0,
+                "maxDistance": 15.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.2,
+                "priority": 180
+              },
+              "summary": "[Audio Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?
+            },
+            {
+              "action_type": "AudioAction",
+              "action_index": 1,
+              "json_path": "tracks.$rcontent[4].actions.$rcontent[1]",
+              "line_number": 212,
+              "frame": 180,
+              "duration": 15,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "sion_soul_furnace_explosion",
+                "volume": 1.0,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "20|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 5.0,
+                "maxDistance": 20.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.3,
+                "priority": 200
+              },
+              "summary": "[Audio Track] - Á¨?80Â∏?- ÊåÅÁª≠15Â∏?
+            }
+          ]
+        }
+      ]
+    },
+    "..\\..\\ai_agent_for_skill\\Assets\\Skills\\TryndamereBloodlust.json": {
+      "file_hash": "5dad6f2cb1e1e0bde62ea04273c69119",
+      "skill_name": "Bloodlust",
+      "total_actions": 3,
+      "last_modified": "2025-10-27T19:37:49.675530",
+      "tracks": [
+        {
+          "track_name": "Resource Heal Track",
+          "track_index": 0,
+          "track_path": "tracks.$rcontent[0]",
+          "actions": [
+            {
+              "action_type": "ResourceDependentHealAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[0]",
+              "line_number": 24,
+              "frame": 0,
+              "duration": 15,
+              "parameters": {
+                "enabled": true,
+                "resourceType": 2,
+                "consumeMode": 0,
+                "fixedConsumeAmount": 50.0,
+                "healType": 0,
+                "baseHeal": 30.0,
+                "perResourceHeal": 0.5,
+                "scaleWithLevel": true,
+                "baseHealPerLevel": 10.0,
+                "perResourceHealPerLevel": 0.45,
+                "baseSpellPowerRatio": 0.3,
+                "perResourceSpellPowerRatio": 0.012,
+                "healEffect": null,
+                "resourceConsumeEffect": null,
+                "effectColor": {
+                  "$type": "5|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 1,
+                  "g": 0.3,
+                  "b": 0.3,
+                  "a": 1
+                },
+                "healSound": null,
+                "resourceConsumeSound": null,
+                "targetFilter": 0
+              },
+              "summary": "[Resource Heal Track] - Á¨?Â∏?- ÊåÅÁª≠15Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Animation Track",
+          "track_index": 1,
+          "track_path": "tracks.$rcontent[1]",
+          "actions": [
+            {
+              "action_type": "AnimationAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[0]",
+              "line_number": 67,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "TryndamereBloodlust",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.1,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?- Êí≠Êîæ: TryndamereBloodlust"
+            }
+          ]
+        },
+        {
+          "track_name": "Audio Track",
+          "track_index": 2,
+          "track_path": "tracks.$rcontent[2]",
+          "actions": [
+            {
+              "action_type": "AudioAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[0]",
+              "line_number": 91,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "tryndamere_bloodlust",
+                "volume": 0.9,
+                "pitch": 1.0,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "13|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 3.0,
+                "maxDistance": 15.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.2,
+                "priority": 180
+              },
+              "summary": "[Audio Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?
+            }
+          ]
+        }
+      ]
+    },
+    "..\\..\\ai_agent_for_skill\\Assets\\Skills\\TryndamereSpinningSlash.json": {
+      "file_hash": "8d4afcb938fec0ebc7ca9ad1c12f5eb2",
+      "skill_name": "Spinning Slash",
+      "total_actions": 5,
+      "last_modified": "2025-10-27T19:47:10.091500",
+      "tracks": [
+        {
+          "track_name": "Movement Track",
+          "track_index": 0,
+          "track_path": "tracks.$rcontent[0]",
+          "actions": [
+            {
+              "action_type": "MovementAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[0].actions.$rcontent[0]",
+              "line_number": 24,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "movementType": 1,
+                "direction": {
+                  "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 1
+                },
+                "speed": 12.0,
+                "distance": 6.0
+              },
+              "summary": "[Movement Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?- ÁßªÂä®ÈÄüÂ∫¶12.0"
+            }
+          ]
+        },
+        {
+          "track_name": "Damage Track",
+          "track_index": 1,
+          "track_path": "tracks.$rcontent[1]",
+          "actions": [
+            {
+              "action_type": "AttributeScaledDamageAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[1].actions.$rcontent[0]",
+              "line_number": 53,
+              "frame": 5,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "baseDamage": 75.0,
+                "damageType": 0,
+                "damageVariance": 0.0,
+                "scaleWithLevel": true,
+                "damagePerLevel": 30.0,
+                "attributeScalings": {
+                  "$id": 9,
+                  "$type": "9|SkillSystem.Actions.AttributeScaling[], Assembly-CSharp",
+                  "$rlength": 2,
+                  "$rcontent": [
+                    {
+                      "$type": "10|SkillSystem.Actions.AttributeScaling, Assembly-CSharp",
+                      "attributeType": 1,
+                      "scalingRatio": 1.3
+                    },
+                    {
+                      "$type": "10|SkillSystem.Actions.AttributeScaling, Assembly-CSharp",
+                      "attributeType": 2,
+                      "scalingRatio": 0.8
+                    }
+                  ]
+                },
+                "canCritical": true,
+                "useCasterCritChance": true,
+                "fixedCriticalChance": 0.0,
+                "criticalMultiplier": 2.0,
+                "targetFilter": 0,
+                "maxTargets": 10,
+                "damageRadius": 3.0,
+                "damageEffect": null,
+                "criticalEffect": null,
+                "effectColor": {
+                  "$type": "11|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 1,
+                  "g": 0.5,
+                  "b": 0,
+                  "a": 1
+                },
+                "hitSound": null,
+                "criticalSound": null
+              },
+              "summary": "[Damage Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Resource Track",
+          "track_index": 2,
+          "track_path": "tracks.$rcontent[2]",
+          "actions": [
+            {
+              "action_type": "ResourceAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[2].actions.$rcontent[0]",
+              "line_number": 113,
+              "frame": 10,
+              "duration": 5,
+              "parameters": {
+                "enabled": true,
+                "resourceType": 2,
+                "operationType": 0,
+                "baseAmount": 10.0,
+                "amountType": 0,
+                "percentage": 0.0,
+                "scaleWithLevel": false,
+                "levelScaling": 0.0,
+                "scaleWithAttribute": false,
+                "scalingAttribute": 0,
+                "attributeRatio": 0.0,
+                "transferMode": 0,
+                "transferEfficiency": 1.0,
+                "respectMaximum": true,
+                "allowOverdraft": false,
+                "overdraftPenalty": 0,
+                "applyOverTime": false,
+                "applicationInterval": 1.0,
+                "resourceEffect": null,
+                "continuousEffect": null,
+                "effectColor": {
+                  "$type": "11|UnityEngine.Color, UnityEngine.CoreModule",
+                  "r": 1,
+                  "g": 0.2,
+                  "b": 0.2,
+                  "a": 1
+                },
+                "operationSound": null,
+                "successSound": null,
+                "failureSound": null,
+                "targetFilter": 0,
+                "maxTargets": 1,
+                "requireLineOfSight": false
+              },
+              "summary": "[Resource Track] - Á¨?0Â∏?- ÊåÅÁª≠5Â∏?
+            }
+          ]
+        },
+        {
+          "track_name": "Animation Track",
+          "track_index": 3,
+          "track_path": "tracks.$rcontent[3]",
+          "actions": [
+            {
+              "action_type": "AnimationAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[3].actions.$rcontent[0]",
+              "line_number": 165,
+              "frame": 0,
+              "duration": 45,
+              "parameters": {
+                "enabled": true,
+                "animationClipName": "TryndamereSpinningSlash",
+                "normalizedTime": 0,
+                "crossFadeDuration": 0.05,
+                "animationLayer": 0
+              },
+              "summary": "[Animation Track] - Á¨?Â∏?- ÊåÅÁª≠45Â∏?- Êí≠Êîæ: TryndamereSpinningSlash"
+            }
+          ]
+        },
+        {
+          "track_name": "Audio Track",
+          "track_index": 4,
+          "track_path": "tracks.$rcontent[4]",
+          "actions": [
+            {
+              "action_type": "AudioAction",
+              "action_index": 0,
+              "json_path": "tracks.$rcontent[4].actions.$rcontent[0]",
+              "line_number": 189,
+              "frame": 0,
+              "duration": 30,
+              "parameters": {
+                "enabled": true,
+                "audioClipName": "tryndamere_spinning_slash",
+                "volume": 0.85,
+                "pitch": 1.1,
+                "loop": false,
+                "is3D": true,
+                "positionOffset": {
+                  "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "minDistance": 4.0,
+                "maxDistance": 18.0,
+                "delayTime": 0.0,
+                "fadeInTime": 0.0,
+                "fadeOutTime": 0.15,
+                "priority": 190
+              },
+              "summary": "[Audio Track] - Á¨?Â∏?- ÊåÅÁª≠30Â∏?
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

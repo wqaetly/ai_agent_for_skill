@@ -10,12 +10,12 @@ namespace TrainingGround.Camera
     public enum CameraViewMode
     {
         ThirdPerson,  // 第三人称跟随
-        TopDown       // LOL风格俯视角
+        TopDown       // LOL风格俯视�?
     }
 
     /// <summary>
     /// 训练场专业相机控制器 - 基于Cinemachine
-    /// 提供第三人称跟随、LOL风格俯视角、动态镜头切换、震屏等商业级功能
+    /// 提供第三人称跟随、LOL风格俯视角、动态镜头切换、震屏等商业级功�?
     /// </summary>
     public class TrainingGroundCameraController : MonoBehaviour
     {
@@ -34,7 +34,7 @@ namespace TrainingGround.Camera
         [SerializeField] private Vector3 thirdPersonOffset = new Vector3(0f, 3f, -6f);
         [SerializeField] private float thirdPersonFOV = 60f;
 
-        [Header("俯视角设置（LOL风格）")]
+        [Header("俯视角设置（LOL风格�?)]
         [SerializeField] private Vector3 topDownOffset = new Vector3(0f, 15f, -8f);
         [SerializeField] private float topDownFOV = 50f;
         [SerializeField] private float topDownAngle = 45f; // 俯视角度
@@ -46,7 +46,7 @@ namespace TrainingGround.Camera
         [SerializeField] private Vector3 lookAtOffset = new Vector3(0f, 1.5f, 0f);
         [SerializeField] private float lookAtDamping = 1f;
 
-        [Header("技能释放镜头")]
+        [Header("技能释放镜�?)]
         [SerializeField] private bool enableSkillCamera = true;
         [SerializeField] private Vector3 skillCameraOffset = new Vector3(2f, 2f, -4f);
         [SerializeField] private float skillCameraFOV = 45f;
@@ -61,12 +61,12 @@ namespace TrainingGround.Camera
         private CinemachineRotationComposer rotationComposer;
         private UnityEngine.Camera mainCamera;
 
-        // 状态
+        // 状�?
         private bool isInSkillMode = false;
 
         void Awake()
         {
-            // 获取主相机
+            // 获取主相�?
             mainCamera = UnityEngine.Camera.main;
             if (mainCamera == null)
             {
@@ -79,7 +79,7 @@ namespace TrainingGround.Camera
                 mainCamera.gameObject.AddComponent<CinemachineBrain>();
             }
 
-            // 创建虚拟相机（如果不存在）
+            // 创建虚拟相机（如果不存在�?
             if (mainVirtualCamera == null)
             {
                 CreateMainVirtualCamera();
@@ -101,7 +101,7 @@ namespace TrainingGround.Camera
 
         void Start()
         {
-            // 自动查找玩家 - 添加空值检查
+            // 自动查找玩家 - 添加空值检�?
             if (followTarget == null)
             {
                 GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -121,7 +121,7 @@ namespace TrainingGround.Camera
         /// </summary>
         public void SetFollowTarget(Transform target)
         {
-            // 添加空值检查
+            // 添加空值检�?
             if (target == null)
             {
                 Debug.LogWarning("[CameraController] Cannot set null follow target");
@@ -141,7 +141,7 @@ namespace TrainingGround.Camera
         }
 
         /// <summary>
-        /// 创建主虚拟相机
+        /// 创建主虚拟相�?
         /// </summary>
         private void CreateMainVirtualCamera()
         {
@@ -187,11 +187,11 @@ namespace TrainingGround.Camera
             }
             followComponent.FollowOffset = currentOffset;
 
-            // 禁用位置阻尼，移除相机拖尾效果
+            // 禁用位置阻尼，移除相机拖尾效�?
             followComponent.TrackerSettings = new TrackerSettings
             {
                 BindingMode = BindingMode.WorldSpace,
-                PositionDamping = Vector3.zero,  // 设为 0 = 无阻尼
+                PositionDamping = Vector3.zero,  // 设为 0 = 无阻�?
                 AngularDampingMode = AngularDampingMode.Euler,
                 RotationDamping = Vector3.zero,
                 QuaternionDamping = 0
@@ -204,8 +204,8 @@ namespace TrainingGround.Camera
                 rotationComposer = mainVirtualCamera.gameObject.AddComponent<CinemachineRotationComposer>();
             }
 
-            // 禁用旋转阻尼，移除相机旋转延迟
-            rotationComposer.Damping = Vector2.zero;  // 设为 0 = 无阻尼
+            // 禁用旋转阻尼，移除相机旋转延�?
+            rotationComposer.Damping = Vector2.zero;  // 设为 0 = 无阻�?
 
             // 设置Lens参数
             var lens = mainVirtualCamera.Lens;
@@ -219,7 +219,7 @@ namespace TrainingGround.Camera
         /// 触发震屏效果
         /// </summary>
         /// <param name="force">震动强度 (0-2)</param>
-        /// <param name="duration">持续时间（秒）</param>
+        /// <param name="duration">持续时间（秒�?/param>
         public void TriggerCameraShake(float force = -1f, float duration = 0.2f)
         {
             if (impulseSource == null) return;
@@ -233,7 +233,7 @@ namespace TrainingGround.Camera
         }
 
         /// <summary>
-        /// 切换到技能释放镜头
+        /// 切换到技能释放镜�?
         /// </summary>
         public void SwitchToSkillCamera()
         {
@@ -257,7 +257,7 @@ namespace TrainingGround.Camera
         }
 
         /// <summary>
-        /// 切换回普通镜头
+        /// 切换回普通镜�?
         /// </summary>
         public void SwitchToNormalCamera()
         {
@@ -334,7 +334,7 @@ namespace TrainingGround.Camera
         }
 
         /// <summary>
-        /// 切换到第三人称模式
+        /// 切换到第三人称模�?
         /// </summary>
         public void SwitchToThirdPersonView()
         {
@@ -376,7 +376,7 @@ namespace TrainingGround.Camera
             }
         }
 
-        #region 公共访问器
+        #region 公共访问�?
 
         public Transform FollowTarget => followTarget;
         public bool IsInSkillMode => isInSkillMode;

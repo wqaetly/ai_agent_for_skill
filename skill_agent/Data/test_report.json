@@ -1,0 +1,96 @@
+{
+  "timestamp": "2025-11-10 18:58:05",
+  "summary": {
+    "total": 11,
+    "passed": 11,
+    "failed": 0
+  },
+  "results": [
+    {
+      "test": "索引构建",
+      "passed": true,
+      "time": 0.0075190067291259766,
+      "stats": {
+        "total_files": 9,
+        "indexed_files": 6,
+        "total_actions": 46,
+        "skipped_files": 0,
+        "errors": [
+          {
+            "file": "..\\..\\ai_agent_for_skill\\Assets\\Skills\\Soul Furnace.json",
+            "error": "Expecting property name enclosed in double quotes: line 104 column 33 (char 5144)"
+          },
+          {
+            "file": "..\\..\\ai_agent_for_skill\\Assets\\Skills\\Test1.json",
+            "error": "argument of type 'int' is not iterable"
+          },
+          {
+            "file": "..\\..\\ai_agent_for_skill\\Assets\\Skills\\Test2.json",
+            "error": "Expecting property name enclosed in double quotes: line 111 column 33 (char 3775)"
+          }
+        ]
+      }
+    },
+    {
+      "test": "查询解析",
+      "passed": true,
+      "queries_tested": 5
+    },
+    {
+      "test": "查询-查询baseDamage>200的DamageAction",
+      "passed": true,
+      "query": "DamageAction where baseDamage > 200",
+      "matches": 0,
+      "time_ms": 0.0
+    },
+    {
+      "test": "查询-查询包含Attack的AnimationAction",
+      "passed": true,
+      "query": "animationClipName contains 'Attack'",
+      "matches": 0,
+      "time_ms": 0.0
+    },
+    {
+      "test": "查询-查询伤害�?00-300之间的Action",
+      "passed": true,
+      "query": "baseDamage between 100 and 300",
+      "matches": 0,
+      "time_ms": 0.0
+    },
+    {
+      "test": "查询-查询所有DamageAction",
+      "passed": true,
+      "query": "DamageAction",
+      "matches": 3,
+      "time_ms": 0.0
+    },
+    {
+      "test": "查询-查询魔法伤害类型",
+      "passed": true,
+      "query": "DamageAction where damageType = 'Magical'",
+      "matches": 0,
+      "time_ms": 0.0
+    },
+    {
+      "test": "性能基准",
+      "passed": true,
+      "avg_time_ms": 0.0,
+      "queries_tested": 4
+    },
+    {
+      "test": "缓存机制",
+      "passed": true,
+      "speedup": 0,
+      "hit_rate": 0.5
+    },
+    {
+      "test": "统计分析",
+      "passed": true,
+      "action_types": 15
+    },
+    {
+      "test": "JSON片段加载",
+      "passed": true
+    }
+  ]
+}

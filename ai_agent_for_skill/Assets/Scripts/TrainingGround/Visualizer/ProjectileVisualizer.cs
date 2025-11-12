@@ -7,7 +7,7 @@ using TrainingGround.Materials;
 namespace TrainingGround.Visualizer
 {
     /// <summary>
-    /// 投射物可视化器
+    /// 投射物可视化�?
     /// </summary>
     public class ProjectileVisualizer : SkillVisualizerBase<ProjectileAction>
     {
@@ -20,10 +20,10 @@ namespace TrainingGround.Visualizer
             // 创建投射物GameObject
             GameObject projectile = CreateProjectileObject(action, caster);
 
-            // 记录投射物
+            // 记录投射�?
             activeProjectiles[action] = projectile;
 
-            // 启动投射物运动
+            // 启动投射物运�?
             var projectileBehavior = projectile.GetComponent<ProjectileBehavior>();
             if (projectileBehavior != null)
             {
@@ -38,7 +38,7 @@ namespace TrainingGround.Visualizer
 
         protected override void OnVisualizeExit(ProjectileAction action, GameObject caster)
         {
-            // 清理投射物
+            // 清理投射�?
             if (activeProjectiles.TryGetValue(action, out GameObject projectile))
             {
                 if (projectile != null)
@@ -63,7 +63,7 @@ namespace TrainingGround.Visualizer
             Vector3 startPosition = caster.transform.position + Vector3.up + caster.transform.forward * 0.5f;
             projectile.transform.position = startPosition;
 
-            // 设置颜色（根据投射物类型） - 使用MaterialLibrary
+            // 设置颜色（根据投射物类型�?- 使用MaterialLibrary
             var renderer = projectile.GetComponent<Renderer>();
             if (renderer != null)
             {
@@ -89,7 +89,7 @@ namespace TrainingGround.Visualizer
 
         private Color GetProjectileColor(ProjectileAction action)
         {
-            // 根据不同投射物类型返回不同颜色
+            // 根据不同投射物类型返回不同颜�?
             // 这里可以根据action的参数来决定
             return new Color(1f, 0.5f, 0f); // 默认橙色
         }
@@ -109,7 +109,7 @@ namespace TrainingGround.Visualizer
     }
 
     /// <summary>
-    /// 投射物行为组件 - 控制投射物的飞行和碰撞
+    /// 投射物行为组�?- 控制投射物的飞行和碰�?
     /// </summary>
     public class ProjectileBehavior : MonoBehaviour
     {
@@ -125,7 +125,7 @@ namespace TrainingGround.Visualizer
             actionData = action;
             caster = casterObject;
             speed = action.projectileSpeed;
-            lifetime = action.maxTravelDistance / speed; // 根据最大距离计算生命周期
+            lifetime = action.maxTravelDistance / speed; // 根据最大距离计算生命周�?
 
             // 确定目标位置
             DetermineTargetPosition();
@@ -154,14 +154,14 @@ namespace TrainingGround.Visualizer
 
             elapsedTime += Time.deltaTime;
 
-            // 移动投射物
+            // 移动投射�?
             Vector3 direction = (targetPosition - transform.position).normalized;
             transform.position += direction * speed * Time.deltaTime;
 
-            // 检查碰撞
+            // 检查碰�?
             CheckCollision();
 
-            // 超时或到达目标后销毁
+            // 超时或到达目标后销�?
             if (elapsedTime >= lifetime || Vector3.Distance(transform.position, targetPosition) < 0.5f)
             {
                 OnHitTarget();
@@ -171,7 +171,7 @@ namespace TrainingGround.Visualizer
 
         private void CheckCollision()
         {
-            // 简单的距离检测
+            // 简单的距离检�?
             var entities = EntityManager.Instance.GetEntitiesInRadius(transform.position, 0.5f);
             foreach (var entity in entities)
             {
@@ -188,7 +188,7 @@ namespace TrainingGround.Visualizer
         {
             Debug.Log($"[ProjectileBehavior] Hit entity: {entity.EntityName}");
 
-            // 应用伤害（如果有）
+            // 应用伤害（如果有�?
             if (actionData.damageOnHit > 0)
             {
                 entity.TakeDamage(actionData.damageOnHit, TrainingGround.Entity.DamageType.Magical, caster.transform.position);
@@ -200,7 +200,7 @@ namespace TrainingGround.Visualizer
 
         private void OnHitTarget()
         {
-            // 到达目标位置的处理
+            // 到达目标位置的处�?
             CreateHitEffect();
         }
 
@@ -214,14 +214,14 @@ namespace TrainingGround.Visualizer
             var renderer = flash.GetComponent<Renderer>();
             if (renderer != null)
             {
-                // 使用MaterialLibrary提供的命中特效材质
+                // 使用MaterialLibrary提供的命中特效材�?
                 renderer.material = MaterialLibrary.Instance.GetHitEffectMaterial(Color.yellow);
             }
 
-            // 移除碰撞体
+            // 移除碰撞�?
             Destroy(flash.GetComponent<Collider>());
 
-            // 1秒后销毁
+            // 1秒后销�?
             Destroy(flash, 0.2f);
         }
     }

@@ -5,8 +5,8 @@ using UnityEngine.Rendering.Universal;
 namespace TrainingGround.PostProcessing
 {
     /// <summary>
-    /// Post-Processing管理器 - 管理URP后期处理效果
-    /// 提供动态调整后期效果、战斗模式切换等商业级功能
+    /// Post-Processing管理�?- 管理URP后期处理效果
+    /// 提供动态调整后期效果、战斗模式切换等商业级功�?
     /// </summary>
     public class PostProcessingManager : MonoBehaviour
     {
@@ -37,12 +37,12 @@ namespace TrainingGround.PostProcessing
         private ChromaticAberration chromaticAberration;
         private MotionBlur motionBlur;
 
-        // 状态
+        // 状�?
         private bool isInCombatMode = false;
 
         void Awake()
         {
-            // 创建Global Volume（如果不存在）
+            // 创建Global Volume（如果不存在�?
             if (globalVolume == null)
             {
                 CreateGlobalVolume();
@@ -177,7 +177,7 @@ namespace TrainingGround.PostProcessing
 
         private void ConfigureChromaticAberration(ChromaticAberration chromatic)
         {
-            chromatic.active = false; // 默认关闭，战斗时可开启
+            chromatic.active = false; // 默认关闭，战斗时可开�?
             chromatic.intensity.value = 0.1f;
         }
 
@@ -218,7 +218,7 @@ namespace TrainingGround.PostProcessing
         }
 
         /// <summary>
-        /// 切换到战斗模式后期效果
+        /// 切换到战斗模式后期效�?
         /// </summary>
         public void SwitchToCombatMode()
         {
@@ -246,7 +246,7 @@ namespace TrainingGround.PostProcessing
         }
 
         /// <summary>
-        /// 切换回普通模式
+        /// 切换回普通模�?
         /// </summary>
         public void SwitchToNormalMode()
         {
@@ -311,7 +311,7 @@ namespace TrainingGround.PostProcessing
         }
 
         /// <summary>
-        /// 技能释放时的特殊效果
+        /// 技能释放时的特殊效�?
         /// </summary>
         public void TriggerSkillEffect(float duration = 0.5f)
         {

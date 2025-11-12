@@ -2,7 +2,7 @@
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
     "skillName": "Broken Wings",
-    "skillDescription": "锐雯向前冲刺，造成物理伤害。可再次施放两次，第三次会跃起猛劈并击飞敌人。",
+    "skillDescription": "锐雯向前冲刺，造成物理伤害。可再次施放两次，第三次会跃起猛劈并击飞敌人�?,
     "totalDuration": 300,
     "frameRate": 30,
     "tracks": {

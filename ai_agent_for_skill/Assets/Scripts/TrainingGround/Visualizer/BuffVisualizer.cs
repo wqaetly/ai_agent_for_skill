@@ -17,7 +17,7 @@ namespace TrainingGround.Visualizer
 
         protected override void OnVisualizeTick(BuffAction action, GameObject caster, int relativeFrame)
         {
-            // Buff通常在Enter时应用，Tick不需要处理
+            // Buff通常在Enter时应用，Tick不需要处�?
         }
 
         protected override void OnVisualizeExit(BuffAction action, GameObject caster)
@@ -66,7 +66,7 @@ namespace TrainingGround.Visualizer
             }
             else
             {
-                // 获取玩家的当前目标
+                // 获取玩家的当前目�?
                 var playerCharacter = caster.GetComponent<PlayerCharacter>();
                 var primaryTarget = playerCharacter?.GetCurrentTarget();
 

@@ -5,8 +5,7 @@ using UnityEngine;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// Action组合约束校验器
-    /// 负责检查Action推荐的合理性，包括互斥关系、前置依赖等
+    /// Action组合约束校验�?    /// 负责检查Action推荐的合理性，包括互斥关系、前置依赖等
     /// </summary>
     public class ActionConstraintValidator
     {
@@ -21,8 +20,8 @@ namespace SkillSystem.RAG
         /// 验证单个Action推荐是否合理
         /// </summary>
         /// <param name="actionType">被验证的Action类型</param>
-        /// <param name="context">上下文描述</param>
-        /// <param name="issues">输出：验证问题列表</param>
+        /// <param name="context">上下文描�?/param>
+        /// <param name="issues">输出：验证问题列�?/param>
         /// <returns>是否通过验证</returns>
         public bool ValidateSingle(string actionType, string context, out List<string> issues)
         {
@@ -52,7 +51,7 @@ namespace SkillSystem.RAG
         /// 验证Action组合是否合理
         /// </summary>
         /// <param name="actionTypes">Action类型列表</param>
-        /// <param name="issues">输出：验证问题列表</param>
+        /// <param name="issues">输出：验证问题列�?/param>
         /// <returns>是否通过验证</returns>
         public bool ValidateCombination(List<string> actionTypes, out List<string> issues)
         {
@@ -63,11 +62,9 @@ namespace SkillSystem.RAG
                 return true;
             }
 
-            // 检查互斥规则
-            CheckExclusiveRules(actionTypes, issues);
+            // 检查互斥规�?            CheckExclusiveRules(actionTypes, issues);
 
-            // 检查前置依赖
-            CheckPrerequisites(actionTypes, issues);
+            // 检查前置依�?            CheckPrerequisites(actionTypes, issues);
 
             // 检查Action间的语义依赖
             CheckSemanticDependencies(actionTypes, issues);
@@ -76,8 +73,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 检查推荐列表中的互斥问题
-        /// </summary>
+        /// 检查推荐列表中的互斥问�?        /// </summary>
         /// <param name="recommendations">推荐列表</param>
         /// <returns>过滤后的推荐列表</returns>
         public List<EditorRAGClient.ActionRecommendation> FilterExclusiveActions(
@@ -131,8 +127,7 @@ namespace SkillSystem.RAG
                 }
             }
 
-            // 检查语义依赖中的互斥关系
-            var semantic1 = registry.GetSemanticInfo(actionType1);
+            // 检查语义依赖中的互斥关�?            var semantic1 = registry.GetSemanticInfo(actionType1);
             if (semantic1?.dependency?.incompatibles != null &&
                 semantic1.dependency.incompatibles.Contains(actionType2))
             {
@@ -150,8 +145,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 检查互斥规则
-        /// </summary>
+        /// 检查互斥规�?        /// </summary>
         private void CheckExclusiveRules(List<string> actionTypes, List<string> issues)
         {
             var exclusiveRules = registry.GetRulesByType("Exclusive");
@@ -170,8 +164,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 检查前置依赖
-        /// </summary>
+        /// 检查前置依�?        /// </summary>
         private void CheckPrerequisites(List<string> actionTypes, List<string> issues)
         {
             foreach (var actionType in actionTypes)
@@ -191,12 +184,10 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 检查语义依赖
-        /// </summary>
+        /// 检查语义依�?        /// </summary>
         private void CheckSemanticDependencies(List<string> actionTypes, List<string> issues)
         {
-            // 检查每对Action的语义兼容性
-            for (int i = 0; i < actionTypes.Count; i++)
+            // 检查每对Action的语义兼容�?            for (int i = 0; i < actionTypes.Count; i++)
             {
                 for (int j = i + 1; j < actionTypes.Count; j++)
                 {
@@ -205,8 +196,7 @@ namespace SkillSystem.RAG
 
                     if (semantic1 != null && semantic2 != null)
                     {
-                        // 检查互斥
-                        if (semantic1.dependency?.incompatibles != null &&
+                        // 检查互�?                        if (semantic1.dependency?.incompatibles != null &&
                             semantic1.dependency.incompatibles.Contains(actionTypes[j]))
                         {
                             issues.Add($"{actionTypes[i]}与{actionTypes[j]}互斥");
@@ -217,8 +207,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 检查意图匹配
-        /// </summary>
+        /// 检查意图匹�?        /// </summary>
         private bool CheckIntentMatch(ActionSemanticInfo semanticInfo, string context)
         {
             if (semanticInfo.purpose?.keywords == null || semanticInfo.purpose.keywords.Count == 0)
@@ -228,8 +217,7 @@ namespace SkillSystem.RAG
 
             string lowerContext = context.ToLower();
 
-            // 检查关键词是否在上下文中出现
-            foreach (var keyword in semanticInfo.purpose.keywords)
+            // 检查关键词是否在上下文中出�?            foreach (var keyword in semanticInfo.purpose.keywords)
             {
                 if (lowerContext.Contains(keyword.ToLower()))
                 {
@@ -237,8 +225,7 @@ namespace SkillSystem.RAG
                 }
             }
 
-            // 检查意图标签
-            if (semanticInfo.purpose.intents != null)
+            // 检查意图标�?            if (semanticInfo.purpose.intents != null)
             {
                 foreach (var intent in semanticInfo.purpose.intents)
                 {
@@ -249,8 +236,7 @@ namespace SkillSystem.RAG
                 }
             }
 
-            return false; // 没有匹配的关键词或意图
-        }
+            return false; // 没有匹配的关键词或意�?        }
 
         /// <summary>
         /// 获取协同推荐

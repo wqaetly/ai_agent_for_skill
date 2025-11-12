@@ -15,7 +15,7 @@ namespace SkillSystem.RAG
         private static Dictionary<string, List<EditorRAGClient.ActionRecommendation>> paramSuggestionsCache;
         private static bool isInitialized = false;
 
-        // UI状态
+        // UI状�?
         private static bool showSmartSuggestions = true;
         private static Vector2 suggestionsScrollPos;
         private static bool isLoadingSuggestions = false;
@@ -50,7 +50,7 @@ namespace SkillSystem.RAG
 
             EditorGUILayout.Space(10);
 
-            // 折叠栏
+            // 折叠�?
             EditorGUILayout.BeginVertical("box");
 
             EditorGUILayout.BeginHorizontal();
@@ -67,7 +67,7 @@ namespace SkillSystem.RAG
             {
                 EditorGUI.indentLevel++;
 
-                // 检查是否有缓存的建议
+                // 检查是否有缓存的建�?
                 if (paramSuggestionsCache.ContainsKey(actionType))
                 {
                     DrawCachedSuggestions(actionType, action);
@@ -89,7 +89,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 绘制缓存的建议
+        /// 绘制缓存的建�?
         /// </summary>
         private static void DrawCachedSuggestions(string actionType, SkillSystem.Actions.ISkillAction action)
         {
@@ -127,7 +127,7 @@ namespace SkillSystem.RAG
 
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField($"{suggestion.display_name} ({suggestion.action_type})", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField($"相似度: {suggestion.semantic_similarity:F3}", GUILayout.Width(100));
+            EditorGUILayout.LabelField($"相似�? {suggestion.semantic_similarity:F3}", GUILayout.Width(100));
             EditorGUILayout.EndHorizontal();
 
             if (!string.IsNullOrEmpty(suggestion.description))
@@ -152,7 +152,7 @@ namespace SkillSystem.RAG
             isLoadingSuggestions = true;
             currentActionType = actionType;
 
-            // 构建上下文查询
+            // 构建上下文查�?
             string context = GetActionContextQuery(actionType);
 
             try
@@ -164,7 +164,7 @@ namespace SkillSystem.RAG
                 });
 
                 paramSuggestionsCache[actionType] = response.recommendations;
-                Debug.Log($"[SmartActionInspector] 获取到 {response.recommendations.Count} 个建议");
+                Debug.Log($"[SmartActionInspector] 获取�?{response.recommendations.Count} 个建�?);
             }
             catch (System.Exception e)
             {
@@ -178,30 +178,30 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 根据Action类型构建上下文查询
+        /// 根据Action类型构建上下文查�?
         /// </summary>
         private static string GetActionContextQuery(string actionType)
         {
             // 移除"Action"后缀
             string baseName = actionType.Replace("Action", "");
 
-            // 根据Action类型返回对应的中文描述
+            // 根据Action类型返回对应的中文描�?
             var contextMap = new Dictionary<string, string>
             {
-                { "Damage", "造成伤害的技能效果" },
-                { "Heal", "治疗恢复生命值" },
+                { "Damage", "造成伤害的技能效�? },
+                { "Heal", "治疗恢复生命�? },
                 { "Movement", "移动角色位置" },
-                { "Projectile", "发射弹道飞行物" },
-                { "AreaOfEffect", "范围效果作用于区域" },
-                { "Buff", "增益或减益状态效果" },
+                { "Projectile", "发射弹道飞行�? },
+                { "AreaOfEffect", "范围效果作用于区�? },
+                { "Buff", "增益或减益状态效�? },
                 { "Shield", "护盾吸收伤害" },
                 { "Summon", "召唤单位" },
-                { "Teleport", "瞬移传送" },
+                { "Teleport", "瞬移传�? },
                 { "Animation", "播放动画效果" },
                 { "Audio", "播放音效" },
-                { "Camera", "相机震动或缩放" },
+                { "Camera", "相机震动或缩�? },
                 { "Control", "控制输入限制" },
-                { "Collision", "碰撞检测" },
+                { "Collision", "碰撞检�? },
                 { "Resource", "资源消耗或生成" }
             };
 
@@ -214,7 +214,7 @@ namespace SkillSystem.RAG
         public static void ClearCache()
         {
             paramSuggestionsCache?.Clear();
-            Debug.Log("[SmartActionInspector] 缓存已清空");
+            Debug.Log("[SmartActionInspector] 缓存已清�?);
         }
     }
 }

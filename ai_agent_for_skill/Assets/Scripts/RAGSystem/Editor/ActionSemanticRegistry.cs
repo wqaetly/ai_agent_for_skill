@@ -7,9 +7,7 @@ using UnityEngine;
 namespace SkillSystem.RAG
 {
     /// <summary>
-    /// Action语义注册表 - 管理Action语义信息和约束规则
-    /// 支持配置文件热更新
-    /// </summary>
+    /// Action语义注册�?- 管理Action语义信息和约束规�?    /// 支持配置文件热更�?    /// </summary>
     public class ActionSemanticRegistry
     {
         private static ActionSemanticRegistry instance;
@@ -54,8 +52,7 @@ namespace SkillSystem.RAG
                     return true;
                 }
 
-                // 读取并解析配置文件
-                string json = File.ReadAllText(configPath);
+                // 读取并解析配置文�?                string json = File.ReadAllText(configPath);
                 config = JsonUtility.FromJson<ActionSemanticConfig>(json);
 
                 if (config == null)
@@ -119,8 +116,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 重新加载配置（热更新）
-        /// </summary>
+        /// 重新加载配置（热更新�?        /// </summary>
         public bool ReloadConfig()
         {
             Debug.Log("[ActionSemanticRegistry] Reloading config...");
@@ -140,8 +136,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取所有语义信息
-        /// </summary>
+        /// 获取所有语义信�?        /// </summary>
         public List<ActionSemanticInfo> GetAllSemanticInfo()
         {
             return config?.actions ?? new List<ActionSemanticInfo>();
@@ -168,8 +163,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取特定类型的规则
-        /// </summary>
+        /// 获取特定类型的规�?        /// </summary>
         public List<ActionCombinationRule> GetRulesByType(string ruleType)
         {
             return config?.rules?.Where(r => r.enabled && r.ruleType == ruleType).ToList()
@@ -177,8 +171,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取涉及特定Action的规则
-        /// </summary>
+        /// 获取涉及特定Action的规�?        /// </summary>
         public List<ActionCombinationRule> GetRulesForAction(string actionType)
         {
             return config?.rules?.Where(r => r.enabled && r.actionTypes.Contains(actionType)).ToList()
@@ -196,11 +189,9 @@ namespace SkillSystem.RAG
                 lastModified = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
             };
 
-            // 添加一些示例语义定义
-            AddDefaultSemanticInfo();
+            // 添加一些示例语义定�?            AddDefaultSemanticInfo();
 
-            // 添加一些示例规则
-            AddDefaultRules();
+            // 添加一些示例规�?            AddDefaultRules();
 
             // 保存配置
             SaveConfig();
@@ -220,7 +211,7 @@ namespace SkillSystem.RAG
                 purpose = new ActionPurpose
                 {
                     intents = new List<string> { "造成伤害", "攻击", "输出" },
-                    scenarios = new List<string> { "攻击技能", "伤害技能", "输出技能" },
+                    scenarios = new List<string> { "攻击技�?, "伤害技�?, "输出技�? },
                     keywords = new List<string> { "伤害", "攻击", "打击", "damage", "attack" }
                 },
                 effect = new ActionEffect
@@ -234,8 +225,7 @@ namespace SkillSystem.RAG
                 dependency = new ActionDependency
                 {
                     prerequisites = new List<string>(),
-                    incompatibles = new List<string> { "HealAction" }, // 同一时刻不应该既造成伤害又治疗
-                    synergies = new List<string> { "ControlAction", "BuffAction" },
+                    incompatibles = new List<string> { "HealAction" }, // 同一时刻不应该既造成伤害又治�?                    synergies = new List<string> { "ControlAction", "BuffAction" },
                     followUps = new List<string> { "BuffAction", "AnimationAction" }
                 },
                 businessPriority = 1.2f
@@ -250,7 +240,7 @@ namespace SkillSystem.RAG
                 purpose = new ActionPurpose
                 {
                     intents = new List<string> { "位移", "移动", "改变位置" },
-                    scenarios = new List<string> { "冲刺技能", "闪现", "位移技能", "跳跃" },
+                    scenarios = new List<string> { "冲刺技�?, "闪现", "位移技�?, "跳跃" },
                     keywords = new List<string> { "位移", "移动", "冲刺", "闪现", "跳跃", "movement", "dash", "blink" }
                 },
                 effect = new ActionEffect
@@ -280,7 +270,7 @@ namespace SkillSystem.RAG
                 purpose = new ActionPurpose
                 {
                     intents = new List<string> { "防护", "保护", "吸收伤害" },
-                    scenarios = new List<string> { "防御技能", "保护技能", "护盾技能" },
+                    scenarios = new List<string> { "防御技�?, "保护技�?, "护盾技�? },
                     keywords = new List<string> { "护盾", "防护", "保护", "吸收", "shield", "protect" }
                 },
                 effect = new ActionEffect
@@ -310,7 +300,7 @@ namespace SkillSystem.RAG
                 purpose = new ActionPurpose
                 {
                     intents = new List<string> { "治疗", "恢复", "回血" },
-                    scenarios = new List<string> { "治疗技能", "恢复技能", "回血技能" },
+                    scenarios = new List<string> { "治疗技�?, "恢复技�?, "回血技�? },
                     keywords = new List<string> { "治疗", "恢复", "回血", "heal", "restore" }
                 },
                 effect = new ActionEffect
@@ -337,13 +327,12 @@ namespace SkillSystem.RAG
         /// </summary>
         private void AddDefaultRules()
         {
-            // 互斥规则：同一时刻不应该既造成伤害又治疗
-            config.rules.Add(new ActionCombinationRule
+            // 互斥规则：同一时刻不应该既造成伤害又治�?            config.rules.Add(new ActionCombinationRule
             {
                 ruleName = "Damage_Heal_Exclusive",
                 ruleType = "Exclusive",
                 actionTypes = new List<string> { "DamageAction", "HealAction" },
-                description = "同一技能不应该同时对同一目标造成伤害和治疗",
+                description = "同一技能不应该同时对同一目标造成伤害和治�?,
                 priority = 10,
                 enabled = true
             });
@@ -359,30 +348,29 @@ namespace SkillSystem.RAG
                 enabled = true
             });
 
-            // 协同规则：伤害+控制效果
+            // 协同规则：伤�?控制效果
             config.rules.Add(new ActionCombinationRule
             {
                 ruleName = "Damage_Control_Synergy",
                 ruleType = "Synergy",
                 actionTypes = new List<string> { "DamageAction", "ControlAction" },
-                description = "伤害和控制效果是常见的协同组合，如晕眩+伤害",
+                description = "伤害和控制效果是常见的协同组合，如晕�?伤害",
                 priority = 5,
                 enabled = true
             });
 
-            // 协同规则：护盾+治疗
+            // 协同规则：护�?治疗
             config.rules.Add(new ActionCombinationRule
             {
                 ruleName = "Shield_Heal_Synergy",
                 ruleType = "Synergy",
                 actionTypes = new List<string> { "ShieldAction", "HealAction" },
-                description = "护盾和治疗是常见的防御组合",
+                description = "护盾和治疗是常见的防御组�?,
                 priority = 5,
                 enabled = true
             });
 
-            // 前置规则：特效需要先有实际效果
-            config.rules.Add(new ActionCombinationRule
+            // 前置规则：特效需要先有实际效�?            config.rules.Add(new ActionCombinationRule
             {
                 ruleName = "Effect_Before_Visual",
                 ruleType = "Prerequisite",
@@ -402,8 +390,7 @@ namespace SkillSystem.RAG
         }
 
         /// <summary>
-        /// 获取最后加载时间
-        /// </summary>
+        /// 获取最后加载时�?        /// </summary>
         public DateTime GetLastLoadTime()
         {
             return lastLoadTime;

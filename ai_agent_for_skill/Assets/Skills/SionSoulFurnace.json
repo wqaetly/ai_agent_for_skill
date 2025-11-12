@@ -2,7 +2,7 @@
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
     "skillName": "Soul Furnace",
-    "skillDescription": "赛恩获得护盾，持续6秒。护盾值基于技能等级、法术强度和当前生命值。3秒后若护盾仍存在，可引爆造成范围魔法伤害，对小兵和野怪有伤害上限。",
+    "skillDescription": "赛恩获得护盾，持�?秒。护盾值基于技能等级、法术强度和当前生命值�?秒后若护盾仍存在，可引爆造成范围魔法伤害，对小兵和野怪有伤害上限�?,
     "totalDuration": 180,
     "frameRate": 30,
     "tracks": {

@@ -5,15 +5,15 @@ using System.Linq;
 namespace TrainingGround.Entity
 {
     /// <summary>
-    /// 训练木桩 - 用于测试技能效果的静态目标
+    /// 训练木桩 - 用于测试技能效果的静态目�?
     /// </summary>
     public class TrainingDummy : MonoBehaviour, IEntity
     {
-        [Header("基础属性")]
+        [Header("基础属�?)]
         [SerializeField] private string entityName = "Training Dummy";
         [SerializeField] private float maxHealth = 10000f;
         [SerializeField] private float maxShield = 1000f;
-        [SerializeField] private float maxResource = 0f; // 木桩不需要资源
+        [SerializeField] private float maxResource = 0f; // 木桩不需要资�?
 
         [Header("重置设置")]
         [SerializeField] private bool autoReset = true;
@@ -31,7 +31,7 @@ namespace TrainingGround.Entity
         public Transform Transform => transform;
         public string EntityName => entityName;
 
-        // 生命值
+        // 生命�?
         private float currentHealth;
         public float CurrentHealth => currentHealth;
         public float MaxHealth => maxHealth;
@@ -42,13 +42,13 @@ namespace TrainingGround.Entity
         public float CurrentShield => currentShield;
         public float MaxShield => maxShield;
 
-        // 资源（木桩不使用）
+        // 资源（木桩不使用�?
         public float CurrentResource => 0f;
         public float MaxResource => maxResource;
 
-        // 状态
+        // 状�?
         public bool IsAlive => currentHealth > 0;
-        public bool IsStunned => false; // 木桩不会被眩晕
+        public bool IsStunned => false; // 木桩不会被眩�?
         public bool IsInvulnerable => false;
 
         // Buff系统
@@ -65,7 +65,7 @@ namespace TrainingGround.Entity
 
         void Awake()
         {
-            // 初始化
+            // 初始�?
             currentHealth = maxHealth;
             currentShield = 0f;
 
@@ -101,7 +101,7 @@ namespace TrainingGround.Entity
             UpdateBuffs();
         }
 
-        #region 伤害和治疗
+        #region 伤害和治�?
 
         public void TakeDamage(float amount, DamageType damageType, Vector3 sourcePosition)
         {
@@ -132,7 +132,7 @@ namespace TrainingGround.Entity
             // 日志
             Debug.Log($"[TrainingDummy] {entityName} took {amount:F1} {damageType} damage (HP: {currentHealth:F0}/{maxHealth:F0}, Shield: {currentShield:F0})");
 
-            // 死亡检查
+            // 死亡检�?
             if (!IsAlive && autoReset)
             {
                 Invoke(nameof(ResetDummy), resetDelay);
@@ -180,7 +180,7 @@ namespace TrainingGround.Entity
             var existing = activeBuffs.FirstOrDefault(b => b.buffId == buff.buffId);
             if (existing != null)
             {
-                // 刷新持续时间或堆叠
+                // 刷新持续时间或堆�?
                 existing.remainingTime = buff.duration;
                 existing.stackCount++;
             }
@@ -238,7 +238,7 @@ namespace TrainingGround.Entity
 
         #endregion
 
-        #region 位置和移动
+        #region 位置和移�?
 
         public Vector3 GetPosition()
         {
@@ -252,7 +252,7 @@ namespace TrainingGround.Entity
 
         public void ApplyKnockback(Vector3 direction, float force)
         {
-            // 木桩默认不会被击退（可以子类化实现）
+            // 木桩默认不会被击退（可以子类化实现�?
             Debug.Log($"[TrainingDummy] {entityName} received knockback (ignored)");
         }
 
@@ -261,7 +261,7 @@ namespace TrainingGround.Entity
         #region 工具方法
 
         /// <summary>
-        /// 重置木桩到初始状态
+        /// 重置木桩到初始状�?
         /// </summary>
         [ContextMenu("Reset Dummy")]
         public void ResetDummy()

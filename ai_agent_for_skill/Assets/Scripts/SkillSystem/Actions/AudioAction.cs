@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SkillSystem.Actions
 {
     /// <summary>
-    /// 音频效果Action - 控制技能音效的播放，支持2D和3D音效
+    /// 音频效果Action - 控制技能音效的播放，支�?D�?D音效
     /// 可配置音量、音调、空间音效等参数，用于增强技能的听觉反馈
     /// </summary>
     [System.Serializable]
@@ -17,7 +17,7 @@ namespace SkillSystem.Actions
         public bool enabled = true;
 
         [Title("音频设置")]
-        [Tooltip("音频片段名称或路径")]
+        [Tooltip("音频片段名称或路�?)]
         public string audioClipName = "";
 
         [Tooltip("音量大小")]
@@ -32,7 +32,7 @@ namespace SkillSystem.Actions
         public bool loop = false;
 
         [Title("空间音效")]
-        [Tooltip("是否为3D空间音效")]
+        [Tooltip("是否�?D空间音效")]
         public bool is3D = true;
 
         [ShowIf("is3D")]
@@ -40,12 +40,12 @@ namespace SkillSystem.Actions
         public Vector3 positionOffset = Vector3.zero;
 
         [ShowIf("is3D")]
-        [Tooltip("最小听声距离")]
+        [Tooltip("最小听声距�?)]
         [Range(1f, 50f)]
         public float minDistance = 1f;
 
         [ShowIf("is3D")]
-        [Tooltip("最大听声距离")]
+        [Tooltip("最大听声距�?)]
         [Range(5f, 500f)]
         public float maxDistance = 50f;
 
@@ -54,24 +54,24 @@ namespace SkillSystem.Actions
         public AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic;
 
         [Title("播放控制")]
-        [Tooltip("延迟播放时间（秒）")]
+        [Tooltip("延迟播放时间（秒�?)]
         [Range(0f, 2f)]
         public float delayTime = 0f;
 
-        [Tooltip("淡入时间（秒）")]
+        [Tooltip("淡入时间（秒�?)]
         [Range(0f, 2f)]
         public float fadeInTime = 0f;
 
-        [Tooltip("淡出时间（秒）")]
+        [Tooltip("淡出时间（秒�?)]
         [Range(0f, 2f)]
         public float fadeOutTime = 0f;
 
         [Title("高级设置")]
-        [Tooltip("音频优先级")]
+        [Tooltip("音频优先�?)]
         [Range(0, 256)]
         public int priority = 128;
 
-        [Tooltip("是否绕过监听器效果")]
+        [Tooltip("是否绕过监听器效�?)]
         public bool bypassListenerEffects = false;
 
         [Tooltip("是否绕过混响效果")]
@@ -84,7 +84,7 @@ namespace SkillSystem.Actions
 
         public void OnEnter(object context)
         {
-            // 音频播放开始逻辑 - 创建AudioSource并开始播放
+            // 音频播放开始逻辑 - 创建AudioSource并开始播�?
         }
 
         public void OnTick(object context, int currentFrame)
@@ -94,7 +94,7 @@ namespace SkillSystem.Actions
 
         public void OnExit(object context)
         {
-            // 音频播放结束逻辑 - 停止播放或淡出结束
+            // 音频播放结束逻辑 - 停止播放或淡出结�?
         }
 
         public override string GetActionName()

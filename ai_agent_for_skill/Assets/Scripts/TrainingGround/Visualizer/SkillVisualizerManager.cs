@@ -6,14 +6,14 @@ using SkillSystem.Runtime;
 namespace TrainingGround.Visualizer
 {
     /// <summary>
-    /// 技能可视化管理器 - 监听SkillPlayer事件，分发给各个Visualizer
+    /// 技能可视化管理�?- 监听SkillPlayer事件，分发给各个Visualizer
     /// </summary>
     public class SkillVisualizerManager : MonoBehaviour
     {
         [SerializeField] private SkillPlayer targetSkillPlayer;
         [SerializeField] private GameObject casterObject;
 
-        // 可视化器注册表
+        // 可视化器注册�?
         private Dictionary<System.Type, ISkillVisualizer> visualizers = new Dictionary<System.Type, ISkillVisualizer>();
 
         // 当前活动的Action及其帧数
@@ -29,7 +29,7 @@ namespace TrainingGround.Visualizer
             if (casterObject == null)
                 casterObject = gameObject;
 
-            // 注册所有可视化器
+            // 注册所有可视化�?
             RegisterAllVisualizers();
         }
 
@@ -59,14 +59,14 @@ namespace TrainingGround.Visualizer
 
         void Update()
         {
-            // 更新所有活动的Action可视化
+            // 更新所有活动的Action可视�?
             UpdateActiveActions();
         }
 
         #region 注册可视化器
 
         /// <summary>
-        /// 注册所有可视化器
+        /// 注册所有可视化�?
         /// </summary>
         private void RegisterAllVisualizers()
         {
@@ -133,7 +133,7 @@ namespace TrainingGround.Visualizer
 
         private void OnFrameChanged(int currentFrame)
         {
-            // 帧变化时在UpdateActiveActions中处理
+            // 帧变化时在UpdateActiveActions中处�?
         }
 
         private void OnActionExecuted(ISkillAction action)
@@ -143,7 +143,7 @@ namespace TrainingGround.Visualizer
             if (visualizer != null)
             {
                 visualizer.VisualizeEnter(action, casterObject);
-                activeActions[action] = 0; // 相对帧从0开始
+                activeActions[action] = 0; // 相对帧从0开�?
                 Debug.Log($"[SkillVisualizerManager] Visualizing action: {action.GetDisplayName()}");
             }
             else
@@ -169,7 +169,7 @@ namespace TrainingGround.Visualizer
             {
                 if (!activeActions.ContainsKey(action))
                 {
-                    // 新Action激活
+                    // 新Action激�?
                     var visualizer = GetVisualizer(action.GetType());
                     if (visualizer != null)
                     {
@@ -194,7 +194,7 @@ namespace TrainingGround.Visualizer
             {
                 if (!currentActions.Contains(kvp.Key))
                 {
-                    // Action已退出
+                    // Action已退�?
                     var visualizer = GetVisualizer(kvp.Key.GetType());
                     visualizer?.VisualizeExit(kvp.Key, casterObject);
                     actionsToRemove.Add(kvp.Key);
@@ -213,7 +213,7 @@ namespace TrainingGround.Visualizer
         #region 公共接口
 
         /// <summary>
-        /// 设置施法者对象
+        /// 设置施法者对�?
         /// </summary>
         public void SetCaster(GameObject caster)
         {
@@ -225,7 +225,7 @@ namespace TrainingGround.Visualizer
         /// </summary>
         public void SetTargetSkillPlayer(SkillPlayer player)
         {
-            // 先取消旧的订阅
+            // 先取消旧的订�?
             if (targetSkillPlayer != null)
             {
                 targetSkillPlayer.OnSkillStarted -= OnSkillStarted;
@@ -247,7 +247,7 @@ namespace TrainingGround.Visualizer
         }
 
         /// <summary>
-        /// 从外部触发Action进入（用于编辑器预览）
+        /// 从外部触发Action进入（用于编辑器预览�?
         /// </summary>
         public void TriggerActionEnter(ISkillAction action)
         {
@@ -267,7 +267,7 @@ namespace TrainingGround.Visualizer
         }
 
         /// <summary>
-        /// 从外部触发Action Tick（用于编辑器预览）
+        /// 从外部触发Action Tick（用于编辑器预览�?
         /// </summary>
         public void TriggerActionTick(ISkillAction action, int relativeFrame)
         {
@@ -301,7 +301,7 @@ namespace TrainingGround.Visualizer
 
         void OnDestroy()
         {
-            // 清理所有可视化器
+            // 清理所有可视化�?
             foreach (var visualizer in visualizers.Values)
             {
                 visualizer.Cleanup();

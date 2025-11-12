@@ -2,7 +2,7 @@
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
     "skillName": "Spinning Slash",
-    "skillDescription": "泰达米尔旋转并穿过他的敌人，造成物理伤害并生成怒气。",
+    "skillDescription": "泰达米尔旋转并穿过他的敌人，造成物理伤害并生成怒气�?,
     "totalDuration": 45,
     "frameRate": 30,
     "tracks": {

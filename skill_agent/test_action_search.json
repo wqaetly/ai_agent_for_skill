@@ -1,0 +1,11 @@
+{
+  "assistant_id": "action-search",
+  "input": {
+    "messages": [
+      {
+        "role": "human",
+        "content": "需要造成持续伤害的Action"
+      }
+    ]
+  }
+}

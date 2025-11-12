@@ -17,7 +17,7 @@ namespace TrainingGround.Visualizer
         {
             Debug.Log($"[AOEVisualizer] Creating AOE effect from {caster.name}");
 
-            // 创建AOE可视化对象
+            // 创建AOE可视化对�?
             GameObject aoeObject = CreateAOEObject(action, caster);
             activeAOEs[action] = aoeObject;
 
@@ -27,7 +27,7 @@ namespace TrainingGround.Visualizer
 
         protected override void OnVisualizeTick(AreaOfEffectAction action, GameObject caster, int relativeFrame)
         {
-            // 持续性AOE可以在这里处理
+            // 持续性AOE可以在这里处�?
             // 目前大多数AOE是瞬时的
         }
 
@@ -49,7 +49,7 @@ namespace TrainingGround.Visualizer
             // 确定AOE中心位置
             Vector3 center = DetermineAOECenter(action, caster);
 
-            // 创建AOE指示器（地面圆环）
+            // 创建AOE指示器（地面圆环�?
             GameObject aoeObject = CreateGroundCircle(center, action.radius);
             aoeObject.name = "AOE_Indicator";
 
@@ -78,7 +78,7 @@ namespace TrainingGround.Visualizer
                 }
                 else
                 {
-                    // 默认使用施法者前方
+                    // 默认使用施法者前�?
                     return caster.transform.position + caster.transform.forward * 5f;
                 }
             }
@@ -91,10 +91,10 @@ namespace TrainingGround.Visualizer
             circle.transform.position = center + Vector3.up * 0.1f; // 稍微抬高避免z-fighting
             circle.transform.localScale = new Vector3(radius * 2f, 0.05f, radius * 2f);
 
-            // 移除碰撞体
+            // 移除碰撞�?
             Object.Destroy(circle.GetComponent<Collider>());
 
-            // 设置材质（半透明红色） - 使用MaterialLibrary
+            // 设置材质（半透明红色�?- 使用MaterialLibrary
             var renderer = circle.GetComponent<Renderer>();
             if (renderer != null)
             {
@@ -106,7 +106,7 @@ namespace TrainingGround.Visualizer
 
         private void ApplyAOEDamage(AreaOfEffectAction action, GameObject caster, Vector3 center)
         {
-            // 获取范围内的所有实体
+            // 获取范围内的所有实�?
             var entitiesInRadius = EntityManager.Instance.GetEntitiesInRadius(center, action.radius);
 
             int hitCount = 0;
@@ -125,7 +125,7 @@ namespace TrainingGround.Visualizer
                     Debug.Log($"[AOEVisualizer] Hit {entity.EntityName} with {action.damagePerTick:F1} damage");
                 }
 
-                // 达到最大目标数量
+                // 达到最大目标数�?
                 if (hitCount >= action.maxTargets)
                     break;
             }
@@ -160,7 +160,7 @@ namespace TrainingGround.Visualizer
         public void Initialize(float radius, float durationSeconds)
         {
             targetRadius = radius;
-            duration = Mathf.Max(durationSeconds, 0.5f); // 至少0.5秒
+            duration = Mathf.Max(durationSeconds, 0.5f); // 至少0.5�?
             initialScale = new Vector3(0.1f, transform.localScale.y, 0.1f);
             transform.localScale = initialScale;
         }
@@ -169,7 +169,7 @@ namespace TrainingGround.Visualizer
         {
             elapsedTime += Time.deltaTime;
 
-            // 扩散动画（前半段）
+            // 扩散动画（前半段�?
             if (elapsedTime < duration * 0.3f)
             {
                 float t = elapsedTime / (duration * 0.3f);
@@ -179,7 +179,7 @@ namespace TrainingGround.Visualizer
             // 保持（中段）
             else if (elapsedTime < duration * 0.7f)
             {
-                // 保持最大半径
+                // 保持最大半�?
             }
             // 消失动画（后段）
             else if (elapsedTime < duration)
@@ -197,7 +197,7 @@ namespace TrainingGround.Visualizer
             }
             else
             {
-                // 时间到，销毁
+                // 时间到，销�?
                 Destroy(gameObject);
             }
         }

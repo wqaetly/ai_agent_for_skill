@@ -6,9 +6,9 @@ namespace SkillSystem.Actions
 {
     /// <summary>
     /// 治疗行为脚本
-    /// 功能概述：为目标单位恢复生命值或法力值，支持瞬间治疗和持续治疗两种模式。
-    /// 可以配置治疗数值、治疗类型、过量治疗转换、治疗加成等参数。
-    /// 适用于DOTA2中的各种恢复技能，如治疗术、回血药剂、生命汲取、魔法恢复等。
+    /// 功能概述：为目标单位恢复生命值或法力值，支持瞬间治疗和持续治疗两种模式�?
+    /// 可以配置治疗数值、治疗类型、过量治疗转换、治疗加成等参数�?
+    /// 适用于DOTA2中的各种恢复技能，如治疗术、回血药剂、生命汲取、魔法恢复等�?
     /// </summary>
     [Serializable]
     [ActionDisplayName("治疗")]
@@ -17,13 +17,13 @@ namespace SkillSystem.Actions
     {
         [BoxGroup("Heal Settings")]
         [LabelText("Heal Type")]
-        /// <summary>治疗类型，决定恢复的资源类型（生命值/法力值/两者）</summary>
+        /// <summary>治疗类型，决定恢复的资源类型（生命�?法力�?两者）</summary>
         public HealType healType = HealType.Health;
 
         [BoxGroup("Heal Settings")]
         [LabelText("Base Heal Amount")]
         [MinValue(0f)]
-        /// <summary>基础治疗量，治疗技能的原始恢复数值</summary>
+        /// <summary>基础治疗量，治疗技能的原始恢复数�?/summary>
         public float baseHealAmount = 150f;
 
         [BoxGroup("Heal Settings")]
@@ -35,12 +35,12 @@ namespace SkillSystem.Actions
         [LabelText("Heal Per Second")]
         [MinValue(0f)]
         [ShowIf("@healMode == HealMode.OverTime")]
-        /// <summary>每秒治疗量，持续治疗模式下每秒恢复的数值</summary>
+        /// <summary>每秒治疗量，持续治疗模式下每秒恢复的数�?/summary>
         public float healPerSecond = 25f;
 
         [BoxGroup("Scaling Settings")]
         [LabelText("Scale with Caster Level")]
-        /// <summary>根据施法者等级缩放，true时治疗量会受施法者等级影响</summary>
+        /// <summary>根据施法者等级缩放，true时治疗量会受施法者等级影�?/summary>
         public bool scaleWithCasterLevel = false;
 
         [BoxGroup("Scaling Settings")]
@@ -71,7 +71,7 @@ namespace SkillSystem.Actions
         [LabelText("Overheal Shield Duration")]
         [MinValue(0f)]
         [ShowIf("allowOverheal")]
-        /// <summary>过量治疗护盾持续时间，过量治疗转换为临时护盾的持续时间</summary>
+        /// <summary>过量治疗护盾持续时间，过量治疗转换为临时护盾的持续时�?/summary>
         public float overhealShieldDuration = 10f;
 
         [BoxGroup("Overheal Settings")]
@@ -83,7 +83,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Visual Settings")]
         [LabelText("Heal Effect")]
-        /// <summary>治疗特效，播放在目标身上的治疗视觉效果</summary>
+        /// <summary>治疗特效，播放在目标身上的治疗视觉效�?/summary>
         public GameObject healEffect;
 
         [BoxGroup("Visual Settings")]
@@ -94,7 +94,7 @@ namespace SkillSystem.Actions
 
         [BoxGroup("Audio Settings")]
         [LabelText("Heal Sound")]
-        /// <summary>治疗音效，播放治疗时的音频效果</summary>
+        /// <summary>治疗音效，播放治疗时的音频效�?/summary>
         public AudioClip healSound;
 
         [BoxGroup("Target Settings")]
@@ -105,7 +105,7 @@ namespace SkillSystem.Actions
         [BoxGroup("Target Settings")]
         [LabelText("Max Targets")]
         [MinValue(1)]
-        /// <summary>最大目标数量，同时可以治疗的单位数量上限</summary>
+        /// <summary>最大目标数量，同时可以治疗的单位数量上�?/summary>
         public int maxTargets = 1;
 
         [BoxGroup("Target Settings")]
@@ -142,7 +142,7 @@ namespace SkillSystem.Actions
             }
             else
             {
-                // 持续治疗初始化
+                // 持续治疗初始�?
                 remainingHealTime = duration * Time.fixedDeltaTime;
                 nextHealTick = 0f;
 
@@ -166,7 +166,7 @@ namespace SkillSystem.Actions
                 if (currentTime >= nextHealTick && remainingHealTime > 0f)
                 {
                     ApplyHealTick();
-                    nextHealTick = currentTime + 1f; // 每秒治疗一次
+                    nextHealTick = currentTime + 1f; // 每秒治疗一�?
                     remainingHealTime -= 1f;
                 }
             }
@@ -194,9 +194,9 @@ namespace SkillSystem.Actions
             // 播放治疗特效
             PlayHealEffects();
 
-            // 在实际项目中，这里会：
+            // 在实际项目中，这里会�?
             // 1. 获取目标单位
-            // 2. 恢复对应的资源（生命值/法力值）
+            // 2. 恢复对应的资源（生命�?法力值）
             // 3. 处理过量治疗逻辑
             // 4. 更新UI显示
 
@@ -211,7 +211,7 @@ namespace SkillSystem.Actions
             }
         }
 
-        /// <summary>应用持续治疗的单次治疗</summary>
+        /// <summary>应用持续治疗的单次治�?/summary>
         private void ApplyHealTick()
         {
             float healAmount = healPerSecond;
@@ -219,7 +219,7 @@ namespace SkillSystem.Actions
             if (scaleWithSpellPower)
             {
                 // 模拟法术强度加成
-                float spellPower = 100f; // 模拟数值
+                float spellPower = 100f; // 模拟数�?
                 healAmount += spellPower * spellPowerRatio;
             }
 
@@ -227,7 +227,7 @@ namespace SkillSystem.Actions
         }
 
         /// <summary>计算最终治疗量</summary>
-        /// <returns>经过各种加成后的最终治疗数值</returns>
+        /// <returns>经过各种加成后的最终治疗数�?/returns>
         private float CalculateFinalHealAmount()
         {
             float finalAmount = baseHealAmount;
@@ -249,14 +249,14 @@ namespace SkillSystem.Actions
             return finalAmount;
         }
 
-        /// <summary>计算过量治疗数值</summary>
-        /// <param name="healAmount">治疗数值</param>
-        /// <returns>过量治疗的数值</returns>
+        /// <summary>计算过量治疗数�?/summary>
+        /// <param name="healAmount">治疗数�?/param>
+        /// <returns>过量治疗的数�?/returns>
         private float CalculateOverhealAmount(float healAmount)
         {
-            // 在实际项目中，这里会获取目标的当前生命值和最大生命值
-            float currentHealth = 800f; // 模拟当前生命值
-            float maxHealth = 1000f;    // 模拟最大生命值
+            // 在实际项目中，这里会获取目标的当前生命值和最大生命�?
+            float currentHealth = 800f; // 模拟当前生命�?
+            float maxHealth = 1000f;    // 模拟最大生命�?
 
             float availableHealth = maxHealth - currentHealth;
             if (healAmount > availableHealth)
@@ -300,9 +300,9 @@ namespace SkillSystem.Actions
     /// <summary>治疗类型枚举</summary>
     public enum HealType
     {
-        Health,     // 生命值
-        Mana,       // 法力值
-        Both        // 同时恢复生命值和法力值
+        Health,     // 生命�?
+        Mana,       // 法力�?
+        Both        // 同时恢复生命值和法力�?
     }
 
     /// <summary>治疗模式枚举</summary>

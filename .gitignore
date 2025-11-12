@@ -241,37 +241,45 @@ cython_debug/
 # SkillRAG - AI Models & Data
 # ===========================
 # Model files (large binary files)
-SkillRAG/Data/models/**/*.safetensors
-SkillRAG/Data/models/**/*.bin
-SkillRAG/Data/models/**/*.onnx
-SkillRAG/Data/models/**/*.pt
-SkillRAG/Data/models/**/*.pth
-SkillRAG/Data/models/**/*.h5
+skill_agent/Data/models/**/*.safetensors
+skill_agent/Data/models/**/*.bin
+skill_agent/Data/models/**/*.onnx
+skill_agent/Data/models/**/*.pt
+skill_agent/Data/models/**/*.pth
+skill_agent/Data/models/**/*.h5
 
 # But keep config files for models
-!SkillRAG/Data/models/**/*.json
-!SkillRAG/Data/models/**/*.txt
-!SkillRAG/Data/models/**/*.md
+!skill_agent/Data/models/**/*.json
+!skill_agent/Data/models/**/*.txt
+!skill_agent/Data/models/**/*.md
 
 # Embeddings cache
-SkillRAG/Data/embeddings_cache/
+skill_agent/Data/embeddings_cache/
 
 # Vector database
-SkillRAG/Data/vector_db/
+skill_agent/Data/vector_db/
 
 # Generated index files
-SkillRAG/Data/skill_index.json
+skill_agent/Data/skill_index.json
 
 # Log files
-SkillRAG/Data/*.log
+skill_agent/Data/*.log
 *.log
 
 # ===========================
-# WebUI
+# WebUI (Next.js)
 # ===========================
 # LangGraph server logs
-SkillRAG/langgraph_server.log
+skill_agent/langgraph_server.log
 
 # Process ID files
-SkillRAG/.langgraph.pid
-SkillRAG/.webui.pid
+skill_agent/.langgraph.pid
+skill_agent/.webui.pid
+
+# Next.js
+webui/.next/
+webui/out/
+webui/node_modules/
+webui/.env*.local
+webui/next-env.d.ts
+webui/.vercel

@@ -19,7 +19,7 @@ namespace TrainingGround.Visualizer
             // 记录起始位置
             startPositions[action] = caster.transform.position;
 
-            // 创建轨迹预测线
+            // 创建轨迹预测�?
             CreateTrajectoryLine(action, caster);
         }
 
@@ -56,7 +56,7 @@ namespace TrainingGround.Visualizer
             material.color = new Color(0f, 1f, 1f, 0.5f); // 青色半透明
             lineRenderer.material = material;
 
-            // 1秒后销毁
+            // 1秒后销�?
             Object.Destroy(lineObject, 1f);
         }
 
@@ -112,12 +112,12 @@ namespace TrainingGround.Visualizer
             float currentTime = relativeFrame / 30f;
             float t = Mathf.Clamp01(currentTime / totalDuration);
 
-            // 根据移动类型选择插值方式
+            // 根据移动类型选择插值方�?
             Vector3 newPosition;
             switch (action.movementType)
             {
                 case MovementType.Dash:
-                    // 快速移动（EaseOut）
+                    // 快速移动（EaseOut�?
                     newPosition = Vector3.Lerp(startPos, endPos, EaseOut(t));
                     break;
 
@@ -128,7 +128,7 @@ namespace TrainingGround.Visualizer
 
                 case MovementType.TowardsTarget:
                 case MovementType.Knockback:
-                    // 线性移动
+                    // 线性移�?
                     newPosition = Vector3.Lerp(startPos, endPos, t);
                     break;
 
@@ -157,7 +157,7 @@ namespace TrainingGround.Visualizer
 
         private void CreateAfterimage(GameObject caster)
         {
-            // 创建简单的残影（半透明克隆）
+            // 创建简单的残影（半透明克隆�?
             var renderers = caster.GetComponentsInChildren<Renderer>();
             foreach (var renderer in renderers)
             {
@@ -167,7 +167,7 @@ namespace TrainingGround.Visualizer
                 afterimage.transform.rotation = renderer.transform.rotation;
                 afterimage.transform.localScale = renderer.transform.lossyScale;
 
-                // 移除碰撞体
+                // 移除碰撞�?
                 Object.Destroy(afterimage.GetComponent<Collider>());
 
                 // 设置半透明材质
@@ -187,7 +187,7 @@ namespace TrainingGround.Visualizer
                     afterimageRenderer.material = material;
                 }
 
-                // 0.5秒后销毁
+                // 0.5秒后销�?
                 Object.Destroy(afterimage, 0.5f);
             }
         }

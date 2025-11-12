@@ -1,0 +1,313 @@
+{
+    "version": "1.0",
+    "exportTime": "2025-11-10T19:17:07.1941913+08:00",
+    "action": {
+        "typeName": "UnitTypeCappedDamageAction",
+        "fullTypeName": "SkillSystem.Actions.UnitTypeCappedDamageAction",
+        "namespaceName": "SkillSystem.Actions",
+        "assemblyName": "Assembly-CSharp",
+        "displayName": "类型伤害上限",
+        "category": "Damage",
+        "description": "这是一个专门针对不同单位类型设置独立伤害上限的伤害计算Action。核心功能是造成基于属性缩放的伤害，并对特定单位类型应用伤害上限，防止对小兵、野怪等非英雄单位造成过高伤害。支持基础伤害、法术强度缩放、最大生命值百分比伤害等多种伤害计算方式，可配置是否随技能等级成长。关键特性是为不同单位类型（英雄、小兵、野怪、建筑、守卫）设置独立的伤害上限值，未配置上限的单位类型不受限制。伤害计算公式为min(基础伤害+属性缩�? 单位类型伤害上限)。典型应用场景包括：赛恩W技能引爆护盾时对小兵野怪的伤害上限、塞拉斯被动对非英雄单位的伤害限制、需要区分PVP和PVE伤害的技能设计。与普通DamageAction的关键区别在于提供了精细化的单位类型伤害控制，特别适合MOBA游戏中需要平衡对英雄和非英雄单位伤害效果的技能�?,
+        "searchText": "类型伤害上限\n这是一个专门针对不同单位类型设置独立伤害上限的伤害计算Action。核心功能是造成基于属性缩放的伤害，并对特定单位类型应用伤害上限，防止对小兵、野怪等非英雄单位造成过高伤害。支持基础伤害、法术强度缩放、最大生命值百分比伤害等多种伤害计算方式，可配置是否随技能等级成长。关键特性是为不同单位类型（英雄、小兵、野怪、建筑、守卫）设置独立的伤害上限值，未配置上限的单位类型不受限制。伤害计算公式为min(基础伤害+属性缩�? 单位类型伤害上限)。典型应用场景包括：赛恩W技能引爆护盾时对小兵野怪的伤害上限、塞拉斯被动对非英雄单位的伤害限制、需要区分PVP和PVE伤害的技能设计。与普通DamageAction的关键区别在于提供了精细化的单位类型伤害控制，特别适合MOBA游戏中需要平衡对英雄和非英雄单位伤害效果的技能。\n关键�? 伤害上限,单位类型伤害,类型限制伤害,Minion Damage Cap,Monster Damage Cap,UnitType Damage,赛恩W,塞拉斯被�?非英雄伤害限�?PVE伤害控制\n分类: Damage\n类型: UnitTypeCappedDamageAction",
+        "parameters": [
+            {
+                "name": "baseDamage",
+                "type": "float",
+                "defaultValue": "40",
+                "label": "Base Damage",
+                "group": "Damage Settings",
+                "infoBox": "基础伤害�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageType",
+                "type": "DamageType",
+                "defaultValue": "Magical",
+                "label": "Damage Type",
+                "group": "Damage Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Physical",
+                    "Magical",
+                    "Pure"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "scaleWithLevel",
+                "type": "bool",
+                "defaultValue": "true",
+                "label": "Scale with Level",
+                "group": "Scaling Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damagePerLevel",
+                "type": "float",
+                "defaultValue": "25",
+                "label": "Damage Per Level",
+                "group": "Scaling Settings",
+                "infoBox": "每级增加的基础伤害",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "spellPowerRatio",
+                "type": "float",
+                "defaultValue": "0.4",
+                "label": "Spell Power Ratio",
+                "group": "Scaling Settings",
+                "infoBox": "法术强度缩放比例�?.4表示40%法强",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxHealthRatio",
+                "type": "float",
+                "defaultValue": "0.14",
+                "label": "Max Health Ratio",
+                "group": "Scaling Settings",
+                "infoBox": "最大生命值缩放比例，0.14表示14%最大生�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "useTargetMaxHealth",
+                "type": "bool",
+                "defaultValue": "false",
+                "label": "Use Target Max Health",
+                "group": "Scaling Settings",
+                "infoBox": "true=使用目标最大生命，false=使用施法者最大生�?,
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageCaps",
+                "type": "UnitTypeDamageCap[]",
+                "defaultValue": "[2 items]",
+                "label": "Damage Caps",
+                "group": "Damage Cap Settings",
+                "infoBox": "为不同单位类型配置伤害上限，未配置的单位类型无伤害上�?,
+                "isArray": true,
+                "isEnum": false,
+                "elementType": "UnitTypeDamageCap",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "targetFilter",
+                "type": "TargetFilter",
+                "defaultValue": "Enemy",
+                "label": "Target Filter",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": true,
+                "elementType": "",
+                "enumValues": [
+                    "Enemy",
+                    "Ally",
+                    "Self",
+                    "All"
+                ],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "maxTargets",
+                "type": "int",
+                "defaultValue": "10",
+                "label": "Max Targets",
+                "group": "Target Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "1",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageRadius",
+                "type": "float",
+                "defaultValue": "5",
+                "label": "Damage Radius",
+                "group": "Target Settings",
+                "infoBox": "伤害半径�?表示单体伤害",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "0",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "damageEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Damage Effect",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "cappedDamageEffect",
+                "type": "GameObject",
+                "defaultValue": "null",
+                "label": "Capped Damage Effect",
+                "group": "Visual Settings",
+                "infoBox": "伤害被上限限制时的特殊视觉效果（可选）",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "effectColor",
+                "type": "Color",
+                "defaultValue": "RGBA(1.00, 0.30, 0.00, 1.00)",
+                "label": "Effect Color",
+                "group": "Visual Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "hitSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Hit Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            },
+            {
+                "name": "cappedHitSound",
+                "type": "AudioClip",
+                "defaultValue": "null",
+                "label": "Capped Hit Sound",
+                "group": "Audio Settings",
+                "infoBox": "",
+                "isArray": false,
+                "isEnum": false,
+                "elementType": "",
+                "enumValues": [],
+                "constraints": {
+                    "minValue": "",
+                    "maxValue": "",
+                    "min": "",
+                    "max": ""
+                }
+            }
+        ]
+    }
+}

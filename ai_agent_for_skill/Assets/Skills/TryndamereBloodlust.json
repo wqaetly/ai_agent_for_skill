@@ -2,7 +2,7 @@
     "$id": 0,
     "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
     "skillName": "Bloodlust",
-    "skillDescription": "泰达米尔消耗他的怒气，回复生命值。回复量基于消耗的怒气值和法术强度。",
+    "skillDescription": "泰达米尔消耗他的怒气，回复生命值。回复量基于消耗的怒气值和法术强度�?,
     "totalDuration": 60,
     "frameRate": 30,
     "tracks": {
