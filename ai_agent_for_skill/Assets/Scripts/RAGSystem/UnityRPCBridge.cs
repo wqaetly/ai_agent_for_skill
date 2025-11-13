@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace RAGSystem
@@ -16,7 +15,7 @@ namespace RAGSystem
         [SerializeField] private UnityRPCClient rpcClient;
 
         // 委托定义
-        public delegate UniTask<JObject> RPCHandler(JObject @params);
+        public delegate UniTask<Dictionary<string, object>> RPCHandler(Dictionary<string, object> @params);
 
         // 注册的RPC方法
         private Dictionary<string, RPCHandler> rpcMethods = new Dictionary<string, RPCHandler>();
@@ -62,7 +61,7 @@ namespace RAGSystem
         /// <summary>
         /// 处理来自服务器的RPC调用
         /// </summary>
-        public async UniTask<JObject> HandleRPCCall(string method, JObject @params)
+        public async UniTask<Dictionary<string, object>> HandleRPCCall(string method, Dictionary<string, object> @params)
         {
             if (!rpcMethods.TryGetValue(method, out var handler))
             {
@@ -77,12 +76,12 @@ namespace RAGSystem
         /// <summary>
         /// 创建技能
         /// </summary>
-        private async UniTask<JObject> HandleCreateSkill(JObject @params)
+        private async UniTask<Dictionary<string, object>> HandleCreateSkill(Dictionary<string, object> @params)
         {
             try
             {
-                string skillName = @params["skillName"]?.ToString();
-                JObject config = @params["config"] as JObject;
+                string skillName = @params.ContainsKey("skillName") ? @params["skillName"]?.ToString() : null;
+                var config = @params.ContainsKey("config") ? @params["config"] as Dictionary<string, object> : null;
 
                 Debug.Log($"[RPCBridge] Creating skill: {skillName}");
 
@@ -90,7 +89,7 @@ namespace RAGSystem
                 // 例如：SkillEditorWindow.CreateSkillFromJSON(skillName, config.ToString());
 
                 // 临时返回成功响应
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = true,
                     ["skill_id"] = Guid.NewGuid().ToString(),
@@ -101,7 +100,7 @@ namespace RAGSystem
             catch (Exception e)
             {
                 Debug.LogError($"[RPCBridge] CreateSkill error: {e.Message}");
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = false,
                     ["error"] = e.Message
@@ -112,18 +111,18 @@ namespace RAGSystem
         /// <summary>
         /// 更新技能
         /// </summary>
-        private async UniTask<JObject> HandleUpdateSkill(JObject @params)
+        private async UniTask<Dictionary<string, object>> HandleUpdateSkill(Dictionary<string, object> @params)
         {
             try
             {
-                string skillId = @params["skillId"]?.ToString();
-                JObject config = @params["config"] as JObject;
+                string skillId = @params.ContainsKey("skillId") ? @params["skillId"]?.ToString() : null;
+                var config = @params.ContainsKey("config") ? @params["config"] as Dictionary<string, object> : null;
 
                 Debug.Log($"[RPCBridge] Updating skill: {skillId}");
 
                 // TODO: 实现技能更新逻辑
 
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = true,
                     ["skill_id"] = skillId,
@@ -133,7 +132,7 @@ namespace RAGSystem
             catch (Exception e)
             {
                 Debug.LogError($"[RPCBridge] UpdateSkill error: {e.Message}");
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = false,
                     ["error"] = e.Message
@@ -144,17 +143,17 @@ namespace RAGSystem
         /// <summary>
         /// 删除技能
         /// </summary>
-        private async UniTask<JObject> HandleDeleteSkill(JObject @params)
+        private async UniTask<Dictionary<string, object>> HandleDeleteSkill(Dictionary<string, object> @params)
         {
             try
             {
-                string skillId = @params["skillId"]?.ToString();
+                string skillId = @params.ContainsKey("skillId") ? @params["skillId"]?.ToString() : null;
 
                 Debug.Log($"[RPCBridge] Deleting skill: {skillId}");
 
                 // TODO: 实现技能删除逻辑
 
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = true,
                     ["skill_id"] = skillId,
@@ -164,7 +163,7 @@ namespace RAGSystem
             catch (Exception e)
             {
                 Debug.LogError($"[RPCBridge] DeleteSkill error: {e.Message}");
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = false,
                     ["error"] = e.Message
@@ -175,22 +174,22 @@ namespace RAGSystem
         /// <summary>
         /// 获取技能列表
         /// </summary>
-        private async UniTask<JObject> HandleGetSkillList(JObject @params)
+        private async UniTask<Dictionary<string, object>> HandleGetSkillList(Dictionary<string, object> @params)
         {
             try
             {
                 Debug.Log("[RPCBridge] Getting skill list");
 
                 // TODO: 实现获取技能列表逻辑
-                var skills = new JArray
+                var skills = new List<object>
                 {
-                    new JObject
+                    new Dictionary<string, object>
                     {
                         ["skill_id"] = "skill_001",
                         ["skill_name"] = "FireBall",
                         ["file_path"] = "Assets/Skills/FireBall.json"
                     },
-                    new JObject
+                    new Dictionary<string, object>
                     {
                         ["skill_id"] = "skill_002",
                         ["skill_name"] = "IceBlast",
@@ -198,7 +197,7 @@ namespace RAGSystem
                     }
                 };
 
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = true,
                     ["skills"] = skills,
@@ -208,7 +207,7 @@ namespace RAGSystem
             catch (Exception e)
             {
                 Debug.LogError($"[RPCBridge] GetSkillList error: {e.Message}");
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = false,
                     ["error"] = e.Message
@@ -219,19 +218,19 @@ namespace RAGSystem
         /// <summary>
         /// 验证技能配置
         /// </summary>
-        private async UniTask<JObject> HandleValidateConfig(JObject @params)
+        private async UniTask<Dictionary<string, object>> HandleValidateConfig(Dictionary<string, object> @params)
         {
             try
             {
-                JObject config = @params["config"] as JObject;
+                var config = @params.ContainsKey("config") ? @params["config"] as Dictionary<string, object> : null;
 
                 Debug.Log("[RPCBridge] Validating config");
 
                 // TODO: 实现配置验证逻辑
                 bool isValid = true;
-                var errors = new JArray();
+                var errors = new List<object>();
 
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["valid"] = isValid,
                     ["errors"] = errors
@@ -240,10 +239,10 @@ namespace RAGSystem
             catch (Exception e)
             {
                 Debug.LogError($"[RPCBridge] ValidateConfig error: {e.Message}");
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["valid"] = false,
-                    ["errors"] = new JArray { e.Message }
+                    ["errors"] = new List<object> { e.Message }
                 };
             }
         }
@@ -251,18 +250,18 @@ namespace RAGSystem
         /// <summary>
         /// 应用参数推荐
         /// </summary>
-        private async UniTask<JObject> HandleApplyParameters(JObject @params)
+        private async UniTask<Dictionary<string, object>> HandleApplyParameters(Dictionary<string, object> @params)
         {
             try
             {
-                string actionType = @params["actionType"]?.ToString();
-                JObject parameters = @params["parameters"] as JObject;
+                string actionType = @params.ContainsKey("actionType") ? @params["actionType"]?.ToString() : null;
+                var parameters = @params.ContainsKey("parameters") ? @params["parameters"] as Dictionary<string, object> : null;
 
                 Debug.Log($"[RPCBridge] Applying parameters to {actionType}");
 
                 // TODO: 实现参数应用逻辑
 
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = true,
                     ["action_type"] = actionType,
@@ -272,7 +271,7 @@ namespace RAGSystem
             catch (Exception e)
             {
                 Debug.LogError($"[RPCBridge] ApplyParameters error: {e.Message}");
-                return new JObject
+                return new Dictionary<string, object>
                 {
                     ["success"] = false,
                     ["error"] = e.Message
@@ -285,7 +284,7 @@ namespace RAGSystem
         /// <summary>
         /// 从Web UI接收到的通知
         /// </summary>
-        public void OnWebNotification(string eventType, JObject data)
+        public void OnWebNotification(string eventType, Dictionary<string, object> data)
         {
             Debug.Log($"[RPCBridge] Web notification: {eventType}");
 

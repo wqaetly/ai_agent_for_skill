@@ -134,7 +134,11 @@ namespace SkillSystem.Editor
             if (track == null)
                 return;
 
-            // 使用IMGUIContainer嵌入SmartActionInspectorEnhanced
+            // RAG功能已迁移到WebUI，使用菜单: Tools → SkillAgent → 打开Web UI
+            // 或访问 http://localhost:3000/rag 进行技能推荐
+
+            // 注释掉原有的SmartActionInspector（已废弃，依赖已删除的EditorRAGClient）
+            /*
             var smartPanelContainer = new IMGUIContainer(() =>
             {
                 try
@@ -153,6 +157,7 @@ namespace SkillSystem.Editor
             });
 
             inspectorContent.Add(smartPanelContainer);
+            */
         }
 
         private void CreateTrackInspector(SkillTrack track, int trackIndex, int currentFrame)

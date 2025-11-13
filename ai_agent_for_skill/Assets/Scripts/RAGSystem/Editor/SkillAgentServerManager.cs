@@ -16,11 +16,11 @@ namespace RAGSystem.Editor
     {
         // ==================== 配置 ====================
 
-        private const string SERVER_SCRIPT_PATH = "快速启动(Unity).bat";  // Unity专用启动脚本
+        private const string SERVER_SCRIPT_PATH = "start_webui.bat";      // 启动脚本（新架构）
         private const string INSTALL_DEPS_SCRIPT = "安装依赖.bat";        // 依赖安装脚本
-        private const string WEB_UI_URL = "http://127.0.0.1:7860";
-        private const int WEB_UI_PORT = 7860;
-        private const int RPC_PORT = 8766;
+        private const string WEB_UI_URL = "http://127.0.0.1:3000";        // WebUI地址（新架构）
+        private const int WEB_UI_PORT = 3000;                             // WebUI端口
+        private const int LANGGRAPH_PORT = 2024;                          // LangGraph后端端口
         private const string PROCESS_ID_KEY = "SkillAgent_ServerProcessID";
 
         private static Process serverProcess;
@@ -35,8 +35,9 @@ namespace RAGSystem.Editor
                 EditorUtility.DisplayDialog(
                     "SkillAgent服务器",
                     "服务器已在运行中！\n\n" +
-                    $"Web UI: {WEB_UI_URL}\n" +
-                    $"RPC端口: {RPC_PORT}",
+                    $"WebUI: {WEB_UI_URL}\n" +
+                    $"WebUI RAG查询: {WEB_UI_URL}/rag\n" +
+                    $"LangGraph API: http://127.0.0.1:{LANGGRAPH_PORT}",
                     "确定"
                 );
                 OpenWebUI();
@@ -165,23 +166,31 @@ namespace RAGSystem.Editor
         [MenuItem("Tools/SkillAgent/打开Web UI (Open Web UI)", priority = 3)]
         public static void OpenWebUI()
         {
-            Application.OpenURL(WEB_UI_URL);
-            Debug.Log($"[SkillAgent] 正在打开浏览器: {WEB_UI_URL}");
+            string ragUrl = $"{WEB_UI_URL}/rag";
+            Application.OpenURL(ragUrl);
+            Debug.Log($"[SkillAgent] 正在打开浏览器: {ragUrl}");
         }
 
         [MenuItem("Tools/SkillAgent/检查服务器状态 (Check Status)", priority = 4)]
         public static void CheckServerStatus()
         {
             bool webUIRunning = IsPortOpen("127.0.0.1", WEB_UI_PORT);
-            bool rpcRunning = IsPortOpen("127.0.0.1", RPC_PORT);
+            bool langgraphRunning = IsPortOpen("127.0.0.1", LANGGRAPH_PORT);
 
             string status = "SkillAgent服务器状态\n\n";
-            status += $"Web UI (端口 {WEB_UI_PORT}): {(webUIRunning ? "✓ 运行中" : "✗ 未运行")}\n";
-            status += $"RPC服务 (端口 {RPC_PORT}): {(rpcRunning ? "✓ 运行中" : "✗ 未运行")}\n";
+            status += $"WebUI (端口 {WEB_UI_PORT}): {(webUIRunning ? "✓ 运行中" : "✗ 未运行")}\n";
+            status += $"LangGraph API (端口 {LANGGRAPH_PORT}): {(langgraphRunning ? "✓ 运行中" : "✗ 未运行")}\n";
 
-            if (webUIRunning || rpcRunning)
+            if (webUIRunning && langgraphRunning)
             {
-                status += $"\n访问地址: {WEB_UI_URL}";
+                status += $"\n✅ 所有服务运行正常！\n";
+                status += $"\nWebUI主页: {WEB_UI_URL}\n";
+                status += $"RAG查询: {WEB_UI_URL}/rag\n";
+                status += $"API文档: http://127.0.0.1:{LANGGRAPH_PORT}/docs";
+            }
+            else if (!webUIRunning && !langgraphRunning)
+            {
+                status += $"\n⚠️ 请先启动服务器！\n菜单: Tools → SkillAgent → 启动服务器";
             }
 
             EditorUtility.DisplayDialog("服务器状态", status, "确定");
@@ -327,7 +336,7 @@ namespace RAGSystem.Editor
         /// </summary>
         private static bool IsServerRunning()
         {
-            return IsPortOpen("127.0.0.1", WEB_UI_PORT) || IsPortOpen("127.0.0.1", RPC_PORT);
+            return IsPortOpen("127.0.0.1", WEB_UI_PORT) || IsPortOpen("127.0.0.1", LANGGRAPH_PORT);
         }
 
         /// <summary>
@@ -377,9 +386,10 @@ namespace RAGSystem.Editor
                     EditorUtility.DisplayDialog(
                         "SkillAgent服务器",
                         "服务器启动成功！\n\n" +
-                        $"Web UI: {WEB_UI_URL}\n" +
-                        $"RPC端口: {RPC_PORT}\n\n" +
-                        "浏览器将自动打开，如未打开请手动访问。",
+                        $"WebUI: {WEB_UI_URL}\n" +
+                        $"RAG查询: {WEB_UI_URL}/rag\n" +
+                        $"LangGraph API: http://127.0.0.1:{LANGGRAPH_PORT}\n\n" +
+                        "浏览器将自动打开到RAG查询页面。",
                         "确定"
                     );
                     return;
@@ -402,61 +412,56 @@ namespace RAGSystem.Editor
         }
 
         /// <summary>
-        /// 杀掉Python进程（清理残留）
+        /// 杀掉Python和Node.js进程（清理残留）
+        /// 注意：这会杀掉所有python.exe和node.exe进程，请谨慎使用
         /// </summary>
         private static void KillPythonProcesses()
         {
             try
             {
-                // 在Windows上查找并杀掉python.exe进程（仅杀掉web_ui.py相关的）
-                Process[] processes = Process.GetProcessesByName("python");
+                // 杀掉 Python 进程（LangGraph服务器）
+                KillProcessByName("python");
+
+                // 杀掉 Node.js 进程（WebUI）
+                KillProcessByName("node");
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[SkillAgent] 清理进程时出错: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 通过进程名杀掉进程
+        /// </summary>
+        private static void KillProcessByName(string processName)
+        {
+            try
+            {
+                Process[] processes = Process.GetProcessesByName(processName);
 
                 foreach (Process process in processes)
                 {
                     try
                     {
-                        // 检查命令行参数是否包含web_ui.py
-                        string commandLine = GetProcessCommandLine(process.Id);
-                        if (commandLine != null && commandLine.Contains("web_ui.py"))
-                        {
-                            process.Kill();
-                            Debug.Log($"[SkillAgent] 已杀掉Python进程: {process.Id}");
-                        }
+                        process.Kill();
+                        Debug.Log($"[SkillAgent] 已杀掉{processName}进程: {process.Id}");
                     }
                     catch
                     {
                         // 忽略无权限的进程
                     }
                 }
+
+                if (processes.Length > 0)
+                {
+                    Debug.Log($"[SkillAgent] 共杀掉 {processes.Length} 个 {processName} 进程");
+                }
             }
             catch (Exception e)
             {
-                Debug.LogWarning($"[SkillAgent] 清理Python进程时出错: {e.Message}");
+                Debug.LogWarning($"[SkillAgent] 杀掉{processName}进程时出错: {e.Message}");
             }
-        }
-
-        /// <summary>
-        /// 获取进程命令行（Windows）
-        /// </summary>
-        private static string GetProcessCommandLine(int processId)
-        {
-            try
-            {
-                using (var searcher = new System.Management.ManagementObjectSearcher(
-                    $"SELECT CommandLine FROM Win32_Process WHERE ProcessId = {processId}"))
-                {
-                    foreach (var obj in searcher.Get())
-                    {
-                        return obj["CommandLine"]?.ToString();
-                    }
-                }
-            }
-            catch
-            {
-                // 忽略错误
-            }
-
-            return null;
         }
 
         // ==================== Unity编辑器关闭时清理 ====================

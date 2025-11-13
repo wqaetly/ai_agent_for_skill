@@ -4,8 +4,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace RAGSystem
@@ -32,8 +30,8 @@ namespace RAGSystem
         private CancellationTokenSource cancellationTokenSource;
 
         // 请求映射（ID -> TaskCompletionSource）
-        private Dictionary<string, UniTaskCompletionSource<JObject>> pendingRequests =
-            new Dictionary<string, UniTaskCompletionSource<JObject>>();
+        private Dictionary<string, UniTaskCompletionSource<Dictionary<string, object>>> pendingRequests =
+            new Dictionary<string, UniTaskCompletionSource<Dictionary<string, object>>>();
 
         // ==================== Unity生命周期 ====================
 
@@ -149,7 +147,7 @@ namespace RAGSystem
         /// <param name="method">方法名</param>
         /// <param name="params">参数（可选）</param>
         /// <returns>结果</returns>
-        public async UniTask<JObject> CallAsync(string method, object @params = null)
+        public async UniTask<Dictionary<string, object>> CallAsync(string method, object @params = null)
         {
             if (!isConnected)
             {
@@ -160,16 +158,16 @@ namespace RAGSystem
             string requestId = Guid.NewGuid().ToString();
 
             // 创建JSON-RPC请求
-            var request = new
+            var request = new Dictionary<string, object>
             {
-                jsonrpc = "2.0",
-                method = method,
-                @params = @params,
-                id = requestId
+                ["jsonrpc"] = "2.0",
+                ["method"] = method,
+                ["params"] = @params,
+                ["id"] = requestId
             };
 
             // 创建等待响应的TaskCompletionSource
-            var tcs = new UniTaskCompletionSource<JObject>();
+            var tcs = new UniTaskCompletionSource<Dictionary<string, object>>();
             pendingRequests[requestId] = tcs;
 
             try
@@ -181,9 +179,9 @@ namespace RAGSystem
                 var responseTask = tcs.Task;
                 var timeoutTask = UniTask.Delay(requestTimeout);
 
-                var completedTask = await UniTask.WhenAny(responseTask, timeoutTask);
+                var (hasTimedOut, _) = await UniTask.WhenAny(responseTask, timeoutTask);
 
-                if (completedTask == 1)
+                if (hasTimedOut)
                 {
                     pendingRequests.Remove(requestId);
                     throw new TimeoutException($"RPC call '{method}' timeout after {requestTimeout}ms");
@@ -210,11 +208,11 @@ namespace RAGSystem
                 throw new InvalidOperationException("Not connected to RPC server");
             }
 
-            var notification = new
+            var notification = new Dictionary<string, object>
             {
-                jsonrpc = "2.0",
-                method = method,
-                @params = @params
+                ["jsonrpc"] = "2.0",
+                ["method"] = method,
+                ["params"] = @params
                 // 注意：通知没有id字段
             };
 
@@ -228,7 +226,8 @@ namespace RAGSystem
         /// </summary>
         private async UniTask SendMessageAsync(object message)
         {
-            string json = JsonConvert.SerializeObject(message);
+            // 使用 Odin 序列化器，输出标准化的 JSON
+            string json = OdinRPCSerializer.Serialize(message, standardize: true);
             byte[] data = Encoding.UTF8.GetBytes(json);
 
             // 4字节长度前缀 + JSON数据
@@ -248,7 +247,7 @@ namespace RAGSystem
         /// <summary>
         /// 接收JSON消息（长度前缀协议）
         /// </summary>
-        private async UniTask<JObject> ReceiveMessageAsync()
+        private async UniTask<Dictionary<string, object>> ReceiveMessageAsync()
         {
             // 读取4字节长度
             byte[] lengthBuffer = new byte[4];
@@ -288,7 +287,8 @@ namespace RAGSystem
             string json = Encoding.UTF8.GetString(dataBuffer);
             Debug.Log($"[UnityRPC] Received: {json}");
 
-            return JObject.Parse(json);
+            // 使用 Odin 序列化器反序列化
+            return OdinRPCSerializer.Deserialize<Dictionary<string, object>>(json);
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace RAGSystem
                     var message = await ReceiveMessageAsync();
 
                     // 处理响应
-                    if (message.ContainsKey("id") && message["id"].Type != JTokenType.Null)
+                    if (message.ContainsKey("id") && message["id"] != null)
                     {
                         string responseId = message["id"].ToString();
 
@@ -313,10 +313,15 @@ namespace RAGSystem
 
                             if (message.ContainsKey("error"))
                             {
-                                var error = message["error"];
-                                var exception = new Exception(
-                                    $"RPC Error: {error["message"]} (code: {error["code"]})"
-                                );
+                                var error = message["error"] as Dictionary<string, object>;
+                                var errorMessage = error != null && error.ContainsKey("message")
+                                    ? error["message"].ToString()
+                                    : "Unknown error";
+                                var errorCode = error != null && error.ContainsKey("code")
+                                    ? error["code"].ToString()
+                                    : "-1";
+
+                                var exception = new Exception($"RPC Error: {errorMessage} (code: {errorCode})");
                                 tcs.TrySetException(exception);
                             }
                             else
@@ -345,10 +350,10 @@ namespace RAGSystem
         /// <summary>
         /// 处理服务端通知
         /// </summary>
-        private void HandleNotification(JObject message)
+        private void HandleNotification(Dictionary<string, object> message)
         {
-            string method = message["method"]?.ToString();
-            var @params = message["params"] as JObject;
+            string method = message.ContainsKey("method") ? message["method"]?.ToString() : null;
+            var @params = message.ContainsKey("params") ? message["params"] as Dictionary<string, object> : null;
 
             Debug.Log($"[UnityRPC] Notification: {method}");
 
@@ -366,7 +371,15 @@ namespace RAGSystem
             try
             {
                 var response = await CallAsync("ping");
-                return response["result"]["pong"].Value<bool>();
+                if (response.ContainsKey("result"))
+                {
+                    var result = response["result"] as Dictionary<string, object>;
+                    if (result != null && result.ContainsKey("pong"))
+                    {
+                        return Convert.ToBoolean(result["pong"]);
+                    }
+                }
+                return false;
             }
             catch (Exception e)
             {
@@ -378,10 +391,10 @@ namespace RAGSystem
         /// <summary>
         /// 获取服务器信息
         /// </summary>
-        public async UniTask<JObject> GetServerInfoAsync()
+        public async UniTask<Dictionary<string, object>> GetServerInfoAsync()
         {
             var response = await CallAsync("get_server_info");
-            return response["result"] as JObject;
+            return response.ContainsKey("result") ? response["result"] as Dictionary<string, object> : null;
         }
 
         // ==================== 属性 ====================

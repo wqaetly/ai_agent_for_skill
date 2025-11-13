@@ -202,7 +202,16 @@ async def root():
         "endpoints": {
             "threads": "/threads/{thread_id}/runs/stream",
             "assistants": "/assistants",
-            "health": "/health"
+            "health": "/health",
+            "rag": {
+                "search": "/rag/search",
+                "recommend_actions": "/rag/recommend-actions",
+                "recommend_parameters": "/rag/recommend-parameters",
+                "rebuild_index": "/rag/index/rebuild",
+                "stats": "/rag/index/stats",
+                "clear_cache": "/rag/cache",
+                "health": "/rag/health"
+            }
         }
     }
 
@@ -381,15 +390,263 @@ async def get_thread(thread_id: str):
     }
 
 
+# ==================== RAG 专用端点 ====================
+
+class RAGSearchRequest(BaseModel):
+    """RAG搜索请求"""
+    query: str = Field(..., description="搜索查询文本")
+    top_k: int = Field(5, description="返回结果数量")
+    filters: Optional[Dict[str, Any]] = Field(None, description="过滤条件")
+
+
+class RAGActionRecommendRequest(BaseModel):
+    """Action推荐请求"""
+    context: str = Field(..., description="上下文描述")
+    top_k: int = Field(3, description="推荐数量")
+
+
+class RAGParameterRecommendRequest(BaseModel):
+    """参数推荐请求"""
+    action_type: str = Field(..., description="Action类型名称")
+    skill_context: Optional[str] = Field(None, description="技能上下文")
+    parameter_name: Optional[str] = Field(None, description="参数名称")
+
+
+@app.post("/rag/search")
+async def rag_search(request: RAGSearchRequest):
+    """
+    技能语义搜索
+
+    根据自然语言查询搜索相似的技能配置
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        logger.info(f"RAG search: query='{request.query}', top_k={request.top_k}")
+
+        engine = get_rag_engine()
+        results = engine.search_skills(
+            query=request.query,
+            top_k=request.top_k,
+            filters=request.filters,
+            return_details=True
+        )
+
+        return {
+            "success": True,
+            "query": request.query,
+            "results": results,
+            "count": len(results)
+        }
+
+    except Exception as e:
+        logger.error(f"RAG search error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/rag/recommend-actions")
+async def rag_recommend_actions(request: RAGActionRecommendRequest):
+    """
+    Action类型智能推荐
+
+    根据上下文描述推荐合适的Action类型
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        logger.info(f"Action recommendation: context='{request.context}'")
+
+        engine = get_rag_engine()
+        recommendations = engine.recommend_actions(
+            context=request.context,
+            top_k=request.top_k
+        )
+
+        return {
+            "success": True,
+            "context": request.context,
+            "recommendations": recommendations,
+            "count": len(recommendations)
+        }
+
+    except Exception as e:
+        logger.error(f"Action recommendation error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/rag/recommend-parameters")
+async def rag_recommend_parameters(request: RAGParameterRecommendRequest):
+    """
+    参数智能推荐（原Unity Inspector功能）
+
+    为指定Action类型推荐合适的参数配置
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        logger.info(f"Parameter recommendation: action_type='{request.action_type}'")
+
+        engine = get_rag_engine()
+
+        # 搜索包含该Action类型的技能
+        action_search_results = engine.search_actions(
+            query=request.action_type,
+            top_k=5
+        )
+
+        # 提取参数示例
+        parameter_examples = []
+        for result in action_search_results:
+            if 'action_data' in result:
+                action_data = result['action_data']
+                if 'parameters' in action_data:
+                    parameter_examples.append({
+                        "action_type": result.get('actionType', request.action_type),
+                        "parameters": action_data['parameters'],
+                        "source_skill": result.get('skill_name', 'Unknown'),
+                        "similarity": result.get('similarity', 0.0)
+                    })
+
+        return {
+            "success": True,
+            "action_type": request.action_type,
+            "parameter_examples": parameter_examples,
+            "count": len(parameter_examples)
+        }
+
+    except Exception as e:
+        logger.error(f"Parameter recommendation error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/rag/index/rebuild")
+async def rag_rebuild_index():
+    """
+    重建RAG索引
+
+    重新索引所有技能配置文件
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        logger.info("Rebuilding RAG index...")
+
+        engine = get_rag_engine()
+
+        # 重建技能索引
+        skill_result = engine.index_skills(force_rebuild=True)
+
+        # 重建Action索引
+        action_result = engine.index_actions(force_rebuild=True)
+
+        # 重建结构化索引
+        structured_result = engine.rebuild_structured_index(force=True)
+
+        return {
+            "success": True,
+            "skill_index": skill_result,
+            "action_index": action_result,
+            "structured_index": structured_result,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Index rebuild error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/rag/index/stats")
+async def rag_index_stats():
+    """
+    获取RAG索引统计信息
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        engine = get_rag_engine()
+        stats = engine.get_statistics()
+
+        return {
+            "success": True,
+            "statistics": stats,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Stats retrieval error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/rag/cache")
+async def rag_clear_cache():
+    """
+    清空RAG查询缓存
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        engine = get_rag_engine()
+
+        # 清空查询缓存
+        if hasattr(engine, '_query_cache') and engine._query_cache is not None:
+            cache_size = len(engine._query_cache)
+            engine._query_cache.clear()
+            logger.info(f"Cleared {cache_size} cached queries")
+        else:
+            cache_size = 0
+            logger.info("Query cache is disabled or empty")
+
+        return {
+            "success": True,
+            "cleared_entries": cache_size,
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.error(f"Cache clear error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/rag/health")
+async def rag_health_check():
+    """
+    RAG服务健康检查
+
+    与 webui/src/lib/service-status.ts 对接
+    """
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        engine = get_rag_engine()
+        stats = engine.get_statistics()
+
+        return {
+            "status": "healthy",
+            "indexed_skills": stats.get("total_skills", 0),
+            "indexed_actions": stats.get("total_actions", 0),
+            "cache_enabled": hasattr(engine, '_query_cache') and engine._query_cache is not None,
+            "last_index_time": stats.get("last_index_time"),
+            "timestamp": datetime.now().isoformat()
+        }
+
+    except Exception as e:
+        logger.warning(f"RAG health check failed: {e}")
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+
 # ==================== 主函数 ====================
 
 def main():
     """启动服务器"""
     host = os.getenv("LANGGRAPH_HOST", "0.0.0.0")
     port = int(os.getenv("LANGGRAPH_PORT", "2024"))
-    
+
     logger.info(f"Starting LangGraph server on {host}:{port}")
-    
+
     uvicorn.run(
         app,
         host=host,

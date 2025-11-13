@@ -45,7 +45,7 @@ namespace SkillSystem.RAG
         /// <param name="maxResults">最大返回数量</param>
         /// <returns>增强后的推荐列表</returns>
         public List<EnhancedActionRecommendation> EnhanceRecommendations(
-            List<EditorRAGClient.ActionRecommendation> recommendations,
+            List<RAGClient.ActionRecommendation> recommendations,
             string context,
             List<string> existingActions = null,
             bool filterInvalid = false,
@@ -84,8 +84,8 @@ namespace SkillSystem.RAG
         /// <summary>
         /// 快速过滤互斥Action（用于实时推荐）
         /// </summary>
-        public List<EditorRAGClient.ActionRecommendation> QuickFilterExclusive(
-            List<EditorRAGClient.ActionRecommendation> recommendations)
+        public List<RAGClient.ActionRecommendation> QuickFilterExclusive(
+            List<RAGClient.ActionRecommendation> recommendations)
         {
             return validator.FilterExclusiveActions(recommendations);
         }

@@ -31,7 +31,7 @@ namespace SkillSystem.RAG
         /// <param name="existingActions">已存在的Action类型（用于约束检查）</param>
         /// <returns>增强后的推荐列表</returns>
         public List<EnhancedActionRecommendation> ScoreRecommendations(
-            List<EditorRAGClient.ActionRecommendation> recommendations,
+            List<RAGClient.ActionRecommendation> recommendations,
             string context,
             List<string> existingActions = null)
         {

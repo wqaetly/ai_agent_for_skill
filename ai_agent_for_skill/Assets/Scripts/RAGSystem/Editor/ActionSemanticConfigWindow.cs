@@ -232,9 +232,9 @@ namespace SkillSystem.RAG
         private void TestScoringSystem()
         {
             // 创建模拟推荐数据
-            var mockRecommendations = new List<EditorRAGClient.ActionRecommendation>
+            var mockRecommendations = new List<RAGClient.ActionRecommendation>
             {
-                new EditorRAGClient.ActionRecommendation
+                new RAGClient.ActionRecommendation
                 {
                     action_type = "DamageAction",
                     display_name = "伤害",
@@ -242,7 +242,7 @@ namespace SkillSystem.RAG
                     description = "对目标造成伤害",
                     semantic_similarity = 0.85f
                 },
-                new EditorRAGClient.ActionRecommendation
+                new RAGClient.ActionRecommendation
                 {
                     action_type = "ShieldAction",
                     display_name = "护盾",
@@ -250,7 +250,7 @@ namespace SkillSystem.RAG
                     description = "为目标提供护盾",
                     semantic_similarity = 0.65f
                 },
-                new EditorRAGClient.ActionRecommendation
+                new RAGClient.ActionRecommendation
                 {
                     action_type = "MovementAction",
                     display_name = "位移",

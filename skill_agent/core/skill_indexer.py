@@ -11,6 +11,8 @@ from pathlib import Path
 from datetime import datetime
 import hashlib
 
+from core.odin_json_parser import OdinJsonParser
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,6 +31,9 @@ class SkillIndexer:
         self.index_cache_path = config.get("index_cache", "../Data/skill_index.json")
         self.index_fields = config.get("index_fields", ["skillName", "skillDescription", "skillId", "actions"])
         self.index_action_details = config.get("index_action_details", True)
+
+        # 初始化 Odin JSON 解析器
+        self.odin_parser = OdinJsonParser()
 
         # 确保技能目录存在
         if not os.path.exists(self.skills_directory):
@@ -74,7 +79,7 @@ class SkillIndexer:
 
     def _parse_odin_json(self, json_data: dict) -> Dict[str, Any]:
         """
-        解析Odin序列化的JSON数据
+        解析Odin序列化的JSON数据（使用统一的 OdinJsonParser）
 
         Args:
             json_data: 原始JSON数据
@@ -82,24 +87,25 @@ class SkillIndexer:
         Returns:
             解析后的技能数据
         """
+        # 使用 OdinJsonParser 解析（它会自动处理 $rcontent 等特殊结构）
+        parsed_data = self.odin_parser._resolve_odin_structure(json_data)
+
         skill_data = {}
 
         # 提取基本字段
-        skill_data['skillName'] = json_data.get('skillName', '')
-        skill_data['skillDescription'] = json_data.get('skillDescription', '')
-        skill_data['skillId'] = json_data.get('skillId', '')
-        skill_data['totalDuration'] = json_data.get('totalDuration', 0)
-        skill_data['frameRate'] = json_data.get('frameRate', 30)
+        skill_data['skillName'] = parsed_data.get('skillName', '')
+        skill_data['skillDescription'] = parsed_data.get('skillDescription', '')
+        skill_data['skillId'] = parsed_data.get('skillId', '')
+        skill_data['totalDuration'] = parsed_data.get('totalDuration', 0)
+        skill_data['frameRate'] = parsed_data.get('frameRate', 30)
 
-        # 解析tracks和actions
+        # 解析tracks和actions（OdinJsonParser 已经将 $rcontent 展开为列表）
         skill_data['tracks'] = []
-        tracks_data = json_data.get('tracks', {})
+        tracks_data = parsed_data.get('tracks', [])
 
-        if isinstance(tracks_data, dict) and '$rcontent' in tracks_data:
-            # Odin序列化格式
-            tracks_content = tracks_data.get('$rcontent', [])
-
-            for track in tracks_content:
+        # tracks 现在应该是列表（已被 OdinJsonParser 展开）
+        if isinstance(tracks_data, list):
+            for track in tracks_data:
                 if isinstance(track, dict):
                     track_info = {
                         'trackName': track.get('trackName', ''),
@@ -107,12 +113,10 @@ class SkillIndexer:
                         'actions': []
                     }
 
-                    # 解析actions
-                    actions_data = track.get('actions', {})
-                    if isinstance(actions_data, dict) and '$rcontent' in actions_data:
-                        actions_content = actions_data.get('$rcontent', [])
-
-                        for action in actions_content:
+                    # 解析actions（也已经被展开为列表）
+                    actions_data = track.get('actions', [])
+                    if isinstance(actions_data, list):
+                        for action in actions_data:
                             if isinstance(action, dict):
                                 action_info = self._parse_action(action)
                                 track_info['actions'].append(action_info)

@@ -80,15 +80,15 @@ namespace SkillSystem.RAG
         /// </summary>
         /// <param name="recommendations">推荐列表</param>
         /// <returns>过滤后的推荐列表</returns>
-        public List<EditorRAGClient.ActionRecommendation> FilterExclusiveActions(
-            List<EditorRAGClient.ActionRecommendation> recommendations)
+        public List<RAGClient.ActionRecommendation> FilterExclusiveActions(
+            List<RAGClient.ActionRecommendation> recommendations)
         {
             if (recommendations == null || recommendations.Count <= 1)
             {
                 return recommendations;
             }
 
-            var filtered = new List<EditorRAGClient.ActionRecommendation>();
+            var filtered = new List<RAGClient.ActionRecommendation>();
             var actionTypes = new List<string>();
 
             foreach (var recommendation in recommendations)

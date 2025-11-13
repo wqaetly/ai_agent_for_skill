@@ -6,75 +6,31 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/../.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/../.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/ACTION_RAG_README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Data/fine_grained_index.json" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Data/fine_grained_index.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/PATH_CONFIG.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/action_indexer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/build_action_index.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/check_paths.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/chunked_json_store.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/clear_cache.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../SkillRAG/Python/config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/debug_search.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/demo_structured_query.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/diagnose_actions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/diagnose_movement_search.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/embeddings.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/fine_grained_indexer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/mcp_server_structured_query.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/query_parser.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/rag_engine.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/rebuild_action_index.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/setup_dirs.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/skill_indexer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/structured_query_engine.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_action_search.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_embedding_similarity.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_recommend.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_req03_integration.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/test_structured_query.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/Python/vector_store.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/QUICK_START.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/setup.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../SkillRAG/start_rag_server.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionConstraintValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionConstraintValidator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationEnhancer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationEnhancer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationScorer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationScorer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticConfigWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticConfigWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentServerManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentServerManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentWindow.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentWindow.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspectorEnhanced.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspectorEnhanced.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/RAGClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/RAGClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCBridge.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCBridge.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCClient.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionInspector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionInspector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/SkillEditorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/SkillEditorWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ01_ActionSelectionRationality.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ01_ActionSelectionRationality.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ02_ParameterGranularity.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ02_ParameterGranularity.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ03_LargeJsonAnalysis.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ03_LargeJsonAnalysis.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ04_UnityInspectorFlow.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ05_Tool_SearchSkillsSemantic.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ05_Tool_SearchSkillsSemantic.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ06_Tool_GetSkillDetail.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ06_Tool_GetSkillDetail.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ07_Tool_RecommendActions.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ08_Tool_InferActionParameters.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ08_Tool_InferActionParameters.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ09_Tool_GenerateActionJson.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ09_Tool_GenerateActionJson.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ10_Tool_ValidateSkillConfig.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ10_Tool_ValidateSkillConfig.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ11_Tool_AnalyzeSkillPattern.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ11_Tool_AnalyzeSkillPattern.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ12_Tool_QueryActionStatistics.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ12_Tool_QueryActionStatistics.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ13_Tool_ExplainActionChoice.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ14_Task1_1_MCPServerFramework.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ14_Task1_1_MCPServerFramework.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ15_Task1_2_ToolSchemas.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ15_Task1_2_ToolSchemas.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ16_Task2_1_ParameterInferencer.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ16_Task2_1_ParameterInferencer.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ17_Task2_2_ActionRecommender.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ18_Task2_3_OdinJsonGenerator.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ18_Task2_3_OdinJsonGenerator.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ19_Task3_1_SchemaValidator.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ19_Task3_1_SchemaValidator.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ20_Task3_2_SkillPatternAnalyzer.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ20_Task3_2_SkillPatternAnalyzer.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ21_Task3_3_StatisticTool.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ21_Task3_3_StatisticTool.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ22_Task4_1_EndToEndTesting.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ22_Task4_1_EndToEndTesting.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ23_Task4_2_Documentation.md" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/mcp_requirements/REQ23_Task4_2_Documentation.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ24_Phase2_UnityMcpPlugin.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ25_Phase2_InspectorRealtime.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ26_Phase2_ParamDebugger.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ27_Phase3_InferCache.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ28_Phase3_VectorPerf.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ29_Phase3_AsyncBatch.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ30_Phase4_BalanceAnalysis.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ31_Phase4_TestCaseGenerator.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../docs/mcp_requirements/REQ32_Phase4_SkillChainRecommendation.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/langgraph_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/langgraph_server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/start_webui.bat" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/start_webui.bat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,14 +43,13 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/30c894378d1d4d5dae14bfc5b403a5c7180800/3c/f5eb110c/GraphicsSettings.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/30c894378d1d4d5dae14bfc5b403a5c7180800/ee/ae38d112/RenderPipelineAsset.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/1e/2de7bb0f/Serializer`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/95/0eb67528/SerializationUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.claude/settings.local.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionExportModels.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionData.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionDatabase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillRAGWindow.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ControlAction.cs" root0="FORCE_HIGHLIGHTING" />
@@ -215,6 +170,7 @@
       <workItem from="1762507465528" duration="602000" />
       <workItem from="1762760565986" duration="1228000" />
       <workItem from="1762831692108" duration="1826000" />
+      <workItem from="1763006484772" duration="1688000" />
     </task>
     <servers />
   </component>

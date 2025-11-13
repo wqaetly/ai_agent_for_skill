@@ -8,7 +8,7 @@ echo.
 REM 获取脚本所在目录
 set SCRIPT_DIR=%~dp0
 set SKILLRAG_DIR=%SCRIPT_DIR%
-set WEBUI_DIR=%SCRIPT_DIR%..\..\agent-chat-ui
+set WEBUI_DIR=%SCRIPT_DIR%..\webui
 
 echo 📁 skill_agent 目录: %SKILLRAG_DIR%
 echo 📁 WebUI 目录: %WEBUI_DIR%
@@ -73,5 +73,15 @@ echo.
 echo ⏹️  停止服务: stop_webui.bat
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 echo.
+
+REM 等待WebUI启动
+echo 等待 WebUI 启动完成...
+timeout /t 8 /nobreak >nul
+
+REM 自动打开浏览器
+echo 🌐 正在打开浏览器...
+start http://localhost:3000/rag
+echo.
+
 echo 按任意键退出（服务将继续在后台运行）...
 pause >nul

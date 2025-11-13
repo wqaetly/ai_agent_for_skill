@@ -1,5 +1,13 @@
 # AI Agent for Skill - Unity技能配置智能助手
 
+> **🎉 v2.0.0 更新 (2025-11-13)**: RAG功能已成功迁移到WebUI！
+>
+> - ✅ Unity RAG查询窗口已移除，所有功能现在在WebUI中
+> - ✅ 新增7个RAG专用API端点，功能更强大
+> - ✅ WebUI提供完整的RAG查询页面（技能搜索、Action推荐、参数推荐、索引管理）
+> - ✅ 代码精简31.6%，架构更清晰
+> - 📖 详见 **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** 了解迁移详情
+
 <img width="3019" height="1484" alt="image" src="https://github.com/user-attachments/assets/e8393a5b-e5bc-47f4-ad4e-6c0417d8a905" />
 
 ## 项目简介

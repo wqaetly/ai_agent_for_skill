@@ -39,7 +39,15 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.langchain.com)",
       "Bash(move \"SkillRAGWindow.cs\" \"SkillAgentWindow.cs\")",
-      "Bash(move \"SkillRAGWindow.cs.meta\" \"SkillAgentWindow.cs.meta\" 2)"
+      "Bash(move \"SkillRAGWindow.cs.meta\" \"SkillAgentWindow.cs.meta\" 2)",
+      "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\SkillAgentWindow.cs\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\SkillAgentWindow.cs.meta\")",
+      "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\EditorRAGClient.cs\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\EditorRAGClient.cs.meta\")",
+      "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\SmartActionInspector.cs\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\SmartActionInspector.cs.meta\")",
+      "Bash(rm:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\ActionRecommendation.cs\")",
+      "Bash(if exist \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\ActionRecommendation.cs.meta\" del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\ai_agent_for_skill\\Assets\\Scripts\\RAGSystem\\Editor\\ActionRecommendation.cs.meta\")"
     ],
     "deny": [],
     "ask": []
