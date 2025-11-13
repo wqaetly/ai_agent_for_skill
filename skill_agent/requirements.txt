@@ -1,0 +1,37 @@
+# SkillRAG 核心依赖
+# 统一版本管理，基础依赖供所有服务使用
+
+# Web 框架（使用 LangChain 要求的高版本）
+fastapi>=0.115.0,<0.116.0
+uvicorn[standard]>=0.32.0,<0.33.0
+
+# 数据验证（使用 LangChain 要求的高版本）
+pydantic>=2.9.0,<3.0.0
+pydantic-settings>=2.6.0,<3.0.0
+
+# 向量数据库
+chromadb>=0.4.22,<1.0.0
+
+# 嵌入模型 - Qwen3 依赖
+sentence-transformers>=2.7.0,<3.0.0  # Qwen3 最低要求
+torch>=2.0.0,<3.0.0                   # PyTorch CPU 版本
+transformers>=4.51.0                  # Qwen3 必需，否则报错 KeyError: 'qwen3'
+
+# 文件监听
+watchdog>=4.0.0
+
+# 工具库
+pyyaml>=6.0.1
+numpy>=1.24.0
+pandas>=2.1.4
+
+# HTTP 客户端
+httpx>=0.26.0
+requests>=2.31.0
+
+# 日志和缓存
+python-json-logger>=2.0.7
+cachetools>=5.3.2
+
+# 进度条
+tqdm>=4.66.1

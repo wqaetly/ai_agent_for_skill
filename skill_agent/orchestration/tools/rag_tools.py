@@ -16,8 +16,8 @@ def get_rag_engine():
     global _rag_engine_instance
 
     if _rag_engine_instance is None:
-        from skill_agent.core import RAGEngine
-        from skill_agent.core.config import get_config
+        from core import RAGEngine
+        from core.config import get_config
 
         config = get_config()
         _rag_engine_instance = RAGEngine(config.to_dict())

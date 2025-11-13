@@ -562,14 +562,33 @@ async def rag_index_stats():
     """
     try:
         from orchestration.tools.rag_tools import get_rag_engine
+        import os
 
         engine = get_rag_engine()
         stats = engine.get_statistics()
 
+        # 提取关键统计数据
+        vector_stats = stats.get('vector_store', {})
+        action_stats = stats.get('action_stats', {})
+
+        # 计算索引大小（估算）
+        persist_dir = vector_stats.get('persist_directory', '')
+        index_size_mb = 0.0
+        if persist_dir and os.path.exists(persist_dir):
+            total_size = 0
+            for dirpath, dirnames, filenames in os.walk(persist_dir):
+                for filename in filenames:
+                    filepath = os.path.join(dirpath, filename)
+                    if os.path.exists(filepath):
+                        total_size += os.path.getsize(filepath)
+            index_size_mb = total_size / (1024 * 1024)  # 转换为 MB
+
+        # 返回前端期望的格式
         return {
-            "success": True,
-            "statistics": stats,
-            "timestamp": datetime.now().isoformat()
+            "total_skills": vector_stats.get('total_documents', 0),
+            "total_actions": action_stats.get('total_actions', 0),
+            "total_parameters": int(action_stats.get('avg_params_per_action', 0) * action_stats.get('total_actions', 0)),
+            "index_size_mb": round(index_size_mb, 2)
         }
 
     except Exception as e:
@@ -612,7 +631,7 @@ async def rag_health_check():
     """
     RAG服务健康检查
 
-    与 webui/src/lib/service-status.ts 对接
+    与 webui/src/app/rag/page.tsx HealthStatus 接口对接
     """
     try:
         from orchestration.tools.rag_tools import get_rag_engine
@@ -620,21 +639,24 @@ async def rag_health_check():
         engine = get_rag_engine()
         stats = engine.get_statistics()
 
+        # 提取嵌套统计数据
+        vector_stats = stats.get('vector_store', {})
+        action_stats = stats.get('action_stats', {})
+
         return {
             "status": "healthy",
-            "indexed_skills": stats.get("total_skills", 0),
-            "indexed_actions": stats.get("total_actions", 0),
-            "cache_enabled": hasattr(engine, '_query_cache') and engine._query_cache is not None,
-            "last_index_time": stats.get("last_index_time"),
-            "timestamp": datetime.now().isoformat()
+            "skill_count": vector_stats.get('total_documents', 0),
+            "action_count": action_stats.get('total_actions', 0),
+            "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
 
     except Exception as e:
         logger.warning(f"RAG health check failed: {e}")
         return {
             "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
+            "skill_count": 0,
+            "action_count": 0,
+            "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
 
 

@@ -6,31 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/../.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/../.claude/settings.local.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionConstraintValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionConstraintValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationEnhancer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationEnhancer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationScorer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationScorer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticConfigWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticConfigWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/EditorRAGClient.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentServerManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentServerManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentWindow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspector.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspectorEnhanced.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SmartActionInspectorEnhanced.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/RAGClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/RAGClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCBridge.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCBridge.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionInspector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/SkillSystem/Editor/ActionInspector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/langgraph_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/langgraph_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/start_webui.bat" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/start_webui.bat" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,7 +146,7 @@
       <workItem from="1762507465528" duration="602000" />
       <workItem from="1762760565986" duration="1228000" />
       <workItem from="1762831692108" duration="1826000" />
-      <workItem from="1763006484772" duration="1688000" />
+      <workItem from="1763006484772" duration="2886000" />
     </task>
     <servers />
   </component>

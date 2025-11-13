@@ -1,11 +1,15 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Search, Zap, FileJson, Database, AlertCircle, CheckCircle, Copy, ChevronDown, ChevronUp, RefreshCw, Trash2, BarChart3 } from 'lucide-react'
+import { MessageSquare, Search, Zap, FileJson, Database, AlertCircle, CheckCircle, Copy, ChevronDown, ChevronUp, RefreshCw, Trash2, BarChart3 } from 'lucide-react'
+import { Thread } from '@/components/thread'
+import { StreamProvider } from '@/providers/Stream'
+import { ThreadProvider } from '@/providers/Thread'
+import { ArtifactProvider } from '@/components/thread/artifact'
 
 // ==================== 类型定义 ====================
 
-type TabType = 'search' | 'actions' | 'parameters' | 'index'
+type TabType = 'chat' | 'search' | 'actions' | 'parameters' | 'index'
 
 interface SearchResult {
   skill_id: string
@@ -54,7 +58,7 @@ const API_BASE_URL = 'http://localhost:2024'
 // ==================== 主组件 ====================
 
 export default function RAGPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('search')
+  const [activeTab, setActiveTab] = useState<TabType>('chat')
   const [toast, setToast] = useState<ToastMessage | null>(null)
   const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null)
 
@@ -109,7 +113,7 @@ export default function RAGPage() {
                 </span>
                 {healthStatus.status === 'healthy' && (
                   <span className="ml-2 text-gray-500">
-                    | 技能: {healthStatus.skill_count} | Action: {healthStatus.action_count}
+                    | 技能: {healthStatus.skill_count ?? 0} | Action: {healthStatus.action_count ?? 0}
                   </span>
                 )}
               </span>
@@ -120,6 +124,12 @@ export default function RAGPage() {
         {/* Tab导航 */}
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <nav className="flex border-b">
+            <TabButton
+              icon={<MessageSquare className="w-5 h-5" />}
+              label="智能对话"
+              active={activeTab === 'chat'}
+              onClick={() => setActiveTab('chat')}
+            />
             <TabButton
               icon={<Search className="w-5 h-5" />}
               label="技能搜索"
@@ -147,7 +157,8 @@ export default function RAGPage() {
           </nav>
 
           {/* Tab内容 */}
-          <div className="p-6">
+          <div className={activeTab === 'chat' ? '' : 'p-6'}>
+            {activeTab === 'chat' && <ChatTab />}
             {activeTab === 'search' && <SearchTab showToast={showToast} />}
             {activeTab === 'actions' && <ActionsTab showToast={showToast} />}
             {activeTab === 'parameters' && <ParametersTab showToast={showToast} />}
@@ -164,6 +175,22 @@ export default function RAGPage() {
           />
         )}
       </div>
+    </div>
+  )
+}
+
+// ==================== 对话Tab ====================
+
+function ChatTab() {
+  return (
+    <div className="h-[calc(100vh-16rem)]">
+      <ThreadProvider>
+        <StreamProvider>
+          <ArtifactProvider>
+            <Thread />
+          </ArtifactProvider>
+        </StreamProvider>
+      </ThreadProvider>
     </div>
   )
 }
@@ -791,10 +818,27 @@ function IndexTab({ showToast, onHealthUpdate }: IndexTabProps) {
       const response = await fetch(`${API_BASE_URL}/rag/health`)
       if (!response.ok) throw new Error('获取状态失败')
       const data = await response.json()
-      setHealthStatus(data)
+
+      // 验证数据完整性，提供默认值
+      const validatedHealth: HealthStatus = {
+        status: data.status ?? 'unhealthy',
+        skill_count: data.skill_count ?? 0,
+        action_count: data.action_count ?? 0,
+        last_updated: data.last_updated ?? '未知'
+      }
+
+      setHealthStatus(validatedHealth)
     } catch (error) {
       console.error('加载健康状态失败:', error)
       showToast('error', '获取服务状态失败')
+
+      // 设置默认值避免渲染错误
+      setHealthStatus({
+        status: 'unhealthy',
+        skill_count: 0,
+        action_count: 0,
+        last_updated: '未知'
+      })
     }
   }
 
@@ -805,10 +849,27 @@ function IndexTab({ showToast, onHealthUpdate }: IndexTabProps) {
       const response = await fetch(`${API_BASE_URL}/rag/index/stats`)
       if (!response.ok) throw new Error('获取统计失败')
       const data = await response.json()
-      setStats(data)
+
+      // 验证数据完整性，提供默认值
+      const validatedStats: IndexStats = {
+        total_skills: data.total_skills ?? 0,
+        total_actions: data.total_actions ?? 0,
+        total_parameters: data.total_parameters ?? 0,
+        index_size_mb: data.index_size_mb ?? 0
+      }
+
+      setStats(validatedStats)
     } catch (error) {
       console.error('加载统计信息失败:', error)
       showToast('error', '获取索引统计失败')
+
+      // 设置默认值避免渲染错误
+      setStats({
+        total_skills: 0,
+        total_actions: 0,
+        total_parameters: 0,
+        index_size_mb: 0
+      })
     } finally {
       setLoading(false)
     }
@@ -930,14 +991,14 @@ function IndexTab({ showToast, onHealthUpdate }: IndexTabProps) {
             <div>
               <div className="text-sm text-gray-600">技能数量</div>
               <div className="text-2xl font-bold text-blue-600">
-                {healthStatus.skill_count.toLocaleString()}
+                {(healthStatus.skill_count ?? 0).toLocaleString()}
               </div>
             </div>
 
             <div>
               <div className="text-sm text-gray-600">Action数量</div>
               <div className="text-2xl font-bold text-purple-600">
-                {healthStatus.action_count.toLocaleString()}
+                {(healthStatus.action_count ?? 0).toLocaleString()}
               </div>
             </div>
           </div>
@@ -948,35 +1009,35 @@ function IndexTab({ showToast, onHealthUpdate }: IndexTabProps) {
         {healthStatus && (
           <div className="mt-4 pt-4 border-t border-blue-200">
             <div className="text-sm text-gray-600">
-              最后更新: <span className="font-medium">{healthStatus.last_updated}</span>
+              最后更新: <span className="font-medium">{healthStatus.last_updated ?? '未知'}</span>
             </div>
           </div>
         )}
       </div>
 
       {/* 索引统计 */}
-      {stats && (
+      {stats && stats.total_skills !== undefined && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">索引统计</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard
               label="总技能数"
-              value={stats.total_skills.toLocaleString()}
+              value={(stats.total_skills ?? 0).toLocaleString()}
               color="blue"
             />
             <StatCard
               label="总Action数"
-              value={stats.total_actions.toLocaleString()}
+              value={(stats.total_actions ?? 0).toLocaleString()}
               color="purple"
             />
             <StatCard
               label="参数配置数"
-              value={stats.total_parameters.toLocaleString()}
+              value={(stats.total_parameters ?? 0).toLocaleString()}
               color="green"
             />
             <StatCard
               label="索引大小"
-              value={`${stats.index_size_mb.toFixed(2)} MB`}
+              value={`${(stats.index_size_mb ?? 0).toFixed(2)} MB`}
               color="orange"
             />
           </div>

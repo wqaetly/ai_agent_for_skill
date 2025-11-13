@@ -1,0 +1,14 @@
+# LangChain/LangGraph 编排层依赖
+# 在基础依赖上增加链式调用和智能编排能力
+
+# 继承基础依赖
+-r requirements.txt
+
+# LangChain 核心库
+langchain>=0.3.7,<0.4.0
+langchain-core>=0.3.17,<0.4.0
+langgraph>=0.2.45,<0.3.0
+
+# LLM Providers
+langchain-openai>=0.2.8,<0.3.0      # OpenAI compatible (DeepSeek)
+langchain-anthropic>=0.2.4,<0.3.0   # Claude

@@ -10,7 +10,7 @@ SkillRAG Core Library
 - 细粒度索引（fine_grained_indexer）
 
 使用示例:
-    from SkillRAG.core import RAGEngine
+    from core import RAGEngine
 
     rag = RAGEngine(config)
     results = rag.search("治疗技能", top_k=5)

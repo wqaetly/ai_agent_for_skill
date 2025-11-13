@@ -11,6 +11,8 @@ MCP Adapter（极简版）
 代码量：约 100 行
 """
 
+import os
+import sys
 import asyncio
 import json
 import logging
@@ -20,8 +22,11 @@ from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
+# 添加项目路径
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 # 导入 LangGraph 图
-from skill_agent.orchestration import (
+from orchestration import (
     get_skill_generation_graph,
     get_skill_search_graph,
     get_skill_detail_graph,

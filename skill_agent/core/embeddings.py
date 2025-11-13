@@ -45,27 +45,23 @@ class EmbeddingGenerator:
         # 加载本地模型
         logger.info(f"Loading Qwen3 embedding model from: {self.model_name}")
 
-        # 加载本地模型
-        if self.use_flash_attention and self.device == "cuda":
-            # 使用 flash_attention_2 加速（需要GPU）
-            logger.info("Using flash_attention_2 for acceleration")
-            self.model = SentenceTransformer(
-                self.model_name,
-                model_kwargs={
-                    "attn_implementation": "flash_attention_2",
-                    "device_map": "auto"
-                },
-                tokenizer_kwargs={"padding_side": "left"},
-                cache_folder=self.cache_dir
-            )
-        else:
+        # 加载本地模型（简化版本，兼容sentence-transformers 2.7.0）
+        try:
             # 标准加载方式（从本地路径）
             self.model = SentenceTransformer(
                 self.model_name,
                 device=self.device,
                 cache_folder=self.cache_dir,
-                tokenizer_kwargs={"padding_side": "left"},
                 trust_remote_code=True  # 信任本地模型代码
+            )
+            logger.info("Model loaded successfully with trust_remote_code=True")
+        except Exception as e:
+            # 降级加载（移除trust_remote_code参数）
+            logger.warning(f"Failed to load with trust_remote_code, trying fallback: {e}")
+            self.model = SentenceTransformer(
+                self.model_name,
+                device=self.device,
+                cache_folder=self.cache_dir
             )
 
         # 内存缓存（LRU，最多缓存1000个embedding）
@@ -139,13 +135,27 @@ class EmbeddingGenerator:
             }
 
             # 按照文档：查询使用 prompt_name="query"，文档不需要prompt
+            # 添加向后兼容：旧版本可能不支持prompt_name
             if prompt_name:
-                encode_kwargs['prompt_name'] = prompt_name
-
-            new_embeddings = self.model.encode(
-                texts_to_encode,
-                **encode_kwargs
-            )
+                try:
+                    encode_kwargs['prompt_name'] = prompt_name
+                    new_embeddings = self.model.encode(
+                        texts_to_encode,
+                        **encode_kwargs
+                    )
+                except TypeError as e:
+                    # 降级：不使用prompt_name
+                    logger.warning(f"prompt_name not supported, falling back: {e}")
+                    encode_kwargs.pop('prompt_name', None)
+                    new_embeddings = self.model.encode(
+                        texts_to_encode,
+                        **encode_kwargs
+                    )
+            else:
+                new_embeddings = self.model.encode(
+                    texts_to_encode,
+                    **encode_kwargs
+                )
 
             # 更新缓存和结果
             for i, embedding in enumerate(new_embeddings):
@@ -198,10 +208,18 @@ class EmbeddingGenerator:
         }
 
         # 如果需要（如批量编码查询），可以添加prompt_name
+        # 添加向后兼容：旧版本可能不支持prompt_name
         if prompt_name:
-            encode_kwargs['prompt_name'] = prompt_name
-
-        embeddings = self.model.encode(texts, **encode_kwargs)
+            try:
+                encode_kwargs['prompt_name'] = prompt_name
+                embeddings = self.model.encode(texts, **encode_kwargs)
+            except TypeError as e:
+                # 降级：不使用prompt_name
+                logger.warning(f"prompt_name not supported in encode_batch, falling back: {e}")
+                encode_kwargs.pop('prompt_name', None)
+                embeddings = self.model.encode(texts, **encode_kwargs)
+        else:
+            embeddings = self.model.encode(texts, **encode_kwargs)
 
         return [emb.tolist() for emb in embeddings]
 

@@ -4,7 +4,7 @@
 
 # ==================== 嵌入模型配置 ====================
 embedding:
-  # 本地模型路径（相对于 core_config.yaml）
+  # Qwen3-Embedding-0.6B 本地模型（已下载完整权重）
   model_name: "Data/models/Qwen3-Embedding-0.6B"
   device: "cpu"  # 或 "cuda" 如果有 GPU
   batch_size: 32

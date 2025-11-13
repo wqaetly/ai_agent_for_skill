@@ -14,12 +14,18 @@ for /f "tokens=5" %%a in ('netstat -aon ^| find ":2024" ^| find "LISTENING"') do
     )
 )
 
-REM 停止 WebUI（通过端口）
+REM 停止 WebUI（通过端口 3000 和 3001）
 echo 🛑 停止 WebUI...
 for /f "tokens=5" %%a in ('netstat -aon ^| find ":3000" ^| find "LISTENING"') do (
     taskkill /F /PID %%a >nul 2>&1
     if !errorlevel! equ 0 (
-        echo ✅ WebUI 已停止 (PID: %%a)
+        echo ✅ WebUI (Port 3000) 已停止 (PID: %%a)
+    )
+)
+for /f "tokens=5" %%a in ('netstat -aon ^| find ":3001" ^| find "LISTENING"') do (
+    taskkill /F /PID %%a >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo ✅ WebUI (Port 3001) 已停止 (PID: %%a)
     )
 )
 
