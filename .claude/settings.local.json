@@ -37,7 +37,9 @@
       "Bash(done)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:docs.langchain.com)"
+      "WebFetch(domain:docs.langchain.com)",
+      "Bash(move \"SkillRAGWindow.cs\" \"SkillAgentWindow.cs\")",
+      "Bash(move \"SkillRAGWindow.cs.meta\" \"SkillAgentWindow.cs.meta\" 2)"
     ],
     "deny": [],
     "ask": []

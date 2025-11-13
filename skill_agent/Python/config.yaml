@@ -1,4 +1,4 @@
-# SkillRAG Configuration File
+# skill_agent Configuration File
 # 支持环境变量替换：${ENV_VAR_NAME}
 
 # ==================== 服务器配置 ====================

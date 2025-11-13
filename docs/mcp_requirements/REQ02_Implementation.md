@@ -436,9 +436,9 @@ Unity Editor -> Window -> General -> Test Runner
 
 ## 与现有系统集成
 
-### 集成到 SkillRAGWindow
+### 集成到 skill_agentWindow
 
-在 `SkillRAGWindow.cs` 的Action推荐标签中：
+在 `skill_agentWindow.cs` 的Action推荐标签中：
 
 ```csharp
 // 获取增强推荐
@@ -612,7 +612,7 @@ REQ-02 的核心功能已完整实现，提供了：
 - **易用性**: 门面模式提供简洁API
 
 下一步：
-1. 在 `SkillRAGWindow` 中集成展示
+1. 在 `skill_agentWindow` 中集成展示
 2. 收集真实技能数据更新统计缓存
 3. 根据用户反馈迭代优化
 

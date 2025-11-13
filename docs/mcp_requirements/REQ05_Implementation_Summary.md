@@ -6,7 +6,7 @@ REQ-05 `search_skills_semantic` 工具已成功实现，提供基于自然语言
 ## 实现内容
 
 ### 1. 数据层扩展 (`rag_engine.py`)
-**位置**: `SkillRAG/Python/rag_engine.py`
+**位置**: `skill_agent/Python/rag_engine.py`
 
 **新增功能**:
 - 添加 `_extract_action_types()` 方法，从技能数据中提取Action类型列表
@@ -29,7 +29,7 @@ def _extract_action_types(self, skill: Dict[str, Any]) -> List[str]:
 ```
 
 ### 2. 过滤器映射器 (`filter_mapper.py`)
-**位置**: `SkillRAG/Python/filter_mapper.py`
+**位置**: `skill_agent/Python/filter_mapper.py`
 
 **功能**:
 - 将用户友好的过滤器转换为 Chroma `where` 语法
@@ -59,7 +59,7 @@ post_filters = {"action_types": ["DamageAction"]}
 ```
 
 ### 3. LLM 摘要生成器 (`skill_summarizer.py`)
-**位置**: `SkillRAG/Python/skill_summarizer.py`
+**位置**: `skill_agent/Python/skill_summarizer.py`
 
 **功能**:
 - 生成基础统计摘要（快速、确定性）
@@ -77,7 +77,7 @@ post_filters = {"action_types": ["DamageAction"]}
 - 失败时自动降级为基础摘要
 
 ### 4. MCP Server (`mcp_server_semantic_search.py`)
-**位置**: `SkillRAG/Python/mcp_server_semantic_search.py`
+**位置**: `skill_agent/Python/mcp_server_semantic_search.py`
 
 **工具定义**:
 ```json
@@ -132,7 +132,7 @@ post_filters = {"action_types": ["DamageAction"]}
 ```
 
 ### 5. 单元测试 (`test_semantic_search.py`)
-**位置**: `SkillRAG/Python/test_semantic_search.py`
+**位置**: `skill_agent/Python/test_semantic_search.py`
 
 **测试覆盖**:
 - ✅ 过滤器映射器测试（10个测试用例）
@@ -156,7 +156,7 @@ post_filters = {"action_types": ["DamageAction"]}
 
 **使用**:
 ```bash
-cd SkillRAG/Python
+cd skill_agent/Python
 python rebuild_index.py
 ```
 
@@ -227,15 +227,15 @@ RAG 搜索 (RAGEngine.search_skills)
 ## 文件清单
 
 ### 核心代码
-1. `SkillRAG/Python/rag_engine.py` (修改) - 扩展索引元数据
-2. `SkillRAG/Python/filter_mapper.py` (新建) - 过滤器映射器
-3. `SkillRAG/Python/skill_summarizer.py` (新建) - 摘要生成器
-4. `SkillRAG/Python/mcp_server_semantic_search.py` (新建) - MCP Server
+1. `skill_agent/Python/rag_engine.py` (修改) - 扩展索引元数据
+2. `skill_agent/Python/filter_mapper.py` (新建) - 过滤器映射器
+3. `skill_agent/Python/skill_summarizer.py` (新建) - 摘要生成器
+4. `skill_agent/Python/mcp_server_semantic_search.py` (新建) - MCP Server
 
 ### 测试与工具
-5. `SkillRAG/Python/test_semantic_search.py` (新建) - 单元测试
-6. `SkillRAG/Python/rebuild_index.py` (新建) - 索引重建脚本
-7. `SkillRAG/Python/quick_performance_test.py` (新建) - 性能测试
+5. `skill_agent/Python/test_semantic_search.py` (新建) - 单元测试
+6. `skill_agent/Python/rebuild_index.py` (新建) - 索引重建脚本
+7. `skill_agent/Python/quick_performance_test.py` (新建) - 性能测试
 
 ### 文档
 8. `docs/mcp_requirements/REQ05_Implementation_Summary.md` (本文件) - 实现总结
@@ -244,7 +244,7 @@ RAG 搜索 (RAGEngine.search_skills)
 
 ### 启动 MCP Server
 ```bash
-cd SkillRAG/Python
+cd skill_agent/Python
 python mcp_server_semantic_search.py
 ```
 

@@ -24,7 +24,7 @@ namespace SkillSystem.RAG
     {
         private const string ACTION_DATABASE_PATH = "Assets/Data/ActionDescriptionDatabase.asset";
         private const string SKILL_DATABASE_PATH = "Assets/Data/SkillDescriptionDatabase.asset";
-        private const string EXPORT_DIRECTORY = "../SkillRAG/Data/Actions";
+        private const string EXPORT_DIRECTORY = "../skill_agent/Data/Actions";
         private const string DEEPSEEK_API_KEY = "sk-e8ec7e0c860d4b7d98ffc4212ab2c138";
 
         [MenuItem("技能系统/描述管理器", priority = 100)]
@@ -844,10 +844,10 @@ namespace SkillSystem.RAG
             switch (choice)
             {
                 case 0: // 打开RAG查询窗口
-                    EditorWindow.GetWindow<SkillRAGWindow>("RAG查询窗口");
+                    EditorWindow.GetWindow<skill_agentWindow>("RAG查询窗口");
                     break;
                 case 1: // 查看排查指南
-                    var guidePath = Path.GetFullPath("../SkillRAG/RAG索引错误排查指南.md");
+                    var guidePath = Path.GetFullPath("../skill_agent/RAG索引错误排查指南.md");
                     if (File.Exists(guidePath))
                     {
                         System.Diagnostics.Process.Start(guidePath);
@@ -947,11 +947,11 @@ namespace SkillSystem.RAG
                     
                     if (choice == 0)
                     {
-                        EditorWindow.GetWindow<SkillRAGWindow>("RAG查询窗口");
+                        EditorWindow.GetWindow<skill_agentWindow>("RAG查询窗口");
                     }
                     else if (choice == 1)
                     {
-                        var guidePath = Path.GetFullPath("../SkillRAG/RAG索引错误排查指南.md");
+                        var guidePath = Path.GetFullPath("../skill_agent/RAG索引错误排查指南.md");
                         if (File.Exists(guidePath))
                         {
                             System.Diagnostics.Process.Start(guidePath);
@@ -1234,7 +1234,7 @@ namespace SkillSystem.RAG
                 string assetsPath = Application.dataPath;
                 string unityProjectPath = Directory.GetParent(assetsPath).FullName;
                 string rootPath = Directory.GetParent(unityProjectPath).FullName;
-                string serverScriptPath = Path.Combine(rootPath, "SkillRAG", "Python", "server.py");
+                string serverScriptPath = Path.Combine(rootPath, "skill_agent", "Python", "server.py");
                 serverScriptPath = Path.GetFullPath(serverScriptPath);
 
                 Log($"[RAG] 查找服务器脚本: {serverScriptPath}");
@@ -1243,7 +1243,7 @@ namespace SkillSystem.RAG
                 {
                     EditorUtility.DisplayDialog("错误",
                         $"未找到服务器脚本:\n{serverScriptPath}\n\n" +
-                        "请确保SkillRAG目录与ai_agent_for_skill目录在同一级",
+                        "请确保skill_agent目录与ai_agent_for_skill目录在同一级",
                         "确定");
                     Log($"[RAG错误] 服务器脚本不存在: {serverScriptPath}");
                     return;

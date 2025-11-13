@@ -53,7 +53,7 @@ POST /clear-cache     - 清除缓存
 
 #### 主要窗口
 
-##### **SkillRAGWindow** (1,132行)
+##### **skill_agentWindow** (1,132行)
 三标签查询界面：
 
 - **Tab 0: 技能搜索** - 向量检索查询
@@ -242,7 +242,7 @@ public class ActionSemanticRegistry
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ 1. 用户输入上下文 (SkillRAGWindow)                            │
+│ 1. 用户输入上下文 (skill_agentWindow)                            │
 │    "需要一个群体治疗技能"                                      │
 └────────────────┬─────────────────────────────────────────────┘
                  │
@@ -317,7 +317,7 @@ public class ActionSemanticRegistry
                  │
                  v
 ┌──────────────────────────────────────────────────────────────┐
-│ 6. UI展示 (SkillRAGWindow)                                   │
+│ 6. UI展示 (skill_agentWindow)                                   │
 │    - 推荐卡片展示                                             │
 │    - 得分、理由、警告可视化                                   │
 │    - 一键应用到技能配置                                       │
@@ -474,7 +474,7 @@ public static class RAGLogger
 
 【编辑器窗口】
 1. DescriptionManagerWindow.cs               (1,476行) - 六步工作流主窗口
-2. SkillRAGWindow.cs                          (1,132行) - 三标签查询UI
+2. skill_agentWindow.cs                          (1,132行) - 三标签查询UI
 3. SmartActionInspector.cs                    (行数未明) - Inspector集成
 
 【语义处理】

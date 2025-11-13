@@ -1,4 +1,4 @@
-# SkillRAG WebUI 架构说明
+# skill_agent WebUI 架构说明
 
 ## 系统架构图
 
@@ -23,7 +23,7 @@ graph TB
     end
     
     subgraph "核心层"
-        D[SkillRAG Core]
+        D[skill_agent Core]
         D1[RAG Engine]
         D2[Vector Store]
         D3[Embeddings]
@@ -124,7 +124,7 @@ graph LR
 - **编排引擎**: LangGraph
 - **LLM框架**: LangChain
 
-### 核心 (SkillRAG)
+### 核心 (skill_agent)
 - **向量存储**: FAISS
 - **嵌入模型**: Qwen Embedding
 - **查询解析**: 自定义解析器
@@ -171,7 +171,7 @@ localhost:3000 (WebUI) ←→ localhost:2024 (LangGraph Server)
 [Nginx/Caddy]
     ├─→ WebUI (Next.js)
     └─→ LangGraph Server (FastAPI)
-         └─→ SkillRAG Core
+         └─→ skill_agent Core
 ```
 
 ## 性能优化

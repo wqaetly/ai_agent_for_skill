@@ -33,7 +33,7 @@ Debug.Log($"高置信度: {enhanced.GetHighConfidenceParameterCount()}");
 ### 场景1：在RAG窗口中展示参数推荐
 
 ```csharp
-// 在 SkillRAGWindow.cs 的 OnGUI 中
+// 在 skill_agentWindow.cs 的 OnGUI 中
 private void DrawEnhancedRecommendations()
 {
     if (GUILayout.Button("获取增强推荐"))
@@ -335,7 +335,7 @@ else
 
 ### Q5: 如何与现有RAG系统集成？
 
-**A**: 在 `SkillRAGWindow` 获取推荐后增强：
+**A**: 在 `skill_agentWindow` 获取推荐后增强：
 
 ```csharp
 // 获取RAG推荐
@@ -377,7 +377,7 @@ Unity Editor -> Window -> General -> Test Runner
 
 ## 下一步
 
-1. **集成到UI**: 在 `SkillRAGWindow` 展示参数推荐
+1. **集成到UI**: 在 `skill_agentWindow` 展示参数推荐
 2. **收集数据**: 从现有技能收集参数统计
 3. **用户测试**: 收集反馈并迭代
 4. **扩展规则**: 为更多Action类型添加依赖规则

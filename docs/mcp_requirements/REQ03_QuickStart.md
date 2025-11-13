@@ -5,7 +5,7 @@
 ### 步骤1：安装依赖
 
 ```bash
-cd SkillRAG/Python
+cd skill_agent/Python
 pip install ijson
 ```
 
@@ -208,7 +208,7 @@ python mcp_server_structured_query.py
     "skill-structured-query": {
       "command": "python",
       "args": [
-        "E:/Study/wqaetly/ai_agent_for_skill/SkillRAG/Python/mcp_server_structured_query.py"
+        "E:/Study/wqaetly/ai_agent_for_skill/skill_agent/Python/mcp_server_structured_query.py"
       ]
     }
   }
@@ -408,7 +408,7 @@ engine.clear_cache()
 
 1. [REQ-03实现文档](REQ03_Implementation.md) - 深入了解架构设计
 2. [MCP开发计划](../MCP_Development_Plan.md) - 完整MCP集成方案
-3. [测试脚本](../../SkillRAG/Python/test_structured_query.py) - 查看更多示例
+3. [测试脚本](../../skill_agent/Python/test_structured_query.py) - 查看更多示例
 
 ---
 

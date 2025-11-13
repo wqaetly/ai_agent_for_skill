@@ -1,10 +1,10 @@
-# SkillRAG 使用指南
+# skill_agent 使用指南
 
-欢迎使用SkillRAG！本指南将帮助你快速上手技能RAG系统。
+欢迎使用skill_agent！本指南将帮助你快速上手技能RAG系统。
 
 ## 目录
 
-- [什么是SkillRAG](#什么是skillrag)
+- [什么是skill_agent](#什么是skillrag)
 - [快速开始](#快速开始)
 - [使用方法](#使用方法)
 - [高级功能](#高级功能)
@@ -13,9 +13,9 @@
 
 ---
 
-## 什么是SkillRAG？
+## 什么是skill_agent？
 
-SkillRAG是一个基于**检索增强生成（RAG）**技术的智能技能辅助系统，专为Unity技能编辑器设计。它能够：
+skill_agent是一个基于**检索增强生成（RAG）**技术的智能技能辅助系统，专为Unity技能编辑器设计。它能够：
 
 - 🔍 **语义搜索**：用自然语言描述查找相似技能
 - 💡 **智能推荐**：根据上下文推荐Action类型和参数
@@ -49,10 +49,10 @@ SkillRAG是一个基于**检索增强生成（RAG）**技术的智能技能辅�
 
 #### 1. 安装Python依赖
 
-打开命令行，进入`SkillRAG/Python`目录：
+打开命令行，进入`skill_agent/Python`目录：
 
 ```bash
-cd SkillRAG/Python
+cd skill_agent/Python
 ```
 
 运行安装脚本（首次运行）：
@@ -89,7 +89,7 @@ python server.py
 看到以下信息说明启动成功：
 
 ```
-INFO: SkillRAG Server is ready!
+INFO: skill_agent Server is ready!
 INFO: Access API docs at: http://127.0.0.1:8765/docs
 ```
 
@@ -492,7 +492,7 @@ RAG服务器支持异步处理，Unity客户端可并发发送多个请求。
 
 **Python服务器日志**:
 ```
-SkillRAG/Data/rag_server.log
+skill_agent/Data/rag_server.log
 ```
 
 **Unity Console**:

@@ -1,8 +1,8 @@
-# SkillRAG 快速开始指南
+# skill_agent 快速开始指南
 
 ## 🎯 系统概述
 
-SkillRAG是一个LLM无关的Unity技能配置中间件，通过Web UI + RPC通信实现：
+skill_agent是一个LLM无关的Unity技能配置中间件，通过Web UI + RPC通信实现：
 
 - **对话生成技能配置** - 用自然语言描述技能，AI自动生成JSON配置
 - **语义搜索技能** - 快速找到相似技能作为参考
@@ -26,12 +26,12 @@ SkillRAG是一个LLM无关的Unity技能配置中间件，通过Web UI + RPC通�
 $env:DEEPSEEK_API_KEY="your-api-key-here"
 $env:DASHSCOPE_API_KEY="your-qwen-api-key"  # 用于embedding
 
-# 或者修改 SkillRAG/Python/config.yaml
+# 或者修改 skill_agent/Python/config.yaml
 ```
 
 ### 步骤2：启动服务
 
-**双击运行**：`SkillRAG/启动技能助手.bat`
+**双击运行**：`skill_agent/启动技能助手.bat`
 
 首次启动会自动：
 1. 创建Python虚拟环境
@@ -83,7 +83,7 @@ AI: [自动搜索相似技能 → 生成JSON配置 → 显示预览]
 
 ### 2. 验证连接
 
-点击Unity菜单 `Tools > SkillRAG > Test Connection`
+点击Unity菜单 `Tools > skill_agent > Test Connection`
 
 ### 3. 使用Web UI生成技能
 
@@ -94,7 +94,7 @@ AI: [自动搜索相似技能 → 生成JSON配置 → 显示预览]
 ## 📁 目录结构
 
 ```
-SkillRAG/
+skill_agent/
 ├── Python/
 │   ├── config.yaml              # 配置文件（API Key等）
 │   ├── web_ui.py                # Web UI主程序
@@ -168,8 +168,8 @@ server:
 ## 🆘 获取帮助
 
 遇到问题？
-1. 查看日志：`SkillRAG/Python/logs/skillrag_server.log`
-2. 检查配置：`SkillRAG/Python/config.yaml`
+1. 查看日志：`skill_agent/Python/logs/skillrag_server.log`
+2. 检查配置：`skill_agent/Python/config.yaml`
 3. 提Issue或联系开发团队
 
 ---

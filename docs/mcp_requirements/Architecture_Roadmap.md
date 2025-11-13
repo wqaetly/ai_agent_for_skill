@@ -114,7 +114,7 @@
 
 **目录结构**:
 ```
-SkillRAG/Python/
+skill_agent/Python/
 ├── mcp_server.py              # MCP Server 主入口
 ├── mcp_config.json            # 配置文件
 ├── mcp_schemas.py             # Pydantic 模型定义

@@ -1,7 +1,7 @@
 #!/bin/bash
-# SkillRAG WebUI 启动脚本（Linux/Mac）
+# skill_agent WebUI 启动脚本（Linux/Mac）
 
-echo "🚀 启动 SkillRAG 技能分析系统..."
+echo "🚀 启动 skill_agent 技能分析系统..."
 echo ""
 
 # 检查 Python 环境
@@ -21,7 +21,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 SKILLRAG_DIR="$SCRIPT_DIR"
 WEBUI_DIR="$SCRIPT_DIR/../../agent-chat-ui"
 
-echo "📁 SkillRAG 目录: $SKILLRAG_DIR"
+echo "📁 skill_agent 目录: $SKILLRAG_DIR"
 echo "📁 WebUI 目录: $WEBUI_DIR"
 echo ""
 
@@ -80,7 +80,7 @@ echo "$LANGGRAPH_PID" > "$SKILLRAG_DIR/.langgraph.pid"
 echo "$WEBUI_PID" > "$SKILLRAG_DIR/.webui.pid"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✨ SkillRAG 技能分析系统已启动！"
+echo "✨ skill_agent 技能分析系统已启动！"
 echo ""
 echo "📊 LangGraph 服务器: http://localhost:2024"
 echo "🌐 WebUI 界面: http://localhost:3000"

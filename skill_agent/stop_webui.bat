@@ -1,8 +1,8 @@
 @echo off
-REM SkillRAG WebUI 停止脚本（Windows）
+REM skill_agent WebUI 停止脚本（Windows）
 chcp 65001 >nul
 
-echo ⏹️  停止 SkillRAG 技能分析系统...
+echo ⏹️  停止 skill_agent 技能分析系统...
 echo.
 
 REM 停止 LangGraph 服务器（通过端口）

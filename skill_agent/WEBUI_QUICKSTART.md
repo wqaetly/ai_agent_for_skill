@@ -1,4 +1,4 @@
-# 🚀 SkillRAG WebUI 快速开始
+# 🚀 skill_agent WebUI 快速开始
 
 > 让策划人员通过网页界面进行技能分析、开发和修复
 
@@ -6,13 +6,13 @@
 
 ### Windows
 ```bash
-cd SkillRAG
+cd skill_agent
 start_webui.bat
 ```
 
 ### Linux/Mac
 ```bash
-cd SkillRAG
+cd skill_agent
 chmod +x start_webui.sh
 ./start_webui.sh
 ```
@@ -66,7 +66,7 @@ stop_webui.bat
 ## 🏗️ 架构
 
 ```
-WebUI (3000) ←→ LangGraph Server (2024) ←→ SkillRAG Core
+WebUI (3000) ←→ LangGraph Server (2024) ←→ skill_agent Core
 ```
 
 ## 🆘 遇到问题？

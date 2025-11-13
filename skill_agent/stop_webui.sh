@@ -1,7 +1,7 @@
 #!/bin/bash
-# SkillRAG WebUI 停止脚本（Linux/Mac）
+# skill_agent WebUI 停止脚本（Linux/Mac）
 
-echo "⏹️  停止 SkillRAG 技能分析系统..."
+echo "⏹️  停止 skill_agent 技能分析系统..."
 echo ""
 
 # 获取脚本所在目录

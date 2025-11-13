@@ -1,6 +1,6 @@
-# SkillRAG API文档
+# skill_agent API文档
 
-SkillRAG Python服务提供的RESTful API接口文档。
+skill_agent Python服务提供的RESTful API接口文档。
 
 ## 基础信息
 
@@ -337,7 +337,7 @@ GET /search?q=火焰伤害&top_k=3&details=true
 **响应示例**:
 ```json
 {
-  "service": "SkillRAG API",
+  "service": "skill_agent API",
   "version": "1.0.0",
   "status": "running",
   "timestamp": "2025-01-29T11:00:00.123456"

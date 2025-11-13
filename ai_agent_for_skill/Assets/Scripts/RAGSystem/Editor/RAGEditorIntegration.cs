@@ -16,10 +16,10 @@ namespace SkillSystem.RAG
         private static bool isInitialized = false;
 
         // 配置
-        private const string RAG_ENABLED_KEY = "SkillRAG_Enabled";
-        private const string RAG_AUTO_SUGGEST_KEY = "SkillRAG_AutoSuggest";
-        private const string RAG_SERVER_HOST_KEY = "SkillRAG_ServerHost";
-        private const string RAG_SERVER_PORT_KEY = "SkillRAG_ServerPort";
+        private const string RAG_ENABLED_KEY = "SkillAgent_Enabled";
+        private const string RAG_AUTO_SUGGEST_KEY = "SkillAgent_AutoSuggest";
+        private const string RAG_SERVER_HOST_KEY = "SkillAgent_ServerHost";
+        private const string RAG_SERVER_PORT_KEY = "SkillAgent_ServerPort";
 
         // 属性
         public static bool IsEnabled
@@ -186,7 +186,7 @@ namespace SkillSystem.RAG
                     // 打开RAG窗口
                     if (GUILayout.Button("打开RAG查询窗口", GUILayout.Height(30)))
                     {
-                        SkillRAGWindow.ShowWindow();
+                        SkillAgentWindow.ShowWindow();
                     }
 
                     // 清空缓存
@@ -207,7 +207,7 @@ namespace SkillSystem.RAG
 
                     if (GUILayout.Button("查看RAG文档"))
                     {
-                        string docPath = Application.dataPath + "/../SkillRAG/Docs/UserGuide.md";
+                        string docPath = Application.dataPath + "/../skill_agent/Docs/UserGuide.md";
                         if (System.IO.File.Exists(docPath))
                         {
                             Application.OpenURL("file:///" + docPath);
@@ -264,7 +264,7 @@ namespace SkillSystem.RAG
         [MenuItem("技能系统/RAG功能/打开RAG查询窗口", false, 100)]
         private static void OpenRAGWindow()
         {
-            SkillRAGWindow.ShowWindow();
+            SkillAgentWindow.ShowWindow();
         }
 
         [MenuItem("技能系统/RAG功能/启用RAG功能", false, 101)]

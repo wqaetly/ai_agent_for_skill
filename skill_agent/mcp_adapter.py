@@ -21,7 +21,7 @@ from mcp.server.stdio import stdio_server
 from mcp.types import Tool, TextContent
 
 # 导入 LangGraph 图
-from SkillRAG.orchestration import (
+from skill_agent.orchestration import (
     get_skill_generation_graph,
     get_skill_search_graph,
     get_skill_detail_graph,

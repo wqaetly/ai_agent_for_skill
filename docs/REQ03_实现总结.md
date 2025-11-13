@@ -295,7 +295,7 @@ print(detail['context'])  # 上下文信息
 - [REQ-03实现文档](mcp_requirements/REQ03_Implementation.md)
 - [REQ-03快速开始](mcp_requirements/REQ03_QuickStart.md)
 - [MCP开发计划](MCP_Development_Plan.md)
-- [测试报告](../SkillRAG/Data/test_report.json)
+- [测试报告](../skill_agent/Data/test_report.json)
 
 ---
 

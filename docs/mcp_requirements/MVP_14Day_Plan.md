@@ -29,9 +29,9 @@
 **时间**: Day 1-2
 **依赖**: 无
 **输出**:
-- `SkillRAG/Python/mcp_server.py` - MCP Server 主入口
-- `SkillRAG/Python/mcp_config.json` - 服务器配置
-- `SkillRAG/Python/requirements_mcp.txt` - MCP 依赖包
+- `skill_agent/Python/mcp_server.py` - MCP Server 主入口
+- `skill_agent/Python/mcp_config.json` - 服务器配置
+- `skill_agent/Python/requirements_mcp.txt` - MCP 依赖包
 
 **验收标准**: Claude Code 能发现并连接服务器
 
@@ -39,8 +39,8 @@
 **时间**: Day 3
 **依赖**: Task 1.1
 **输出**:
-- `SkillRAG/Python/mcp_schemas.py` - Pydantic 模型定义
-- `SkillRAG/Python/mcp_tools.py` - Tool 注册入口
+- `skill_agent/Python/mcp_schemas.py` - Pydantic 模型定义
+- `skill_agent/Python/mcp_tools.py` - Tool 注册入口
 
 **验收标准**: 5 个核心 Tool 的 Schema 定义清晰
 
@@ -50,17 +50,17 @@
 
 #### Task 2.1 参数推理增强 [REQ-16]
 **时间**: Day 4-6
-**输出**: `SkillRAG/Python/parameter_inferencer.py`
+**输出**: `skill_agent/Python/parameter_inferencer.py`
 **验收**: 返回参数值、置信度、推理理由
 
 #### Task 2.2 Odin JSON 生成器 [REQ-18]
 **时间**: Day 7-8
-**输出**: `SkillRAG/Python/odin_json_generator.py` + 模板库
+**输出**: `skill_agent/Python/odin_json_generator.py` + 模板库
 **验收**: 生成符合 Odin 格式的 JSON 片段
 
 #### Task 2.3 Schema 校验扩展 [REQ-19]
 **时间**: Day 9-10
-**输出**: `SkillRAG/Python/schema_validator.py`
+**输出**: `skill_agent/Python/schema_validator.py`
 **验收**: 能校验整个技能 JSON 的完整性和时序一致性
 
 ---

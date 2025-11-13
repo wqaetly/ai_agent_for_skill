@@ -1,4 +1,4 @@
-# SkillRAG - 智能技能检索与推荐系统
+# skill_agent - 智能技能检索与推荐系统
 
 <div align="center">
 
@@ -12,7 +12,7 @@
 
 ## 📖 简介
 
-SkillRAG（Skill Retrieval-Augmented Generation）是一个基于**检索增强生成（RAG）**技术的智能技能辅助系统。它通过向量化技能数据，提供语义搜索和智能推荐，帮助开发者快速找到相似技能、获取参数建议，大幅提升技能设计效率。
+skill_agent（Skill Retrieval-Augmented Generation）是一个基于**检索增强生成（RAG）**技术的智能技能辅助系统。它通过向量化技能数据，提供语义搜索和智能推荐，帮助开发者快速找到相似技能、获取参数建议，大幅提升技能设计效率。
 
 ### 🎯 核心价值
 
@@ -93,7 +93,7 @@ SkillRAG（Skill Retrieval-Augmented Generation）是一个基于**检索增强�
 
 1. 下载 Qwen3-Embedding-0.6B 模型到指定目录：
    ```
-   SkillRAG/Data/models/Qwen3-Embedding-0.6B/
+   skill_agent/Data/models/Qwen3-Embedding-0.6B/
    ```
 
 2. 模型文件获取方式：
@@ -101,12 +101,12 @@ SkillRAG（Skill Retrieval-Augmented Generation）是一个基于**检索增强�
    - 使用 `git lfs` 克隆：
      ```bash
      git lfs install
-     git clone https://huggingface.co/Qwen/Qwen3-Embedding-0.6B SkillRAG/Data/models/Qwen3-Embedding-0.6B
+     git clone https://huggingface.co/Qwen/Qwen3-Embedding-0.6B skill_agent/Data/models/Qwen3-Embedding-0.6B
      ```
 
 3. 确保目录结构如下：
    ```
-   SkillRAG/Data/models/Qwen3-Embedding-0.6B/
+   skill_agent/Data/models/Qwen3-Embedding-0.6B/
    ├── config.json
    ├── model.safetensors
    ├── tokenizer.json
@@ -117,7 +117,7 @@ SkillRAG（Skill Retrieval-Augmented Generation）是一个基于**检索增强�
 #### 2️⃣ 安装Python依赖
 
 ```bash
-cd SkillRAG
+cd skill_agent
 setup.bat  # Windows
 
 # 或手动安装
@@ -153,7 +153,7 @@ start_rag_server.bat  # Windows
 
 看到以下信息说明成功：
 ```
-INFO: SkillRAG Server is ready!
+INFO: skill_agent Server is ready!
 INFO: Access API docs at: http://127.0.0.1:8765/docs
 ```
 
@@ -227,7 +227,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 ┌─────────────────────────────────────────────────────────┐
 │                    Unity 编辑器                          │
 │  ┌────────────────┐  ┌──────────────┐  ┌─────────────┐ │
-│  │ SkillRAGWindow │  │ActionInspector│  │SkillEditor │ │
+│  │ skill_agentWindow │  │ActionInspector│  │SkillEditor │ │
 │  │  (查询界面)     │  │ (智能建议)    │  │  (编辑器)   │ │
 │  └────────┬───────┘  └──────┬───────┘  └─────────────┘ │
 │           │                 │                            │
@@ -277,7 +277,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 #### Unity前端
 
 - **RAGClient.cs**：HTTP客户端，API调用封装
-- **SkillRAGWindow.cs**：查询窗口UI
+- **skill_agentWindow.cs**：查询窗口UI
 - **SmartActionInspector.cs**：智能参数推荐
 - **RAGEditorIntegration.cs**：编辑器钩子集成
 
@@ -286,7 +286,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 ## 📁 目录结构
 
 ```
-SkillRAG/
+skill_agent/
 ├── Python/                      # Python RAG服务
 │   ├── server.py                # FastAPI服务器
 │   ├── rag_engine.py            # RAG引擎核心
@@ -298,7 +298,7 @@ SkillRAG/
 │
 ├── Unity/                       # Unity编辑器集成（实际位于Assets/Scripts/RAGSystem）
 │   ├── RAGClient.cs             # HTTP客户端
-│   ├── SkillRAGWindow.cs        # RAG查询窗口
+│   ├── skill_agentWindow.cs        # RAG查询窗口
 │   ├── SmartActionInspector.cs  # 智能参数推荐
 │   └── RAGEditorIntegration.cs  # 编辑器集成
 │

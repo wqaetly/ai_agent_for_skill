@@ -477,7 +477,7 @@ dmypy.json
 cython_debug/
 
 # ===========================
-# SkillRAG - AI Models & Data
+# SkillAgent - AI Models & Data
 # ===========================
 # Model files (large binary files)
 skill_agent/Data/models/**/*.safetensors

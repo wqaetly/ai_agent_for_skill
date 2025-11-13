@@ -7,7 +7,7 @@ REQ-03实现了技能JSON文件的细粒度分析能力，支持行级/路径级
 ## 核心组件
 
 ### 1. **FineGrainedIndexer** - 细粒度索引器
-`SkillRAG/Python/fine_grained_indexer.py`
+`skill_agent/Python/fine_grained_indexer.py`
 
 **功能**：
 - 为每个Action构建路径级索引（技能 > 轨道 > Action）
@@ -67,7 +67,7 @@ print(f"索引了 {stats['total_actions']} 个Action")
 ---
 
 ### 2. **QueryParser** - 查询语法解析器
-`SkillRAG/Python/query_parser.py`
+`skill_agent/Python/query_parser.py`
 
 **功能**：
 - 解析结构化查询语法
@@ -119,7 +119,7 @@ print(f"匹配: {matches}")  # True
 ---
 
 ### 3. **ChunkedJsonStore** - 流式JSON加载器
-`SkillRAG/Python/chunked_json_store.py`
+`skill_agent/Python/chunked_json_store.py`
 
 **功能**：
 - 按JSONPath加载指定片段
@@ -156,7 +156,7 @@ summary = store.get_chunk_summary(
 ---
 
 ### 4. **StructuredQueryEngine** - 结构化查询引擎
-`SkillRAG/Python/structured_query_engine.py`
+`skill_agent/Python/structured_query_engine.py`
 
 **功能**：
 - 集成索引、解析、评估
@@ -247,7 +247,7 @@ stats = engine.rebuild_index(force=True)
 ---
 
 ### 5. **MCP Server** - MCP协议集成
-`SkillRAG/Python/mcp_server_structured_query.py`
+`skill_agent/Python/mcp_server_structured_query.py`
 
 **功能**：
 - 5个MCP Tools
@@ -315,7 +315,7 @@ stats = engine.rebuild_index(force=True)
 
 **启动MCP Server**：
 ```bash
-cd SkillRAG/Python
+cd skill_agent/Python
 python mcp_server_structured_query.py
 ```
 

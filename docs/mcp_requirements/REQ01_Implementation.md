@@ -221,7 +221,7 @@ bool HealthCheck(out string message)
 
 ## UI 集成
 
-### 1. SkillRAGWindow 增强
+### 1. skill_agentWindow 增强
 
 **新增功能**：
 - 增强推荐开关
@@ -508,7 +508,7 @@ if (!isValid)
 - `ActionRecommendationEnhancer.cs` - 增强服务门面
 
 ### UI 组件
-- `SkillRAGWindow.cs` - RAG 查询窗口（已修改）
+- `skill_agentWindow.cs` - RAG 查询窗口（已修改）
 - `ActionSemanticConfigWindow.cs` - 配置管理窗口
 
 ### 配置文件

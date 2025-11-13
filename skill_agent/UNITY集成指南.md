@@ -1,8 +1,8 @@
-# Unity集成指南 - 从Unity启动SkillRAG服务器
+# Unity集成指南 - 从Unity启动skill_agent服务器
 
 ## 🎯 功能说明
 
-通过Unity Editor菜单，可以一键启动SkillRAG服务器，无需手动运行bat脚本。
+通过Unity Editor菜单，可以一键启动skill_agent服务器，无需手动运行bat脚本。
 
 - ✅ Unity菜单一键启动/停止
 - ✅ 自动检测服务器状态
@@ -18,20 +18,20 @@
 **方法A：通过Unity菜单安装**
 
 1. 打开Unity编辑器
-2. 点击菜单：`Tools > SkillRAG > 安装依赖 (Install Dependencies)`
+2. 点击菜单：`Tools > skill_agent > 安装依赖 (Install Dependencies)`
 3. 在弹出的控制台窗口中等待安装完成（约2-5分钟）
 4. 看到"安装完成！"后关闭控制台窗口
 
 **方法B：手动运行脚本**
 
-1. 双击 `SkillRAG/安装依赖.bat`
+1. 双击 `skill_agent/安装依赖.bat`
 2. 等待安装完成
 
 ### 步骤2：配置API Key
 
 **方法A：通过Unity菜单配置**
 
-1. 点击菜单：`Tools > SkillRAG > 配置API Key`
+1. 点击菜单：`Tools > skill_agent > 配置API Key`
 2. 按照提示设置环境变量或编辑config.yaml
 
 **方法B：手动配置（推荐）**
@@ -43,7 +43,7 @@
 [System.Environment]::SetEnvironmentVariable("DASHSCOPE_API_KEY", "your-qwen-key", "User")
 ```
 
-或编辑 `SkillRAG/Python/config.yaml`，将API Key直接写入（仅测试用）：
+或编辑 `skill_agent/Python/config.yaml`，将API Key直接写入（仅测试用）：
 
 ```yaml
 llm_providers:
@@ -58,14 +58,14 @@ llm_providers:
 ### 启动服务器
 
 1. 打开Unity编辑器
-2. 点击菜单：`Tools > SkillRAG > 启动服务器 (Start Server)`
+2. 点击菜单：`Tools > skill_agent > 启动服务器 (Start Server)`
 3. 等待10-30秒（首次启动稍慢）
 4. 浏览器自动打开 http://127.0.0.1:7860
 
 **启动后会弹出对话框：**
 
 ```
-SkillRAG服务器
+skill_agent服务器
 服务器启动成功！
 
 Web UI: http://127.0.0.1:7860
@@ -77,20 +77,20 @@ RPC端口: 8766
 
 ### 停止服务器
 
-点击菜单：`Tools > SkillRAG > 停止服务器 (Stop Server)`
+点击菜单：`Tools > skill_agent > 停止服务器 (Stop Server)`
 
 ### 打开Web UI
 
-如果浏览器意外关闭，点击：`Tools > SkillRAG > 打开Web UI (Open Web UI)`
+如果浏览器意外关闭，点击：`Tools > skill_agent > 打开Web UI (Open Web UI)`
 
 ### 检查服务器状态
 
-点击菜单：`Tools > SkillRAG > 检查服务器状态 (Check Status)`
+点击菜单：`Tools > skill_agent > 检查服务器状态 (Check Status)`
 
 会显示：
 
 ```
-SkillRAG 服务器状态
+skill_agent 服务器状态
 
 Web UI (端口 7860): ✓ 运行中
 RPC服务 (端口 8766): ✓ 运行中
@@ -120,13 +120,13 @@ RPC服务 (端口 8766): ✓ 运行中
 
 ```
 Assets/Scripts/RAGSystem/Editor/
-└── SkillRAGServerManager.cs    # Unity Editor菜单脚本
+└── skill_agentServerManager.cs    # Unity Editor菜单脚本
 ```
 
 ### Python侧文件
 
 ```
-SkillRAG/
+skill_agent/
 ├── 快速启动(Unity).bat          # Unity调用的启动脚本
 ├── 安装依赖.bat                  # 依赖安装脚本
 ├── 启动技能助手.bat              # 手动启动脚本（完整版）
@@ -145,7 +145,7 @@ SkillRAG/
 **检查清单：**
 
 1. 是否已安装依赖？
-   - 运行：`Tools > SkillRAG > 安装依赖`
+   - 运行：`Tools > skill_agent > 安装依赖`
 
 2. Python是否已安装？
    - 命令行运行：`python --version`
@@ -176,7 +176,7 @@ SkillRAG/
 
 **方法2：日志文件**
 
-查看 `SkillRAG/Python/logs/skillrag_server.log`
+查看 `skill_agent/Python/logs/skillrag_server.log`
 
 ### Q4: Unity关闭后服务器是否自动关闭？
 
@@ -185,7 +185,7 @@ SkillRAG/
 - 优点：Unity重启后可直接使用已启动的服务器
 - 缺点：需要手动停止（通过菜单或关闭控制台窗口）
 
-**如需自动关闭**，编辑 `SkillRAGServerManager.cs:389`，取消注释：
+**如需自动关闭**，编辑 `skill_agentServerManager.cs:389`，取消注释：
 
 ```csharp
 [InitializeOnLoadMethod]

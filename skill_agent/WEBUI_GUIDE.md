@@ -1,8 +1,8 @@
-# SkillRAG WebUI 使用指南
+# skill_agent WebUI 使用指南
 
 ## 📖 概述
 
-SkillRAG WebUI 是一个基于 LangGraph 和 agent-chat-ui 的可视化技能分析系统，让策划人员可以通过网页界面进行技能的分析、开发和修复工作。
+skill_agent WebUI 是一个基于 LangGraph 和 agent-chat-ui 的可视化技能分析系统，让策划人员可以通过网页界面进行技能的分析、开发和修复工作。
 
 ## 🏗️ 架构
 
@@ -16,7 +16,7 @@ SkillRAG WebUI 是一个基于 LangGraph 和 agent-chat-ui 的可视化技能分
                                                  │
                                                  ▼
                                         ┌──────────────────┐
-                                        │   SkillRAG Core  │
+                                        │   skill_agent Core  │
                                         │   (RAG Engine)   │
                                         └──────────────────┘
 ```
@@ -40,14 +40,14 @@ SkillRAG WebUI 是一个基于 LangGraph 和 agent-chat-ui 的可视化技能分
 #### Windows
 
 ```bash
-cd SkillRAG
+cd skill_agent
 start_webui.bat
 ```
 
 #### Linux/Mac
 
 ```bash
-cd SkillRAG
+cd skill_agent
 chmod +x start_webui.sh
 ./start_webui.sh
 ```
@@ -63,7 +63,7 @@ chmod +x start_webui.sh
 #### 1. 启动 LangGraph 服务器
 
 ```bash
-cd SkillRAG
+cd skill_agent
 
 # 创建虚拟环境（首次）
 python -m venv venv
@@ -89,7 +89,7 @@ python langgraph_server.py
 cd ../../agent-chat-ui
 
 # 复制环境配置
-cp ../ai_agent_for_skill/SkillRAG/webui.env .env
+cp ../ai_agent_for_skill/skill_agent/webui.env .env
 
 # 或手动创建 .env 文件，内容如下：
 # NEXT_PUBLIC_API_URL=http://localhost:2024
@@ -305,18 +305,18 @@ stop_webui.bat
 
 ## 📝 日志
 
-- **LangGraph 服务器日志**: `SkillRAG/langgraph_server.log`
+- **LangGraph 服务器日志**: `skill_agent/langgraph_server.log`
 - **WebUI 日志**: 在启动 WebUI 的终端中查看
 
 ## 🎨 自定义
 
 ### 修改 Prompt
 
-编辑 `SkillRAG/orchestration/prompts/` 目录下的 Prompt 模板。
+编辑 `skill_agent/orchestration/prompts/` 目录下的 Prompt 模板。
 
 ### 添加新的助手
 
-1. 在 `SkillRAG/orchestration/graphs/` 中创建新的图
+1. 在 `skill_agent/orchestration/graphs/` 中创建新的图
 2. 在 `langgraph_server.py` 中注册新的助手
 3. 更新 `/assistants` 端点
 
@@ -335,7 +335,7 @@ agent-chat-ui 是一个标准的 Next.js 应用，可以自由修改：
    ```dockerfile
    FROM python:3.10
    WORKDIR /app
-   COPY SkillRAG/ .
+   COPY skill_agent/ .
    RUN pip install -r requirements_langchain.txt
    CMD ["python", "langgraph_server.py"]
    ```
@@ -384,7 +384,7 @@ NEXT_PUBLIC_ASSISTANT_ID=skill-generation
 
 ## 📚 相关文档
 
-- [SkillRAG 核心文档](./README.md)
+- [skill_agent 核心文档](./README.md)
 - [LangGraph 官方文档](https://langchain-ai.github.io/langgraph/)
 - [agent-chat-ui 文档](https://github.com/langchain-ai/agent-chat-ui)
 - [FastAPI 文档](https://fastapi.tiangolo.com/)

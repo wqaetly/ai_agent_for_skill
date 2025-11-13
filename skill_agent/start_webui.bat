@@ -1,8 +1,8 @@
 @echo off
-REM SkillRAG WebUI 启动脚本（Windows）
+REM skill_agent WebUI 启动脚本（Windows）
 chcp 65001 >nul
 
-echo 🚀 启动 SkillRAG 技能分析系统...
+echo 🚀 启动 skill_agent 技能分析系统...
 echo.
 
 REM 获取脚本所在目录
@@ -10,7 +10,7 @@ set SCRIPT_DIR=%~dp0
 set SKILLRAG_DIR=%SCRIPT_DIR%
 set WEBUI_DIR=%SCRIPT_DIR%..\..\agent-chat-ui
 
-echo 📁 SkillRAG 目录: %SKILLRAG_DIR%
+echo 📁 skill_agent 目录: %SKILLRAG_DIR%
 echo 📁 WebUI 目录: %WEBUI_DIR%
 echo.
 
@@ -63,7 +63,7 @@ echo ✅ WebUI 已启动
 echo.
 
 echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo ✨ SkillRAG 技能分析系统已启动！
+echo ✨ skill_agent 技能分析系统已启动！
 echo.
 echo 📊 LangGraph 服务器: http://localhost:2024
 echo 🌐 WebUI 界面: http://localhost:3000

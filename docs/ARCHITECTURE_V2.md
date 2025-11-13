@@ -1,4 +1,4 @@
-# SkillRAG 架构重构总结
+# skill_agent 架构重构总结
 
 **版本**: 2.0
 **日期**: 2025-01-11
@@ -74,7 +74,7 @@
 ## 📁 新目录结构
 
 ```
-SkillRAG/
+skill_agent/
 ├── core/                       # RAG Core（独立库）
 │   ├── __init__.py
 │   ├── config.py              # 配置加载器
@@ -134,7 +134,7 @@ graph LR
 ### 代码示例
 
 ```python
-from SkillRAG.orchestration import generate_skill_sync
+from skill_agent.orchestration import generate_skill_sync
 
 # 生成技能配置（自动循环修复）
 result = generate_skill_sync(
@@ -183,7 +183,7 @@ validation_fix:
 ### 使用方式
 
 ```python
-from SkillRAG.orchestration.prompts import get_prompt_manager
+from skill_agent.orchestration.prompts import get_prompt_manager
 
 prompt_mgr = get_prompt_manager()
 prompt = prompt_mgr.get_prompt("skill_generation")
@@ -238,14 +238,14 @@ async def call_tool(name: str, arguments: dict):
 
 ```bash
 # 无需 MCP/LangGraph，纯 RAG 测试
-cd SkillRAG
+cd skill_agent
 python -c "from core import RAGEngine; print('RAG Core OK')"
 ```
 
 ### 2. LangGraph 图测试
 
 ```python
-from SkillRAG.orchestration import generate_skill_sync
+from skill_agent.orchestration import generate_skill_sync
 
 # 测试循环修复能力
 result = generate_skill_sync("创建治疗技能", max_retries=3)
@@ -256,7 +256,7 @@ assert result["final_result"] is not None
 
 ```bash
 # 启动 MCP Adapter
-python SkillRAG/mcp_adapter.py
+python skill_agent/mcp_adapter.py
 
 # Claude Code 调用工具测试
 ```
@@ -268,8 +268,8 @@ python SkillRAG/mcp_adapter.py
 ### 作为 RAG 库使用（无 MCP）
 
 ```python
-from SkillRAG.core import RAGEngine
-from SkillRAG.core.config import get_config
+from skill_agent.core import RAGEngine
+from skill_agent.core.config import get_config
 
 config = get_config()
 rag = RAGEngine(config.to_dict())
@@ -281,7 +281,7 @@ results = rag.search("治疗技能", top_k=5)
 ### 作为 LangGraph 使用（无 MCP）
 
 ```python
-from SkillRAG.orchestration import generate_skill_sync
+from skill_agent.orchestration import generate_skill_sync
 
 # 生成技能（带循环修复）
 result = generate_skill_sync("火球术技能", max_retries=3)
@@ -292,7 +292,7 @@ print(result["final_result"])
 
 ```bash
 # 启动 MCP Adapter
-python SkillRAG/mcp_adapter.py
+python skill_agent/mcp_adapter.py
 
 # Claude Code 自动连接
 ```
