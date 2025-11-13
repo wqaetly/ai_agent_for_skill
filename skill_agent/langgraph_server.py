@@ -77,7 +77,7 @@ class RunsStreamRequest(BaseModel):
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     logger.info("🚀 LangGraph Server starting...")
-    
+
     # 预加载图
     try:
         get_skill_generation_graph()
@@ -86,9 +86,57 @@ async def lifespan(app: FastAPI):
         logger.info("✅ All graphs loaded successfully")
     except Exception as e:
         logger.error(f"❌ Failed to load graphs: {e}")
-    
+
+    # 自动初始化 RAG 索引
+    try:
+        from orchestration.tools.rag_tools import get_rag_engine
+
+        logger.info("🔍 Checking RAG index status...")
+        engine = get_rag_engine()
+
+        # 获取索引统计信息
+        try:
+            skill_count = engine.vector_store.count()
+            logger.info(f"Skill index count: {skill_count}")
+        except Exception as e:
+            logger.warning(f"Failed to get skill count: {e}")
+            skill_count = 0
+
+        try:
+            action_count = engine.action_vector_store.count()
+            logger.info(f"Action index count: {action_count}")
+        except Exception as e:
+            logger.warning(f"Failed to get action count: {e}")
+            action_count = 0
+
+        # 如果索引为空，自动重建
+        if skill_count == 0 or action_count == 0:
+            logger.info("📦 Empty index detected, initializing...")
+
+            # 重建技能索引
+            if skill_count == 0:
+                logger.info("  → Indexing skills...")
+                skill_result = engine.index_skills(force_rebuild=False)
+                logger.info(f"  ✅ Skills indexed: {skill_result.get('count', 0)} items in {skill_result.get('elapsed_time', 0):.2f}s")
+
+            # 重建 Action 索引
+            if action_count == 0:
+                logger.info("  → Indexing actions...")
+                action_result = engine.index_actions(force_rebuild=False)
+                logger.info(f"  ✅ Actions indexed: {action_result.get('count', 0)} items in {action_result.get('elapsed_time', 0):.2f}s")
+
+            logger.info("🎉 RAG index initialization complete")
+        else:
+            logger.info(f"✅ RAG index ready (Skills: {skill_count}, Actions: {action_count})")
+
+    except Exception as e:
+        import traceback
+        logger.error(f"❌ Failed to initialize RAG index: {e}")
+        logger.error(traceback.format_exc())
+        logger.warning("⚠️  RAG功能可能无法正常工作，请手动调用 POST /rag/index/rebuild")
+
     yield
-    
+
     logger.info("🛑 LangGraph Server shutting down...")
 
 

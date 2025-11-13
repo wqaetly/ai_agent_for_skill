@@ -28,7 +28,7 @@ call venv\Scripts\activate.bat
 
 REM 安装依赖
 echo 📦 安装 Python 依赖...
-pip install -q -r requirements_langchain.txt
+pip install -q -r requirements.txt
 
 REM 启动 LangGraph 服务器
 echo 🔧 启动 LangGraph 服务器 (端口 2024)...

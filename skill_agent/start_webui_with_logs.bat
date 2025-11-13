@@ -46,21 +46,10 @@ call venv\Scripts\activate.bat
 REM Upgrade pip first
 python -m pip install --upgrade pip -q
 
-REM Install LangChain dependencies
-pip install -q -r requirements_langchain.txt
+REM Install all dependencies from requirements.txt
+pip install -q -r requirements.txt
 if errorlevel 1 (
-    echo    ERROR: Failed to install LangChain dependencies
-    pause
-    exit /b 1
-)
-
-REM Install ML dependencies (torch, sentence-transformers, chromadb)
-REM Use --only-binary to avoid C++ compilation issues on Windows
-echo    Installing ML dependencies (using precompiled wheels)...
-pip install -q --only-binary=:all: -r requirements_ml.txt
-if errorlevel 1 (
-    echo    ERROR: Failed to install ML dependencies
-    echo    Tip: Ensure you have the latest pip version
+    echo    ERROR: Failed to install dependencies
     pause
     exit /b 1
 )

@@ -58,7 +58,7 @@ action_indexer:
 rag:
   # 检索参数
   top_k: 5  # 返回最相似的 K 个结果
-  similarity_threshold: 0.15  # 相似度阈值（0-1）
+  similarity_threshold: 0.1  # 相似度阈值（0-1），降低以提高召回率
 
   # 重排序
   rerank_enabled: false  # 可扩展

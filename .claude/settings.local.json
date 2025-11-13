@@ -70,7 +70,8 @@
       "Bash(skill_agent/venv/Scripts/python.exe:*)",
       "Bash(skill_agent/venv/Scripts/pip.exe:*)",
       "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\Python\\requirements.txt\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\Python\\requirements_mcp.txt\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\requirements_langchain.txt\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\requirements_ml.txt\")",
-      "Bash(venv/Scripts/python.exe -m pip:*)"
+      "Bash(venv/Scripts/python.exe -m pip:*)",
+      "Bash(venv/Scripts/python.exe:*)"
     ],
     "deny": [],
     "ask": []

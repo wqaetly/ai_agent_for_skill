@@ -379,7 +379,7 @@ class RAGEngine:
                 'display_name': display_name,
                 'category': category,
                 'description': description,
-                'semantic_similarity': similarity
+                'similarity': similarity  # 前端期望的字段名
             })
 
         logger.info(

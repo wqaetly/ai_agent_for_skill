@@ -1,15 +1,11 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { MessageSquare, Search, Zap, FileJson, Database, AlertCircle, CheckCircle, Copy, ChevronDown, ChevronUp, RefreshCw, Trash2, BarChart3 } from 'lucide-react'
-import { Thread } from '@/components/thread'
-import { StreamProvider } from '@/providers/Stream'
-import { ThreadProvider } from '@/providers/Thread'
-import { ArtifactProvider } from '@/components/thread/artifact'
+import { Search, Zap, FileJson, Database, AlertCircle, CheckCircle, Copy, ChevronDown, ChevronUp, RefreshCw, Trash2, BarChart3 } from 'lucide-react'
 
 // ==================== 类型定义 ====================
 
-type TabType = 'chat' | 'search' | 'actions' | 'parameters' | 'index'
+type TabType = 'search' | 'actions' | 'parameters' | 'index'
 
 interface SearchResult {
   skill_id: string
@@ -58,7 +54,7 @@ const API_BASE_URL = 'http://localhost:2024'
 // ==================== 主组件 ====================
 
 export default function RAGPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('chat')
+  const [activeTab, setActiveTab] = useState<TabType>('search')
   const [toast, setToast] = useState<ToastMessage | null>(null)
   const [healthStatus, setHealthStatus] = useState<HealthStatus | null>(null)
 
@@ -125,12 +121,6 @@ export default function RAGPage() {
         <div className="bg-white rounded-lg shadow-sm mb-6">
           <nav className="flex border-b">
             <TabButton
-              icon={<MessageSquare className="w-5 h-5" />}
-              label="智能对话"
-              active={activeTab === 'chat'}
-              onClick={() => setActiveTab('chat')}
-            />
-            <TabButton
               icon={<Search className="w-5 h-5" />}
               label="技能搜索"
               active={activeTab === 'search'}
@@ -157,8 +147,7 @@ export default function RAGPage() {
           </nav>
 
           {/* Tab内容 */}
-          <div className={activeTab === 'chat' ? '' : 'p-6'}>
-            {activeTab === 'chat' && <ChatTab />}
+          <div className="p-6">
             {activeTab === 'search' && <SearchTab showToast={showToast} />}
             {activeTab === 'actions' && <ActionsTab showToast={showToast} />}
             {activeTab === 'parameters' && <ParametersTab showToast={showToast} />}
@@ -175,22 +164,6 @@ export default function RAGPage() {
           />
         )}
       </div>
-    </div>
-  )
-}
-
-// ==================== 对话Tab ====================
-
-function ChatTab() {
-  return (
-    <div className="h-[calc(100vh-16rem)]">
-      <ThreadProvider>
-        <StreamProvider>
-          <ArtifactProvider>
-            <Thread />
-          </ArtifactProvider>
-        </StreamProvider>
-      </ThreadProvider>
     </div>
   )
 }
