@@ -79,9 +79,36 @@
       "Bash(kill:*)",
       "Bash(cmd.exe /c restart_server.bat)",
       "Bash(timeout:*)",
-      "WebFetch(domain:api-docs.deepseek.com)"
+      "WebFetch(domain:api-docs.deepseek.com)",
+      "Bash(venvScriptspython.exe langgraph_server.py)",
+      "Bash(./venv/Scripts/python.exe:*)",
+      "Bash(skill_agentvenvScriptspython.exe skill_agentlanggraph_server.py)",
+      "Bash(./skill_agent/venv/Scripts/python.exe:*)",
+      "Bash(where:*)",
+      "Bash(npx:*)",
+      "Bash(set MCPR_TOKEN=mcpr_DinXYOJY7txetz6zK8ouRlfL8WmW4v6k)",
+      "mcp__mcp-router__resolve-library-id",
+      "mcp__mcp-router__get-library-docs",
+      "mcp__mcp-router__sequentialthinking",
+      "Bash(langgraph dev)",
+      "Bash(venv/Scripts/pip.exe show:*)",
+      "Bash(venv/Scripts/pip.exe install:*)",
+      "Bash(venvScriptslanggraph.exe dev:*)",
+      "Bash(venv/Scripts/langgraph.exe dev:*)",
+      "Bash(set:*)",
+      "Bash(ping:*)",
+      "Bash(del test_cli.py dev_output.log 2)",
+      "Bash(del \"skill_agent\\start_webui.bat\" \"skill_agent\\start_webui_with_logs.bat\" \"skill_agent\\start_server.bat\" \"skill_agent\\start_server_with_log.bat\" \"skill_agent\\start_langgraph_dev.bat\" \"skill_agent\\stop_webui.bat\" \"skill_agent\\restart_server.bat\" \"skill_agent\\start_webui.sh\" \"skill_agent\\stop_webui.sh\" 2)",
+      "Bash(del:*)",
+      "Bash(venvScriptspython.exe -m langgraph --help)",
+      "Bash(cmd.exe /c test_launch.bat)",
+      "Bash(npm:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "mcp-router"
+  ]
 }

@@ -142,6 +142,11 @@ export function AssistantMessage({
   // 🔥 检查是否为流式输出中
   const isStreamingMessage = (message as any)?.streaming === true;
 
+  // 🔍 调试日志
+  if (message?.id && (isThinking || contentString.includes("思考") || contentString.includes("DeepSeek"))) {
+    console.log(`[AI Message Debug] id=${message.id}, thinking=${isThinking}, streaming=${isStreamingMessage}, content preview:`, contentString.substring(0, 100));
+  }
+
   if (isToolResult && hideToolCalls) {
     return null;
   }
@@ -170,10 +175,24 @@ export function AssistantMessage({
           </>
         ) : (
           <>
-            {contentString.length > 0 && (
+            {contentString.length > 0 ? (
               <div className="py-1">
                 <MarkdownText>{contentString}</MarkdownText>
+                {/* 🔥 流式输出中的提示 */}
+                {isStreamingMessage && (
+                  <span className="text-muted-foreground inline-flex items-center gap-1 text-sm ml-1">
+                    <span className="inline-block h-1 w-1 animate-pulse rounded-full bg-current"></span>
+                    <span className="inline-block h-1 w-1 animate-pulse rounded-full bg-current [animation-delay:0.2s]"></span>
+                    <span className="inline-block h-1 w-1 animate-pulse rounded-full bg-current [animation-delay:0.4s]"></span>
+                  </span>
+                )}
               </div>
+            ) : (
+              isStreamingMessage && (
+                <div className="py-1 text-muted-foreground text-sm italic">
+                  Streaming response...
+                </div>
+              )
             )}
 
             {!hideToolCalls && (

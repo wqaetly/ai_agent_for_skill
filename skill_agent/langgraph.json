@@ -1,0 +1,11 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "skill_generation": "./graphs.py:skill_generation",
+    "skill_search": "./graphs.py:skill_search",
+    "skill_detail": "./graphs.py:skill_detail",
+    "skill_validation": "./graphs.py:skill_validation",
+    "parameter_inference": "./graphs.py:parameter_inference"
+  },
+  "python_version": "3.12"
+}

@@ -42,10 +42,6 @@ logger = logging.getLogger(__name__)
 # 实际生产环境应使用 Redis 或数据库
 thread_states: Dict[str, Dict[str, Any]] = {}
 
-# 全局 chunk 队列存储（用于流式推送）
-# 每个 thread_id 对应一个 asyncio.Queue
-chunk_queues: Dict[str, asyncio.Queue] = {}
-
 
 # ==================== 数据模型 ====================
 
@@ -267,27 +263,45 @@ async def stream_graph_updates(
         logger.info(f"Starting stream for thread {thread_id}, initial_state: {initial_state.get('requirement', 'N/A')}")
         event_count = 0
 
-        # 🔥 创建此 thread 的 chunk 队列
-        chunk_queue = asyncio.Queue()
-        chunk_queues[thread_id] = chunk_queue
-        logger.info(f"✅ Created chunk queue for thread {thread_id}")
-
-        # 使用 astream 进行流式处理
+        # 使用 astream 进行流式处理，同时启用 values 和 custom 模式
         # 维护一个累积的 state
         accumulated_state = {}
 
-        # 🔥 标记队列是否应继续处理
-        queue_active = True
-
         try:
-            # 🔥 传递 thread_id 到 config，使节点能够访问
+            # 🔥 传递 thread_id 到 config
             config = {"configurable": {"thread_id": thread_id}}
-            async for event in graph.astream(initial_state, config=config):
-                event_count += 1
-                logger.info(f"Stream event #{event_count}: keys={list(event.keys())}")
 
-                # 记录完整的原始事件（用于调试）
-                logger.debug(f"Raw event data: {event}")
+            # 🔥 使用多个 stream_mode 来同时接收 values 更新和 custom 事件
+            async for stream_mode, event in graph.astream(
+                initial_state,
+                config=config,
+                stream_mode=["values", "custom"]  # 同时接收 values 和 custom 事件
+            ):
+                event_count += 1
+                logger.info(f"Stream event #{event_count}: mode={stream_mode}")
+
+                # 🔥 处理不同类型的流式事件
+                if stream_mode == "custom":
+                    # 这是来自节点内 writer() 的自定义事件
+                    logger.info(f"📨 Received custom event: {event}")
+                    try:
+                        # 直接转发 custom 事件到前端
+                        event_json = json.dumps(event, ensure_ascii=False)
+                        event_type = event.get("type", "chunk")
+                        # 确保事件名带有 custom| 前缀
+                        custom_event = (
+                            event_type
+                            if str(event_type).startswith("custom|")
+                            else f"custom|{event_type}"
+                        )
+                        logger.info(f"📤 Forwarding custom event: {custom_event}")
+                        yield f"event: {custom_event}\ndata: {event_json}\n\n"
+                    except Exception as e:
+                        logger.error(f"❌ Custom event encoding error: {e}", exc_info=True)
+                    continue
+
+                # 处理 values 事件（图状态更新）
+                logger.debug(f"Raw values event: {event}")
 
                 # 序列化事件数据
                 try:
@@ -322,7 +336,10 @@ async def stream_graph_updates(
                     for i, msg in enumerate(new_messages):
                         content = msg.get('content', '')
                         content_preview = content[:200] if len(content) > 200 else content
-                        logger.info(f"  Message {i+1}: {msg.get('type', 'unknown')} - {content_preview}...")
+                        # 🔍 检查 thinking 字段
+                        thinking_flag = msg.get('thinking', False)
+                        msg_id = msg.get('id', 'N/A')
+                        logger.info(f"  Message {i+1}: type={msg.get('type', 'unknown')}, id={msg_id}, thinking={thinking_flag}, content={content_preview}...")
 
                     # 追加到累积状态
                     accumulated_state['messages'].extend(new_messages)
@@ -335,7 +352,7 @@ async def stream_graph_updates(
                 # 发送标准 SSE 事件（发送累积状态）
                 try:
                     event_json = json.dumps(accumulated_state, ensure_ascii=False)
-                    logger.info(f"📤 Sending SSE event (size: {len(event_json)} bytes)")
+                    logger.info(f"📤 Sending SSE values event (size: {len(event_json)} bytes)")
                     logger.info(f"📋 Event data keys: {list(accumulated_state.keys())}")
                     # 标准 SSE 格式：event: <type>\ndata: <json>\n\n
                     yield f"event: values\ndata: {event_json}\n\n"
@@ -343,37 +360,11 @@ async def stream_graph_updates(
                     logger.error(f"❌ JSON encoding error: {e}", exc_info=True)
                     continue
 
-                # 🔥 非阻塞检查 chunk 队列，发送所有可用的 chunk
-                while not chunk_queue.empty():
-                    try:
-                        chunk_data = chunk_queue.get_nowait()
-                        chunk_json = json.dumps(chunk_data, ensure_ascii=False)
-                        event_type = chunk_data.get("type", "chunk")
-                        logger.info(f"📨 Sending chunk event: {event_type}")
-                        yield f"event: {event_type}\ndata: {chunk_json}\n\n"
-                    except asyncio.QueueEmpty:
-                        break
-                    except Exception as e:
-                        logger.error(f"❌ Chunk send error: {e}", exc_info=True)
-
                 # 添加小延迟以确保流式传输（减少到 1ms 降低累积延迟）
                 await asyncio.sleep(0.001)
         except Exception as e:
             logger.error(f"❌ Stream iteration error: {e}", exc_info=True)
             raise
-
-        # 🔥 发送队列中剩余的 chunk（流结束前）
-        while not chunk_queue.empty():
-            try:
-                chunk_data = chunk_queue.get_nowait()
-                chunk_json = json.dumps(chunk_data, ensure_ascii=False)
-                event_type = chunk_data.get("type", "chunk")
-                logger.info(f"📨 Sending final chunk event: {event_type}")
-                yield f"event: {event_type}\ndata: {chunk_json}\n\n"
-            except asyncio.QueueEmpty:
-                break
-            except Exception as e:
-                logger.error(f"❌ Final chunk send error: {e}", exc_info=True)
 
         # 保存最终状态到全局存储
         thread_states[thread_id] = accumulated_state
@@ -385,20 +376,10 @@ async def stream_graph_updates(
         yield f"event: end\ndata: {final_state_json}\n\n"
         logger.info("End signal sent successfully")
 
-        # 🔥 清理 chunk 队列
-        if thread_id in chunk_queues:
-            del chunk_queues[thread_id]
-            logger.info(f"✅ Cleaned up chunk queue for thread {thread_id}")
-
     except Exception as e:
         logger.error(f"Stream error: {e}", exc_info=True)
         error_data = {"error": str(e)}
         yield f"event: error\ndata: {json.dumps(error_data, ensure_ascii=False)}\n\n"
-
-        # 🔥 异常时也要清理队列
-        if thread_id in chunk_queues:
-            del chunk_queues[thread_id]
-            logger.info(f"✅ Cleaned up chunk queue after error for thread {thread_id}")
 
 
 # ==================== API 端点 ====================
@@ -546,6 +527,7 @@ async def create_run_stream(
             "retry_count": 0,
             "max_retries": 3,
             "final_result": {},
+            "thread_id": thread_id,  # 🔥 传递 thread_id 到 state
             "messages": convert_to_langgraph_messages([
                 Message(
                     role=msg["role"],
@@ -634,6 +616,7 @@ async def create_run(
             "retry_count": 0,
             "max_retries": 3,
             "final_result": {},
+            "thread_id": thread_id,  # 🔥 传递 thread_id 到 state
             "messages": convert_to_langgraph_messages([
                 Message(
                     role=msg["role"],
@@ -644,7 +627,7 @@ async def create_run(
                 for msg in normalized_messages
             ]) if normalized_messages else [],
         }
-        
+
         # 执行图
         result = await graph.ainvoke(initial_state)
         

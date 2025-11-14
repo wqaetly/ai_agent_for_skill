@@ -28,6 +28,7 @@ class SkillGenerationState(TypedDict):
     max_retries: int  # 最大重试次数
     final_result: Dict[str, Any]  # 最终结果
     messages: Annotated[List, "append"]  # 对话历史
+    thread_id: str  # 🔥 线程ID (用于流式输出)
 
 
 # ==================== LLM 初始化 ====================
@@ -107,7 +108,7 @@ def retriever_node(state: SkillGenerationState) -> Dict[str, Any]:
     }
 
 
-def generator_node(state: SkillGenerationState, config: Dict[str, Any] = None) -> Dict[str, Any]:
+def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
     """
     生成技能 JSON 节点
 
@@ -115,25 +116,20 @@ def generator_node(state: SkillGenerationState, config: Dict[str, Any] = None) -
 
     Args:
         state: 技能生成状态
-        config: LangGraph 配置（包含 thread_id）
     """
     from ..prompts.prompt_manager import get_prompt_manager
+    from langgraph.config import get_stream_writer
 
     requirement = state["requirement"]
     similar_skills = state.get("similar_skills", [])
 
-    # 🔥 获取 thread_id 和 chunk 队列
-    thread_id = None
-    chunk_queue = None
-    if config and "configurable" in config:
-        thread_id = config["configurable"].get("thread_id")
-        if thread_id:
-            # 导入全局队列
-            import sys
-            langgraph_server = sys.modules.get('langgraph_server')
-            if langgraph_server and hasattr(langgraph_server, 'chunk_queues'):
-                chunk_queue = langgraph_server.chunk_queues.get(thread_id)
-                logger.info(f"✅ Got chunk queue for thread {thread_id}")
+    # 🔥 使用 LangGraph 标准的 stream_writer 机制
+    try:
+        writer = get_stream_writer()
+        logger.info(f"✅ Got stream writer")
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to get stream writer: {e}")
+        writer = None
 
     logger.info(f"生成技能 JSON: {requirement}")
 
@@ -166,8 +162,8 @@ def generator_node(state: SkillGenerationState, config: Dict[str, Any] = None) -
     full_content = ""    # 最终输出
 
     # 🔥 生成唯一的 message_id 用于跟踪流式消息
-    thinking_message_id = f"thinking_{thread_id}_{api_start_time}" if thread_id else None
-    content_message_id = f"content_{thread_id}_{api_start_time}" if thread_id else None
+    thinking_message_id = f"thinking_{api_start_time}"
+    content_message_id = f"content_{api_start_time}"
 
     # 流式调用
     for chunk in chain.stream({
@@ -199,32 +195,36 @@ def generator_node(state: SkillGenerationState, config: Dict[str, Any] = None) -
         # 累积思考内容
         if reasoning_chunk:
             full_reasoning += reasoning_chunk
+            logger.info(f"📝 Reasoning chunk received: {len(reasoning_chunk)} chars")
 
-            # 🔥 实时推送 thinking chunk 到队列
-            if chunk_queue and thinking_message_id:
+            # 🔥 使用 LangGraph 标准 writer 实时推送 thinking chunk
+            if writer:
                 try:
-                    chunk_queue.put_nowait({
+                    writer({
                         "type": "thinking_chunk",
                         "message_id": thinking_message_id,
                         "chunk": reasoning_chunk
                     })
+                    logger.info(f"✅ Sent thinking chunk via writer")
                 except Exception as e:
-                    logger.error(f"❌ Failed to push thinking chunk: {e}")
+                    logger.error(f"❌ Failed to send thinking chunk: {e}")
 
         # 累积最终内容
         if hasattr(chunk, 'content') and chunk.content:
             full_content += chunk.content
+            logger.info(f"📝 Content chunk received: {len(chunk.content)} chars, total: {len(full_content)}")
 
-            # 🔥 实时推送 content chunk 到队列
-            if chunk_queue and content_message_id:
+            # 🔥 使用 LangGraph 标准 writer 实时推送 content chunk
+            if writer:
                 try:
-                    chunk_queue.put_nowait({
+                    writer({
                         "type": "content_chunk",
                         "message_id": content_message_id,
                         "chunk": chunk.content
                     })
+                    logger.info(f"✅ Sent content chunk via writer")
                 except Exception as e:
-                    logger.error(f"❌ Failed to push content chunk: {e}")
+                    logger.error(f"❌ Failed to send content chunk: {e}")
 
     # 记录完整响应和性能指标
     api_total_time = time.time() - api_start_time
@@ -240,14 +240,20 @@ def generator_node(state: SkillGenerationState, config: Dict[str, Any] = None) -
     generated_json = full_content
 
     # 如果有思考过程，作为单独的消息添加（标记为 thinking）
+    # 🔥 使用与流式chunk相同的 message_id，确保前端可以正确更新消息
     if full_reasoning:
         messages.append(AIMessage(
             content=full_reasoning,
-            additional_kwargs={"thinking": True}
+            additional_kwargs={"thinking": True},
+            id=thinking_message_id  # 🔥 使用相同的 ID
         ))
 
     # 添加 DeepSeek 的最终输出
-    messages.append(AIMessage(content=full_content))
+    # 🔥 使用与流式chunk相同的 message_id
+    messages.append(AIMessage(
+        content=full_content,
+        id=content_message_id  # 🔥 使用相同的 ID
+    ))
 
     return {
         "generated_json": generated_json,
