@@ -14,6 +14,7 @@ import { ThreadView } from "../agent-inbox";
 import { useQueryState, parseAsBoolean } from "nuqs";
 import { GenericInterruptView } from "./generic-interrupt";
 import { useArtifact } from "../artifact";
+import { ThinkingMessage } from "./thinking";
 
 function CustomComponent({
   message,
@@ -136,8 +137,23 @@ export function AssistantMessage({
   const hasAnthropicToolCalls = !!anthropicStreamedToolCalls?.length;
   const isToolResult = message?.type === "tool";
 
+  // 检查是否为思考内容
+  const isThinking = (message as any)?.thinking === true;
+  // 🔥 检查是否为流式输出中
+  const isStreamingMessage = (message as any)?.streaming === true;
+
   if (isToolResult && hideToolCalls) {
     return null;
+  }
+
+  // 如果是思考内容，使用专门的ThinkingMessage组件
+  if (isThinking) {
+    return (
+      <ThinkingMessage
+        content={contentString}
+        isStreaming={isStreamingMessage || (isLoading && isLastMessage)} // 🔥 优先使用 streaming 字段
+      />
+    );
   }
 
   return (

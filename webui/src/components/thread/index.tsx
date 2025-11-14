@@ -142,6 +142,14 @@ export function Thread() {
   const messages = stream.messages;
   const isLoading = stream.isLoading;
 
+  // 调试日志
+  useEffect(() => {
+    console.log('[Thread Debug] Messages count:', messages.length);
+    console.log('[Thread Debug] Messages:', messages);
+    console.log('[Thread Debug] Stream values:', stream.values);
+    console.log('[Thread Debug] isLoading:', isLoading);
+  }, [messages, stream.values, isLoading]);
+
   const lastError = useRef<string | undefined>(undefined);
 
   const setThreadId = (id: string | null) => {

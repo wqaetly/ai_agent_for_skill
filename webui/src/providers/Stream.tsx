@@ -79,18 +79,69 @@ const StreamSession = ({
 }) => {
   const [threadId, setThreadId] = useQueryState("threadId");
   const { getThreads, setThreads } = useThreads();
+
+  // 🔥 存储流式 chunk 的累积缓冲区
+  const [chunkBuffers, setChunkBuffers] = useState<Record<string, string>>({});
+
   const streamValue = useTypedStream({
     apiUrl,
     apiKey: apiKey ?? undefined,
     assistantId,
     threadId: threadId ?? null,
     fetchStateHistory: true,
-    onCustomEvent: (event, options) => {
+    onCustomEvent: (event: any, options) => {
       if (isUIMessage(event) || isRemoveUIMessage(event)) {
         options.mutate((prev) => {
           const ui = uiMessageReducer(prev.ui ?? [], event);
           return { ...prev, ui };
         });
+      }
+
+      // 🔥 处理 thinking_chunk 和 content_chunk 事件
+      if (event && typeof event === 'object' && ('type' in event)) {
+        const eventType = event.type;
+
+        if (eventType === 'thinking_chunk' || eventType === 'content_chunk') {
+          const { message_id, chunk } = event;
+
+          console.log(`[Stream] Received ${eventType}:`, { message_id, chunk: chunk?.substring(0, 50) });
+
+          // 累积 chunk 到 buffer
+          setChunkBuffers(prev => ({
+            ...prev,
+            [message_id]: (prev[message_id] || '') + chunk
+          }));
+
+          // 实时更新到 messages
+          options.mutate((prev) => {
+            const messages = prev.messages || [];
+            const existingIndex = messages.findIndex((m: any) => m.id === message_id);
+
+            const updatedContent = (chunkBuffers[message_id] || '') + chunk;
+
+            if (existingIndex >= 0) {
+              // 更新现有消息
+              const updatedMessages = [...messages];
+              updatedMessages[existingIndex] = {
+                ...updatedMessages[existingIndex],
+                content: updatedContent,
+                streaming: true, // 标记为流式中
+                ...(eventType === 'thinking_chunk' ? { thinking: true } : {})
+              };
+              return { ...prev, messages: updatedMessages };
+            } else {
+              // 创建新消息
+              const newMessage = {
+                id: message_id,
+                type: 'ai' as const,
+                content: updatedContent,
+                streaming: true,
+                ...(eventType === 'thinking_chunk' ? { thinking: true } : {})
+              };
+              return { ...prev, messages: [...messages, newMessage] };
+            }
+          });
+        }
       }
     },
     onThreadId: (id) => {
@@ -100,6 +151,13 @@ const StreamSession = ({
       sleep().then(() => getThreads().then(setThreads).catch(console.error));
     },
   });
+
+  // 调试日志
+  useEffect(() => {
+    console.log('[StreamProvider Debug] messages:', streamValue.messages);
+    console.log('[StreamProvider Debug] values:', streamValue.values);
+    console.log('[StreamProvider Debug] isLoading:', streamValue.isLoading);
+  }, [streamValue.messages, streamValue.values, streamValue.isLoading]);
 
   useEffect(() => {
     checkGraphStatus(apiUrl, apiKey).then((ok) => {

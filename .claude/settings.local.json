@@ -71,7 +71,15 @@
       "Bash(skill_agent/venv/Scripts/pip.exe:*)",
       "Bash(del \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\Python\\requirements.txt\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\Python\\requirements_mcp.txt\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\requirements_langchain.txt\" \"E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\requirements_ml.txt\")",
       "Bash(venv/Scripts/python.exe -m pip:*)",
-      "Bash(venv/Scripts/python.exe:*)"
+      "Bash(venv/Scripts/python.exe:*)",
+      "Bash(timeout /t 4 /nobreak)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(if exist skill_agentrestart_server.bat del skill_agentrestart_server.bat)",
+      "Bash(if exist restart_server.bat del restart_server.bat)",
+      "Bash(kill:*)",
+      "Bash(cmd.exe /c restart_server.bat)",
+      "Bash(timeout:*)",
+      "WebFetch(domain:api-docs.deepseek.com)"
     ],
     "deny": [],
     "ask": []

@@ -57,7 +57,7 @@ def search_skills_semantic(query: str, top_k: int = 5, filters: Optional[Dict[st
         技能配置列表，每个包含：skill_id, skill_name, similarity_score, skill_data
     """
     rag = get_rag_engine()
-    results = rag.search(query, top_k=top_k, filters=filters)
+    results = rag.search_skills(query, top_k=top_k, filters=filters)
     return results
 
 

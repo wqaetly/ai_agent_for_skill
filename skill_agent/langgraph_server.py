@@ -8,6 +8,7 @@ import os
 import sys
 import logging
 import asyncio
+import json
 from typing import Dict, Any, List, Optional, AsyncIterator
 from datetime import datetime
 from contextlib import asynccontextmanager
@@ -17,6 +18,10 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import uvicorn
+
+# 加载环境变量
+from dotenv import load_dotenv
+load_dotenv()
 
 # 添加项目路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -32,6 +37,14 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+# 全局线程状态存储（内存）
+# 实际生产环境应使用 Redis 或数据库
+thread_states: Dict[str, Dict[str, Any]] = {}
+
+# 全局 chunk 队列存储（用于流式推送）
+# 每个 thread_id 对应一个 asyncio.Queue
+chunk_queues: Dict[str, asyncio.Queue] = {}
 
 
 # ==================== 数据模型 ====================
@@ -181,60 +194,211 @@ def convert_from_langgraph_messages(messages: List[Any]) -> List[Dict[str, str]]
     result = []
     for msg in messages:
         msg_type = msg.__class__.__name__.lower()
-        role = "human" if "human" in msg_type else "ai" if "ai" in msg_type else "system"
+        message_type = "human" if "human" in msg_type else "ai" if "ai" in msg_type else "system"
         result.append({
-            "role": role,
+            "type": message_type,  # 前端期望 type 字段，不是 role
             "content": msg.content,
             "id": getattr(msg, "id", None)
         })
     return result
 
 
+def serialize_event_data(data: Any) -> Any:
+    """
+    递归序列化事件数据，处理 LangChain 消息对象
+
+    Args:
+        data: 待序列化的数据
+
+    Returns:
+        可 JSON 序列化的数据
+    """
+    from langchain_core.messages import BaseMessage
+
+    if isinstance(data, BaseMessage):
+        # 转换 LangChain 消息为字典
+        msg_type = data.__class__.__name__.lower()
+        message_type = "human" if "human" in msg_type else "ai" if "ai" in msg_type else "system"
+
+        # 提取 thinking 标记
+        is_thinking = False
+        if hasattr(data, 'additional_kwargs') and isinstance(data.additional_kwargs, dict):
+            is_thinking = data.additional_kwargs.get("thinking", False)
+
+        result = {
+            "type": message_type,  # 前端期望 type 字段，不是 role
+            "content": data.content,
+            "id": getattr(data, "id", None)
+        }
+
+        # 如果是思考消息，添加 thinking 字段
+        if is_thinking:
+            result["thinking"] = True
+
+        return result
+    elif isinstance(data, dict):
+        # 递归处理字典
+        return {k: serialize_event_data(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        # 递归处理列表
+        return [serialize_event_data(item) for item in data]
+    else:
+        # 其他类型直接返回
+        return data
+
+
 async def stream_graph_updates(
     graph,
-    initial_state: Dict[str, Any]
+    initial_state: Dict[str, Any],
+    thread_id: str
 ) -> AsyncIterator[str]:
     """
     流式输出图的更新
-    
+
     Args:
         graph: LangGraph 图实例
         initial_state: 初始状态
-        
+        thread_id: 线程ID
+
     Yields:
         SSE 格式的事件数据
     """
     try:
+        logger.info(f"Starting stream for thread {thread_id}, initial_state: {initial_state.get('requirement', 'N/A')}")
+        event_count = 0
+
+        # 🔥 创建此 thread 的 chunk 队列
+        chunk_queue = asyncio.Queue()
+        chunk_queues[thread_id] = chunk_queue
+        logger.info(f"✅ Created chunk queue for thread {thread_id}")
+
         # 使用 astream 进行流式处理
-        async for event in graph.astream(initial_state):
-            # 格式化为 SSE 事件
-            event_data = {
-                "event": "values",
-                "data": event
-            }
-            
-            # 转换消息格式
-            if "messages" in event:
-                event_data["data"]["messages"] = convert_from_langgraph_messages(
-                    event["messages"]
-                )
-            
-            # 发送事件
-            yield f"data: {str(event_data)}\n\n"
-            
-            # 添加小延迟以确保流式传输
-            await asyncio.sleep(0.01)
-        
-        # 发送结束事件
-        yield f"data: {str({'event': 'end'})}\n\n"
-        
+        # 维护一个累积的 state
+        accumulated_state = {}
+
+        # 🔥 标记队列是否应继续处理
+        queue_active = True
+
+        try:
+            # 🔥 传递 thread_id 到 config，使节点能够访问
+            config = {"configurable": {"thread_id": thread_id}}
+            async for event in graph.astream(initial_state, config=config):
+                event_count += 1
+                logger.info(f"Stream event #{event_count}: keys={list(event.keys())}")
+
+                # 记录完整的原始事件（用于调试）
+                logger.debug(f"Raw event data: {event}")
+
+                # 序列化事件数据
+                try:
+                    serialized_event = serialize_event_data(event)
+                    logger.info(f"✅ Event serialized successfully")
+                except Exception as e:
+                    logger.error(f"❌ Serialization error: {e}", exc_info=True)
+                    continue
+
+                # 从节点输出中提取 messages 到顶层
+                # LangGraph 输出格式：{node_name: {messages: [...], ...}}
+                # 前端期望格式：{messages: [...], node_name: {...}}
+                flattened_state = {}
+                for node_name, node_output in serialized_event.items():
+                    if isinstance(node_output, dict) and 'messages' in node_output:
+                        # 将 messages 提升到顶层
+                        flattened_state['messages'] = node_output['messages']
+                        # 保留节点输出（不包含 messages）
+                        flattened_state[node_name] = {k: v for k, v in node_output.items() if k != 'messages'}
+                    else:
+                        # 保留其他字段
+                        flattened_state[node_name] = node_output
+
+                # 累积消息（追加而非覆盖）
+                if 'messages' in flattened_state:
+                    if 'messages' not in accumulated_state:
+                        accumulated_state['messages'] = []
+
+                    # 记录新增的消息内容
+                    new_messages = flattened_state['messages']
+                    logger.info(f"📨 Event contains {len(new_messages)} messages")
+                    for i, msg in enumerate(new_messages):
+                        content = msg.get('content', '')
+                        content_preview = content[:200] if len(content) > 200 else content
+                        logger.info(f"  Message {i+1}: {msg.get('type', 'unknown')} - {content_preview}...")
+
+                    # 追加到累积状态
+                    accumulated_state['messages'].extend(new_messages)
+                    # 移除 flattened_state 中的 messages，避免重复 update
+                    flattened_state = {k: v for k, v in flattened_state.items() if k != 'messages'}
+
+                # 更新其他状态字段
+                accumulated_state.update(flattened_state)
+
+                # 发送标准 SSE 事件（发送累积状态）
+                try:
+                    event_json = json.dumps(accumulated_state, ensure_ascii=False)
+                    logger.info(f"📤 Sending SSE event (size: {len(event_json)} bytes)")
+                    logger.info(f"📋 Event data keys: {list(accumulated_state.keys())}")
+                    # 标准 SSE 格式：event: <type>\ndata: <json>\n\n
+                    yield f"event: values\ndata: {event_json}\n\n"
+                except Exception as e:
+                    logger.error(f"❌ JSON encoding error: {e}", exc_info=True)
+                    continue
+
+                # 🔥 非阻塞检查 chunk 队列，发送所有可用的 chunk
+                while not chunk_queue.empty():
+                    try:
+                        chunk_data = chunk_queue.get_nowait()
+                        chunk_json = json.dumps(chunk_data, ensure_ascii=False)
+                        event_type = chunk_data.get("type", "chunk")
+                        logger.info(f"📨 Sending chunk event: {event_type}")
+                        yield f"event: {event_type}\ndata: {chunk_json}\n\n"
+                    except asyncio.QueueEmpty:
+                        break
+                    except Exception as e:
+                        logger.error(f"❌ Chunk send error: {e}", exc_info=True)
+
+                # 添加小延迟以确保流式传输（减少到 1ms 降低累积延迟）
+                await asyncio.sleep(0.001)
+        except Exception as e:
+            logger.error(f"❌ Stream iteration error: {e}", exc_info=True)
+            raise
+
+        # 🔥 发送队列中剩余的 chunk（流结束前）
+        while not chunk_queue.empty():
+            try:
+                chunk_data = chunk_queue.get_nowait()
+                chunk_json = json.dumps(chunk_data, ensure_ascii=False)
+                event_type = chunk_data.get("type", "chunk")
+                logger.info(f"📨 Sending final chunk event: {event_type}")
+                yield f"event: {event_type}\ndata: {chunk_json}\n\n"
+            except asyncio.QueueEmpty:
+                break
+            except Exception as e:
+                logger.error(f"❌ Final chunk send error: {e}", exc_info=True)
+
+        # 保存最终状态到全局存储
+        thread_states[thread_id] = accumulated_state
+        logger.info(f"Saved final state for thread {thread_id}")
+
+        # 发送结束事件（保留最终状态）
+        logger.info(f"Stream completed with {event_count} events, sending end signal")
+        final_state_json = json.dumps(accumulated_state, ensure_ascii=False)
+        yield f"event: end\ndata: {final_state_json}\n\n"
+        logger.info("End signal sent successfully")
+
+        # 🔥 清理 chunk 队列
+        if thread_id in chunk_queues:
+            del chunk_queues[thread_id]
+            logger.info(f"✅ Cleaned up chunk queue for thread {thread_id}")
+
     except Exception as e:
         logger.error(f"Stream error: {e}", exc_info=True)
-        error_event = {
-            "event": "error",
-            "data": {"error": str(e)}
-        }
-        yield f"data: {str(error_event)}\n\n"
+        error_data = {"error": str(e)}
+        yield f"event: error\ndata: {json.dumps(error_data, ensure_ascii=False)}\n\n"
+
+        # 🔥 异常时也要清理队列
+        if thread_id in chunk_queues:
+            del chunk_queues[thread_id]
+            logger.info(f"✅ Cleaned up chunk queue after error for thread {thread_id}")
 
 
 # ==================== API 端点 ====================
@@ -269,6 +433,22 @@ async def health_check():
     """健康检查"""
     return {
         "status": "healthy",
+        "timestamp": datetime.now().isoformat()
+    }
+
+
+@app.get("/info")
+async def server_info():
+    """
+    服务器信息端点（兼容 LangGraph Cloud/Studio）
+
+    前端使用此端点检查服务可用性
+    """
+    return {
+        "version": "1.0.0",
+        "name": "SkillRAG LangGraph Server",
+        "description": "技能分析与生成的 LangGraph 服务器",
+        "status": "ready",
         "timestamp": datetime.now().isoformat()
     }
 
@@ -328,15 +508,35 @@ async def create_run_stream(
         
         # 准备初始状态
         input_data = request.input
-        
+
         # 从 messages 中提取最新的用户消息作为需求
         messages = input_data.get("messages", [])
-        if messages:
-            last_message = messages[-1]
-            requirement = last_message.get("content", "")
+
+        # 转换 LangGraph Cloud 消息格式为内部格式
+        normalized_messages = []
+        for msg in messages:
+            # 提取 role (type 字段)
+            role = msg.get("type", msg.get("role", "human"))
+
+            # 提取 content (可能是字符串或列表)
+            content = msg.get("content", "")
+            if isinstance(content, list):
+                # 如果是列表，提取第一个 text 内容
+                content = content[0].get("text", "") if content else ""
+
+            normalized_messages.append({
+                "id": msg.get("id"),
+                "role": role,
+                "content": content,
+                "name": msg.get("name")
+            })
+
+        # 提取最新消息作为需求
+        if normalized_messages:
+            requirement = normalized_messages[-1].get("content", "")
         else:
             requirement = input_data.get("requirement", "")
-        
+
         # 构建初始状态
         initial_state = {
             "requirement": requirement,
@@ -346,12 +546,20 @@ async def create_run_stream(
             "retry_count": 0,
             "max_retries": 3,
             "final_result": {},
-            "messages": convert_to_langgraph_messages([Message(**msg) for msg in messages]) if messages else [],
+            "messages": convert_to_langgraph_messages([
+                Message(
+                    role=msg["role"],
+                    content=msg["content"],
+                    id=msg.get("id"),
+                    name=msg.get("name")
+                )
+                for msg in normalized_messages
+            ]) if normalized_messages else [],
         }
         
         # 返回流式响应
         return StreamingResponse(
-            stream_graph_updates(graph, initial_state),
+            stream_graph_updates(graph, initial_state, thread_id),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",
@@ -392,13 +600,32 @@ async def create_run(
         # 准备初始状态
         input_data = request.input
         messages = input_data.get("messages", [])
-        
-        if messages:
-            last_message = messages[-1]
-            requirement = last_message.get("content", "")
+
+        # 转换 LangGraph Cloud 消息格式为内部格式
+        normalized_messages = []
+        for msg in messages:
+            # 提取 role (type 字段)
+            role = msg.get("type", msg.get("role", "human"))
+
+            # 提取 content (可能是字符串或列表)
+            content = msg.get("content", "")
+            if isinstance(content, list):
+                # 如果是列表，提取第一个 text 内容
+                content = content[0].get("text", "") if content else ""
+
+            normalized_messages.append({
+                "id": msg.get("id"),
+                "role": role,
+                "content": content,
+                "name": msg.get("name")
+            })
+
+        # 提取最新消息作为需求
+        if normalized_messages:
+            requirement = normalized_messages[-1].get("content", "")
         else:
             requirement = input_data.get("requirement", "")
-        
+
         initial_state = {
             "requirement": requirement,
             "similar_skills": [],
@@ -407,7 +634,15 @@ async def create_run(
             "retry_count": 0,
             "max_retries": 3,
             "final_result": {},
-            "messages": convert_to_langgraph_messages([Message(**msg) for msg in messages]) if messages else [],
+            "messages": convert_to_langgraph_messages([
+                Message(
+                    role=msg["role"],
+                    content=msg["content"],
+                    id=msg.get("id"),
+                    name=msg.get("name")
+                )
+                for msg in normalized_messages
+            ]) if normalized_messages else [],
         }
         
         # 执行图
@@ -428,6 +663,22 @@ async def create_run(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/threads")
+async def create_thread():
+    """
+    创建新线程（兼容 LangGraph Cloud API）
+
+    前端使用此端点创建新的对话线程
+    """
+    thread_id = f"thread_{datetime.now().timestamp()}"
+    return {
+        "thread_id": thread_id,
+        "created_at": datetime.now().isoformat(),
+        "metadata": {},
+        "status": "idle"
+    }
+
+
 @app.get("/threads/{thread_id}")
 async def get_thread(thread_id: str):
     """获取线程信息"""
@@ -436,6 +687,81 @@ async def get_thread(thread_id: str):
         "created_at": datetime.now().isoformat(),
         "metadata": {}
     }
+
+
+@app.get("/threads/{thread_id}/state")
+async def get_thread_state(thread_id: str):
+    """
+    获取线程状态（兼容 LangGraph SDK）
+
+    前端在 stream 完成后会调用此端点获取最终状态
+    """
+    try:
+        # 从全局存储中获取状态
+        state = thread_states.get(thread_id)
+
+        if state is None:
+            # 如果没有找到，返回空状态
+            logger.warning(f"No state found for thread {thread_id}")
+            return {
+                "values": {},
+                "next": [],
+                "config": {},
+                "metadata": {},
+                "created_at": datetime.now().isoformat(),
+                "parent_config": None
+            }
+
+        # 返回 LangGraph 兼容的状态格式
+        return {
+            "values": state,  # 完整的状态对象
+            "next": [],  # 下一步节点（已完成所以为空）
+            "config": {},
+            "metadata": {},
+            "created_at": datetime.now().isoformat(),
+            "parent_config": None
+        }
+    except Exception as e:
+        logger.error(f"Get thread state error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/threads/search")
+async def search_threads(request: Request):
+    """
+    搜索线程（兼容 LangGraph SDK）
+
+    前端使用 client.threads.search() 时调用此端点
+    """
+    try:
+        body = await request.json() if request.headers.get("content-type") == "application/json" else {}
+
+        # 由于我们没有持久化存储，返回空列表
+        # 实际应用中应该从数据库查询
+        return []
+
+    except Exception as e:
+        logger.error(f"Search threads error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/threads/{thread_id}/history")
+async def get_thread_history(thread_id: str, request: Request):
+    """
+    获取线程历史消息（兼容 LangGraph SDK）
+
+    返回指定线程的完整对话历史
+    LangGraph SDK 期望返回一个数组格式的历史记录
+    """
+    try:
+        # 由于我们没有持久化存储，返回空数组
+        # 实际应用中应该从数据库查询
+        # 返回格式应该是状态快照数组
+        return []
+
+    except Exception as e:
+        logger.error(f"Get thread history error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ==================== RAG 专用端点 ====================
@@ -710,12 +1036,105 @@ async def rag_health_check():
 
 # ==================== 主函数 ====================
 
+def kill_process_on_port(port: int) -> bool:
+    """
+    杀掉占用指定端口的进程
+
+    Args:
+        port: 端口号
+
+    Returns:
+        是否成功杀掉进程
+    """
+    try:
+        import subprocess
+        import re
+
+        # 在Windows上查找占用端口的进程
+        if sys.platform == "win32":
+            # 使用 netstat 查找端口
+            result = subprocess.run(
+                ['netstat', '-ano'],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+
+            # 解析输出，查找监听该端口的进程
+            for line in result.stdout.splitlines():
+                if f':{port}' in line and 'LISTENING' in line:
+                    # 提取PID（最后一列）
+                    parts = line.split()
+                    if parts:
+                        pid = parts[-1]
+                        logger.info(f"🔍 Found process {pid} using port {port}")
+
+                        # 杀掉进程
+                        kill_result = subprocess.run(
+                            ['taskkill', '/F', '/PID', pid],
+                            capture_output=True,
+                            text=True,
+                            timeout=5
+                        )
+
+                        if kill_result.returncode == 0:
+                            logger.info(f"✅ Successfully killed process {pid}")
+                            return True
+                        else:
+                            logger.warning(f"⚠️  Failed to kill process {pid}: {kill_result.stderr}")
+
+            return False
+        else:
+            # Linux/Mac 使用 lsof
+            result = subprocess.run(
+                ['lsof', '-ti', f':{port}'],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+
+            if result.stdout.strip():
+                pid = result.stdout.strip()
+                logger.info(f"🔍 Found process {pid} using port {port}")
+
+                subprocess.run(['kill', '-9', pid], timeout=5)
+                logger.info(f"✅ Successfully killed process {pid}")
+                return True
+
+            return False
+
+    except Exception as e:
+        logger.error(f"❌ Error killing process on port {port}: {e}")
+        return False
+
+
 def main():
     """启动服务器"""
     host = os.getenv("LANGGRAPH_HOST", "0.0.0.0")
     port = int(os.getenv("LANGGRAPH_PORT", "2024"))
 
     logger.info(f"Starting LangGraph server on {host}:{port}")
+
+    # 检查端口是否被占用
+    import socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('localhost', port))
+    sock.close()
+
+    if result == 0:
+        logger.warning(f"⚠️  Port {port} is already in use!")
+        logger.info(f"🔄 Attempting to kill existing process...")
+
+        if kill_process_on_port(port):
+            logger.info(f"✅ Port {port} is now free, starting server...")
+            # 等待端口完全释放
+            import time
+            time.sleep(2)
+        else:
+            logger.error(f"❌ Failed to free port {port}")
+            logger.warning(f"    To manually find the process: netstat -ano | findstr :{port}")
+            logger.warning(f"    To manually kill it: taskkill /F /PID <PID>")
+            sys.exit(1)
 
     uvicorn.run(
         app,
