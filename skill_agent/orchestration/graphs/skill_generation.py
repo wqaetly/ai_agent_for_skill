@@ -4,6 +4,9 @@
 """
 
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.sqlite import SqliteSaver
+import os
+import logging
 from ..nodes.skill_nodes import (
     SkillGenerationState,
     retriever_node,
@@ -13,6 +16,8 @@ from ..nodes.skill_nodes import (
     finalize_node,
     should_continue,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def build_skill_generation_graph():
@@ -64,8 +69,24 @@ def build_skill_generation_graph():
     # 最终化后结束
     workflow.add_edge("finalize", END)
 
-    # 编译图
-    return workflow.compile()
+    # 🔥 P0改进：添加持久化支持
+    # 创建checkpoints目录
+    checkpoint_dir = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    checkpoint_db = os.path.join(checkpoint_dir, "skill_generation.db")
+    logger.info(f"💾 使用checkpoint数据库: {checkpoint_db}")
+
+    # 初始化SqliteSaver
+    checkpointer = SqliteSaver.from_conn_string(checkpoint_db)
+
+    # 🔥 编译图（添加checkpointer和recursion_limit）
+    return workflow.compile(
+        checkpointer=checkpointer,
+        interrupt_before=[],  # 可以在特定节点前暂停，支持human-in-the-loop
+        interrupt_after=[],   # 可以在特定节点后暂停
+        debug=False           # 生产环境设为False
+    )
 
 
 # 全局图实例（单例）
@@ -108,7 +129,13 @@ async def generate_skill(requirement: str, max_retries: int = 3) -> dict:
         "messages": [],
     }
 
-    result = await graph.ainvoke(initial_state)
+    # 🔥 P0改进：添加thread_id和recursion_limit配置
+    config = {
+        "configurable": {"thread_id": f"skill_gen_{hash(requirement) % 10000}"},
+        "recursion_limit": 50  # 防止无限循环
+    }
+
+    result = await graph.ainvoke(initial_state, config)
     return result
 
 
@@ -136,7 +163,13 @@ def generate_skill_sync(requirement: str, max_retries: int = 3) -> dict:
         "messages": [],
     }
 
-    result = graph.invoke(initial_state)
+    # 🔥 P0改进：添加thread_id和recursion_limit配置
+    config = {
+        "configurable": {"thread_id": f"skill_gen_{hash(requirement) % 10000}"},
+        "recursion_limit": 50  # 防止无限循环
+    }
+
+    result = graph.invoke(initial_state, config)
     return result
 
 

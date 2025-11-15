@@ -99,12 +99,9 @@ def search_actions(query: str, top_k: int = 5) -> List[Dict[str, Any]]:
     """
     rag = get_rag_engine()
 
-    # 调用 Action 搜索功能
-    if hasattr(rag, 'action_indexer'):
-        results = rag.action_indexer.search(query, top_k=top_k)
-        return results
-    else:
-        return {"error": "Action 索引器未初始化"}
+    # 调用 RAG Engine 的 Action 搜索功能
+    results = rag.search_actions(query, top_k=top_k, return_details=True)
+    return results
 
 
 @tool

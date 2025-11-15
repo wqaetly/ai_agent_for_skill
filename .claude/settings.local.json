@@ -102,7 +102,8 @@
       "Bash(del:*)",
       "Bash(venvScriptspython.exe -m langgraph --help)",
       "Bash(cmd.exe /c test_launch.bat)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(venv/Scripts/pip.exe:*)"
     ],
     "deny": [],
     "ask": []

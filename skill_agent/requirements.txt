@@ -31,6 +31,7 @@ transformers>=4.51.0                  # Qwen3 必需，否则报错 KeyError: 'q
 langchain>=0.3.7,<0.4.0
 langchain-core>=0.3.17,<0.4.0
 langgraph>=0.2.45,<0.3.0
+langgraph-checkpoint-sqlite>=3.0.0  # SQLite checkpoint for persistence
 
 # LLM Providers
 langchain-openai>=0.2.8,<0.3.0      # OpenAI compatible (DeepSeek)
