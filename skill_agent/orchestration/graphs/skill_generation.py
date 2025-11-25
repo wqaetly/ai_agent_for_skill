@@ -4,9 +4,9 @@
 """
 
 from langgraph.graph import StateGraph, END
-from langgraph.checkpoint.sqlite import SqliteSaver
 import os
 import logging
+from .utils import get_checkpointer
 from ..nodes.skill_nodes import (
     SkillGenerationState,
     retriever_node,
@@ -71,14 +71,10 @@ def build_skill_generation_graph():
 
     # 🔥 P0改进：添加持久化支持
     # 创建checkpoints目录
-    checkpoint_dir = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints")
-    os.makedirs(checkpoint_dir, exist_ok=True)
+    checkpoint_db = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints", "skill_generation.db")
 
-    checkpoint_db = os.path.join(checkpoint_dir, "skill_generation.db")
-    logger.info(f"💾 使用checkpoint数据库: {checkpoint_db}")
-
-    # 初始化SqliteSaver
-    checkpointer = SqliteSaver.from_conn_string(checkpoint_db)
+    # 🔥 获取 checkpointer（部署环境返回 None）
+    checkpointer = get_checkpointer(checkpoint_db)
 
     # 🔥 编译图（添加checkpointer和recursion_limit）
     return workflow.compile(

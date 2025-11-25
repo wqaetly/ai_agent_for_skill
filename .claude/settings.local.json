@@ -103,7 +103,10 @@
       "Bash(venvScriptspython.exe -m langgraph --help)",
       "Bash(cmd.exe /c test_launch.bat)",
       "Bash(npm:*)",
-      "Bash(venv/Scripts/pip.exe:*)"
+      "Bash(venv/Scripts/pip.exe:*)",
+      "mcp__mcp-router__codex",
+      "Bash(E:\\Study\\wqaetly\\ai_agent_for_skill\\skill_agent\\venv\\Scripts\\python.exe -m pytest:*)",
+      "Bash(E:/Study/wqaetly/ai_agent_for_skill/skill_agent/venv/Scripts/python.exe:*)"
     ],
     "deny": [],
     "ask": []

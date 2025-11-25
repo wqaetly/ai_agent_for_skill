@@ -16,7 +16,11 @@ pydantic-settings>=2.6.0,<3.0.0
 # ============================================================
 # 向量数据库
 # ============================================================
-chromadb>=0.4.22,<1.0.0
+# ⚠️ WARNING: ChromaDB 0.5.4 has critical bugs (seq_id TypeError on Windows)
+# Issue: https://github.com/chroma-core/chroma/issues/2513
+# Blocked by langchain-chroma: chromadb!=0.5.4,!=0.5.5
+# If you encounter "TypeError: object of type 'int' has no len()", delete Data/vector_db
+chromadb>=0.4.22,!=0.5.4,!=0.5.5,<1.0.0
 
 # ============================================================
 # 嵌入模型 - Qwen3 依赖
@@ -30,8 +34,9 @@ transformers>=4.51.0                  # Qwen3 必需，否则报错 KeyError: 'q
 # ============================================================
 langchain>=0.3.7,<0.4.0
 langchain-core>=0.3.17,<0.4.0
-langgraph>=0.2.45,<0.3.0
-langgraph-checkpoint-sqlite>=3.0.0  # SQLite checkpoint for persistence
+langgraph>=1.0.0,<2.0.0              # 🔥 P0: Upgraded to 1.0+ for checkpoint 3.0 support
+langgraph-checkpoint>=2.1.0,<4.0.0   # Base checkpoint support (langgraph 1.0 requires >=2.1.0)
+langgraph-checkpoint-sqlite>=2.0.0,<4.0.0  # SQLite checkpoint for persistence
 
 # LLM Providers
 langchain-openai>=0.2.8,<0.3.0      # OpenAI compatible (DeepSeek)

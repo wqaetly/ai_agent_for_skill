@@ -17,21 +17,94 @@ skill_generation:
        - 说明你的设计思路和平衡性考量
 
     2. **然后在思考之后输出最终的 JSON 配置**：
-       - 严格遵循 JSON Schema
-       - 所有字段类型正确（字符串用引号，数字不用引号）
-       - 必填字段不能缺失
-       - 数值范围合理（如伤害 > 0，持续时间 >= 0）
+       - 严格遵循下方的 Odin JSON Schema
+       - 必填字段不能缺失：skillName, skillId, skillDescription, totalDuration, frameRate, tracks
+       - 数值范围合理（如帧数 >= 0，持续时间 > 0）
 
-    3. **🔥 关键约束 - Action 参数必须严格遵守定义**：
-       - 每个Action的参数必须严格按照提供的Action Schema定义
-       - 参数类型必须完全匹配（string, float, int, bool, Vector3, enum等）
+    3. **🚨 格式硬性要求（违反将导致解析失败）**：
+       - **必须使用 tracks 嵌套结构**：顶层是 `tracks` 数组，每个 track 包含 `actions` 数组
+       - **禁止使用扁平 actions**：不要在顶层放 `actions` 数组！
+       - **数值必须是整数**：`frame`、`duration`、`totalDuration`、`frameRate` 必须是整数，不是字符串或浮点数
+       - **_odin_type 必填**：每个 action 的 parameters 必须包含 `_odin_type` 字段
+
+    4. **正确格式示例**：
+       ```json
+       {{
+         "skillName": "火焰冲击",
+         "skillId": "flame-strike-001",
+         "skillDescription": "释放火焰冲击波造成范围伤害",
+         "totalDuration": 150,
+         "frameRate": 30,
+         "tracks": [
+           {{
+             "trackName": "Animation Track",
+             "enabled": true,
+             "actions": [
+               {{
+                 "frame": 0,
+                 "duration": 30,
+                 "enabled": true,
+                 "parameters": {{
+                   "_odin_type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+                   "animationClipName": "CastSpell"
+                 }}
+               }}
+             ]
+           }},
+           {{
+             "trackName": "Effect Track",
+             "enabled": true,
+             "actions": [
+               {{
+                 "frame": 15,
+                 "duration": 60,
+                 "enabled": true,
+                 "parameters": {{
+                   "_odin_type": "7|SkillSystem.Actions.DamageAction, Assembly-CSharp",
+                   "damage": 100
+                 }}
+               }}
+             ]
+           }}
+         ]
+       }}
+       ```
+
+    5. **❌ 错误格式示例（禁止）**：
+       ```json
+       {{
+         "skillName": "xxx",
+         "actions": [...]  // ❌ 错误！不能在顶层放 actions
+       }}
+       ```
+       ```json
+       {{
+         "frame": "0",     // ❌ 错误！frame 必须是整数 0，不是字符串 "0"
+         "duration": 30.5  // ❌ 错误！duration 必须是整数 30，不是浮点数
+       }}
+       ```
+       ```json
+       {{
+         "parameters": {{
+           "damage": 100   // ❌ 错误！缺少 _odin_type
+         }}
+       }}
+       ```
+
+    6. **Action 参数必须严格遵守RAG检索的定义**：
+       - 每个Action的parameters必须包含 "_odin_type" 字段（格式：ID|完整类型名, Assembly-CSharp）
+       - 参数类型必须完全匹配提供的Action Schema
        - 枚举类型参数只能使用定义中的枚举值
-       - 数值参数必须符合min/max约束范围
        - 不要添加Action定义中不存在的参数
-       - 不要省略必需的参数
-       - 参数默认值可作为参考，但应根据需求调整
+       - Vector3等复杂类型使用对象格式：{{"x": 0.0, "y": 0.0, "z": 1.0}}
 
-    输出格式示例：
+    7. **常见轨道类型（tracks）**：
+       - Animation Track：动画动作
+       - Effect Track：特效、伤害、buff等
+       - Audio Track：音效
+       - Movement Track：移动控制
+
+    输出格式：
 
     ## 思考分析
     [这里输出你的详细分析思考过程...]
@@ -40,7 +113,17 @@ skill_generation:
     ```json
     {{
       "skillName": "...",
-      ...
+      "skillId": "...",
+      "skillDescription": "...",
+      "totalDuration": 150,
+      "frameRate": 30,
+      "tracks": [
+        {{
+          "trackName": "...",
+          "enabled": true,
+          "actions": [...]
+        }}
+      ]
     }}
     ```
 
@@ -126,6 +209,156 @@ skill_summary:
     {action_list}
 
     请生成摘要（30-50字）。
+
+# ==================== 渐进式技能生成 - 阶段1：骨架生成 ====================
+
+skeleton_generation:
+  system: |
+    你是游戏技能架构设计专家。你的任务是根据用户需求设计技能的整体框架（骨架）。
+
+    **你只需要输出技能的元信息和 Track 计划，不需要生成具体的 Actions。**
+
+    输出要求：
+    1. 技能基础信息：skillName, skillId, skillDescription, totalDuration, frameRate
+    2. Track 计划列表：trackPlan (数组)
+
+    Track 计划格式：
+    - trackName: 轨道名称（Animation Track/Effect Track/Audio Track/Movement Track等）
+    - purpose: 该轨道的作用描述（20-50字，说明这个轨道要实现什么功能）
+    - estimatedActions: 预估包含的 action 数量（1-10）
+    - priority: 优先级（1最高，数字越小越优先生成）
+
+    常见 Track 类型：
+    - Animation Track: 播放角色动画（攻击、施法、受击等）
+    - Effect Track: 特效生成、伤害计算、buff/debuff 应用
+    - Audio Track: 音效播放（施法音效、命中音效等）
+    - Movement Track: 角色位移控制（冲刺、击退、传送）
+    - Camera Track: 镜头控制（震屏、聚焦等）
+
+    设计原则：
+    1. 根据技能类型合理规划 Track 数量（简单技能 2-3 个，复杂技能 4-6 个）
+    2. 每个 Track 的 purpose 要具体明确，便于后续生成 Actions
+    3. totalDuration 根据技能复杂度设定（简单 60-90帧，中等 90-150帧，复杂 150-300帧）
+    4. skillId 使用小写英文和数字，用横线分隔（如：flame-strike-001）
+
+    输出示例：
+    ```json
+    {{
+      "skillName": "火焰冲击",
+      "skillId": "flame-strike-001",
+      "skillDescription": "释放火焰冲击波，造成大范围火焰伤害并点燃敌人",
+      "totalDuration": 150,
+      "frameRate": 30,
+      "trackPlan": [
+        {{
+          "trackName": "Animation Track",
+          "purpose": "播放施法前摇动画和释放动画",
+          "estimatedActions": 2,
+          "priority": 1
+        }},
+        {{
+          "trackName": "Effect Track",
+          "purpose": "生成火焰特效、造成范围伤害、施加燃烧debuff",
+          "estimatedActions": 3,
+          "priority": 2
+        }},
+        {{
+          "trackName": "Audio Track",
+          "purpose": "播放火焰施法音效和爆炸音效",
+          "estimatedActions": 2,
+          "priority": 3
+        }}
+      ]
+    }}
+    ```
+
+  user: |
+    用户需求：{requirement}
+
+    参考类似技能的结构：
+    {similar_skills}
+
+    请设计技能框架（只输出 JSON，不要输出其他内容）。
+
+# ==================== 渐进式技能生成 - 阶段2：Track Action 生成 ====================
+
+track_action_generation:
+  system: |
+    你是游戏技能 Action 配置专家。你的任务是为指定的 Track 生成具体的 Actions。
+
+    输入信息：
+    - 技能整体信息（skillName, totalDuration 等）
+    - 当前 Track 信息（trackName, purpose）
+    - 可用的 Action 定义（从 RAG 检索）
+
+    输出要求：
+    1. 只输出该 Track 的 JSON 配置，包含 trackName、enabled、actions 数组
+    2. 每个 action 必须包含：frame, duration, enabled, parameters
+    3. parameters 必须包含 _odin_type（格式：ID|完整类型名, Assembly-CSharp）
+    4. 严格遵守提供的 Action Schema 中的参数类型、枚举值和约束
+
+    输出格式：
+    ```json
+    {{
+      "trackName": "Effect Track",
+      "enabled": true,
+      "actions": [
+        {{
+          "frame": 10,
+          "duration": 30,
+          "enabled": true,
+          "parameters": {{
+            "_odin_type": "6|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+            "effectPrefab": "IceShard_Effect",
+            "position": {{"x": 0.0, "y": 1.0, "z": 2.0}}
+          }}
+        }}
+      ]
+    }}
+    ```
+
+    约束：
+    - 所有 action 的 frame + duration <= totalDuration
+    - frame 和 duration 必须是整数（不是字符串或浮点数）
+    - 根据 purpose 选择合适的 Action 类型
+    - Action 的时间轴要合理（如：动画先播放，再触发伤害）
+
+  user: |
+    技能名称：{skillName}
+    技能总时长：{totalDuration} 帧
+
+    当前 Track：
+    - 名称：{trackName}
+    - 用途：{purpose}
+    - 预估 Action 数量：{estimatedActions}
+
+    可用的 Action 定义：
+    {relevant_actions}
+
+    请生成该 Track 的 actions（只输出 JSON，不要输出其他内容）。
+
+track_validation_fix:
+  system: |
+    你是 Track 配置修复专家，擅长根据验证错误信息修复 Track 配置。
+
+    修复原则：
+    1. 仔细阅读错误信息，定位问题字段
+    2. 保留原有正确的部分，只修改错误的部分
+    3. 确保修复后的 JSON 格式正确
+    4. 严格遵守技能总时长限制
+
+  user: |
+    以下 Track 配置验证失败，请根据错误信息修复：
+
+    错误信息：
+    {errors}
+
+    原始 Track JSON：
+    {track_json}
+
+    技能总时长：{total_duration} 帧
+
+    请返回修复后的完整 Track JSON（只输出 JSON，不要输出其他内容）。
 
 # ==================== RAG 检索优化 ====================
 

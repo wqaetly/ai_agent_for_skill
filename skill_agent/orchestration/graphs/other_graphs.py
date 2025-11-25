@@ -3,13 +3,18 @@
 包括：技能搜索、详情查询、验证修复、参数推理
 """
 
+import os
+import logging
 from typing import Dict, Any, List, TypedDict
 from langgraph.graph import StateGraph, END
+from .utils import get_checkpointer
 from ..tools.rag_tools import (
     search_skills_semantic,
     get_skill_detail,
     get_parameter_suggestions,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ==================== 技能搜索图 ====================
@@ -43,7 +48,12 @@ def build_skill_search_graph():
     workflow.add_node("search", search_node)
     workflow.set_entry_point("search")
     workflow.add_edge("search", END)
-    return workflow.compile()
+
+    # 🔥 P0改进：添加持久化支持（环境感知）
+    checkpoint_db = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints", "skill_search.db")
+    checkpointer = get_checkpointer(checkpoint_db)
+
+    return workflow.compile(checkpointer=checkpointer)
 
 
 _skill_search_graph = None
@@ -78,7 +88,12 @@ def build_skill_detail_graph():
     workflow.add_node("detail", detail_node)
     workflow.set_entry_point("detail")
     workflow.add_edge("detail", END)
-    return workflow.compile()
+
+    # 🔥 P0改进：添加持久化支持（环境感知）
+    checkpoint_db = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints", "skill_detail.db")
+    checkpointer = get_checkpointer(checkpoint_db)
+
+    return workflow.compile(checkpointer=checkpointer)
 
 
 _skill_detail_graph = None
@@ -171,7 +186,11 @@ def build_skill_validation_graph():
 
     workflow.add_edge("fix", "validate")  # 修复后重新验证
 
-    return workflow.compile()
+    # 🔥 P0改进：添加持久化支持（环境感知）
+    checkpoint_db = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints", "skill_validation.db")
+    checkpointer = get_checkpointer(checkpoint_db)
+
+    return workflow.compile(checkpointer=checkpointer)
 
 
 _skill_validation_graph = None
@@ -216,7 +235,12 @@ def build_parameter_inference_graph():
     workflow.add_node("infer", parameter_inference_node)
     workflow.set_entry_point("infer")
     workflow.add_edge("infer", END)
-    return workflow.compile()
+
+    # 🔥 P0改进：添加持久化支持（环境感知）
+    checkpoint_db = os.path.join(os.path.dirname(__file__), "..", "..", "Data", "checkpoints", "parameter_inference.db")
+    checkpointer = get_checkpointer(checkpoint_db)
+
+    return workflow.compile(checkpointer=checkpointer)
 
 
 _parameter_inference_graph = None

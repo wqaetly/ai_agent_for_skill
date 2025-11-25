@@ -28,6 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from orchestration import (
     get_skill_generation_graph,
+    get_progressive_skill_generation_graph,
     get_skill_search_graph,
     get_skill_detail_graph,
 )
@@ -38,9 +39,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# 全局线程状态存储（内存）
-# 实际生产环境应使用 Redis 或数据库
-thread_states: Dict[str, Dict[str, Any]] = {}
+# 🔥 P0改进：状态持久化已迁移到 LangGraph Checkpoint
+# 不再需要全局内存存储，所有状态由 SqliteSaver 自动管理
+# 每个图在 compile() 时已配置 checkpointer，状态会自动持久化到 SQLite
 
 
 # ==================== 数据模型 ====================
@@ -90,9 +91,10 @@ async def lifespan(app: FastAPI):
     # 预加载图
     try:
         get_skill_generation_graph()
+        get_progressive_skill_generation_graph()  # 渐进式生成图
         get_skill_search_graph()
         get_skill_detail_graph()
-        logger.info("✅ All graphs loaded successfully")
+        logger.info("✅ All graphs loaded successfully (including progressive generation)")
     except Exception as e:
         logger.error(f"❌ Failed to load graphs: {e}")
 
@@ -366,9 +368,9 @@ async def stream_graph_updates(
             logger.error(f"❌ Stream iteration error: {e}", exc_info=True)
             raise
 
-        # 保存最终状态到全局存储
-        thread_states[thread_id] = accumulated_state
-        logger.info(f"Saved final state for thread {thread_id}")
+        # 🔥 P0改进：状态已由 LangGraph Checkpoint 自动持久化，无需手动保存
+        # LangGraph 在每次节点执行后自动调用 checkpointer.put()
+        logger.info(f"✅ Stream completed for thread {thread_id}, state auto-persisted by checkpoint")
 
         # 发送结束事件（保留最终状态）
         logger.info(f"Stream completed with {event_count} events, sending end signal")
@@ -396,6 +398,9 @@ async def root():
             "threads": "/threads/{thread_id}/runs/stream",
             "assistants": "/assistants",
             "health": "/health",
+            "thread_state": "/threads/{thread_id}/state",
+            "thread_resume": "/threads/{thread_id}/resume",
+            "thread_history": "/threads/{thread_id}/history",
             "rag": {
                 "search": "/rag/search",
                 "recommend_actions": "/rag/recommend-actions",
@@ -442,8 +447,15 @@ async def list_assistants():
             {
                 "assistant_id": "skill-generation",
                 "name": "技能生成助手",
-                "description": "根据需求描述生成技能配置JSON",
+                "description": "根据需求描述生成技能配置JSON（一次性生成）",
                 "graph_id": "skill_generation"
+            },
+            {
+                "assistant_id": "progressive-skill-generation",
+                "name": "渐进式技能生成助手",
+                "description": "三阶段渐进式生成技能：骨架→Track→组装（推荐用于复杂技能）",
+                "graph_id": "progressive_skill_generation",
+                "recommended": True
             },
             {
                 "assistant_id": "skill-search",
@@ -473,20 +485,22 @@ async def create_run_stream(
     """
     try:
         logger.info(f"Stream request for thread {thread_id}: {request.input}")
-        
+
         # 获取助手ID（默认使用技能生成）
         assistant_id = request.assistant_id or request.config.get("configurable", {}).get("assistant_id", "skill-generation")
-        
+
         # 根据助手ID选择图
         if assistant_id == "skill-generation":
             graph = get_skill_generation_graph()
+        elif assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
         elif assistant_id == "skill-search":
             graph = get_skill_search_graph()
         elif assistant_id == "skill-detail":
             graph = get_skill_detail_graph()
         else:
             raise HTTPException(status_code=404, detail=f"Assistant '{assistant_id}' not found")
-        
+
         # 准备初始状态
         input_data = request.input
 
@@ -518,27 +532,60 @@ async def create_run_stream(
         else:
             requirement = input_data.get("requirement", "")
 
-        # 构建初始状态
-        initial_state = {
-            "requirement": requirement,
-            "similar_skills": [],
-            "generated_json": "",
-            "validation_errors": [],
-            "retry_count": 0,
-            "max_retries": 3,
-            "final_result": {},
-            "thread_id": thread_id,  # 🔥 传递 thread_id 到 state
-            "messages": convert_to_langgraph_messages([
-                Message(
-                    role=msg["role"],
-                    content=msg["content"],
-                    id=msg.get("id"),
-                    name=msg.get("name")
-                )
-                for msg in normalized_messages
-            ]) if normalized_messages else [],
-        }
-        
+        # 构建初始状态（根据 assistant_id 使用不同的 State 结构）
+        if assistant_id == "progressive-skill-generation":
+            # 渐进式生成使用 ProgressiveSkillGenerationState
+            initial_state = {
+                "requirement": requirement,
+                "similar_skills": [],
+                # 阶段1输出
+                "skill_skeleton": {},
+                "skeleton_validation_errors": [],
+                # 阶段2状态
+                "track_plan": [],
+                "current_track_index": 0,
+                "current_track_data": {},
+                "generated_tracks": [],
+                "current_track_errors": [],
+                "track_retry_count": 0,
+                "max_track_retries": 3,
+                # 阶段3输出
+                "assembled_skill": {},
+                "final_validation_errors": [],
+                # 通用
+                "thread_id": thread_id,
+                "messages": convert_to_langgraph_messages([
+                    Message(
+                        role=msg["role"],
+                        content=msg["content"],
+                        id=msg.get("id"),
+                        name=msg.get("name")
+                    )
+                    for msg in normalized_messages
+                ]) if normalized_messages else [],
+            }
+        else:
+            # 标准技能生成使用 SkillGenerationState
+            initial_state = {
+                "requirement": requirement,
+                "similar_skills": [],
+                "generated_json": "",
+                "validation_errors": [],
+                "retry_count": 0,
+                "max_retries": 3,
+                "final_result": {},
+                "thread_id": thread_id,
+                "messages": convert_to_langgraph_messages([
+                    Message(
+                        role=msg["role"],
+                        content=msg["content"],
+                        id=msg.get("id"),
+                        name=msg.get("name")
+                    )
+                    for msg in normalized_messages
+                ]) if normalized_messages else [],
+            }
+
         # 返回流式响应
         return StreamingResponse(
             stream_graph_updates(graph, initial_state, thread_id),
@@ -565,13 +612,15 @@ async def create_run(
     """
     try:
         logger.info(f"Run request for thread {thread_id}: {request.input}")
-        
+
         # 获取助手ID
         assistant_id = request.assistant_id or request.config.get("configurable", {}).get("assistant_id", "skill-generation")
-        
+
         # 根据助手ID选择图
         if assistant_id == "skill-generation":
             graph = get_skill_generation_graph()
+        elif assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
         elif assistant_id == "skill-search":
             graph = get_skill_search_graph()
         elif assistant_id == "skill-detail":
@@ -608,25 +657,54 @@ async def create_run(
         else:
             requirement = input_data.get("requirement", "")
 
-        initial_state = {
-            "requirement": requirement,
-            "similar_skills": [],
-            "generated_json": "",
-            "validation_errors": [],
-            "retry_count": 0,
-            "max_retries": 3,
-            "final_result": {},
-            "thread_id": thread_id,  # 🔥 传递 thread_id 到 state
-            "messages": convert_to_langgraph_messages([
-                Message(
-                    role=msg["role"],
-                    content=msg["content"],
-                    id=msg.get("id"),
-                    name=msg.get("name")
-                )
-                for msg in normalized_messages
-            ]) if normalized_messages else [],
-        }
+        # 构建初始状态（根据 assistant_id 使用不同的 State 结构）
+        if assistant_id == "progressive-skill-generation":
+            # 渐进式生成使用 ProgressiveSkillGenerationState
+            initial_state = {
+                "requirement": requirement,
+                "similar_skills": [],
+                "skill_skeleton": {},
+                "skeleton_validation_errors": [],
+                "track_plan": [],
+                "current_track_index": 0,
+                "current_track_data": {},
+                "generated_tracks": [],
+                "current_track_errors": [],
+                "track_retry_count": 0,
+                "max_track_retries": 3,
+                "assembled_skill": {},
+                "final_validation_errors": [],
+                "thread_id": thread_id,
+                "messages": convert_to_langgraph_messages([
+                    Message(
+                        role=msg["role"],
+                        content=msg["content"],
+                        id=msg.get("id"),
+                        name=msg.get("name")
+                    )
+                    for msg in normalized_messages
+                ]) if normalized_messages else [],
+            }
+        else:
+            initial_state = {
+                "requirement": requirement,
+                "similar_skills": [],
+                "generated_json": "",
+                "validation_errors": [],
+                "retry_count": 0,
+                "max_retries": 3,
+                "final_result": {},
+                "thread_id": thread_id,
+                "messages": convert_to_langgraph_messages([
+                    Message(
+                        role=msg["role"],
+                        content=msg["content"],
+                        id=msg.get("id"),
+                        name=msg.get("name")
+                    )
+                    for msg in normalized_messages
+                ]) if normalized_messages else [],
+            }
 
         # 执行图
         result = await graph.ainvoke(initial_state)
@@ -673,23 +751,38 @@ async def get_thread(thread_id: str):
 
 
 @app.get("/threads/{thread_id}/state")
-async def get_thread_state(thread_id: str):
+async def get_thread_state(thread_id: str, assistant_id: str = "skill-generation"):
     """
     获取线程状态（兼容 LangGraph SDK）
 
     前端在 stream 完成后会调用此端点获取最终状态
+    🔥 P0改进：从 LangGraph Checkpoint 读取持久化状态
     """
     try:
-        # 从全局存储中获取状态
-        state = thread_states.get(thread_id)
+        # 根据 assistant_id 选择对应的图
+        if assistant_id == "skill-generation":
+            graph = get_skill_generation_graph()
+        elif assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
+        elif assistant_id == "skill-search":
+            graph = get_skill_search_graph()
+        elif assistant_id == "skill-detail":
+            graph = get_skill_detail_graph()
+        else:
+            logger.warning(f"Unknown assistant_id: {assistant_id}, using skill-generation")
+            graph = get_skill_generation_graph()
 
-        if state is None:
+        # 🔥 从 checkpoint 读取状态
+        config = {"configurable": {"thread_id": thread_id}}
+        state_snapshot = graph.get_state(config)
+
+        if state_snapshot is None or not state_snapshot.values:
             # 如果没有找到，返回空状态
-            logger.warning(f"No state found for thread {thread_id}")
+            logger.warning(f"No checkpoint state found for thread {thread_id}")
             return {
                 "values": {},
                 "next": [],
-                "config": {},
+                "config": config,
                 "metadata": {},
                 "created_at": datetime.now().isoformat(),
                 "parent_config": None
@@ -697,12 +790,12 @@ async def get_thread_state(thread_id: str):
 
         # 返回 LangGraph 兼容的状态格式
         return {
-            "values": state,  # 完整的状态对象
-            "next": [],  # 下一步节点（已完成所以为空）
-            "config": {},
-            "metadata": {},
-            "created_at": datetime.now().isoformat(),
-            "parent_config": None
+            "values": state_snapshot.values,  # 从 checkpoint 读取的状态
+            "next": state_snapshot.next,       # 下一步节点
+            "config": config,
+            "metadata": state_snapshot.metadata or {},
+            "created_at": state_snapshot.created_at.isoformat() if hasattr(state_snapshot, 'created_at') else datetime.now().isoformat(),
+            "parent_config": state_snapshot.parent_config
         }
     except Exception as e:
         logger.error(f"Get thread state error: {e}", exc_info=True)
@@ -715,12 +808,15 @@ async def search_threads(request: Request):
     搜索线程（兼容 LangGraph SDK）
 
     前端使用 client.threads.search() 时调用此端点
+    🔥 P0改进：从 Checkpoint 查询持久化的线程列表
     """
     try:
         body = await request.json() if request.headers.get("content-type") == "application/json" else {}
 
-        # 由于我们没有持久化存储，返回空列表
-        # 实际应用中应该从数据库查询
+        # 🔥 TODO: 实现从 SqliteSaver 查询线程列表
+        # SqliteSaver 提供了 list() 方法，但需要遍历所有图的 checkpoint
+        # 暂时返回空列表，未来可以通过查询 SQLite 数据库实现
+        logger.info("Thread search requested, returning empty list (TODO: implement checkpoint query)")
         return []
 
     except Exception as e:
@@ -729,21 +825,107 @@ async def search_threads(request: Request):
 
 
 @app.post("/threads/{thread_id}/history")
-async def get_thread_history(thread_id: str, request: Request):
+async def get_thread_history(thread_id: str, request: Request, assistant_id: str = "skill-generation"):
     """
     获取线程历史消息（兼容 LangGraph SDK）
 
     返回指定线程的完整对话历史
     LangGraph SDK 期望返回一个数组格式的历史记录
+    🔥 P0改进：从 Checkpoint 读取历史状态快照
     """
     try:
-        # 由于我们没有持久化存储，返回空数组
-        # 实际应用中应该从数据库查询
-        # 返回格式应该是状态快照数组
-        return []
+        # 根据 assistant_id 选择对应的图
+        if assistant_id == "skill-generation":
+            graph = get_skill_generation_graph()
+        elif assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
+        elif assistant_id == "skill-search":
+            graph = get_skill_search_graph()
+        elif assistant_id == "skill-detail":
+            graph = get_skill_detail_graph()
+        else:
+            graph = get_skill_generation_graph()
+
+        # 🔥 从 checkpoint 读取历史状态
+        config = {"configurable": {"thread_id": thread_id}}
+
+        # 使用 get_state_history() 获取所有历史快照
+        history = []
+        try:
+            state_history = graph.get_state_history(config)
+            for state_snapshot in state_history:
+                history.append({
+                    "values": state_snapshot.values,
+                    "next": state_snapshot.next,
+                    "config": state_snapshot.config,
+                    "metadata": state_snapshot.metadata or {},
+                    "parent_config": state_snapshot.parent_config,
+                    "created_at": state_snapshot.created_at.isoformat() if hasattr(state_snapshot, 'created_at') else None
+                })
+        except Exception as e:
+            logger.warning(f"Failed to get history for thread {thread_id}: {e}")
+
+        return history
 
     except Exception as e:
         logger.error(f"Get thread history error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/threads/{thread_id}/resume")
+async def resume_thread(thread_id: str, assistant_id: str = "skill-generation"):
+    """
+    恢复线程会话（新增功能）
+
+    返回指定线程的最新状态和对话历史,用于服务重启后恢复对话
+    🔥 P0新功能：利用 Checkpoint 实现会话恢复
+    """
+    try:
+        # 根据 assistant_id 选择对应的图
+        if assistant_id == "skill-generation":
+            graph = get_skill_generation_graph()
+        elif assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
+        elif assistant_id == "skill-search":
+            graph = get_skill_search_graph()
+        elif assistant_id == "skill-detail":
+            graph = get_skill_detail_graph()
+        else:
+            logger.warning(f"Unknown assistant_id: {assistant_id}, using skill-generation")
+            graph = get_skill_generation_graph()
+
+        # 从 checkpoint 读取最新状态
+        config = {"configurable": {"thread_id": thread_id}}
+        state_snapshot = graph.get_state(config)
+
+        if state_snapshot is None or not state_snapshot.values:
+            logger.warning(f"No checkpoint found for thread {thread_id}")
+            raise HTTPException(status_code=404, detail=f"Thread {thread_id} not found or has no state")
+
+        # 提取对话历史（从 messages 字段）
+        messages = state_snapshot.values.get("messages", [])
+        converted_messages = convert_from_langgraph_messages(messages) if messages else []
+
+        # 构建恢复响应
+        return {
+            "thread_id": thread_id,
+            "assistant_id": assistant_id,
+            "status": "resumed",
+            "messages": converted_messages,
+            "state_summary": {
+                "requirement": state_snapshot.values.get("requirement", ""),
+                "retry_count": state_snapshot.values.get("retry_count", 0),
+                "is_valid": state_snapshot.values.get("is_valid", None),
+                "has_result": bool(state_snapshot.values.get("final_result")),
+            },
+            "next_nodes": state_snapshot.next,
+            "created_at": state_snapshot.created_at.isoformat() if hasattr(state_snapshot, 'created_at') else datetime.now().isoformat()
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Resume thread error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 

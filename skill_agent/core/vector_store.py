@@ -51,15 +51,40 @@ class VectorStore:
                 name=self.collection_name
             )
             logger.info(f"Loaded existing collection: {self.collection_name}")
-        except Exception:
+        except Exception as e:
             # 集合不存在，创建新集合
-            self.collection = self.client.create_collection(
-                name=self.collection_name,
-                metadata={"hnsw:space": self.distance_metric}
-            )
-            logger.info(f"Created new collection: {self.collection_name}")
+            logger.warning(f"Collection not found or corrupted: {e}, creating new collection")
+            try:
+                self.collection = self.client.create_collection(
+                    name=self.collection_name,
+                    metadata={"hnsw:space": self.distance_metric}
+                )
+                logger.info(f"Created new collection: {self.collection_name}")
+            except Exception as create_error:
+                logger.error(f"Failed to create collection: {create_error}")
+                raise
 
-        logger.info(f"Collection contains {self.collection.count()} documents")
+        # 尝试获取文档数量，但捕获 ChromaDB 0.5.4 的 seq_id bug
+        try:
+            doc_count = self.collection.count()
+            logger.info(f"Collection contains {doc_count} documents")
+        except TypeError as e:
+            # ChromaDB 0.5.4 已知 bug: TypeError: object of type 'int' has no len()
+            logger.warning(f"⚠️ ChromaDB count() failed (known 0.5.4 bug): {e}")
+            logger.warning("Attempting to reset collection to recover...")
+            try:
+                # 删除并重建集合
+                self.client.delete_collection(name=self.collection_name)
+                self.collection = self.client.create_collection(
+                    name=self.collection_name,
+                    metadata={"hnsw:space": self.distance_metric}
+                )
+                logger.info("✅ Collection reset successfully, now empty")
+            except Exception as reset_error:
+                logger.error(f"❌ Failed to reset collection: {reset_error}")
+                logger.warning("Continuing with potentially corrupted collection...")
+        except Exception as e:
+            logger.warning(f"Could not get document count: {e}, continuing anyway")
 
     def add_documents(
         self,
