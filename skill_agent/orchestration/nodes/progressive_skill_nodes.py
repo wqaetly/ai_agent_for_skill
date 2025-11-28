@@ -6,8 +6,9 @@
 import json
 import logging
 import time
-from typing import Any, Dict, List, TypedDict, Annotated, Optional
-from langchain_core.messages import AIMessage
+from typing import Any, Dict, List, TypedDict, Annotated, Optional, Literal, Tuple
+from langchain_core.messages import AIMessage, AnyMessage
+from langgraph.graph.message import add_messages
 from pydantic import ValidationError
 
 from .skill_nodes import get_llm, _prepare_payload_text
@@ -54,7 +55,8 @@ class ProgressiveSkillGenerationState(TypedDict):
     is_valid: bool  # 技能是否通过验证
 
     # === 通用 ===
-    messages: Annotated[List, "append"]  # 对话历史（用于流式输出）
+    # 使用add_messages reducer确保消息正确累积
+    messages: Annotated[List[AnyMessage], add_messages]
     thread_id: str  # 线程ID（用于追踪会话）
 
 
@@ -309,7 +311,7 @@ def format_similar_skills(skills: List[Dict[str, Any]]) -> str:
 
 # ==================== 条件判断函数 ====================
 
-def should_continue_to_track_generation(state: ProgressiveSkillGenerationState) -> str:
+def should_continue_to_track_generation(state: ProgressiveSkillGenerationState) -> Literal["generate_tracks", "skeleton_failed"]:
     """
     判断是否继续进入 Track 生成阶段
 
@@ -357,73 +359,116 @@ def infer_track_type(track_name: str) -> str:
 def search_actions_by_track_type(
     track_type: str,
     purpose: str,
-    top_k: int = 5
+    top_k: int = 5,
+    suggested_types: Optional[List[str]] = None,
+    used_types: Optional[List[str]] = None,
+    batch_context: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
-    根据 track 类型和用途检索相关 Actions
+    根据 track 类型和用途检索相关 Actions（增强版：支持语义上下文）
 
     策略：
     1. 基于 track_type 过滤 Action 类别
-    2. 结合 purpose 进行语义检索
-    3. 返回最相关的 top_k 个
+    2. 优先检索 suggested_types 指定的Action类型
+    3. 结合 purpose 和 batch_context 进行语义检索
+    4. 降权已使用的 used_types（避免重复推荐同类型）
+    5. 返回最相关的 top_k 个
 
     Args:
         track_type: Track 类型（animation/effect/audio/movement/camera/other）
         purpose: Track 用途描述
         top_k: 返回的最大 Action 数量
+        suggested_types: 建议使用的Action类型列表（来自语义上下文）
+        used_types: 已使用的Action类型列表（避免重复）
+        batch_context: 批次上下文描述
 
     Returns:
-        Action 定义列表
+        Action 定义列表（按相关性排序）
     """
     from ..tools.rag_tools import search_actions
 
     # Track 类型 → Action 类别映射
     type_to_category_map = {
         "animation": ["Animation"],
-        "effect": ["Effect", "Damage", "Buff", "Debuff", "Spawn"],
+        "effect": ["Effect", "Damage", "Buff", "Debuff", "Spawn", "Heal", "Shield"],
         "audio": ["Audio", "Sound"],
         "movement": ["Movement", "Dash", "Teleport"],
         "camera": ["Camera"],
         "other": []  # 不过滤
     }
 
-    # 构建检索查询
-    query = f"{track_type} {purpose}"
     categories = type_to_category_map.get(track_type, [])
+    all_results = []
 
-    logger.info(f"🔍 检索 {track_type} track 的 Actions: query=\"{query}\", categories={categories}")
+    # 策略1：优先检索建议的Action类型
+    if suggested_types:
+        for suggested_type in suggested_types[:3]:  # 最多检索3种建议类型
+            try:
+                query = f"{suggested_type} {purpose[:30]}"
+                results = search_actions.invoke({"query": query, "top_k": 3})
+                if isinstance(results, list):
+                    for r in results:
+                        r["_relevance_boost"] = 2.0  # 建议类型加权
+                        if r not in all_results:
+                            all_results.append(r)
+            except Exception as e:
+                logger.warning(f"⚠️ 检索建议类型 {suggested_type} 失败: {e}")
+
+    # 策略2：结合purpose和batch_context构建查询
+    if batch_context:
+        combined_query = f"{track_type} {batch_context} {purpose[:50]}"
+    else:
+        combined_query = f"{track_type} {purpose}"
+
+    logger.info(f"🔍 检索 {track_type} track: query=\"{combined_query[:60]}...\"")
 
     try:
-        # 调用 RAG 检索（目前不支持 category 过滤，后续可优化）
-        results = search_actions.invoke({"query": query, "top_k": top_k * 2})  # 多检索一些以便过滤
+        # 主查询
+        results = search_actions.invoke({"query": combined_query, "top_k": top_k * 2})
 
-        # 如果有类别限制，进行二次过滤
-        if categories and isinstance(results, list):
-            filtered_results = []
-            for action in results:
-                action_category = action.get("category", "")
-                if any(cat.lower() in action_category.lower() for cat in categories):
-                    filtered_results.append(action)
-
-            # 如果过滤后结果太少，保留原始结果的一部分
-            if len(filtered_results) < top_k // 2 and results:
-                logger.warning(f"⚠️ 类别过滤后只剩 {len(filtered_results)} 个结果，补充原始结果")
-                filtered_results = results[:top_k]
-            else:
-                filtered_results = filtered_results[:top_k]
-
-            logger.info(f"✅ 检索到 {len(filtered_results)} 个 {track_type} 相关 Actions")
-            return filtered_results
-
-        # 无类别限制或检索失败，返回原始结果
         if isinstance(results, list):
-            return results[:top_k]
-
-        return []
+            for r in results:
+                if r not in all_results:
+                    r["_relevance_boost"] = 1.0
+                    all_results.append(r)
 
     except Exception as e:
-        logger.error(f"❌ 检索 Actions 失败: {e}", exc_info=True)
-        return []
+        logger.error(f"❌ 主查询失败: {e}")
+
+    # 类别过滤
+    if categories:
+        filtered_results = []
+        for action in all_results:
+            action_category = action.get("category", "")
+            if any(cat.lower() in action_category.lower() for cat in categories):
+                filtered_results.append(action)
+
+        # 如果过滤后结果太少，保留部分原始结果
+        if len(filtered_results) < top_k // 2 and all_results:
+            logger.warning(f"⚠️ 类别过滤后只剩 {len(filtered_results)} 个，补充原始结果")
+            for r in all_results:
+                if r not in filtered_results and len(filtered_results) < top_k:
+                    filtered_results.append(r)
+        all_results = filtered_results
+
+    # 降权已使用的类型
+    if used_types:
+        for action in all_results:
+            action_type = action.get("typeName", "")
+            if action_type in used_types:
+                action["_relevance_boost"] = action.get("_relevance_boost", 1.0) * 0.5
+
+    # 按加权相关性排序
+    all_results.sort(key=lambda x: x.get("_relevance_boost", 1.0), reverse=True)
+
+    # 清理临时字段
+    for action in all_results:
+        action.pop("_relevance_boost", None)
+
+    final_results = all_results[:top_k]
+    logger.info(f"✅ 检索到 {len(final_results)} 个 {track_type} 相关 Actions")
+
+    return final_results
 
 
 def validate_track(track_data: Dict[str, Any], total_duration: int) -> List[str]:
@@ -900,6 +945,119 @@ def should_continue_tracks(state: ProgressiveSkillGenerationState) -> str:
 
 # ==================== 阶段3：技能组装节点 ====================
 
+def validate_cross_track_timeline(tracks: List[Dict[str, Any]]) -> Tuple[List[str], List[str]]:
+    """
+    验证跨Track时间同步
+
+    检查不同Track间的时间协调性，确保：
+    1. 动画和音效在相近帧触发
+    2. 伤害Action在动画/特效之后
+    3. 效果Track不早于动画Track开始
+
+    Args:
+        tracks: 已生成的Track列表
+
+    Returns:
+        (errors, warnings) 元组
+    """
+    errors = []
+    warnings = []
+
+    # 收集各类型Track的帧信息
+    animation_frames: List[int] = []  # 动画开始帧
+    audio_frames: List[int] = []       # 音效开始帧
+    damage_frames: List[int] = []      # 伤害开始帧
+    effect_frames: List[int] = []      # 特效开始帧
+
+    track_start_frames: Dict[str, int] = {}  # Track类型 -> 最早开始帧
+
+    for track in tracks:
+        track_name = track.get("trackName", "").lower()
+        actions = track.get("actions", [])
+
+        if not actions:
+            continue
+
+        # 记录Track最早开始帧
+        min_frame = min(a.get("frame", 999) for a in actions)
+
+        if "animation" in track_name:
+            track_start_frames["animation"] = min(
+                track_start_frames.get("animation", 999), min_frame
+            )
+            for action in actions:
+                animation_frames.append(action.get("frame", 0))
+
+        elif "audio" in track_name or "sound" in track_name:
+            track_start_frames["audio"] = min(
+                track_start_frames.get("audio", 999), min_frame
+            )
+            for action in actions:
+                audio_frames.append(action.get("frame", 0))
+
+        elif "effect" in track_name:
+            track_start_frames["effect"] = min(
+                track_start_frames.get("effect", 999), min_frame
+            )
+            for action in actions:
+                params = action.get("parameters", {})
+                odin_type = params.get("_odin_type", "")
+
+                if "Damage" in odin_type:
+                    damage_frames.append(action.get("frame", 0))
+                elif "Effect" in odin_type or "Spawn" in odin_type:
+                    effect_frames.append(action.get("frame", 0))
+
+    # === 验证1：动画和音效时间同步 ===
+    if animation_frames and audio_frames:
+        for anim_frame in animation_frames[:3]:  # 检查前3个动画帧
+            has_nearby_audio = any(
+                abs(anim_frame - audio_frame) <= 15  # 允许±15帧偏差
+                for audio_frame in audio_frames
+            )
+            if not has_nearby_audio:
+                warnings.append(
+                    f"动画帧{anim_frame}附近缺少配套音效（±15帧内）"
+                )
+
+    # === 验证2：伤害应在动画/特效之后 ===
+    if damage_frames and (animation_frames or effect_frames):
+        earliest_visual = min(
+            animation_frames + effect_frames if animation_frames or effect_frames else [0]
+        )
+        for damage_frame in damage_frames:
+            if damage_frame < earliest_visual:
+                warnings.append(
+                    f"伤害(帧{damage_frame})出现在动画/特效(帧{earliest_visual})之前"
+                )
+
+    # === 验证3：效果Track不应早于动画Track ===
+    anim_start = track_start_frames.get("animation", 0)
+    effect_start = track_start_frames.get("effect", 999)
+
+    if effect_start < anim_start and anim_start != 999:
+        warnings.append(
+            f"效果Track(帧{effect_start})早于动画Track(帧{anim_start})开始"
+        )
+
+    # === 验证4：检查时间轴空白（可选，仅警告） ===
+    all_frames = animation_frames + audio_frames + damage_frames + effect_frames
+    if all_frames:
+        all_frames.sort()
+        max_gap = 0
+        for i in range(1, len(all_frames)):
+            gap = all_frames[i] - all_frames[i-1]
+            if gap > max_gap:
+                max_gap = gap
+
+        if max_gap > 60:  # 超过60帧（约2秒）的空白
+            warnings.append(
+                f"时间轴存在较大空白（最大间隔{max_gap}帧），可能影响技能连贯性"
+            )
+
+    return errors, warnings
+
+
 def validate_complete_skill(skill_data: Dict[str, Any]) -> List[str]:
     """
     验证完整技能的合法性
@@ -1008,6 +1166,10 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
     # 整体验证
     errors = validate_complete_skill(assembled_skill)
 
+    # 跨Track时间同步验证（新增）
+    timeline_errors, timeline_warnings = validate_cross_track_timeline(tracks)
+    errors.extend(timeline_errors)
+
     if errors:
         logger.warning(f"⚠️ 技能组装后验证发现 {len(errors)} 个问题")
         errors_list = "\n".join([f"• {err}" for err in errors])
@@ -1024,15 +1186,23 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
             for track in tracks
         ])
 
-        messages.append(AIMessage(
-            content=f"✅ **技能组装完成**\n\n"
-                    f"**技能名称**: {assembled_skill['skillName']}\n"
-                    f"**技能ID**: {assembled_skill['skillId']}\n"
-                    f"**总时长**: {assembled_skill['totalDuration']} 帧\n"
-                    f"**轨道数**: {len(tracks)}\n"
-                    f"**总Actions**: {total_actions}\n\n"
-                    f"**轨道详情**: {track_summary}"
-        ))
+        result_msg = (
+            f"✅ **技能组装完成**\n\n"
+            f"**技能名称**: {assembled_skill['skillName']}\n"
+            f"**技能ID**: {assembled_skill['skillId']}\n"
+            f"**总时长**: {assembled_skill['totalDuration']} 帧\n"
+            f"**轨道数**: {len(tracks)}\n"
+            f"**总Actions**: {total_actions}\n\n"
+            f"**轨道详情**: {track_summary}"
+        )
+
+        # 添加跨Track时间同步警告
+        if timeline_warnings:
+            warnings_text = "\n".join([f"  • {w}" for w in timeline_warnings[:5]])
+            result_msg += f"\n\n⚠️ **时间同步建议**:\n{warnings_text}"
+            logger.warning(f"⚠️ 跨Track时间同步有 {len(timeline_warnings)} 个建议")
+
+        messages.append(AIMessage(content=result_msg))
 
     return {
         "assembled_skill": assembled_skill,
@@ -1082,7 +1252,7 @@ def finalize_progressive_node(state: ProgressiveSkillGenerationState) -> Dict[st
     }
 
 
-def should_finalize_or_fail(state: ProgressiveSkillGenerationState) -> str:
+def should_finalize_or_fail(state: ProgressiveSkillGenerationState) -> Literal["finalize", "failed"]:
     """
     判断是否进入最终化或失败状态
 

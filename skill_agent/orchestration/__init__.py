@@ -32,6 +32,13 @@ from .graphs.progressive_skill_generation import (
     generate_skill_progressive_sync,
 )
 
+# 导出批量式生成图
+from .graphs.action_batch_skill_generation import (
+    get_action_batch_skill_generation_graph,
+    generate_skill_action_batch,
+    generate_skill_action_batch_sync,
+)
+
 # 导出工具
 from .tools.rag_tools import RAG_TOOLS
 
@@ -42,6 +49,7 @@ __all__ = [
     # 图实例获取函数
     "get_skill_generation_graph",
     "get_progressive_skill_generation_graph",
+    "get_action_batch_skill_generation_graph",
     "get_skill_search_graph",
     "get_skill_detail_graph",
     "get_skill_validation_graph",
@@ -51,6 +59,8 @@ __all__ = [
     "generate_skill_sync",
     "generate_skill_progressive",
     "generate_skill_progressive_sync",
+    "generate_skill_action_batch",
+    "generate_skill_action_batch_sync",
     # 工具和管理器
     "RAG_TOOLS",
     "get_prompt_manager",

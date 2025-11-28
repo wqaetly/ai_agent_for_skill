@@ -32,6 +32,7 @@ from orchestration import (
     get_skill_search_graph,
     get_skill_detail_graph,
 )
+from config import retry, server, rag, timeout, cors
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,7 +63,7 @@ class ThreadState(BaseModel):
     generated_json: Optional[str] = Field(None)
     validation_errors: List[str] = Field(default_factory=list)
     retry_count: int = Field(0)
-    max_retries: int = Field(3)
+    max_retries: int = Field(default=retry.MAX_RETRIES, description="最大重试次数")
     final_result: Optional[Dict[str, Any]] = Field(None)
 
 
@@ -160,13 +161,14 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS 配置
+# CORS 配置（使用配置模块，支持环境变量覆盖）
+# 生产环境设置: ALLOWED_ORIGINS=https://your-domain.com
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 生产环境应该限制具体域名
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=cors.origins_list,
+    allow_credentials=cors.ALLOW_CREDENTIALS,
+    allow_methods=cors.methods_list,
+    allow_headers=cors.headers_list,
 )
 
 
@@ -175,7 +177,7 @@ app.add_middleware(
 def convert_to_langgraph_messages(messages: List[Message]) -> List[Dict[str, Any]]:
     """将消息转换为 LangGraph 格式"""
     from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-    
+
     result = []
     for msg in messages:
         if msg.role == "human":
@@ -185,6 +187,109 @@ def convert_to_langgraph_messages(messages: List[Message]) -> List[Dict[str, Any
         elif msg.role == "system":
             result.append(SystemMessage(content=msg.content))
     return result
+
+
+def normalize_langgraph_messages(messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    将 LangGraph Cloud 消息格式转换为内部格式
+
+    处理以下情况：
+    - role 可能在 "type" 或 "role" 字段
+    - content 可能是字符串或列表
+
+    Args:
+        messages: LangGraph Cloud 格式的消息列表
+
+    Returns:
+        标准化后的消息列表
+    """
+    normalized = []
+    for msg in messages:
+        # 提取 role (type 字段优先)
+        role = msg.get("type", msg.get("role", "human"))
+
+        # 提取 content (可能是字符串或列表)
+        content = msg.get("content", "")
+        if isinstance(content, list):
+            # 如果是列表，提取第一个 text 内容
+            content = content[0].get("text", "") if content else ""
+
+        normalized.append({
+            "id": msg.get("id"),
+            "role": role,
+            "content": content,
+            "name": msg.get("name")
+        })
+
+    return normalized
+
+
+def build_initial_state(
+    assistant_id: str,
+    requirement: str,
+    thread_id: str,
+    normalized_messages: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """
+    根据 assistant_id 构建初始状态
+
+    Args:
+        assistant_id: 助手类型 ("progressive-skill-generation" 或其他)
+        requirement: 用户需求描述
+        thread_id: 线程ID
+        normalized_messages: 标准化后的消息列表
+
+    Returns:
+        对应类型的初始状态字典
+    """
+    # 转换消息为 LangGraph 格式
+    langgraph_messages = convert_to_langgraph_messages([
+        Message(
+            role=msg["role"],
+            content=msg["content"],
+            id=msg.get("id"),
+            name=msg.get("name")
+        )
+        for msg in normalized_messages
+    ]) if normalized_messages else []
+
+    # 公共字段
+    base_state = {
+        "requirement": requirement,
+        "similar_skills": [],
+        "thread_id": thread_id,
+        "messages": langgraph_messages,
+    }
+
+    if assistant_id == "progressive-skill-generation":
+        # 渐进式生成使用 ProgressiveSkillGenerationState
+        return {
+            **base_state,
+            # 阶段1输出
+            "skill_skeleton": {},
+            "skeleton_validation_errors": [],
+            # 阶段2状态
+            "track_plan": [],
+            "current_track_index": 0,
+            "current_track_data": {},
+            "generated_tracks": [],
+            "current_track_errors": [],
+            "track_retry_count": 0,
+            "max_track_retries": retry.MAX_TRACK_RETRIES,
+            # 阶段3输出
+            "assembled_skill": {},
+            "final_validation_errors": [],
+        }
+    else:
+        # 标准技能生成使用 SkillGenerationState
+        return {
+            **base_state,
+            "generated_json": "",
+            "validation_errors": [],
+            "retry_count": 0,
+            "max_retries": retry.MAX_RETRIES,
+            "final_result": {},
+        }
 
 
 def convert_from_langgraph_messages(messages: List[Any]) -> List[Dict[str, str]]:
@@ -503,28 +608,10 @@ async def create_run_stream(
 
         # 准备初始状态
         input_data = request.input
-
-        # 从 messages 中提取最新的用户消息作为需求
         messages = input_data.get("messages", [])
 
-        # 转换 LangGraph Cloud 消息格式为内部格式
-        normalized_messages = []
-        for msg in messages:
-            # 提取 role (type 字段)
-            role = msg.get("type", msg.get("role", "human"))
-
-            # 提取 content (可能是字符串或列表)
-            content = msg.get("content", "")
-            if isinstance(content, list):
-                # 如果是列表，提取第一个 text 内容
-                content = content[0].get("text", "") if content else ""
-
-            normalized_messages.append({
-                "id": msg.get("id"),
-                "role": role,
-                "content": content,
-                "name": msg.get("name")
-            })
+        # 使用抽取的辅助函数转换消息格式
+        normalized_messages = normalize_langgraph_messages(messages)
 
         # 提取最新消息作为需求
         if normalized_messages:
@@ -532,59 +619,13 @@ async def create_run_stream(
         else:
             requirement = input_data.get("requirement", "")
 
-        # 构建初始状态（根据 assistant_id 使用不同的 State 结构）
-        if assistant_id == "progressive-skill-generation":
-            # 渐进式生成使用 ProgressiveSkillGenerationState
-            initial_state = {
-                "requirement": requirement,
-                "similar_skills": [],
-                # 阶段1输出
-                "skill_skeleton": {},
-                "skeleton_validation_errors": [],
-                # 阶段2状态
-                "track_plan": [],
-                "current_track_index": 0,
-                "current_track_data": {},
-                "generated_tracks": [],
-                "current_track_errors": [],
-                "track_retry_count": 0,
-                "max_track_retries": 3,
-                # 阶段3输出
-                "assembled_skill": {},
-                "final_validation_errors": [],
-                # 通用
-                "thread_id": thread_id,
-                "messages": convert_to_langgraph_messages([
-                    Message(
-                        role=msg["role"],
-                        content=msg["content"],
-                        id=msg.get("id"),
-                        name=msg.get("name")
-                    )
-                    for msg in normalized_messages
-                ]) if normalized_messages else [],
-            }
-        else:
-            # 标准技能生成使用 SkillGenerationState
-            initial_state = {
-                "requirement": requirement,
-                "similar_skills": [],
-                "generated_json": "",
-                "validation_errors": [],
-                "retry_count": 0,
-                "max_retries": 3,
-                "final_result": {},
-                "thread_id": thread_id,
-                "messages": convert_to_langgraph_messages([
-                    Message(
-                        role=msg["role"],
-                        content=msg["content"],
-                        id=msg.get("id"),
-                        name=msg.get("name")
-                    )
-                    for msg in normalized_messages
-                ]) if normalized_messages else [],
-            }
+        # 使用抽取的辅助函数构建初始状态
+        initial_state = build_initial_state(
+            assistant_id=assistant_id,
+            requirement=requirement,
+            thread_id=thread_id,
+            normalized_messages=normalized_messages
+        )
 
         # 返回流式响应
         return StreamingResponse(
@@ -632,24 +673,8 @@ async def create_run(
         input_data = request.input
         messages = input_data.get("messages", [])
 
-        # 转换 LangGraph Cloud 消息格式为内部格式
-        normalized_messages = []
-        for msg in messages:
-            # 提取 role (type 字段)
-            role = msg.get("type", msg.get("role", "human"))
-
-            # 提取 content (可能是字符串或列表)
-            content = msg.get("content", "")
-            if isinstance(content, list):
-                # 如果是列表，提取第一个 text 内容
-                content = content[0].get("text", "") if content else ""
-
-            normalized_messages.append({
-                "id": msg.get("id"),
-                "role": role,
-                "content": content,
-                "name": msg.get("name")
-            })
+        # 使用抽取的辅助函数转换消息格式
+        normalized_messages = normalize_langgraph_messages(messages)
 
         # 提取最新消息作为需求
         if normalized_messages:
@@ -657,54 +682,13 @@ async def create_run(
         else:
             requirement = input_data.get("requirement", "")
 
-        # 构建初始状态（根据 assistant_id 使用不同的 State 结构）
-        if assistant_id == "progressive-skill-generation":
-            # 渐进式生成使用 ProgressiveSkillGenerationState
-            initial_state = {
-                "requirement": requirement,
-                "similar_skills": [],
-                "skill_skeleton": {},
-                "skeleton_validation_errors": [],
-                "track_plan": [],
-                "current_track_index": 0,
-                "current_track_data": {},
-                "generated_tracks": [],
-                "current_track_errors": [],
-                "track_retry_count": 0,
-                "max_track_retries": 3,
-                "assembled_skill": {},
-                "final_validation_errors": [],
-                "thread_id": thread_id,
-                "messages": convert_to_langgraph_messages([
-                    Message(
-                        role=msg["role"],
-                        content=msg["content"],
-                        id=msg.get("id"),
-                        name=msg.get("name")
-                    )
-                    for msg in normalized_messages
-                ]) if normalized_messages else [],
-            }
-        else:
-            initial_state = {
-                "requirement": requirement,
-                "similar_skills": [],
-                "generated_json": "",
-                "validation_errors": [],
-                "retry_count": 0,
-                "max_retries": 3,
-                "final_result": {},
-                "thread_id": thread_id,
-                "messages": convert_to_langgraph_messages([
-                    Message(
-                        role=msg["role"],
-                        content=msg["content"],
-                        id=msg.get("id"),
-                        name=msg.get("name")
-                    )
-                    for msg in normalized_messages
-                ]) if normalized_messages else [],
-            }
+        # 使用抽取的辅助函数构建初始状态
+        initial_state = build_initial_state(
+            assistant_id=assistant_id,
+            requirement=requirement,
+            thread_id=thread_id,
+            normalized_messages=normalized_messages
+        )
 
         # 执行图
         result = await graph.ainvoke(initial_state)
@@ -934,14 +918,14 @@ async def resume_thread(thread_id: str, assistant_id: str = "skill-generation"):
 class RAGSearchRequest(BaseModel):
     """RAG搜索请求"""
     query: str = Field(..., description="搜索查询文本")
-    top_k: int = Field(5, description="返回结果数量")
+    top_k: int = Field(default=rag.DEFAULT_TOP_K, description="返回结果数量")
     filters: Optional[Dict[str, Any]] = Field(None, description="过滤条件")
 
 
 class RAGActionRecommendRequest(BaseModel):
     """Action推荐请求"""
     context: str = Field(..., description="上下文描述")
-    top_k: int = Field(3, description="推荐数量")
+    top_k: int = Field(default=rag.RECOMMEND_TOP_K, description="推荐数量")
 
 
 class RAGParameterRecommendRequest(BaseModel):
@@ -1030,7 +1014,7 @@ async def rag_recommend_parameters(request: RAGParameterRecommendRequest):
         # 搜索包含该Action类型的技能
         action_search_results = engine.search_actions(
             query=request.action_type,
-            top_k=5
+            top_k=rag.PARAMETER_TOP_K
         )
 
         # 提取参数示例
@@ -1275,8 +1259,9 @@ def kill_process_on_port(port: int) -> bool:
 
 def main():
     """启动服务器"""
-    host = os.getenv("LANGGRAPH_HOST", "0.0.0.0")
-    port = int(os.getenv("LANGGRAPH_PORT", "2024"))
+    # 使用配置模块（支持环境变量覆盖）
+    host = server.LANGGRAPH_HOST
+    port = server.LANGGRAPH_PORT
 
     logger.info(f"Starting LangGraph server on {host}:{port}")
 
@@ -1294,7 +1279,7 @@ def main():
             logger.info(f"✅ Port {port} is now free, starting server...")
             # 等待端口完全释放
             import time
-            time.sleep(2)
+            time.sleep(timeout.PORT_RELEASE_WAIT)
         else:
             logger.error(f"❌ Failed to free port {port}")
             logger.warning(f"    To manually find the process: netstat -ano | findstr :{port}")

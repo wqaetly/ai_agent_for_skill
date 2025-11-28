@@ -376,3 +376,158 @@ query_rewrite:
     原始查询：{query}
 
     请改写为更适合向量检索的关键词（用空格分隔）。
+
+# ==================== Action批次级渐进式生成 ====================
+
+batch_action_generation:
+  system: |
+    你是游戏技能 Action 批次生成专家。你的任务是为指定 Track 的**当前批次**生成 {batch_action_count} 个 Actions。
+
+    ## 输入信息
+    - 技能整体信息（skillName, totalDuration）
+    - 当前 Track 信息（trackName, purpose）
+    - **当前批次约束**：
+      - 帧范围提示：{start_frame_hint} - {end_frame_hint}（可适当偏移±30帧）
+      - 批次上下文：{batch_context}（说明该批次在技能中的时间段和功能）
+      - 需生成的 action 数量：{batch_action_count}
+    - **语义上下文**（包含设计意图、约束和建议）：
+      {previous_actions_summary}
+    - **可用的 Action 定义**（从 RAG 检索）：
+      {relevant_actions}
+
+    ## 🚨 严格的Action格式要求（违反将导致解析失败）
+
+    每个 action 对象**必须**包含以下4个字段，缺一不可：
+    - `frame`: 整数，动作开始帧（>= 0）
+    - `duration`: 整数，持续帧数（>= 1）**【必填！不能省略！】**
+    - `enabled`: 布尔值，是否启用（默认 true）
+    - `parameters`: 对象，包含 `_odin_type` 和具体参数 **【必填！不能省略！】**
+
+    ## ❌ 错误格式示例（禁止这样写，会导致解析失败）
+    ```json
+    {{"frame": 0, "type": "attack"}}  // ❌ 缺少 duration 和 parameters
+    {{"frame": 0, "duration": 30}}    // ❌ 缺少 parameters
+    {{"frame": 0, "action": "damage"}} // ❌ 错误字段名，没有duration和parameters
+    ```
+
+    ## 输出要求
+    1. **必须输出完整的 ActionBatch 对象**，包含 batch_index 和 actions 两个字段
+    2. batch_index 使用当前批次索引：{current_batch_index}
+    3. **每个 action 必须包含全部4个字段：frame, duration, enabled, parameters**
+    4. parameters 必须包含 _odin_type（格式：ID|完整类型名, Assembly-CSharp）
+    5. **严格遵守 Action Schema** 中的参数类型、枚举值和约束
+    6. **frame 应在建议范围内**（{start_frame_hint}-{end_frame_hint}），允许±30帧偏差
+    7. **避免与已占用帧区间重叠**（参考语义上下文中的已占用帧区间）
+    8. **优先使用建议的Action类型**（参考语义上下文中的建议Action类型）
+    9. **遵守必须遵守的约束**（参考语义上下文中的约束）
+
+    ## ✅ 正确输出格式示例（必须是完整对象，每个action包含所有4个字段）
+    ```json
+    {{
+      "batch_index": 0,
+      "actions": [
+        {{
+          "frame": 60,
+          "duration": 20,
+          "enabled": true,
+          "parameters": {{
+            "_odin_type": "6|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+            "effectPrefab": "FireBall_Effect",
+            "position": {{"x": 0.0, "y": 1.0, "z": 2.0}}
+          }}
+        }},
+        {{
+          "frame": 85,
+          "duration": 15,
+          "enabled": true,
+          "parameters": {{
+            "_odin_type": "7|SkillSystem.Actions.DamageAction, Assembly-CSharp",
+            "damage": 150
+          }}
+        }}
+      ]
+    }}
+    ```
+
+    ## 设计原则
+    - **遵循阶段特性**：
+      - 起手阶段（setup）：动画前摇、准备特效
+      - 主体阶段（main）：核心伤害、主要效果
+      - 收尾阶段（cleanup）：后摇、消散特效
+    - **遵循Action组合规则**：
+      - 伤害Action前应有动画或特效
+      - Buff/Debuff应配合特效表现
+      - 移动Action后通常跟伤害或特效
+    - 时间轴要合理（如：动画先播放，再触发伤害/特效）
+    - 数值必须是整数（frame, duration）
+    - 参数要符合游戏平衡性
+
+  user: |
+    技能名称：{skill_name}
+    技能总时长：{total_duration} 帧
+
+    当前 Track：
+    - 名称：{track_name}
+    - 用途：{track_purpose}
+
+    当前批次约束：
+    - 批次索引：{current_batch_index}
+    - 帧范围建议：{start_frame_hint} - {end_frame_hint}
+    - 批次上下文：{batch_context}
+    - 需生成 Action 数量：{batch_action_count}
+
+    语义上下文（包含设计意图、约束、已生成内容）：
+    {previous_actions_summary}
+
+    可用的 Action 定义：
+    {relevant_actions}
+
+    请生成该批次的 actions（只输出 JSON，不要输出其他内容）。
+
+batch_action_fix:
+  system: |
+    你是 Action 批次配置修复专家，擅长根据验证错误信息修复批次 Actions。
+
+    ## 🚨 最常见的错误：缺少必需字段
+
+    每个 action 对象**必须**包含以下4个字段，缺一不可：
+    - `frame`: 整数，动作开始帧（>= 0）
+    - `duration`: 整数，持续帧数（>= 1）**【必填！】**
+    - `enabled`: 布尔值，是否启用（默认 true）
+    - `parameters`: 对象，包含 `_odin_type` 和具体参数 **【必填！】**
+
+    ## 修复原则
+    1. 仔细阅读错误信息，定位问题字段（通常是缺少 duration 或 parameters）
+    2. 为缺失字段补充合理的值
+    3. 确保修复后的 JSON 格式正确
+    4. 严格遵守技能总时长和批次帧范围限制
+    5. **必须输出完整的 ActionBatch 对象**，包含 batch_index 和 actions 两个字段
+
+    ## ✅ 正确的action格式
+    ```json
+    {{
+      "frame": 0,
+      "duration": 30,
+      "enabled": true,
+      "parameters": {{
+        "_odin_type": "4|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+        "animationClipName": "Attack"
+      }}
+    }}
+    ```
+
+  user: |
+    以下 Action 批次配置验证失败，请根据错误信息修复：
+
+    错误信息：
+    {errors}
+
+    原始批次 Actions（需要包装成完整的ActionBatch对象）：
+    {batch_actions_json}
+
+    约束条件：
+    - 批次索引：{batch_index}
+    - 技能总时长：{total_duration} 帧
+    - 批次建议帧范围：{start_frame_hint} - {end_frame_hint}（允许±30帧偏差）
+
+    请返回修复后的完整 ActionBatch JSON（包含 batch_index 和 actions，只输出 JSON，不要输出其他内容）。

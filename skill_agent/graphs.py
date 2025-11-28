@@ -16,6 +16,8 @@ if not os.getenv("DEEPSEEK_API_KEY"):
 
 from orchestration import (
     get_skill_generation_graph,
+    get_progressive_skill_generation_graph,
+    get_action_batch_skill_generation_graph,
     get_skill_search_graph,
     get_skill_detail_graph,
     get_skill_validation_graph,
@@ -24,6 +26,8 @@ from orchestration import (
 
 # 导出编译后的 graph 实例
 skill_generation = get_skill_generation_graph()
+progressive_skill_generation = get_progressive_skill_generation_graph()
+action_batch_skill_generation = get_action_batch_skill_generation_graph()
 skill_search = get_skill_search_graph()
 skill_detail = get_skill_detail_graph()
 skill_validation = get_skill_validation_graph()

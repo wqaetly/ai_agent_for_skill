@@ -2,6 +2,8 @@
   "dependencies": ["."],
   "graphs": {
     "skill_generation": "./graphs.py:skill_generation",
+    "progressive_skill_generation": "./graphs.py:progressive_skill_generation",
+    "action_batch_skill_generation": "./graphs.py:action_batch_skill_generation",
     "skill_search": "./graphs.py:skill_search",
     "skill_detail": "./graphs.py:skill_detail",
     "skill_validation": "./graphs.py:skill_validation",

@@ -3,8 +3,81 @@ Pydantic Schema 定义
 用于 LangGraph structured output，确保 DeepSeek 生成符合 Odin 格式的技能配置
 """
 
-from typing import List, Dict, Any, Optional, Union
+from enum import Enum
+from typing import List, Dict, Any, Optional, Union, Tuple, TypedDict
 from pydantic import BaseModel, Field, field_validator, ConfigDict
+
+
+# ==== 批次上下文相关定义 ====
+
+class BatchPhase(str, Enum):
+    """批次在Track中的阶段"""
+    SETUP = "setup"        # 起手阶段（动画前摇、准备特效）
+    MAIN = "main"          # 主体阶段（核心伤害、主要效果）
+    CLEANUP = "cleanup"    # 收尾阶段（后摇、消散特效）
+
+
+class SemanticGroup(TypedDict):
+    """语义功能组（用于批次划分）"""
+    name: str                    # 功能组名称（如"动画"、"伤害"、"特效"）
+    keywords: List[str]          # 关键词列表
+    suggested_action_types: List[str]  # 建议的Action类型
+    estimated_count: int         # 预估Action数量
+    phase: str                   # 所属阶段
+
+
+class CompletedActionSummary(TypedDict):
+    """已完成Action摘要（轻量级，用于跨批次传递）"""
+    frame: int                   # 起始帧
+    duration: int                # 持续帧数
+    action_type: str             # 简化类型名（如"DamageAction"）
+    key_params: Dict[str, Any]   # 关键参数（如damage、effectName）
+
+
+class BatchContextState(TypedDict, total=False):
+    """
+    批次上下文状态
+
+    用于在批次间传递设计意图、约束和已生成信息，
+    解决原有纯数量驱动批次划分的语义断层问题
+    """
+    # 批次标识
+    batch_id: int                         # 当前批次索引
+    total_batches: int                    # 总批次数
+    phase: str                            # 当前阶段 (BatchPhase值)
+
+    # 设计意图
+    design_intent: str                    # Track整体设计意图
+    current_goal: str                     # 当前批次目标
+
+    # 已生成摘要（结构化）
+    completed_actions: List[CompletedActionSummary]  # 已完成Action摘要
+    used_action_types: List[str]          # 已使用的Action类型
+    occupied_frames: List[Tuple[int, int]]  # 已占用的帧区间 [(start, end), ...]
+
+    # 约束链
+    must_follow: List[str]                # 必须遵守的约束
+    suggested_types: List[str]            # 建议使用的Action类型
+    avoid_patterns: List[str]             # 应避免的模式（从失败中学习）
+
+    # 依赖关系
+    prerequisites_met: List[str]          # 已满足的前置条件
+    pending_effects: List[str]            # 待触发的效果
+
+    # 验证状态
+    violations: List[str]                 # 已触发的语义警告
+
+
+# ==== 语义验证规则 ====
+
+class SemanticRule(TypedDict):
+    """语义规则定义"""
+    name: str                             # 规则名称
+    condition: str                        # 触发条件（Action类型）
+    requires_before: List[str]            # 必须在此之前出现的Action类型
+    suggests_after: List[str]             # 建议在此之后的Action类型
+    suggests_with: List[str]              # 建议同批次出现的Action类型
+    severity: str                         # 严重程度: error/warning/info
 
 
 # ==== 渐进式技能生成 Schema ====
@@ -242,4 +315,31 @@ def odin_to_simplified(odin_skill: OdinSkillSchema) -> SimplifiedSkillSchema:
         skillId=odin_skill.skillId,
         skillDescription=odin_skill.skillDescription,
         actions=all_actions
+    )
+
+
+# ==== Action批次级渐进式生成 Schema ====
+
+class ActionBatchPlan(BaseModel):
+    """单个Action批次计划（用于更细粒度的渐进式生成）"""
+    batch_index: int = Field(..., description="批次索引(0-based)", ge=0)
+    action_count: int = Field(..., description="本批次应生成的action数量", ge=1, le=10)
+    start_frame_hint: int = Field(..., description="建议起始帧(提示作用)", ge=0)
+    end_frame_hint: int = Field(..., description="建议结束帧(提示作用)", ge=1)
+    context: str = Field(
+        ...,
+        description="批次上下文描述，说明该批次actions的时间段和功能（如'前摇阶段'、'爆发阶段'）",
+        min_length=5,
+        max_length=100
+    )
+
+
+class ActionBatch(BaseModel):
+    """Action批次数据（生成节点的输出）"""
+    batch_index: int = Field(..., description="批次索引", ge=0)
+    actions: List[SkillAction] = Field(
+        ...,
+        description="本批次生成的actions",
+        min_length=1,
+        max_length=10
     )
