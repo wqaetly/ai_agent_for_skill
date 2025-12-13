@@ -1,0 +1,175 @@
+{
+  "skillName": "火球术",
+  "skillId": "fireball-001",
+  "skillDescription": "释放一个火球向目标移动，沿途持续造成火焰伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": [
+    {
+      "trackName": "Animation Track",
+      "enabled": true,
+      "actions": [
+        {
+          "frame": 0,
+          "duration": 30,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+            "animationClipName": "CastPreAnimation",
+            "normalizedTime": 0.0,
+            "crossFadeDuration": 0.1,
+            "animationLayer": 0
+          }
+        },
+        {
+          "frame": 30,
+          "duration": 40,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+            "animationClipName": "FireballReleaseAnimation",
+            "normalizedTime": 0.0,
+            "crossFadeDuration": 0.1,
+            "animationLayer": 0
+          }
+        }
+      ]
+    },
+    {
+      "trackName": "Effect Track",
+      "enabled": true,
+      "actions": [
+        {
+          "frame": 0,
+          "duration": 100,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+            "projectileType": "Linear",
+            "projectileSpeed": 1000.0,
+            "maxRange": 1000.0,
+            "projectilePrefab": "Fireball_Effect",
+            "projectileSize": 1.0,
+            "trailEffect": null,
+            "arcHeight": 5.0,
+            "trackingStrength": 0.8
+          }
+        },
+        {
+          "frame": 10,
+          "duration": 90,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "2|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+            "areaShape": "Circle",
+            "areaSize": 5.0,
+            "innerRadius": 2.0,
+            "areaAngle": 90.0,
+            "centerPosition": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "useRelativePosition": true,
+            "followCaster": false,
+            "effectType": "Damage"
+          }
+        },
+        {
+          "frame": 100,
+          "duration": 1,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "3|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+            "buffType": "Debuff",
+            "buffId": "burn_effect",
+            "stackType": "Refresh",
+            "maxStacks": 1,
+            "buffDuration": 5.0,
+            "isPermanent": false,
+            "buffIcon": null,
+            "buffName": "Burn"
+          }
+        }
+      ]
+    },
+    {
+      "trackName": "Audio Track",
+      "enabled": true,
+      "actions": [
+        {
+          "frame": 0,
+          "duration": 30,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+            "audioClipName": "Fireball_Cast_Sound",
+            "volume": 1.0,
+            "pitch": 1.0,
+            "loop": false,
+            "is3D": true
+          }
+        },
+        {
+          "frame": 5,
+          "duration": 115,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+            "audioClipName": "Fireball_Flight_Sound",
+            "volume": 1.0,
+            "pitch": 1.0,
+            "loop": true,
+            "is3D": true
+          }
+        }
+      ]
+    },
+    {
+      "trackName": "Movement Track",
+      "enabled": true,
+      "actions": [
+        {
+          "frame": 0,
+          "duration": 60,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+            "movementType": "Linear",
+            "movementSpeed": 0.5,
+            "targetPosition": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 30.0
+            },
+            "useRelativePosition": false,
+            "arcHeight": 0.0,
+            "movementCurve": null,
+            "faceMovementDirection": true,
+            "allowMovementCancel": false
+          }
+        },
+        {
+          "frame": 60,
+          "duration": 60,
+          "enabled": true,
+          "parameters": {
+            "_odin_type": "1|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+            "movementType": "Linear",
+            "movementSpeed": 0.5,
+            "targetPosition": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 60.0
+            },
+            "useRelativePosition": false,
+            "arcHeight": 0.0,
+            "movementCurve": null,
+            "faceMovementDirection": true,
+            "allowMovementCancel": false
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -6,15 +6,129 @@
 import json
 import logging
 import time
+from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, TypedDict, Annotated, Optional, Literal, Tuple
 from langchain_core.messages import AIMessage, AnyMessage
 from langgraph.graph.message import add_messages
+from langgraph.types import StreamWriter
+from langgraph.config import get_stream_writer
 from pydantic import ValidationError
 
 from .skill_nodes import get_llm, _prepare_payload_text
 from ..schemas import SkillSkeletonSchema, TrackPlanItem, SkillTrack, OdinSkillSchema
+from ..streaming import (
+    ProgressEventType,
+    emit_progress,
+)
 
 logger = logging.getLogger(__name__)
+
+# ==================== JSON 输出配置 ====================
+
+# 输出目录（相对于 skill_agent 目录）
+_OUTPUT_DIR = Path(__file__).parent.parent.parent / "Data" / "generated_skills"
+
+
+def _save_generated_json(data: Dict[str, Any], stage: str, skill_name: str = "unknown") -> Optional[Path]:
+    """
+    保存生成的 JSON 数据到文件
+
+    Args:
+        data: 要保存的数据
+        stage: 生成阶段 (skeleton/track/final)
+        skill_name: 技能名称
+
+    Returns:
+        保存的文件路径，失败返回 None
+    """
+    try:
+        # 确保输出目录存在
+        _OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+        # 生成文件名：{skill_name}_{stage}_{timestamp}.json
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in skill_name)
+        filename = f"{safe_name}_{stage}_{timestamp}.json"
+        filepath = _OUTPUT_DIR / filename
+
+        # 保存 JSON（格式化输出，支持中文）
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+        logger.info(f"📁 已保存 {stage} JSON: {filepath}")
+        return filepath
+
+    except Exception as e:
+        logger.warning(f"⚠️ 保存 JSON 失败: {e}")
+        return None
+
+
+# ==================== 流式输出辅助函数 ====================
+
+def _get_writer_safe() -> Optional[Any]:
+    """
+    安全获取StreamWriter
+
+    在非流式执行环境中不会报错
+    """
+    try:
+        return get_stream_writer()
+    except Exception:
+        return None
+
+
+def _emit_skeleton_progress(
+    event_type: ProgressEventType,
+    message: str,
+    **kwargs
+):
+    """
+    发送骨架生成进度事件的便捷函数
+    """
+    writer = _get_writer_safe()
+    if writer is None:
+        logger.debug(f"[{event_type.value}] {message}")
+        return
+
+    # 骨架阶段进度固定为10%以内
+    progress = kwargs.pop("progress", 0.05)
+
+    emit_progress(
+        writer,
+        event_type,
+        message,
+        progress=progress,
+        phase="skeleton",
+        **kwargs
+    )
+
+
+def _emit_finalize_progress(
+    event_type: ProgressEventType,
+    message: str,
+    is_valid: bool = True,
+    **kwargs
+):
+    """
+    发送最终化进度事件的便捷函数
+    """
+    writer = _get_writer_safe()
+    if writer is None:
+        logger.debug(f"[{event_type.value}] {message}")
+        return
+
+    # 最终化阶段进度为100%
+    progress = 1.0 if is_valid else 0.95
+
+    emit_progress(
+        writer,
+        event_type,
+        message,
+        progress=progress,
+        phase="finalize",
+        **kwargs
+    )
 
 
 # ==================== State 定义 ====================
@@ -131,12 +245,13 @@ def validate_skeleton(skeleton: Dict[str, Any]) -> List[str]:
 
 def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
     """
-    骨架生成节点（阶段1）
+    骨架生成节点（阶段1）- 增强版：支持流式输出
 
     职责：
     1. 根据用户需求和相似技能，生成技能骨架和 track 计划
     2. 使用 structured output 确保输出符合 SkillSkeletonSchema
     3. 验证骨架数据
+    4. 发送进度事件
 
     输出：
     - skill_skeleton: 骨架数据
@@ -152,6 +267,14 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
     similar_skills = state.get("similar_skills", [])
 
     logger.info(f"🦴 开始生成技能骨架: {requirement[:50]}...")
+
+    # 发送骨架生成开始事件
+    _emit_skeleton_progress(
+        ProgressEventType.SKELETON_STARTED,
+        f"开始生成技能骨架...",
+        progress=0.02,
+        data={"requirement": requirement[:50]}
+    )
 
     # 准备消息列表
     messages = []
@@ -185,6 +308,13 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
     api_start_time = time.time()
     logger.info("⏳ 正在调用 DeepSeek API 生成骨架...")
 
+    # 发送LLM调用事件
+    _emit_skeleton_progress(
+        ProgressEventType.LLM_CALLING,
+        "调用LLM生成技能骨架...",
+        progress=0.03
+    )
+
     try:
         response = chain.invoke({
             "requirement": requirement,
@@ -213,6 +343,13 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
             skeleton_dict = validated.model_dump()
             logger.info(f"✅ 骨架手动解析成功: {skeleton_dict.get('skillName')}")
 
+        # 保存骨架 JSON 到文件
+        _save_generated_json(
+            skeleton_dict,
+            stage="skeleton",
+            skill_name=skeleton_dict.get("skillName", "unknown")
+        )
+
         # 验证骨架
         validation_errors = validate_skeleton(skeleton_dict)
 
@@ -238,6 +375,18 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
                         f"**Track 计划** ({len(track_plan)} 个轨道):\n{track_summary}"
             ))
 
+        # 发送骨架生成完成事件
+        _emit_skeleton_progress(
+            ProgressEventType.SKELETON_COMPLETED,
+            f"骨架生成完成: {skeleton_dict.get('skillName', 'Unknown')}",
+            progress=0.1,
+            data={
+                "skill_name": skeleton_dict.get("skillName"),
+                "total_duration": skeleton_dict.get("totalDuration"),
+                "track_count": len(skeleton_dict.get("trackPlan", []))
+            }
+        )
+
         return {
             "skill_skeleton": skeleton_dict,
             "track_plan": skeleton_dict.get("trackPlan", []),
@@ -254,6 +403,14 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
         error_details = "\n".join([f"• {err['loc']}: {err['msg']}" for err in e.errors()])
         messages.append(AIMessage(content=f"❌ 骨架生成失败（Schema 验证错误）:\n{error_details}"))
 
+        # 发送骨架生成失败事件
+        _emit_skeleton_progress(
+            ProgressEventType.SKELETON_FAILED,
+            f"骨架Schema验证失败",
+            progress=0.1,
+            data={"error": str(e)[:100]}
+        )
+
         return {
             "skill_skeleton": {},
             "track_plan": [],
@@ -268,6 +425,14 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
         # 其他错误
         logger.error(f"❌ 骨架生成异常: {e}", exc_info=True)
         messages.append(AIMessage(content=f"❌ 骨架生成失败: {str(e)}"))
+
+        # 发送骨架生成失败事件
+        _emit_skeleton_progress(
+            ProgressEventType.SKELETON_FAILED,
+            f"骨架生成异常: {str(e)[:50]}",
+            progress=0.1,
+            data={"error": str(e)[:100]}
+        )
 
         return {
             "skill_skeleton": {},
@@ -328,32 +493,36 @@ def should_continue_to_track_generation(state: ProgressiveSkillGenerationState) 
     return "generate_tracks"
 
 
-# ==================== 阶段2：Track 生成相关函数 ====================
+# ==================== Track 类型识别 ====================
+
+# Track类型关键词映射（支持中英文）
+TRACK_TYPE_KEYWORDS = {
+    "animation": ["animation", "anim", "动画", "動畫"],
+    "effect": ["effect", "fx", "vfx", "特效", "效果", "伤害", "傷害", "damage"],
+    "audio": ["audio", "sound", "音效", "音频", "音頻", "声音", "聲音"],
+    "movement": ["movement", "move", "移动", "移動", "位移", "冲刺", "衝刺"],
+    "camera": ["camera", "cam", "镜头", "鏡頭", "相机", "相機"],
+}
+
 
 def infer_track_type(track_name: str) -> str:
     """
-    根据 track 名称推断类型
+    根据 track 名称推断类型（支持中英文）
 
     Args:
-        track_name: Track 名称（如 "Animation Track", "Effect Track"）
+        track_name: Track 名称（如 "Animation Track", "动画轨道"）
 
     Returns:
         Track 类型：animation | effect | audio | movement | camera | other
     """
     track_name_lower = track_name.lower()
 
-    if "animation" in track_name_lower or "anim" in track_name_lower:
-        return "animation"
-    elif "effect" in track_name_lower or "fx" in track_name_lower or "vfx" in track_name_lower:
-        return "effect"
-    elif "audio" in track_name_lower or "sound" in track_name_lower:
-        return "audio"
-    elif "movement" in track_name_lower or "move" in track_name_lower:
-        return "movement"
-    elif "camera" in track_name_lower or "cam" in track_name_lower:
-        return "camera"
-    else:
-        return "other"
+    for track_type, keywords in TRACK_TYPE_KEYWORDS.items():
+        for keyword in keywords:
+            if keyword in track_name_lower:
+                return track_type
+
+    return "other"
 
 
 def search_actions_by_track_type(
@@ -972,30 +1141,33 @@ def validate_cross_track_timeline(tracks: List[Dict[str, Any]]) -> Tuple[List[st
     track_start_frames: Dict[str, int] = {}  # Track类型 -> 最早开始帧
 
     for track in tracks:
-        track_name = track.get("trackName", "").lower()
+        track_name = track.get("trackName", "")
         actions = track.get("actions", [])
 
         if not actions:
             continue
 
+        # 使用增强的Track类型识别（支持中英文）
+        track_type = infer_track_type(track_name)
+
         # 记录Track最早开始帧
         min_frame = min(a.get("frame", 999) for a in actions)
 
-        if "animation" in track_name:
+        if track_type == "animation":
             track_start_frames["animation"] = min(
                 track_start_frames.get("animation", 999), min_frame
             )
             for action in actions:
                 animation_frames.append(action.get("frame", 0))
 
-        elif "audio" in track_name or "sound" in track_name:
+        elif track_type == "audio":
             track_start_frames["audio"] = min(
                 track_start_frames.get("audio", 999), min_frame
             )
             for action in actions:
                 audio_frames.append(action.get("frame", 0))
 
-        elif "effect" in track_name:
+        elif track_type == "effect":
             track_start_frames["effect"] = min(
                 track_start_frames.get("effect", 999), min_frame
             )
@@ -1213,17 +1385,19 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
 
 def finalize_progressive_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
     """
-    渐进式生成最终化节点
+    渐进式生成最终化节点 - 增强版：支持流式输出
 
     职责：
     1. 输出最终结果
     2. 生成摘要消息
+    3. 发送生成完成/失败事件
 
     输出：
     - final_result: 最终技能配置（与旧版 SkillGenerationState 兼容）
     """
     assembled_skill = state.get("assembled_skill", {})
     final_errors = state.get("final_validation_errors", [])
+    tracks = assembled_skill.get("tracks", [])
 
     logger.info(f"🏁 渐进式技能生成完成: {assembled_skill.get('skillName', 'Unknown')}")
 
@@ -1237,12 +1411,46 @@ def finalize_progressive_node(state: ProgressiveSkillGenerationState) -> Dict[st
                     f"建议手动检查后使用"
         ))
         is_valid = False
+
+        # 发送生成完成事件（带警告）
+        _emit_finalize_progress(
+            ProgressEventType.GENERATION_COMPLETED,
+            f"技能生成完成（有 {len(final_errors)} 个警告）",
+            is_valid=False,
+            data={
+                "skill_name": assembled_skill.get("skillName"),
+                "track_count": len(tracks),
+                "error_count": len(final_errors)
+            }
+        )
     else:
         messages.append(AIMessage(
             content="[SUCCESS] **技能生成成功！**\n\n"
                     f"技能 `{assembled_skill.get('skillName')}` 已就绪，可直接导入 Unity 使用"
         ))
         is_valid = True
+
+        # 发送生成完成事件（成功）
+        total_actions = sum(len(t.get("actions", [])) for t in tracks)
+        _emit_finalize_progress(
+            ProgressEventType.GENERATION_COMPLETED,
+            f"技能 {assembled_skill.get('skillName')} 生成成功！",
+            is_valid=True,
+            data={
+                "skill_name": assembled_skill.get("skillName"),
+                "track_count": len(tracks),
+                "total_actions": total_actions,
+                "total_duration": assembled_skill.get("totalDuration")
+            }
+        )
+
+    # 保存最终技能 JSON 到文件
+    if assembled_skill:
+        _save_generated_json(
+            assembled_skill,
+            stage="final",
+            skill_name=assembled_skill.get("skillName", "unknown")
+        )
 
     # 兼容旧版 State 的 final_result 字段
     return {

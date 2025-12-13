@@ -6,19 +6,28 @@ Action批次级渐进式技能生成节点实现
 1. Token消耗降低50%（每批次3-5个actions vs 整Track 15个actions）
 2. 错误隔离性优秀（单批次失败不影响其他批次）
 3. 生成质量提升（避免长输出导致的后半段质量下降）
+4. 流式输出支持（实时进度反馈）
 """
 
 import json
 import logging
 import math
 import operator
+from functools import lru_cache
 from typing import Any, Dict, List, Tuple, TypedDict, Annotated, Optional, Literal
 
 from langchain_core.messages import AIMessage, AnyMessage
 from langgraph.graph.message import add_messages
+from langgraph.types import StreamWriter
+from langgraph.config import get_stream_writer
 from pydantic import ValidationError
 
 from .skill_nodes import get_llm, _prepare_payload_text
+from ..streaming import (
+    ProgressEventType,
+    ProgressCalculator,
+    emit_progress,
+)
 from .progressive_skill_nodes import (
     format_similar_skills,
     skeleton_generator_node,  # 复用骨架生成
@@ -41,7 +50,87 @@ from ..schemas import (
     SemanticRule,
 )
 
+# 参数深度验证模块（可选依赖，失败时降级）
+try:
+    from .parameter_validator import validate_batch_actions_deep
+    HAS_DEEP_VALIDATOR = True
+except ImportError:
+    HAS_DEEP_VALIDATOR = False
+    validate_batch_actions_deep = None  # type: ignore
+
 logger = logging.getLogger(__name__)
+
+
+# ==================== 流式输出辅助函数 ====================
+
+def _get_writer_safe() -> Optional[Any]:
+    """
+    安全获取StreamWriter
+
+    在非流式执行环境中不会报错
+    """
+    try:
+        return get_stream_writer()
+    except Exception:
+        return None
+
+
+def _emit_progress(
+    event_type: ProgressEventType,
+    message: str,
+    state: Optional[Dict[str, Any]] = None,
+    **kwargs
+):
+    """
+    发送进度事件的便捷函数
+
+    自动从state中提取上下文信息
+    """
+    writer = _get_writer_safe()
+    if writer is None:
+        logger.debug(f"[{event_type.value}] {message}")
+        return
+
+    # 从state提取进度信息
+    extra_data = {}
+    if state:
+        track_plan = state.get("track_plan", [])
+        current_track_idx = state.get("current_track_index", 0)
+        batch_plan = state.get("current_track_batch_plan", [])
+        current_batch_idx = state.get("current_batch_index", 0)
+
+        extra_data["track_index"] = current_track_idx
+        extra_data["total_tracks"] = len(track_plan)
+        extra_data["batch_index"] = current_batch_idx
+        extra_data["total_batches"] = len(batch_plan)
+
+        # 计算进度
+        if track_plan:
+            # 骨架 10% + tracks 80% + 组装 10%
+            skeleton_progress = 0.1
+            track_progress = 0.0
+
+            total_tracks = len(track_plan)
+            if total_tracks > 0:
+                completed_tracks = current_track_idx
+                # 当前track内的批次进度
+                if batch_plan:
+                    current_track_batch_progress = current_batch_idx / len(batch_plan)
+                else:
+                    current_track_batch_progress = 0
+
+                track_progress = (completed_tracks + current_track_batch_progress) / total_tracks
+                track_progress *= 0.8  # 80% 权重
+
+            extra_data["progress"] = skeleton_progress + track_progress
+
+        if current_track_idx < len(track_plan):
+            extra_data["track_name"] = track_plan[current_track_idx].get("trackName", "")
+
+    # 合并额外参数
+    extra_data.update(kwargs)
+
+    emit_progress(writer, event_type, message, **extra_data)
 
 
 # ==================== 语义验证规则定义 ====================
@@ -1018,6 +1107,9 @@ class ActionBatchProgressiveState(TypedDict):
     token_budget: int  # Token预算上限（默认100000）
     adaptive_batch_size: int  # 自适应批次大小（根据token使用动态调整）
 
+    # === 流式输出支持（新增） ===
+    progress_calculator: Optional[Dict[str, Any]]  # 进度计算器状态
+
     # === 通用 ===
     # 使用add_messages reducer确保消息正确累积
     messages: Annotated[List[AnyMessage], add_messages]
@@ -1286,12 +1378,13 @@ def calculate_batch_plan(
 
 def plan_track_batches_node(state: ActionBatchProgressiveState) -> Dict[str, Any]:
     """
-    Track批次规划节点（增强版：语义化批次规划）
+    Track批次规划节点（增强版：语义化批次规划 + 流式输出）
 
     职责:
     1. 获取当前Track的信息（trackName, purpose, estimatedActions）
     2. 使用语义批次规划算法（解析purpose提取功能组）
     3. 初始化批次上下文，用于跨批次传递设计意图
+    4. 发送进度事件
 
     输出:
     - current_track_batch_plan: 批次计划列表（包含语义信息）
@@ -1303,6 +1396,19 @@ def plan_track_batches_node(state: ActionBatchProgressiveState) -> Dict[str, Any
     skeleton = state.get("skill_skeleton", {})
     track_plan = state.get("track_plan", [])
     current_track_idx = state.get("current_track_index", 0)
+
+    # 新任务开始时（第一个Track）清理缓存
+    if current_track_idx == 0:
+        clear_action_schema_cache()
+        logger.debug("📋 新任务开始，已清理Action Schema缓存")
+        # 发送生成开始事件
+        _emit_progress(
+            ProgressEventType.GENERATION_STARTED,
+            f"开始生成技能: {skeleton.get('skillName', 'Unknown')}",
+            state,
+            phase="skeleton",
+            data={"skill_name": skeleton.get("skillName"), "total_tracks": len(track_plan)}
+        )
 
     if current_track_idx >= len(track_plan):
         logger.error(f"❌ current_track_index ({current_track_idx}) 超出范围")
@@ -1326,12 +1432,29 @@ def plan_track_batches_node(state: ActionBatchProgressiveState) -> Dict[str, Any
         f"({estimated_actions} actions)"
     )
 
+    # 发送Track开始事件
+    _emit_progress(
+        ProgressEventType.TRACK_STARTED,
+        f"开始生成 Track: {track_name}",
+        state,
+        phase="track",
+        data={"track_name": track_name, "purpose": purpose[:50], "estimated_actions": estimated_actions}
+    )
+
     # 使用语义批次规划（替代原有的纯数量驱动）
     batch_plan, batch_context = calculate_semantic_batch_plan(
         track_name=track_name,
         estimated_actions=estimated_actions,
         total_duration=total_duration,
         purpose=purpose
+    )
+
+    # 发送批次规划完成事件
+    _emit_progress(
+        ProgressEventType.BATCH_PLANNING,
+        f"批次规划完成: {len(batch_plan)} 个批次",
+        state,
+        data={"batch_count": len(batch_plan)}
     )
 
     # 准备消息
@@ -1393,7 +1516,7 @@ def format_previous_actions_summary(actions: List[Dict[str, Any]]) -> str:
 
 def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str, Any]:
     """
-    批次Action生成节点（增强版：使用语义上下文）
+    批次Action生成节点（增强版：使用语义上下文 + 流式输出）
 
     职责:
     1. 提取当前批次的约束条件（帧范围、action数量、语义上下文）
@@ -1406,6 +1529,7 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
        - RAG检索的Action schemas
     4. 调用LLM生成actions
     5. 使用structured output确保格式
+    6. 发送进度事件
 
     输出:
     - current_batch_actions: 当前批次生成的actions列表
@@ -1453,6 +1577,19 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
         f"{track_name}, {batch_action_count} actions, 帧 {start_frame_hint}-{end_frame_hint}"
     )
 
+    # 发送批次开始事件
+    _emit_progress(
+        ProgressEventType.BATCH_STARTED,
+        f"生成批次 {current_batch_idx + 1}/{len(batch_plan)}: {batch_context_desc[:30]}",
+        state,
+        phase="batch",
+        data={
+            "batch_action_count": batch_action_count,
+            "frame_range": f"{start_frame_hint}-{end_frame_hint}",
+            "phase": current_phase
+        }
+    )
+
     # 准备消息
     messages = []
     messages.append(AIMessage(
@@ -1460,6 +1597,13 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
                 f"目标: {batch_context_desc}\n"
                 f"生成 {batch_action_count} 个actions（帧 {start_frame_hint}-{end_frame_hint}）"
     ))
+
+    # 发送RAG检索事件
+    _emit_progress(
+        ProgressEventType.RAG_SEARCHING,
+        f"检索相关Action定义...",
+        state
+    )
 
     # RAG检索相关Actions（增强版：结合语义上下文精准检索）
     track_type = infer_track_type(track_name)
@@ -1473,6 +1617,14 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
         suggested_types=suggested_types,
         used_types=used_types,
         batch_context=batch_context_desc
+    )
+
+    # 发送RAG检索完成事件
+    _emit_progress(
+        ProgressEventType.RAG_COMPLETED,
+        f"检索到 {len(relevant_actions)} 个相关Action定义",
+        state,
+        data={"action_count": len(relevant_actions)}
     )
 
     if relevant_actions:
@@ -1494,6 +1646,13 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
     prompt_mgr = get_prompt_manager()
     prompt = prompt_mgr.get_prompt("batch_action_generation")
 
+    # 发送LLM调用事件
+    _emit_progress(
+        ProgressEventType.LLM_CALLING,
+        f"调用LLM生成Actions...",
+        state
+    )
+
     # 调用LLM
     llm = get_llm(temperature=0.6)
 
@@ -1511,7 +1670,14 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
 
     chain = prompt | structured_llm
 
+    # 保存原始响应用于错误日志
+    raw_response_text = ""
+
     try:
+        # 记录 LLM 调用开始时间
+        llm_start_time = time.time()
+        logger.info(f"⏳ 开始调用 DeepSeek API (batch {current_batch_idx + 1}/{len(batch_plan)})...")
+
         response = chain.invoke({
             "skill_name": skeleton.get("skillName", "Unknown"),
             "total_duration": skeleton.get("totalDuration", 150),
@@ -1527,19 +1693,32 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
             "relevant_actions": action_schemas_text or "无特定Action参考"
         })
 
+        # 记录 LLM 调用耗时
+        llm_elapsed = time.time() - llm_start_time
+        logger.info(f"⏱️ DeepSeek API 响应耗时: {llm_elapsed:.2f}s")
+
         # 处理响应
         if isinstance(response, ActionBatch):
             batch_actions = [action.model_dump() for action in response.actions]
             logger.info(f"✅ 批次生成成功 (structured): {len(batch_actions)} actions")
         else:
-            # 手动解析
+            # 手动解析 - 保存原始响应用于错误日志
             payload_text = _prepare_payload_text(response)
+            raw_response_text = payload_text  # 保存用于错误日志
             json_content = extract_json_from_markdown(payload_text)
             batch_dict = json.loads(json_content)
 
             validated = ActionBatch.model_validate(batch_dict)
             batch_actions = [action.model_dump() for action in validated.actions]
             logger.info(f"✅ 批次生成成功 (手动解析): {len(batch_actions)} actions")
+
+        # 发送LLM完成事件
+        _emit_progress(
+            ProgressEventType.LLM_COMPLETED,
+            f"生成 {len(batch_actions)} 个Actions",
+            state,
+            data={"action_count": len(batch_actions)}
+        )
 
         messages.append(AIMessage(
             content=f"✅ 批次生成完成: {len(batch_actions)} 个actions"
@@ -1551,21 +1730,23 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
         }
 
     except ValidationError as e:
-        # 尝试获取原始输出用于调试
-        raw_output = ""
-        try:
-            raw_output = locals().get('payload_text', '') or str(response)
-        except:
-            pass
-
         logger.error(f"❌ 批次Schema验证失败: {e}")
-        logger.error(f"原始LLM输出: {raw_output[:500]}...")
+        if raw_response_text:
+            logger.error(f"原始LLM输出: {raw_response_text[:500]}...")
 
         error_details = "\n".join([f"• {err['loc']}: {err['msg']}" for err in e.errors()])
         messages.append(AIMessage(
             content=f"❌ 批次生成失败（格式错误）:\n{error_details}\n"
                     f"提示: 每个action必须包含frame, duration, enabled, parameters四个字段"
         ))
+
+        # 发送错误事件
+        _emit_progress(
+            ProgressEventType.BATCH_FAILED,
+            f"批次生成失败: Schema验证错误",
+            state,
+            data={"error": str(e)[:100]}
+        )
 
         # 返回空列表触发修复流程
         return {
@@ -1577,6 +1758,14 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
     except Exception as e:
         logger.error(f"❌ 批次生成异常: {e}", exc_info=True)
         messages.append(AIMessage(content=f"❌ 批次生成失败: {str(e)}"))
+
+        # 发送错误事件
+        _emit_progress(
+            ProgressEventType.BATCH_FAILED,
+            f"批次生成失败: {str(e)[:50]}",
+            state,
+            data={"error": str(e)[:100]}
+        )
 
         return {
             "current_batch_actions": [],
@@ -1663,17 +1852,16 @@ def validate_batch_actions(
 
 def batch_action_validator_node(state: ActionBatchProgressiveState) -> Dict[str, Any]:
     """
-    批次Action验证节点（增强版：支持参数深度验证）
+    批次Action验证节点（增强版：支持参数深度验证 + 流式输出）
 
     职责:
     1. 验证当前批次actions的基础合法性（frame/duration/parameters）
     2. 对照RAG检索的Action Schema进行参数深度验证（类型/枚举/范围）
+    3. 发送验证进度事件
 
     输出:
     - current_batch_errors: 错误列表
     """
-    from .parameter_validator import validate_batch_actions_deep
-
     batch_actions = state.get("current_batch_actions", [])
     batch_plan = state["current_track_batch_plan"]
     current_batch_idx = state["current_batch_index"]
@@ -1685,6 +1873,13 @@ def batch_action_validator_node(state: ActionBatchProgressiveState) -> Dict[str,
 
     logger.info("🔍 验证批次actions（含参数深度验证）...")
 
+    # 发送验证开始事件
+    _emit_progress(
+        ProgressEventType.BATCH_VALIDATING,
+        f"验证批次 {current_batch_idx + 1}/{len(batch_plan)}...",
+        state
+    )
+
     # 基础结构验证
     errors = validate_batch_actions(
         batch_actions=batch_actions,
@@ -1692,9 +1887,9 @@ def batch_action_validator_node(state: ActionBatchProgressiveState) -> Dict[str,
         total_duration=total_duration
     )
 
-    # 参数深度验证（获取相关Action Schema）
+    # 参数深度验证（获取相关Action Schema）- 仅在模块可用时执行
     warnings = []
-    if batch_actions and not errors:  # 仅在基础验证通过后进行深度验证
+    if batch_actions and not errors and HAS_DEEP_VALIDATOR:
         # 获取当前Track的purpose用于检索
         track_purpose = ""
         if current_track_idx < len(track_plan):
@@ -1705,7 +1900,7 @@ def batch_action_validator_node(state: ActionBatchProgressiveState) -> Dict[str,
             batch_actions, track_purpose
         )
 
-        if relevant_schemas:
+        if relevant_schemas and validate_batch_actions_deep is not None:
             # 执行参数深度验证
             deep_errors, deep_warnings = validate_batch_actions_deep(
                 batch_actions=batch_actions,
@@ -1715,6 +1910,8 @@ def batch_action_validator_node(state: ActionBatchProgressiveState) -> Dict[str,
             errors.extend(deep_errors)
             warnings.extend(deep_warnings)
             logger.info(f"📋 参数深度验证完成: {len(deep_errors)} 错误, {len(deep_warnings)} 警告")
+    elif not HAS_DEEP_VALIDATOR:
+        logger.debug("⚠️ 参数深度验证模块不可用，跳过深度验证")
 
     messages = []
     if errors:
@@ -1736,12 +1933,52 @@ def batch_action_validator_node(state: ActionBatchProgressiveState) -> Dict[str,
     }
 
 
+# RAG检索结果缓存（使用lru_cache需要hashable参数，所以封装一层）
+_action_schema_cache: Dict[str, List[Dict[str, Any]]] = {}
+
+
+def _cached_search_actions(type_name: str, top_k: int = 3) -> List[Dict[str, Any]]:
+    """
+    带缓存的Action Schema检索
+
+    Args:
+        type_name: Action类型名
+        top_k: 返回数量
+
+    Returns:
+        检索结果列表
+    """
+    cache_key = f"{type_name}:{top_k}"
+
+    if cache_key in _action_schema_cache:
+        return _action_schema_cache[cache_key]
+
+    from ..tools.rag_tools import search_actions
+
+    try:
+        results = search_actions.invoke({"query": type_name, "top_k": top_k})
+        if isinstance(results, list):
+            _action_schema_cache[cache_key] = results
+            return results
+    except Exception as e:
+        logger.warning(f"⚠️ 检索Action Schema失败 ({type_name}): {e}")
+
+    return []
+
+
+def clear_action_schema_cache():
+    """清除Action Schema缓存（在新任务开始时调用）"""
+    global _action_schema_cache
+    _action_schema_cache = {}
+    logger.debug("已清除Action Schema缓存")
+
+
 def _get_relevant_action_schemas_for_validation(
     batch_actions: List[Dict[str, Any]],
     track_purpose: str
 ) -> List[Dict[str, Any]]:
     """
-    获取批次中actions对应的Schema定义
+    获取批次中actions对应的Schema定义（带缓存）
 
     Args:
         batch_actions: 批次actions列表
@@ -1750,8 +1987,6 @@ def _get_relevant_action_schemas_for_validation(
     Returns:
         Action Schema列表
     """
-    from ..tools.rag_tools import search_actions
-
     schemas = []
 
     # 收集所有action类型
@@ -1765,26 +2000,22 @@ def _get_relevant_action_schemas_for_validation(
             if type_name:
                 action_types.add(type_name)
 
-    # 为每种类型检索Schema
+    # 为每种类型检索Schema（使用缓存）
     for type_name in action_types:
-        try:
-            results = search_actions.invoke({"query": type_name, "top_k": 3})
-            if isinstance(results, list):
-                for result in results:
-                    # 检查是否匹配
-                    result_type = result.get("typeName", "")
-                    if result_type == type_name or type_name in result_type:
-                        schemas.append(result)
-                        break
-        except Exception as e:
-            logger.warning(f"⚠️ 检索Action Schema失败 ({type_name}): {e}")
+        results = _cached_search_actions(type_name, top_k=3)
+        for result in results:
+            # 检查是否匹配
+            result_type = result.get("typeName", "")
+            if result_type == type_name or type_name in result_type:
+                schemas.append(result)
+                break
 
     return schemas
 
 
 def batch_action_fixer_node(state: ActionBatchProgressiveState) -> Dict[str, Any]:
     """
-    批次Action修复节点
+    批次Action修复节点（增强版：流式输出）
 
     职责: 根据验证错误修复批次actions
 
@@ -1804,6 +2035,14 @@ def batch_action_fixer_node(state: ActionBatchProgressiveState) -> Dict[str, Any
     current_batch_plan = batch_plan[current_batch_idx]
 
     logger.info(f"🔧 修复批次actions, 错误数: {len(errors)}")
+
+    # 发送修复开始事件
+    _emit_progress(
+        ProgressEventType.BATCH_FIXING,
+        f"修复批次 {current_batch_idx + 1}/{len(batch_plan)} ({len(errors)} 个错误)",
+        state,
+        data={"error_count": len(errors)}
+    )
 
     # 格式化错误
     errors_text = "\n".join([f"{i+1}. {err}" for i, err in enumerate(errors)])
@@ -1870,13 +2109,14 @@ def batch_action_fixer_node(state: ActionBatchProgressiveState) -> Dict[str, Any
 
 def batch_action_saver_node(state: ActionBatchProgressiveState) -> Dict[str, Any]:
     """
-    批次Action保存节点（增强版：更新语义上下文）
+    批次Action保存节点（增强版：更新语义上下文 + 流式输出）
 
     职责:
     1. 保存验证通过的批次actions
     2. 更新BatchContextState（已生成摘要、已用类型、占用帧区间）
     3. 执行语义验证并记录警告
     4. 移动到下一批次
+    5. 发送进度事件
 
     输出:
     - accumulated_track_actions: 追加当前批次actions
@@ -1889,6 +2129,19 @@ def batch_action_saver_node(state: ActionBatchProgressiveState) -> Dict[str, Any
     current_batch_idx = state.get("current_batch_index", 0)
     batch_plan = state["current_track_batch_plan"]
     batch_context = state.get("batch_context", {})
+
+    # 处理空批次（跳过场景）
+    if not batch_actions:
+        logger.warning(f"⚠️ 批次 [{current_batch_idx + 1}/{len(batch_plan)}] 为空，跳过保存")
+        return {
+            "accumulated_track_actions": accumulated,  # 保持不变
+            "current_batch_index": current_batch_idx + 1,
+            "batch_retry_count": 0,
+            "batch_context": batch_context,  # 不更新上下文
+            "messages": [AIMessage(
+                content=f"⚠️ 批次 [{current_batch_idx + 1}/{len(batch_plan)}] 跳过（生成失败或为空）"
+            )]
+        }
 
     logger.info(f"💾 保存批次 [{current_batch_idx + 1}/{len(batch_plan)}]: {len(batch_actions)} actions")
 
@@ -1943,6 +2196,19 @@ def batch_action_saver_node(state: ActionBatchProgressiveState) -> Dict[str, Any
             action_types.append(t)
 
     type_info = f" ({', '.join(action_types[:3])})" if action_types else ""
+
+    # 发送批次完成事件
+    _emit_progress(
+        ProgressEventType.BATCH_COMPLETED,
+        f"批次 {progress} 已保存: {len(batch_actions)} actions{type_info}",
+        state,
+        data={
+            "action_count": len(batch_actions),
+            "action_types": action_types[:3],
+            "accumulated_total": len(accumulated)
+        }
+    )
+
     messages.append(AIMessage(
         content=f"💾 批次 {progress} 已保存 ({len(batch_actions)} actions{type_info})"
     ))
@@ -1960,12 +2226,13 @@ def batch_action_saver_node(state: ActionBatchProgressiveState) -> Dict[str, Any
 
 def track_assembler_node_batch(state: ActionBatchProgressiveState) -> Dict[str, Any]:
     """
-    Track组装节点（批次级版本）
+    Track组装节点（批次级版本 + 流式输出）
 
     职责:
     1. 将accumulated_track_actions组装为完整Track
     2. 验证Track整体的时间轴连贯性
     3. 添加到generated_tracks
+    4. 发送进度事件
 
     输出:
     - generated_tracks: 追加当前Track
@@ -1986,6 +2253,14 @@ def track_assembler_node_batch(state: ActionBatchProgressiveState) -> Dict[str, 
 
     logger.info(
         f"🔧 组装 Track '{track_name}': {len(accumulated_actions)} actions"
+    )
+
+    # 发送Track组装事件
+    _emit_progress(
+        ProgressEventType.ASSEMBLING_TRACK,
+        f"组装 Track: {track_name}",
+        state,
+        data={"track_name": track_name, "action_count": len(accumulated_actions)}
     )
 
     # 组装Track
@@ -2010,6 +2285,20 @@ def track_assembler_node_batch(state: ActionBatchProgressiveState) -> Dict[str, 
     generated_tracks.append(track_data)
 
     progress = f"[{len(generated_tracks)}/{len(track_plan)}]"
+
+    # 发送Track完成事件
+    _emit_progress(
+        ProgressEventType.TRACK_COMPLETED,
+        f"Track '{track_name}' 组装完成 {progress}",
+        state,
+        data={
+            "track_name": track_name,
+            "action_count": len(accumulated_actions),
+            "completed_tracks": len(generated_tracks),
+            "total_tracks": len(track_plan)
+        }
+    )
+
     messages.append(AIMessage(
         content=f"✅ Track '{track_name}' 组装完成 {progress}"
     ))

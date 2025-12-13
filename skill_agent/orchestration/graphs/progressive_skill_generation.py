@@ -168,15 +168,15 @@ def get_progressive_skill_generation_graph():
     return _progressive_skill_generation_graph
 
 
-# ==================== 便捷调用接口 ====================
+# ==================== 状态初始化 ====================
 
-async def generate_skill_progressive(
+def _create_progressive_initial_state(
     requirement: str,
     similar_skills: list = None,
     max_track_retries: int = 3
 ) -> dict:
     """
-    渐进式技能生成（异步）
+    创建渐进式技能生成的初始状态
 
     Args:
         requirement: 需求描述
@@ -184,11 +184,9 @@ async def generate_skill_progressive(
         max_track_retries: 单个 track 的最大重试次数
 
     Returns:
-        包含 final_result、messages 等的字典
+        初始状态字典
     """
-    graph = get_progressive_skill_generation_graph()
-
-    initial_state = {
+    return {
         "requirement": requirement,
         "similar_skills": similar_skills or [],
         # 阶段1输出
@@ -211,6 +209,33 @@ async def generate_skill_progressive(
         # 通用
         "messages": [],
     }
+
+
+# ==================== 便捷调用接口 ====================
+
+async def generate_skill_progressive(
+    requirement: str,
+    similar_skills: list = None,
+    max_track_retries: int = 3
+) -> dict:
+    """
+    渐进式技能生成（异步）
+
+    Args:
+        requirement: 需求描述
+        similar_skills: 相似技能列表（可选，用于 RAG）
+        max_track_retries: 单个 track 的最大重试次数
+
+    Returns:
+        包含 final_result、messages 等的字典
+    """
+    graph = get_progressive_skill_generation_graph()
+
+    initial_state = _create_progressive_initial_state(
+        requirement=requirement,
+        similar_skills=similar_skills,
+        max_track_retries=max_track_retries
+    )
 
     # 配置
     config = {
@@ -240,29 +265,11 @@ def generate_skill_progressive_sync(
     """
     graph = get_progressive_skill_generation_graph()
 
-    initial_state = {
-        "requirement": requirement,
-        "similar_skills": similar_skills or [],
-        # 阶段1输出
-        "skill_skeleton": {},
-        "skeleton_validation_errors": [],
-        # 阶段2状态
-        "track_plan": [],
-        "current_track_index": 0,
-        "current_track_data": {},
-        "generated_tracks": [],
-        "current_track_errors": [],
-        "track_retry_count": 0,
-        "max_track_retries": max_track_retries,
-        # 阶段3输出
-        "assembled_skill": {},
-        "final_validation_errors": [],
-        # 兼容旧版字段
-        "final_result": {},
-        "is_valid": False,
-        # 通用
-        "messages": [],
-    }
+    initial_state = _create_progressive_initial_state(
+        requirement=requirement,
+        similar_skills=similar_skills,
+        max_track_retries=max_track_retries
+    )
 
     # 配置
     config = {

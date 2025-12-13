@@ -1,0 +1,33 @@
+{
+  "skillName": "火球术",
+  "skillId": "fireball-001",
+  "skillDescription": "释放一个火球，火球持续向目标点移动，并在移动过程中每秒对周围敌人造成魔法伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "控制角色施法动作和火球生成动画，确保视觉同步和流畅",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制火球从施法位置到目标点的持续匀速运动，确保路径平滑",
+      "estimatedActions": 1,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成火球运动特效，并在移动期间每秒触发一次范围伤害计算和视觉反馈",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法音效、火球移动音效和周期性伤害音效，增强沉浸感",
+      "estimatedActions": 3,
+      "priority": 4
+    }
+  ]
+}

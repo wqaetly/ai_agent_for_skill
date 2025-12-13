@@ -49,8 +49,9 @@ def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0):
     if not api_key:
         raise ValueError("环境变量 DEEPSEEK_API_KEY 未设置")
 
-    # 从环境变量读取超时配置（默认 120 秒，因为 reasoner 模型推理时间长）
-    timeout = int(os.getenv("DEEPSEEK_TIMEOUT", "120"))
+    # 从环境变量读取超时配置
+    # deepseek-reasoner 是深度思考模型，复杂任务可能需要 5 分钟以上
+    timeout = int(os.getenv("DEEPSEEK_TIMEOUT", "300"))  # 默认 5 分钟
     max_retries = int(os.getenv("DEEPSEEK_MAX_RETRIES", "2"))
 
     logger.info(f"初始化 LLM: model={model}, timeout={timeout}s, max_retries={max_retries}")
@@ -62,6 +63,8 @@ def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0):
         base_url="https://api.deepseek.com/v1",
         timeout=timeout,  # 请求超时（秒）
         max_retries=max_retries,  # 最大重试次数
+        # 添加 HTTP 客户端配置，确保超时生效
+        http_client=None,  # 使用默认 httpx 客户端
     )
 
 

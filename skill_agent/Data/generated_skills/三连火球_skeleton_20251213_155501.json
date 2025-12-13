@@ -1,0 +1,27 @@
+{
+  "skillName": "三连火球",
+  "skillId": "triple-fireball-001",
+  "skillDescription": "发射三颗火球，对敌人造成连续火焰伤害",
+  "totalDuration": 150,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法动画，分三次发射火球，包括准备动作和每次发射动作",
+      "estimatedActions": 4,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成火球发射特效、轨迹动画、命中爆炸效果，并计算每颗火球的伤害",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法音效、火球发射音效和爆炸命中音效",
+      "estimatedActions": 3,
+      "priority": 3
+    }
+  ]
+}

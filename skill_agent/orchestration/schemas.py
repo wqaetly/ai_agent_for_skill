@@ -338,8 +338,8 @@ class ActionBatch(BaseModel):
     """Action批次数据（生成节点的输出）"""
     batch_index: int = Field(..., description="批次索引", ge=0)
     actions: List[SkillAction] = Field(
-        ...,
-        description="本批次生成的actions",
-        min_length=1,
+        default_factory=list,
+        description="本批次生成的actions（空列表表示跳过的批次）",
         max_length=10
     )
+    # 注：移除了 min_length=1，允许空批次用于错误恢复场景

@@ -14,12 +14,14 @@ Action批次级渐进式技能生成图
 - Token消耗降低50%
 - 错误隔离性优秀（单批次失败不影响其他批次）
 - 生成质量提升（避免长输出导致的质量下降）
+- 支持流式输出（实时进度反馈）
 """
 
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
 import os
 import logging
+from typing import Optional, Callable, Dict, Any
 from .utils import get_checkpointer
 from ..nodes.action_batch_skill_nodes import (
     ActionBatchProgressiveState,
@@ -42,6 +44,13 @@ from ..nodes.action_batch_skill_nodes import (
     skill_assembler_node,
     finalize_progressive_node,
     should_finalize_or_fail,
+)
+from ..streaming import (
+    StreamConsumer,
+    PrintStreamConsumer,
+    CallbackStreamConsumer,
+    stream_graph_execution,
+    stream_graph_execution_sync,
 )
 
 logger = logging.getLogger(__name__)
@@ -198,6 +207,66 @@ def get_action_batch_skill_generation_graph():
     return _action_batch_skill_generation_graph
 
 
+# ==================== 状态初始化 ====================
+
+def _create_action_batch_initial_state(
+    requirement: str,
+    similar_skills: list = None,
+    max_batch_retries: int = 2,
+    token_budget: int = 100000,
+    thread_id: str = None
+) -> dict:
+    """
+    创建Action批次级渐进式生成的初始状态
+
+    Args:
+        requirement: 需求描述
+        similar_skills: 相似技能列表（可选）
+        max_batch_retries: 单个批次的最大重试次数
+        token_budget: Token预算上限
+        thread_id: 线程ID
+
+    Returns:
+        初始状态字典
+    """
+    return {
+        "requirement": requirement,
+        "similar_skills": similar_skills or [],
+        # 阶段1
+        "skill_skeleton": {},
+        "skeleton_validation_errors": [],
+        "track_plan": [],
+        # 阶段2
+        "current_track_index": 0,
+        "current_track_batch_plan": [],
+        # 阶段3
+        "current_batch_index": 0,
+        "current_batch_actions": [],
+        "current_batch_errors": [],
+        "batch_retry_count": 0,
+        "max_batch_retries": max_batch_retries,
+        # 语义上下文
+        "batch_context": {},
+        # Token监控
+        "total_tokens_used": 0,
+        "batch_token_history": [],
+        "token_budget": token_budget,
+        "adaptive_batch_size": 3,  # 默认批次大小
+        # 阶段4
+        "accumulated_track_actions": [],
+        "generated_tracks": [],
+        # 阶段5
+        "assembled_skill": {},
+        "final_validation_errors": [],
+        # 兼容字段
+        "final_result": {},
+        "is_valid": False,
+        # 通用
+        "messages": [],
+        "thread_id": thread_id or "",
+    }
+
+
 # ==================== 便捷调用接口 ====================
 
 async def generate_skill_action_batch(
@@ -245,42 +314,13 @@ async def generate_skill_action_batch(
             logger.warning(f"⚠️ 从checkpoint恢复失败，将重新开始: {e}")
 
     # 初始化新状态
-    initial_state = {
-        "requirement": requirement,
-        "similar_skills": similar_skills or [],
-        # 阶段1
-        "skill_skeleton": {},
-        "skeleton_validation_errors": [],
-        "track_plan": [],
-        # 阶段2
-        "current_track_index": 0,
-        "current_track_batch_plan": [],
-        # 阶段3
-        "current_batch_index": 0,
-        "current_batch_actions": [],
-        "current_batch_errors": [],
-        "batch_retry_count": 0,
-        "max_batch_retries": max_batch_retries,
-        # 语义上下文
-        "batch_context": {},
-        # Token监控（新增）
-        "total_tokens_used": 0,
-        "batch_token_history": [],
-        "token_budget": token_budget,
-        "adaptive_batch_size": 3,  # 默认批次大小
-        # 阶段4
-        "accumulated_track_actions": [],
-        "generated_tracks": [],
-        # 阶段5
-        "assembled_skill": {},
-        "final_validation_errors": [],
-        # 兼容字段
-        "final_result": {},
-        "is_valid": False,
-        # 通用
-        "messages": [],
-        "thread_id": thread_id,
-    }
+    initial_state = _create_action_batch_initial_state(
+        requirement=requirement,
+        similar_skills=similar_skills,
+        max_batch_retries=max_batch_retries,
+        token_budget=token_budget,
+        thread_id=thread_id
+    )
 
     try:
         result = await graph.ainvoke(initial_state, config)
@@ -341,42 +381,13 @@ def generate_skill_action_batch_sync(
             logger.warning(f"⚠️ 从checkpoint恢复失败，将重新开始: {e}")
 
     # 初始化新状态
-    initial_state = {
-        "requirement": requirement,
-        "similar_skills": similar_skills or [],
-        # 阶段1
-        "skill_skeleton": {},
-        "skeleton_validation_errors": [],
-        "track_plan": [],
-        # 阶段2
-        "current_track_index": 0,
-        "current_track_batch_plan": [],
-        # 阶段3
-        "current_batch_index": 0,
-        "current_batch_actions": [],
-        "current_batch_errors": [],
-        "batch_retry_count": 0,
-        "max_batch_retries": max_batch_retries,
-        # 语义上下文
-        "batch_context": {},
-        # Token监控（新增）
-        "total_tokens_used": 0,
-        "batch_token_history": [],
-        "token_budget": token_budget,
-        "adaptive_batch_size": 3,  # 默认批次大小
-        # 阶段4
-        "accumulated_track_actions": [],
-        "generated_tracks": [],
-        # 阶段5
-        "assembled_skill": {},
-        "final_validation_errors": [],
-        # 兼容字段
-        "final_result": {},
-        "is_valid": False,
-        # 通用
-        "messages": [],
-        "thread_id": thread_id,
-    }
+    initial_state = _create_action_batch_initial_state(
+        requirement=requirement,
+        similar_skills=similar_skills,
+        max_batch_retries=max_batch_retries,
+        token_budget=token_budget,
+        thread_id=thread_id
+    )
 
     try:
         result = graph.invoke(initial_state, config)
@@ -451,3 +462,254 @@ def visualize_action_batch_graph():
     """
     graph = get_action_batch_skill_generation_graph()
     return graph.get_graph().draw_mermaid()
+
+
+# ==================== 流式输出API ====================
+
+async def generate_skill_action_batch_streaming(
+    requirement: str,
+    similar_skills: list = None,
+    max_batch_retries: int = 2,
+    token_budget: int = 100000,
+    consumer: Optional[StreamConsumer] = None,
+    on_progress: Optional[Callable[[Dict[str, Any]], None]] = None,
+    resume_thread_id: str = None
+) -> dict:
+    """
+    Action批次级渐进式技能生成（异步流式，支持实时进度反馈）
+
+    这是推荐的生成方式，提供实时进度反馈。
+
+    Args:
+        requirement: 需求描述
+        similar_skills: 相似技能列表（可选）
+        max_batch_retries: 单个批次的最大重试次数（默认2）
+        token_budget: Token预算上限（默认100000）
+        consumer: 流式消费者（可选，默认使用PrintStreamConsumer）
+        on_progress: 进度回调函数（可选，简化用法）
+        resume_thread_id: 恢复的thread_id（如提供，将尝试从checkpoint恢复）
+
+    Returns:
+        包含 final_result、messages 等的字典
+
+    Example:
+        # 使用回调函数
+        async def my_progress(event):
+            print(f"Progress: {event.get('progress', 0)*100:.1f}%")
+
+        result = await generate_skill_action_batch_streaming(
+            "创建一个火球术技能",
+            on_progress=my_progress
+        )
+
+        # 使用自定义消费者
+        from skill_agent.orchestration.streaming import PrintStreamConsumer
+        result = await generate_skill_action_batch_streaming(
+            "创建一个火球术技能",
+            consumer=PrintStreamConsumer(show_progress_bar=True)
+        )
+    """
+    graph = get_action_batch_skill_generation_graph()
+
+    # 生成thread_id
+    thread_id = resume_thread_id or f"action_batch_stream_{hash(requirement) % 10000}"
+
+    config = {
+        "configurable": {"thread_id": thread_id},
+        "recursion_limit": 200
+    }
+
+    # 选择消费者
+    if consumer is None:
+        if on_progress is not None:
+            consumer = CallbackStreamConsumer(on_progress=on_progress)
+        else:
+            consumer = PrintStreamConsumer(show_progress_bar=True)
+
+    # 尝试从checkpoint恢复
+    if resume_thread_id:
+        try:
+            state = await graph.aget_state(config)
+            if state and state.values:
+                logger.info(f"✅ 从checkpoint恢复流式执行 (thread_id={resume_thread_id})")
+                # 继续执行（流式）
+                result = await stream_graph_execution(
+                    graph, None, config, consumer
+                )
+                return result
+        except Exception as e:
+            logger.warning(f"⚠️ 从checkpoint恢复失败，将重新开始: {e}")
+
+    # 初始化新状态
+    initial_state = _create_action_batch_initial_state(
+        requirement=requirement,
+        similar_skills=similar_skills,
+        max_batch_retries=max_batch_retries,
+        token_budget=token_budget,
+        thread_id=thread_id
+    )
+
+    try:
+        result = await stream_graph_execution(
+            graph, initial_state, config, consumer
+        )
+        return result
+
+    except GraphRecursionError as e:
+        logger.error(f"❌ 图执行超过递归限制(200): {e}")
+        return {
+            "requirement": requirement,
+            "final_result": {},
+            "is_valid": False,
+            "thread_id": thread_id,
+            "messages": [{"type": "error", "content": f"生成过程超过递归限制: {str(e)}"}],
+        }
+
+
+def generate_skill_action_batch_streaming_sync(
+    requirement: str,
+    similar_skills: list = None,
+    max_batch_retries: int = 2,
+    token_budget: int = 100000,
+    consumer: Optional[StreamConsumer] = None,
+    on_progress: Optional[Callable[[Dict[str, Any]], None]] = None,
+    resume_thread_id: str = None
+) -> dict:
+    """
+    Action批次级渐进式技能生成（同步流式，支持实时进度反馈）
+
+    Args:
+        requirement: 需求描述
+        similar_skills: 相似技能列表（可选）
+        max_batch_retries: 单个批次的最大重试次数（默认2）
+        token_budget: Token预算上限（默认100000）
+        consumer: 流式消费者（可选，默认使用PrintStreamConsumer）
+        on_progress: 进度回调函数（可选，简化用法）
+        resume_thread_id: 恢复的thread_id
+
+    Returns:
+        包含 final_result、messages 等的字典
+
+    Example:
+        # 最简用法（自动打印进度）
+        result = generate_skill_action_batch_streaming_sync("创建一个火球术技能")
+
+        # 使用回调
+        def my_progress(event):
+            print(f"[{event.get('event_type')}] {event.get('message')}")
+
+        result = generate_skill_action_batch_streaming_sync(
+            "创建一个火球术技能",
+            on_progress=my_progress
+        )
+    """
+    graph = get_action_batch_skill_generation_graph()
+
+    # 生成thread_id
+    thread_id = resume_thread_id or f"action_batch_stream_{hash(requirement) % 10000}"
+
+    config = {
+        "configurable": {"thread_id": thread_id},
+        "recursion_limit": 200
+    }
+
+    # 选择消费者
+    if consumer is None:
+        if on_progress is not None:
+            consumer = CallbackStreamConsumer(on_progress=on_progress)
+        else:
+            consumer = PrintStreamConsumer(show_progress_bar=True)
+
+    # 尝试从checkpoint恢复
+    if resume_thread_id:
+        try:
+            state = graph.get_state(config)
+            if state and state.values:
+                logger.info(f"✅ 从checkpoint恢复流式执行 (thread_id={resume_thread_id})")
+                result = stream_graph_execution_sync(
+                    graph, None, config, consumer
+                )
+                return result
+        except Exception as e:
+            logger.warning(f"⚠️ 从checkpoint恢复失败，将重新开始: {e}")
+
+    # 初始化新状态
+    initial_state = _create_action_batch_initial_state(
+        requirement=requirement,
+        similar_skills=similar_skills,
+        max_batch_retries=max_batch_retries,
+        token_budget=token_budget,
+        thread_id=thread_id
+    )
+
+    try:
+        result = stream_graph_execution_sync(
+            graph, initial_state, config, consumer
+        )
+        return result
+
+    except GraphRecursionError as e:
+        logger.error(f"❌ 图执行超过递归限制(200): {e}")
+        return {
+            "requirement": requirement,
+            "final_result": {},
+            "is_valid": False,
+            "thread_id": thread_id,
+            "messages": [{"type": "error", "content": f"生成过程超过递归限制: {str(e)}"}],
+        }
+
+
+def create_progress_callback(
+    on_batch_complete: Optional[Callable[[int, int, int], None]] = None,
+    on_track_complete: Optional[Callable[[str, int, int], None]] = None,
+    on_progress_update: Optional[Callable[[float, str], None]] = None,
+) -> Callable[[Dict[str, Any]], None]:
+    """
+    创建进度回调函数（便捷工厂）
+
+    Args:
+        on_batch_complete: 批次完成回调 (batch_idx, total_batches, action_count)
+        on_track_complete: Track完成回调 (track_name, track_idx, total_tracks)
+        on_progress_update: 进度更新回调 (progress_percent, message)
+
+    Returns:
+        可用于流式API的回调函数
+
+    Example:
+        callback = create_progress_callback(
+            on_batch_complete=lambda b, t, a: print(f"批次 {b+1}/{t} 完成，{a} 个actions"),
+            on_track_complete=lambda n, i, t: print(f"Track '{n}' 完成 ({i+1}/{t})"),
+            on_progress_update=lambda p, m: print(f"进度 {p:.1f}%: {m}")
+        )
+
+        result = generate_skill_action_batch_streaming_sync(
+            "创建火球术",
+            on_progress=callback
+        )
+    """
+    def callback(event: Dict[str, Any]):
+        event_type = event.get("event_type", "")
+        progress = event.get("progress")
+        message = event.get("message", "")
+
+        # 进度更新
+        if on_progress_update and progress is not None:
+            on_progress_update(progress * 100, message)
+
+        # 批次完成
+        if event_type == "batch_completed" and on_batch_complete:
+            data = event.get("data", {})
+            batch_idx = event.get("batch_index", 0)
+            total_batches = event.get("total_batches", 1)
+            action_count = data.get("action_count", 0)
+            on_batch_complete(batch_idx, total_batches, action_count)
+
+        # Track完成
+        if event_type == "track_completed" and on_track_complete:
+            data = event.get("data", {})
+            track_name = data.get("track_name", "")
+            track_idx = event.get("track_index", 0)
+            total_tracks = event.get("total_tracks", 1)
+            on_track_complete(track_name, track_idx, total_tracks)
+
+    return callback
