@@ -15,6 +15,11 @@ from .json_utils import extract_json_from_markdown
 
 logger = logging.getLogger(__name__)
 
+# ==================== 默认类型配置 ====================
+# 当 LLM 生成的 Action 缺少 _odin_type 时使用的默认类型
+# 注意：不再硬编码索引，序列化器会自动分配索引
+DEFAULT_ACTION_TYPE = "SkillSystem.Actions.BaseAction, Assembly-CSharp"
+
 
 # ==================== State 定义 ====================
 
@@ -34,13 +39,14 @@ class SkillGenerationState(TypedDict):
 
 # ==================== LLM 初始化 ====================
 
-def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0):
+def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0, streaming: bool = True):
     """
     获取 LLM 实例（使用 LangChain ChatOpenAI 兼容 DeepSeek）
 
     Args:
         model: 模型名称（默认使用 deepseek-reasoner 思考模型）
         temperature: 温度参数（deepseek-reasoner 推荐使用 1.0）
+        streaming: 是否启用流式输出（默认 True，支持 LangGraph Studio token 级别流式）
 
     Returns:
         ChatOpenAI 实例
@@ -54,7 +60,7 @@ def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0):
     timeout = int(os.getenv("DEEPSEEK_TIMEOUT", "300"))  # 默认 5 分钟
     max_retries = int(os.getenv("DEEPSEEK_MAX_RETRIES", "2"))
 
-    logger.info(f"初始化 LLM: model={model}, timeout={timeout}s, max_retries={max_retries}")
+    logger.info(f"初始化 LLM: model={model}, timeout={timeout}s, max_retries={max_retries}, streaming={streaming}")
 
     return ChatOpenAI(
         model=model,
@@ -63,8 +69,28 @@ def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0):
         base_url="https://api.deepseek.com/v1",
         timeout=timeout,  # 请求超时（秒）
         max_retries=max_retries,  # 最大重试次数
+        streaming=streaming,  # 🔥 启用流式输出，让 LangGraph 可以捕获 token
         # 添加 HTTP 客户端配置，确保超时生效
         http_client=None,  # 使用默认 httpx 客户端
+    )
+
+
+def get_openai_client():
+    """
+    获取 OpenAI SDK 客户端（用于直接调用 DeepSeek API 以支持 reasoning_content 流式输出）
+
+    Returns:
+        OpenAI 客户端实例
+    """
+    from openai import OpenAI
+
+    api_key = os.getenv("DEEPSEEK_API_KEY")
+    if not api_key:
+        raise ValueError("环境变量 DEEPSEEK_API_KEY 未设置")
+
+    return OpenAI(
+        api_key=api_key,
+        base_url="https://api.deepseek.com"
     )
 
 
@@ -212,7 +238,7 @@ def _normalize_existing_tracks(payload_dict: Dict[str, Any], source: str):
                     parameters.get("odinType") or
                     action.get("_odin_type") or
                     action.get("odinType") or
-                    "4|SkillSystem.Actions.GenericAction, Assembly-CSharp"
+                    DEFAULT_ACTION_TYPE
                 )
                 parameters = {**parameters, "_odin_type": fallback_type}
                 logger.debug(f"为 track[{track_name}].action (frame={frame}) 补充 _odin_type")
@@ -362,7 +388,7 @@ def _enforce_odin_structure(payload: Any, source: str):
             "duration": 1,
             "enabled": True,
             "parameters": {
-                "_odin_type": "4|SkillSystem.Actions.GenericAction, Assembly-CSharp"
+                "_odin_type": DEFAULT_ACTION_TYPE
             }
         }]
 
@@ -387,7 +413,7 @@ def _enforce_odin_structure(payload: Any, source: str):
                     parameters.get("odinType") or
                     action.get("_odin_type") or
                     action.get("odinType") or
-                    "4|SkillSystem.Actions.GenericAction, Assembly-CSharp"  # 终极默认值
+                    DEFAULT_ACTION_TYPE
                 )
                 parameters = {**parameters, "_odin_type": fallback_type}
                 logger.debug(f"为 action (frame={frame}) 补充 _odin_type: {fallback_type}")
@@ -507,7 +533,7 @@ def retriever_node(state: SkillGenerationState) -> Dict[str, Any]:
     }
 
 
-def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
+def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str, Any]:
     """
     生成技能 JSON 节点
 
@@ -516,6 +542,7 @@ def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
 
     Args:
         state: 技能生成状态
+        writer: StreamWriter 实例（由 LangGraph 注入，用于流式输出自定义事件）
     """
     from ..prompts.prompt_manager import get_prompt_manager
     from langgraph.config import get_stream_writer
@@ -526,12 +553,28 @@ def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
     action_schemas = state.get("action_schemas", [])  # 🔥 新增：获取action schemas
 
     # 🔥 使用 LangGraph 标准的 stream_writer 机制
-    try:
-        writer = get_stream_writer()
-        logger.info(f"✅ Got stream writer")
-    except Exception as e:
-        logger.warning(f"⚠️ Failed to get stream writer: {e}")
-        writer = None
+    # 优先使用参数传入的 writer，其次尝试 get_stream_writer()
+    if writer is None:
+        try:
+            writer = get_stream_writer()
+            logger.info(f"✅ Got stream writer from get_stream_writer(): {type(writer)}")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to get stream writer: {e}")
+            writer = None
+    else:
+        logger.info(f"✅ Got stream writer from parameter: {type(writer)}")
+
+    # 🔥 立即发送一个测试事件，验证 writer 是否工作
+    if writer:
+        try:
+            writer({
+                "type": "thinking_chunk",
+                "message_id": f"test_{time.time()}",
+                "chunk": "🤔 DeepSeek Reasoner 开始思考...\n"
+            })
+            logger.info("✅ Test thinking_chunk sent successfully")
+        except Exception as e:
+            logger.error(f"❌ Failed to send test chunk: {e}")
 
     logger.info(f"生成技能 JSON: {requirement}")
 
@@ -635,48 +678,63 @@ def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
     thinking_message_id = f"thinking_{api_start_time}"
     content_message_id = f"content_{api_start_time}"
 
+    # 准备 prompt 输入（用于流式和可能的 structured fallback）
+    prompt_inputs = {
+        "requirement": requirement,
+        "similar_skills": similar_skills_text or "无参考技能",
+        "action_schemas": action_schemas_text or "无Action参考"
+    }
+
     # 🔥 P0改进：添加错误边界
     try:
-        # 🔥 策略调整：先用普通LLM流式生成（保留thinking体验），然后验证Schema
-        # 因为 structured_output 可能不支持流式 + reasoning
-        llm_for_stream = get_llm()  # 使用普通LLM进行流式输出
-        stream_chain = prompt | llm_for_stream
+        # 🔥 关键修复：使用 OpenAI SDK 直接调用 DeepSeek API
+        # LangChain 的 ChatOpenAI 不能正确处理 DeepSeek Reasoner 的 reasoning_content
+        client = get_openai_client()
 
-        # 准备 prompt 输入（用于流式和可能的 structured fallback）
-        prompt_inputs = {
-            "requirement": requirement,
-            "similar_skills": similar_skills_text or "无参考技能",
-            "action_schemas": action_schemas_text or "无Action参考"  # 🔥 新增：传递action schemas
-        }
+        # 渲染 prompt 模板
+        prompt_value = prompt.invoke(prompt_inputs)
+        # 转换为 OpenAI 格式的 messages
+        openai_messages = []
+        for msg in prompt_value.to_messages():
+            msg_type = msg.__class__.__name__.lower()
+            if "system" in msg_type:
+                openai_messages.append({"role": "system", "content": msg.content})
+            elif "human" in msg_type:
+                openai_messages.append({"role": "user", "content": msg.content})
+            elif "ai" in msg_type:
+                openai_messages.append({"role": "assistant", "content": msg.content})
+            else:
+                openai_messages.append({"role": "user", "content": msg.content})
 
-        # 流式调用
-        for chunk in stream_chain.stream(prompt_inputs):
+        logger.info(f"📤 Sending request to DeepSeek API with {len(openai_messages)} messages")
+
+        # 🔥 使用 OpenAI SDK 进行流式调用，正确获取 reasoning_content
+        response = client.chat.completions.create(
+            model="deepseek-reasoner",
+            messages=openai_messages,
+            stream=True
+        )
+
+        # 流式处理响应
+        for chunk in response:
             # 记录首字节时间（TTFB）
             if first_chunk_time is None:
                 first_chunk_time = time.time()
                 ttfb = first_chunk_time - api_start_time
                 logger.info(f"⚡ 首字节延迟 (TTFB): {ttfb:.2f}s")
 
-            # 尝试提取 reasoning_content (DeepSeek Reasoner 特有)
-            # 检查多个可能的位置
-            reasoning_chunk = None
+            # 🔥 正确提取 reasoning_content（DeepSeek API 标准位置）
+            delta = chunk.choices[0].delta if chunk.choices else None
+            if delta is None:
+                continue
 
-            # 方法1: 检查 response_metadata
-            if hasattr(chunk, 'response_metadata') and isinstance(chunk.response_metadata, dict):
-                reasoning_chunk = chunk.response_metadata.get('reasoning_content')
-
-            # 方法2: 检查 additional_kwargs
-            if not reasoning_chunk and hasattr(chunk, 'additional_kwargs') and isinstance(chunk.additional_kwargs, dict):
-                reasoning_chunk = chunk.additional_kwargs.get('reasoning_content')
-
-            # 方法3: 直接检查属性
-            if not reasoning_chunk and hasattr(chunk, 'reasoning_content'):
-                reasoning_chunk = chunk.reasoning_content
-
-            # 累积思考内容
+            # 提取 reasoning_content（思考过程）
+            reasoning_chunk = getattr(delta, 'reasoning_content', None)
             if reasoning_chunk:
                 full_reasoning += reasoning_chunk
-                logger.info(f"📝 Reasoning chunk received: {len(reasoning_chunk)} chars")
+                # 降低日志频率，每 500 字符记录一次
+                if len(full_reasoning) % 500 < len(reasoning_chunk):
+                    logger.info(f"📝 Reasoning progress: {len(full_reasoning)} chars")
 
                 # 🔥 使用 LangGraph 标准 writer 实时推送 thinking chunk
                 if writer:
@@ -686,14 +744,16 @@ def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
                             "message_id": thinking_message_id,
                             "chunk": reasoning_chunk
                         })
-                        logger.info(f"✅ Sent thinking chunk via writer")
                     except Exception as e:
                         logger.error(f"❌ Failed to send thinking chunk: {e}")
 
-            # 累积最终内容
-            if hasattr(chunk, 'content') and chunk.content:
-                full_content += chunk.content
-                logger.info(f"📝 Content chunk received: {len(chunk.content)} chars, total: {len(full_content)}")
+            # 提取 content（最终输出）
+            content_chunk = getattr(delta, 'content', None)
+            if content_chunk:
+                full_content += content_chunk
+                # 降低日志频率
+                if len(full_content) % 200 < len(content_chunk):
+                    logger.info(f"📝 Content progress: {len(full_content)} chars")
 
                 # 🔥 使用 LangGraph 标准 writer 实时推送 content chunk
                 if writer:
@@ -701,9 +761,8 @@ def generator_node(state: SkillGenerationState) -> Dict[str, Any]:
                         writer({
                             "type": "content_chunk",
                             "message_id": content_message_id,
-                            "chunk": chunk.content
+                            "chunk": content_chunk
                         })
-                        logger.info(f"✅ Sent content chunk via writer")
                     except Exception as e:
                         logger.error(f"❌ Failed to send content chunk: {e}")
 

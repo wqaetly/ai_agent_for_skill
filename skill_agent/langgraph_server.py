@@ -370,7 +370,7 @@ async def stream_graph_updates(
         logger.info(f"Starting stream for thread {thread_id}, initial_state: {initial_state.get('requirement', 'N/A')}")
         event_count = 0
 
-        # 使用 astream 进行流式处理，同时启用 values 和 custom 模式
+        # 使用 astream 进行流式处理
         # 维护一个累积的 state
         accumulated_state = {}
 
@@ -378,31 +378,49 @@ async def stream_graph_updates(
             # 🔥 传递 thread_id 到 config
             config = {"configurable": {"thread_id": thread_id}}
 
-            # 🔥 使用多个 stream_mode 来同时接收 values 更新和 custom 事件
+            # 🔥 使用多个 stream_mode：
+            # - "values": 图状态更新
+            # - "messages": LLM token 级别流式输出（LangGraph Studio 需要）
+            # - "custom": 自定义事件
             async for stream_mode, event in graph.astream(
                 initial_state,
                 config=config,
-                stream_mode=["values", "custom"]  # 同时接收 values 和 custom 事件
+                stream_mode=["values", "messages", "custom"]
             ):
                 event_count += 1
-                logger.info(f"Stream event #{event_count}: mode={stream_mode}")
+                
+                # 🔥 处理 messages 模式（LLM token 流）
+                if stream_mode == "messages":
+                    # messages 模式返回 (message_chunk, metadata) 元组
+                    try:
+                        message_chunk, metadata = event
+                        # 获取 token 内容
+                        content = ""
+                        if hasattr(message_chunk, 'content'):
+                            content = message_chunk.content
+                        elif isinstance(message_chunk, dict):
+                            content = message_chunk.get('content', '')
+                        
+                        if content:
+                            # 发送 messages 事件（LangGraph Studio 格式）
+                            messages_event = {
+                                "content": content,
+                                "type": "ai",
+                                "langgraph_node": metadata.get("langgraph_node", "unknown") if isinstance(metadata, dict) else "unknown"
+                            }
+                            event_json = json.dumps(messages_event, ensure_ascii=False)
+                            yield f"event: messages\ndata: {event_json}\n\n"
+                    except Exception as e:
+                        logger.debug(f"Messages event processing: {e}")
+                    continue
 
-                # 🔥 处理不同类型的流式事件
+                # 🔥 处理 custom 模式（自定义事件）
                 if stream_mode == "custom":
-                    # 这是来自节点内 writer() 的自定义事件
                     logger.info(f"📨 Received custom event: {event}")
                     try:
-                        # 直接转发 custom 事件到前端
                         event_json = json.dumps(event, ensure_ascii=False)
-                        event_type = event.get("type", "chunk")
-                        # 确保事件名带有 custom| 前缀
-                        custom_event = (
-                            event_type
-                            if str(event_type).startswith("custom|")
-                            else f"custom|{event_type}"
-                        )
-                        logger.info(f"📤 Forwarding custom event: {custom_event}")
-                        yield f"event: {custom_event}\ndata: {event_json}\n\n"
+                        logger.info(f"📤 Forwarding custom event with data: {event_json[:200]}...")
+                        yield f"event: custom\ndata: {event_json}\n\n"
                     except Exception as e:
                         logger.error(f"❌ Custom event encoding error: {e}", exc_info=True)
                     continue

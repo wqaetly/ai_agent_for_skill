@@ -18,6 +18,7 @@ from ..nodes.progressive_skill_nodes import (
     ProgressiveSkillGenerationState,
     # 阶段1：骨架生成
     skeleton_generator_node,
+    skeleton_fixer_node,
     should_continue_to_track_generation,
     # 阶段2：Track 生成循环
     track_action_generator_node,
@@ -43,7 +44,8 @@ def build_progressive_skill_generation_graph():
     1. skeleton_generator: 生成技能骨架和 track 计划
     2. 判断骨架是否有效：
        - 有效 → 进入 track 生成循环
-       - 无效 → 直接失败
+       - 有错误且未达重试上限 → skeleton_fixer（修复）
+       - 有错误且达到上限 → 直接失败
     3. track_action_generator: 为当前 track 生成 actions
     4. track_validator: 验证当前 track
     5. 判断验证结果：
@@ -53,7 +55,7 @@ def build_progressive_skill_generation_graph():
     6. 判断是否继续：
        - 还有 track → 回到 track_action_generator
        - 全部完成 → skill_assembler
-    7. skill_assembler: 组装完整技能
+    7. skill_assembler: 组装完整技能（含自动修复时间线）
     8. finalize: 输出最终结果
 
     Returns:
@@ -66,6 +68,7 @@ def build_progressive_skill_generation_graph():
 
     # 阶段1：骨架生成
     workflow.add_node("skeleton_generator", skeleton_generator_node)
+    workflow.add_node("skeleton_fixer", skeleton_fixer_node)
 
     # 阶段2：Track 生成循环
     workflow.add_node("track_action_generator", track_action_generator_node)
@@ -88,7 +91,19 @@ def build_progressive_skill_generation_graph():
         should_continue_to_track_generation,
         {
             "generate_tracks": "track_action_generator",  # 骨架有效 → 开始生成 tracks
-            "skeleton_failed": "finalize"                  # 骨架无效 → 直接结束
+            "fix_skeleton": "skeleton_fixer",             # 骨架需要修复
+            "skeleton_failed": "finalize"                 # 骨架无效 → 直接结束
+        }
+    )
+    
+    # 骨架修复后重新判断
+    workflow.add_conditional_edges(
+        "skeleton_fixer",
+        should_continue_to_track_generation,
+        {
+            "generate_tracks": "track_action_generator",
+            "fix_skeleton": "skeleton_fixer",  # 继续修复
+            "skeleton_failed": "finalize"
         }
     )
 
@@ -173,7 +188,8 @@ def get_progressive_skill_generation_graph():
 def _create_progressive_initial_state(
     requirement: str,
     similar_skills: list = None,
-    max_track_retries: int = 3
+    max_track_retries: int = 3,
+    max_skeleton_retries: int = 2
 ) -> dict:
     """
     创建渐进式技能生成的初始状态
@@ -182,6 +198,7 @@ def _create_progressive_initial_state(
         requirement: 需求描述
         similar_skills: 相似技能列表（可选，用于 RAG）
         max_track_retries: 单个 track 的最大重试次数
+        max_skeleton_retries: 骨架的最大重试次数
 
     Returns:
         初始状态字典
@@ -192,6 +209,8 @@ def _create_progressive_initial_state(
         # 阶段1输出
         "skill_skeleton": {},
         "skeleton_validation_errors": [],
+        "skeleton_retry_count": 0,
+        "max_skeleton_retries": max_skeleton_retries,
         # 阶段2状态
         "track_plan": [],
         "current_track_index": 0,
@@ -200,6 +219,7 @@ def _create_progressive_initial_state(
         "current_track_errors": [],
         "track_retry_count": 0,
         "max_track_retries": max_track_retries,
+        "used_action_types": [],
         # 阶段3输出
         "assembled_skill": {},
         "final_validation_errors": [],

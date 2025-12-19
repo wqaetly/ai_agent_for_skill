@@ -1,2 +1,0 @@
-遇到复杂任务时，必须利用sequencethink mcp进行思考规划
-遇到LangGraph和本地网页（webui）相关内容时，必须利用context7 mcp获取最新文档

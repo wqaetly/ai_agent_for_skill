@@ -13,6 +13,7 @@ import json
 import logging
 import math
 import operator
+import time
 from functools import lru_cache
 from typing import Any, Dict, List, Tuple, TypedDict, Annotated, Optional, Literal
 
@@ -1653,31 +1654,18 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
         state
     )
 
-    # 调用LLM
-    llm = get_llm(temperature=0.6)
+    llm_start_time = time.time()
+    logger.info(f"⏳ 开始调用 DeepSeek API（LangChain streaming）(batch {current_batch_idx + 1}/{len(batch_plan)})...")
 
     try:
-        # 使用structured output（绑定ActionBatch）
-        structured_llm = llm.with_structured_output(
-            ActionBatch,
-            method="json_mode",
-            include_raw=False
-        )
-        logger.info("✅ Batch generator 使用 structured output 模式")
-    except Exception as e:
-        logger.warning(f"⚠️ Structured output 不可用: {e}")
-        structured_llm = llm
-
-    chain = prompt | structured_llm
-
-    # 保存原始响应用于错误日志
-    raw_response_text = ""
-
-    try:
-        # 记录 LLM 调用开始时间
-        llm_start_time = time.time()
-        logger.info(f"⏳ 开始调用 DeepSeek API (batch {current_batch_idx + 1}/{len(batch_plan)})...")
-
+        # 🔥 使用 LangChain LLM（streaming=True）
+        # LangGraph Studio 通过 stream_mode="messages" 自动捕获 token 流
+        llm = get_llm(streaming=True)
+        
+        # 创建 chain
+        chain = prompt | llm
+        
+        # 调用 LLM（LangGraph 会自动追踪这个调用并流式输出 token）
         response = chain.invoke({
             "skill_name": skeleton.get("skillName", "Unknown"),
             "total_duration": skeleton.get("totalDuration", 150),
@@ -1688,29 +1676,25 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
             "end_frame_hint": end_frame_hint,
             "batch_context": batch_context_desc,
             "current_batch_index": current_batch_idx,
-            # 使用增强的语义上下文（替代原有的简单摘要）
             "previous_actions_summary": context_text,
             "relevant_actions": action_schemas_text or "无特定Action参考"
         })
 
-        # 记录 LLM 调用耗时
         llm_elapsed = time.time() - llm_start_time
         logger.info(f"⏱️ DeepSeek API 响应耗时: {llm_elapsed:.2f}s")
 
-        # 处理响应
-        if isinstance(response, ActionBatch):
-            batch_actions = [action.model_dump() for action in response.actions]
-            logger.info(f"✅ 批次生成成功 (structured): {len(batch_actions)} actions")
-        else:
-            # 手动解析 - 保存原始响应用于错误日志
-            payload_text = _prepare_payload_text(response)
-            raw_response_text = payload_text  # 保存用于错误日志
-            json_content = extract_json_from_markdown(payload_text)
-            batch_dict = json.loads(json_content)
+        # 提取响应内容
+        full_content = _prepare_payload_text(response)
+        logger.info(f"📝 LLM 响应长度: {len(full_content)} 字符")
 
-            validated = ActionBatch.model_validate(batch_dict)
-            batch_actions = [action.model_dump() for action in validated.actions]
-            logger.info(f"✅ 批次生成成功 (手动解析): {len(batch_actions)} actions")
+        # 解析 JSON 响应
+        json_content = extract_json_from_markdown(full_content)
+        batch_dict = json.loads(json_content)
+
+        # 使用 Pydantic 验证
+        validated = ActionBatch.model_validate(batch_dict)
+        batch_actions = [action.model_dump() for action in validated.actions]
+        logger.info(f"✅ 批次生成成功（流式）: {len(batch_actions)} actions")
 
         # 发送LLM完成事件
         _emit_progress(
@@ -1731,8 +1715,8 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
 
     except ValidationError as e:
         logger.error(f"❌ 批次Schema验证失败: {e}")
-        if raw_response_text:
-            logger.error(f"原始LLM输出: {raw_response_text[:500]}...")
+        if full_content:
+            logger.error(f"原始LLM输出: {full_content[:500]}...")
 
         error_details = "\n".join([f"• {err['loc']}: {err['msg']}" for err in e.errors()])
         messages.append(AIMessage(

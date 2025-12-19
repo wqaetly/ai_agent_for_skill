@@ -21,8 +21,16 @@ from ..streaming import (
     ProgressEventType,
     emit_progress,
 )
+from core.odin_json_parser import serialize_to_odin
 
 logger = logging.getLogger(__name__)
+
+
+# ==================== 流式 LLM 调用辅助函数 ====================
+
+# 🔥 注意：原 stream_llm_with_reasoning 函数已废弃
+# LangGraph Studio 通过 stream_mode="messages" 自动捕获 LangChain LLM 的流式 token
+# 不再需要手动处理流式输出，LangGraph 会自动追踪所有 LLM.invoke() 调用
 
 # ==================== JSON 输出配置 ====================
 
@@ -30,7 +38,12 @@ logger = logging.getLogger(__name__)
 _OUTPUT_DIR = Path(__file__).parent.parent.parent / "Data" / "generated_skills"
 
 
-def _save_generated_json(data: Dict[str, Any], stage: str, skill_name: str = "unknown") -> Optional[Path]:
+def _save_generated_json(
+    data: Dict[str, Any], 
+    stage: str, 
+    skill_name: str = "unknown",
+    require_odin_format: bool = True
+) -> Tuple[Optional[Path], bool]:
     """
     保存生成的 JSON 数据到文件
 
@@ -38,9 +51,10 @@ def _save_generated_json(data: Dict[str, Any], stage: str, skill_name: str = "un
         data: 要保存的数据
         stage: 生成阶段 (skeleton/track/final)
         skill_name: 技能名称
+        require_odin_format: final 阶段是否强制要求 Odin 格式
 
     Returns:
-        保存的文件路径，失败返回 None
+        (保存的文件路径, 是否为Odin格式) 元组，路径为None表示失败
     """
     try:
         # 确保输出目录存在
@@ -51,17 +65,68 @@ def _save_generated_json(data: Dict[str, Any], stage: str, skill_name: str = "un
         safe_name = "".join(c if c.isalnum() or c in "-_" else "_" for c in skill_name)
         filename = f"{safe_name}_{stage}_{timestamp}.json"
         filepath = _OUTPUT_DIR / filename
+        
+        is_odin_format = False
+
+        # 如果是 final 阶段，转换为 Odin 序列化格式
+        if stage == "final" and "tracks" in data:
+            try:
+                data_to_save = serialize_to_odin(data)
+                is_odin_format = True
+                logger.info("✅ 已将技能数据转换为 Odin 序列化格式")
+            except Exception as e:
+                if require_odin_format:
+                    # 强制要求时记录错误但仍保存原始格式（同时保存两个文件）
+                    logger.error(f"❌ Odin 序列化失败: {e}")
+                    # 保存原始格式作为备份
+                    backup_filename = f"{safe_name}_{stage}_raw_{timestamp}.json"
+                    backup_filepath = _OUTPUT_DIR / backup_filename
+                    with open(backup_filepath, "w", encoding="utf-8") as f:
+                        json.dump(data, f, ensure_ascii=False, indent=2)
+                    logger.warning(f"⚠️ 已保存原始格式备份: {backup_filepath}")
+                    
+                    # 尝试简化序列化（只处理 _odin_type）
+                    data_to_save = _simple_odin_serialize(data)
+                    logger.info("✅ 使用简化 Odin 序列化")
+                else:
+                    logger.warning(f"⚠️ Odin 序列化失败，使用原始格式: {e}")
+                    data_to_save = data
+        else:
+            data_to_save = data
 
         # 保存 JSON（格式化输出，支持中文）
         with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(data_to_save, f, ensure_ascii=False, indent=2)
 
         logger.info(f"📁 已保存 {stage} JSON: {filepath}")
-        return filepath
+        return filepath, is_odin_format
 
     except Exception as e:
         logger.warning(f"⚠️ 保存 JSON 失败: {e}")
-        return None
+        return None, False
+
+
+def _simple_odin_serialize(data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    简化的 Odin 序列化（当完整序列化失败时使用）
+    
+    只确保 _odin_type 格式正确，不做其他复杂转换
+    """
+    import copy
+    result = copy.deepcopy(data)
+    
+    # 遍历所有 tracks 和 actions
+    for track in result.get("tracks", []):
+        for action in track.get("actions", []):
+            params = action.get("parameters", {})
+            odin_type = params.get("_odin_type", "")
+            
+            # 确保 _odin_type 有索引前缀
+            if odin_type and "|" not in odin_type:
+                # 添加默认索引 0
+                params["_odin_type"] = f"0|{odin_type}"
+    
+    return result
 
 
 # ==================== 流式输出辅助函数 ====================
@@ -73,8 +138,11 @@ def _get_writer_safe() -> Optional[Any]:
     在非流式执行环境中不会报错
     """
     try:
-        return get_stream_writer()
-    except Exception:
+        writer = get_stream_writer()
+        logger.info(f"✅ 成功获取 StreamWriter: {type(writer)}")
+        return writer
+    except Exception as e:
+        logger.warning(f"⚠️ 无法获取 StreamWriter: {e}")
         return None
 
 
@@ -131,6 +199,54 @@ def _emit_finalize_progress(
     )
 
 
+def _emit_track_progress(
+    event_type: ProgressEventType,
+    message: str,
+    track_index: int,
+    total_tracks: int,
+    track_name: str = "",
+    **kwargs
+):
+    """
+    发送Track生成进度事件的便捷函数
+    
+    Args:
+        event_type: 事件类型
+        message: 消息内容
+        track_index: 当前Track索引（0-based）
+        total_tracks: Track总数
+        track_name: Track名称
+        **kwargs: 其他参数
+    """
+    writer = _get_writer_safe()
+    if writer is None:
+        logger.debug(f"[{event_type.value}] {message}")
+        return
+
+    # 计算进度：骨架10% + tracks占80%（按比例分配）
+    base_progress = 0.1  # 骨架已完成
+    track_weight = 0.8 / max(1, total_tracks)
+    
+    if event_type == ProgressEventType.TRACK_STARTED:
+        progress = base_progress + track_index * track_weight
+    elif event_type == ProgressEventType.TRACK_COMPLETED:
+        progress = base_progress + (track_index + 1) * track_weight
+    else:
+        progress = base_progress + (track_index + 0.5) * track_weight
+
+    emit_progress(
+        writer,
+        event_type,
+        message,
+        progress=progress,
+        phase="track",
+        track_index=track_index,
+        track_name=track_name,
+        total_tracks=total_tracks,
+        **kwargs
+    )
+
+
 # ==================== State 定义 ====================
 
 class ProgressiveSkillGenerationState(TypedDict):
@@ -150,6 +266,8 @@ class ProgressiveSkillGenerationState(TypedDict):
     # === 阶段1输出 ===
     skill_skeleton: Dict[str, Any]  # 骨架数据（SkillSkeletonSchema）
     skeleton_validation_errors: List[str]  # 骨架验证错误
+    skeleton_retry_count: int  # 骨架重试次数
+    max_skeleton_retries: int  # 骨架最大重试次数（默认 2）
 
     # === 阶段2状态 ===
     track_plan: List[Dict[str, Any]]  # Track 计划列表
@@ -159,6 +277,7 @@ class ProgressiveSkillGenerationState(TypedDict):
     current_track_errors: List[str]  # 当前 track 的验证错误
     track_retry_count: int  # 当前 track 重试次数
     max_track_retries: int  # 单个 track 最大重试次数（默认 3）
+    used_action_types: List[str]  # 已使用的 Action 类型（跨 Track 传递）
 
     # === 阶段3输出 ===
     assembled_skill: Dict[str, Any]  # 组装后的完整技能（OdinSkillSchema）
@@ -172,6 +291,99 @@ class ProgressiveSkillGenerationState(TypedDict):
     # 使用add_messages reducer确保消息正确累积
     messages: Annotated[List[AnyMessage], add_messages]
     thread_id: str  # 线程ID（用于追踪会话）
+
+
+# ==================== 默认 Action 模板 ====================
+
+DEFAULT_ACTIONS_BY_TRACK_TYPE: Dict[str, List[Dict[str, Any]]] = {
+    "animation": [
+        {
+            "action_name": "AnimationAction",
+            "action_type": "SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+            "description": "播放角色动画",
+            "parameters": [
+                {"name": "animationClipName", "type": "string", "defaultValue": "Attack01"},
+                {"name": "normalizedTime", "type": "float", "defaultValue": "0"},
+                {"name": "crossFadeDuration", "type": "float", "defaultValue": "0.2"},
+                {"name": "animationLayer", "type": "int", "defaultValue": "0"}
+            ]
+        }
+    ],
+    "effect": [
+        {
+            "action_name": "SpawnEffectAction",
+            "action_type": "SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+            "description": "生成特效",
+            "parameters": [
+                {"name": "effectPrefab", "type": "string", "defaultValue": "DefaultEffect"},
+                {"name": "position", "type": "Vector3", "defaultValue": "(0,0,0)"},
+                {"name": "duration", "type": "float", "defaultValue": "1.0"}
+            ]
+        },
+        {
+            "action_name": "DamageAction",
+            "action_type": "SkillSystem.Actions.DamageAction, Assembly-CSharp",
+            "description": "造成伤害",
+            "parameters": [
+                {"name": "damageAmount", "type": "float", "defaultValue": "10"},
+                {"name": "damageType", "type": "DamageType", "defaultValue": "Physical"},
+                {"name": "radius", "type": "float", "defaultValue": "1.0"}
+            ]
+        }
+    ],
+    "audio": [
+        {
+            "action_name": "PlaySoundAction",
+            "action_type": "SkillSystem.Actions.PlaySoundAction, Assembly-CSharp",
+            "description": "播放音效",
+            "parameters": [
+                {"name": "soundClip", "type": "string", "defaultValue": "DefaultSound"},
+                {"name": "volume", "type": "float", "defaultValue": "1.0"},
+                {"name": "pitch", "type": "float", "defaultValue": "1.0"}
+            ]
+        }
+    ],
+    "movement": [
+        {
+            "action_name": "MoveAction",
+            "action_type": "SkillSystem.Actions.MoveAction, Assembly-CSharp",
+            "description": "角色位移",
+            "parameters": [
+                {"name": "direction", "type": "Vector3", "defaultValue": "(0,0,1)"},
+                {"name": "distance", "type": "float", "defaultValue": "2.0"},
+                {"name": "speed", "type": "float", "defaultValue": "5.0"}
+            ]
+        }
+    ],
+    "camera": [
+        {
+            "action_name": "CameraShakeAction",
+            "action_type": "SkillSystem.Actions.CameraShakeAction, Assembly-CSharp",
+            "description": "镜头震动",
+            "parameters": [
+                {"name": "intensity", "type": "float", "defaultValue": "0.5"},
+                {"name": "duration", "type": "float", "defaultValue": "0.3"}
+            ]
+        }
+    ],
+    "other": [
+        {
+            "action_name": "GenericAction",
+            "action_type": "SkillSystem.Actions.GenericAction, Assembly-CSharp",
+            "description": "通用Action",
+            "parameters": []
+        }
+    ]
+}
+
+
+def get_default_actions_for_track_type(track_type: str) -> List[Dict[str, Any]]:
+    """
+    获取指定Track类型的默认Action模板
+    
+    当RAG检索失败时使用，确保LLM有参考格式
+    """
+    return DEFAULT_ACTIONS_BY_TRACK_TYPE.get(track_type, DEFAULT_ACTIONS_BY_TRACK_TYPE["other"])
 
 
 # ==================== 骨架验证函数 ====================
@@ -243,15 +455,20 @@ def validate_skeleton(skeleton: Dict[str, Any]) -> List[str]:
 
 # ==================== 阶段1：骨架生成节点 ====================
 
-def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
+def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: StreamWriter) -> Dict[str, Any]:
     """
-    骨架生成节点（阶段1）- 增强版：支持流式输出
+    骨架生成节点（阶段1）- 使用 LangChain LLM 实现流式输出
 
     职责：
     1. 根据用户需求和相似技能，生成技能骨架和 track 计划
-    2. 使用 structured output 确保输出符合 SkillSkeletonSchema
-    3. 验证骨架数据
-    4. 发送进度事件
+    2. 使用 LangChain ChatOpenAI（streaming=True）调用 LLM
+    3. LangGraph Studio 通过 stream_mode="messages" 自动捕获 token 级别流式输出
+    4. 验证骨架数据
+    5. 发送进度事件
+
+    Args:
+        state: 渐进式技能生成状态
+        writer: LangGraph 注入的 StreamWriter，用于流式输出自定义事件
 
     输出：
     - skill_skeleton: 骨架数据
@@ -287,27 +504,6 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
     prompt_mgr = get_prompt_manager()
     prompt = prompt_mgr.get_prompt("skeleton_generation")
 
-    # 调用 LLM（使用 structured output）
-    llm = get_llm(temperature=0.7)
-
-    try:
-        # 使用 with_structured_output 确保格式正确
-        structured_llm = llm.with_structured_output(
-            SkillSkeletonSchema,
-            method="json_mode",
-            include_raw=False
-        )
-        logger.info("✅ Skeleton generator 使用 structured output 模式")
-    except Exception as e:
-        logger.warning(f"⚠️ Structured output 初始化失败，使用普通模式: {e}")
-        structured_llm = llm
-
-    chain = prompt | structured_llm
-
-    # 调用 LLM
-    api_start_time = time.time()
-    logger.info("⏳ 正在调用 DeepSeek API 生成骨架...")
-
     # 发送LLM调用事件
     _emit_skeleton_progress(
         ProgressEventType.LLM_CALLING,
@@ -315,7 +511,18 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
         progress=0.03
     )
 
+    api_start_time = time.time()
+    logger.info("⏳ 正在调用 DeepSeek API 生成骨架（LangChain streaming）...")
+
     try:
+        # 🔥 使用 LangChain LLM（streaming=True）
+        # LangGraph Studio 通过 stream_mode="messages" 自动捕获 token 流
+        llm = get_llm(streaming=True)
+        
+        # 创建 chain
+        chain = prompt | llm
+        
+        # 调用 LLM（LangGraph 会自动追踪这个调用并流式输出 token）
         response = chain.invoke({
             "requirement": requirement,
             "similar_skills": similar_skills_text or "无参考技能"
@@ -324,30 +531,25 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str,
         api_elapsed = time.time() - api_start_time
         logger.info(f"⏱️ 骨架生成耗时: {api_elapsed:.2f}s")
 
-        # 处理响应：可能是 SkillSkeletonSchema 实例或原始文本
-        if isinstance(response, SkillSkeletonSchema):
-            # structured output 成功
-            skeleton_dict = response.model_dump()
-            logger.info(f"✅ 骨架生成成功 (structured output): {response.skillName}")
-        else:
-            # 需要手动解析
-            logger.warning("⚠️ Structured output 返回非预期类型，尝试手动解析")
-            payload_text = _prepare_payload_text(response)
+        # 提取响应内容
+        full_content = _prepare_payload_text(response)
+        logger.info(f"📝 LLM 响应长度: {len(full_content)} 字符")
 
-            # 尝试解析 JSON
-            json_content = extract_json_from_markdown(payload_text)
-            skeleton_dict = json.loads(json_content)
+        # 解析 JSON 响应
+        json_content = extract_json_from_markdown(full_content)
+        skeleton_dict = json.loads(json_content)
 
-            # 使用 Pydantic 验证
-            validated = SkillSkeletonSchema.model_validate(skeleton_dict)
-            skeleton_dict = validated.model_dump()
-            logger.info(f"✅ 骨架手动解析成功: {skeleton_dict.get('skillName')}")
+        # 使用 Pydantic 验证
+        validated = SkillSkeletonSchema.model_validate(skeleton_dict)
+        skeleton_dict = validated.model_dump()
+        logger.info(f"✅ 骨架生成成功: {skeleton_dict.get('skillName')}")
 
-        # 保存骨架 JSON 到文件
+        # 保存骨架 JSON 到文件（skeleton 阶段不涉及 Odin 序列化）
         _save_generated_json(
             skeleton_dict,
             stage="skeleton",
-            skill_name=skeleton_dict.get("skillName", "unknown")
+            skill_name=skeleton_dict.get("skillName", "unknown"),
+            require_odin_format=False
         )
 
         # 验证骨架
@@ -474,34 +676,155 @@ def format_similar_skills(skills: List[Dict[str, Any]]) -> str:
     return "\n\n".join(formatted)
 
 
+# ==================== 骨架修复节点 ====================
+
+def skeleton_fixer_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
+    """
+    骨架修复节点
+    
+    职责：根据验证错误修复骨架数据
+    
+    输出：
+    - skill_skeleton: 修复后的骨架数据
+    - skeleton_validation_errors: 清空（由验证节点重新填充）
+    - skeleton_retry_count: 递增重试计数
+    """
+    from ..prompts.prompt_manager import get_prompt_manager
+    from .json_utils import extract_json_from_markdown
+    
+    skeleton = state.get("skill_skeleton", {})
+    errors = state.get("skeleton_validation_errors", [])
+    requirement = state.get("requirement", "")
+    
+    logger.info(f"🔧 修复骨架，错误数: {len(errors)}")
+    
+    # 格式化错误信息
+    errors_text = "\n".join([f"{i+1}. {err}" for i, err in enumerate(errors)])
+    
+    # 准备消息列表
+    messages = []
+    messages.append(AIMessage(
+        content=f"🔧 骨架验证发现 {len(errors)} 个错误，正在修复...\n{errors_text}"
+    ))
+    
+    # 获取 Prompt（复用修复逻辑）
+    prompt_mgr = get_prompt_manager()
+    prompt = prompt_mgr.get_prompt("skeleton_validation_fix")
+    
+    # 调用 LLM
+    llm = get_llm(temperature=0.3)  # 修复时使用更低温度
+    
+    try:
+        fixer_llm = llm.with_structured_output(
+            SkillSkeletonSchema,
+            method="json_mode",
+            include_raw=False
+        )
+        logger.info("✅ Skeleton fixer 使用 structured output 模式")
+    except Exception as e:
+        logger.warning(f"⚠️ Fixer structured output 不可用: {e}")
+        fixer_llm = llm
+    
+    chain = prompt | fixer_llm
+    
+    try:
+        response = chain.invoke({
+            "errors": errors_text,
+            "skeleton_json": json.dumps(skeleton, ensure_ascii=False, indent=2),
+            "requirement": requirement
+        })
+        
+        # 处理响应
+        if isinstance(response, SkillSkeletonSchema):
+            fixed_skeleton_dict = response.model_dump()
+            logger.info("✅ 骨架修复成功 (structured output)")
+        else:
+            payload_text = _prepare_payload_text(response)
+            json_content = extract_json_from_markdown(payload_text)
+            fixed_skeleton_dict = json.loads(json_content)
+            validated = SkillSkeletonSchema.model_validate(fixed_skeleton_dict)
+            fixed_skeleton_dict = validated.model_dump()
+            logger.info("✅ 骨架修复成功（手动解析）")
+        
+        # 重新验证
+        new_errors = validate_skeleton(fixed_skeleton_dict)
+        
+        messages.append(AIMessage(content="✅ 骨架已修复，重新验证中..."))
+        
+        return {
+            "skill_skeleton": fixed_skeleton_dict,
+            "track_plan": fixed_skeleton_dict.get("trackPlan", []),
+            "skeleton_validation_errors": new_errors,
+            "skeleton_retry_count": state.get("skeleton_retry_count", 0) + 1,
+            "messages": messages
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ 骨架修复失败: {e}", exc_info=True)
+        messages.append(AIMessage(content=f"❌ 骨架修复失败: {str(e)}"))
+        
+        # 修复失败时，保留原有错误并添加修复失败信息
+        original_errors = state.get("skeleton_validation_errors", [])
+        updated_errors = original_errors + [f"修复失败: {str(e)}"]
+        
+        return {
+            "skeleton_validation_errors": updated_errors,
+            "skeleton_retry_count": state.get("skeleton_retry_count", 0) + 1,
+            "messages": messages
+        }
+
+
 # ==================== 条件判断函数 ====================
 
-def should_continue_to_track_generation(state: ProgressiveSkillGenerationState) -> Literal["generate_tracks", "skeleton_failed"]:
+def should_continue_to_track_generation(state: ProgressiveSkillGenerationState) -> Literal["generate_tracks", "fix_skeleton", "skeleton_failed"]:
     """
     判断是否继续进入 Track 生成阶段
 
     条件：
     - 骨架验证无错误 → "generate_tracks"
-    - 骨架验证有错误 → "skeleton_failed"
+    - 骨架验证有错误且未达重试上限 → "fix_skeleton"
+    - 骨架验证有错误且达到上限 → "skeleton_failed"
     """
     errors = state.get("skeleton_validation_errors", [])
+    retry_count = state.get("skeleton_retry_count", 0)
+    max_retries = state.get("max_skeleton_retries", 2)
 
-    if errors:
-        logger.warning(f"骨架验证失败，错误数: {len(errors)}")
+    if not errors:
+        return "generate_tracks"
+    
+    if retry_count < max_retries:
+        logger.info(f"骨架需要修复 (重试 {retry_count + 1}/{max_retries})")
+        return "fix_skeleton"
+    else:
+        logger.warning(f"骨架达到最大重试次数 ({max_retries})，生成失败")
         return "skeleton_failed"
-
-    return "generate_tracks"
 
 
 # ==================== Track 类型识别 ====================
 
-# Track类型关键词映射（支持中英文）
+# Track类型关键词映射（支持中英文，增强版）
 TRACK_TYPE_KEYWORDS = {
-    "animation": ["animation", "anim", "动画", "動畫"],
-    "effect": ["effect", "fx", "vfx", "特效", "效果", "伤害", "傷害", "damage"],
-    "audio": ["audio", "sound", "音效", "音频", "音頻", "声音", "聲音"],
-    "movement": ["movement", "move", "移动", "移動", "位移", "冲刺", "衝刺"],
-    "camera": ["camera", "cam", "镜头", "鏡頭", "相机", "相機"],
+    "animation": [
+        "animation", "anim", "animator", 
+        "动画", "動畫", "动作", "動作"
+    ],
+    "effect": [
+        "effect", "fx", "vfx", "visual", "particle",
+        "特效", "效果", "伤害", "傷害", "damage", "buff", "debuff",
+        "技能效果", "攻击效果", "攻擊效果"
+    ],
+    "audio": [
+        "audio", "sound", "sfx", "music",
+        "音效", "音频", "音頻", "声音", "聲音", "音乐", "音樂"
+    ],
+    "movement": [
+        "movement", "move", "position", "translate", "dash", "teleport",
+        "移动", "移動", "位移", "冲刺", "衝刺", "传送", "傳送", "位置"
+    ],
+    "camera": [
+        "camera", "cam", "shake", "zoom", "focus",
+        "镜头", "鏡頭", "相机", "相機", "震动", "震動", "震屏"
+    ],
 }
 
 
@@ -649,7 +972,8 @@ def validate_track(track_data: Dict[str, Any], total_duration: int) -> List[str]
     2. actions 数组非空
     3. 每个 action 的 frame/duration 合法
     4. 每个 action 的 parameters 包含 _odin_type
-    5. 所有 action 的结束帧 <= totalDuration
+    5. _odin_type 格式正确（TypeName, Assembly-CSharp）
+    6. 所有 action 的结束帧 <= totalDuration
 
     Args:
         track_data: Track 数据（dict 格式）
@@ -658,6 +982,8 @@ def validate_track(track_data: Dict[str, Any], total_duration: int) -> List[str]
     Returns:
         错误列表，空表示验证通过
     """
+    from core.odin_json_parser import validate_odin_type
+    
     errors = []
 
     # 验证1：trackName 非空
@@ -703,6 +1029,12 @@ def validate_track(track_data: Dict[str, Any], total_duration: int) -> List[str]
             errors.append(f"Track '{track_name}' action[{idx}].parameters 缺失或格式错误")
         elif "_odin_type" not in parameters:
             errors.append(f"Track '{track_name}' action[{idx}].parameters 缺少 _odin_type")
+        else:
+            # 验证 _odin_type 格式
+            odin_type = parameters.get("_odin_type", "")
+            is_valid, _, error_msg = validate_odin_type(odin_type)
+            if not is_valid:
+                errors.append(f"Track '{track_name}' action[{idx}]: {error_msg}")
 
     return errors
 
@@ -747,6 +1079,16 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
         f"{track_name} (预估 {estimated_actions} actions)"
     )
 
+    # 发送Track生成开始事件
+    _emit_track_progress(
+        ProgressEventType.TRACK_STARTED,
+        f"开始生成 Track: {track_name}",
+        track_index=current_index,
+        total_tracks=len(track_plan),
+        track_name=track_name,
+        data={"purpose": purpose[:50], "estimated_actions": estimated_actions}
+    )
+
     # 准备消息列表
     messages = []
     messages.append(AIMessage(
@@ -756,18 +1098,26 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
 
     # RAG 检索：根据 trackName 和 purpose 检索相关 Actions
     track_type = infer_track_type(track_name)
+    used_action_types = state.get("used_action_types", [])
+    
     relevant_actions = search_actions_by_track_type(
         track_type=track_type,
         purpose=purpose,
-        top_k=5
+        top_k=5,
+        used_types=used_action_types
     )
 
-    if relevant_actions:
+    # RAG 检索容错：无结果时使用默认模板
+    if not relevant_actions:
+        logger.warning(f"⚠️ RAG 检索无结果，使用 {track_type} 类型默认模板")
+        relevant_actions = get_default_actions_for_track_type(track_type)
+        messages.append(AIMessage(
+            content=f"⚠️ 未检索到相关 Action，使用 {track_type} 类型默认模板生成"
+        ))
+    else:
         messages.append(AIMessage(
             content=f"📋 检索到 {len(relevant_actions)} 个相关 Action 定义用于生成"
         ))
-    else:
-        messages.append(AIMessage(content="⚠️ 未检索到相关 Action，将基于通用知识生成"))
 
     # 格式化 Action Schema
     action_schemas_text = format_action_schemas_for_prompt(relevant_actions)
@@ -836,6 +1186,16 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
             content=f"✅ Track 生成完成：{len(track_dict.get('actions', []))} 个 actions"
         ))
 
+        # 发送Track生成完成事件（注意：这里只是LLM生成完成，还需要验证）
+        _emit_track_progress(
+            ProgressEventType.LLM_COMPLETED,
+            f"Track {track_name} LLM生成完成，待验证",
+            track_index=current_index,
+            total_tracks=len(track_plan),
+            track_name=track_name,
+            data={"actions_count": len(track_dict.get('actions', []))}
+        )
+
         return {
             "current_track_data": track_dict,
             "current_track_errors": [],  # 初始为空，由 validator 填充
@@ -848,6 +1208,16 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
         error_details = "\n".join([f"• {err['loc']}: {err['msg']}" for err in e.errors()])
         messages.append(AIMessage(content=f"❌ Track 生成失败（Schema 验证错误）:\n{error_details}"))
 
+        # 发送Track生成失败事件
+        _emit_track_progress(
+            ProgressEventType.TRACK_FAILED,
+            f"Track {track_name} Schema验证失败",
+            track_index=current_index,
+            total_tracks=len(track_plan),
+            track_name=track_name,
+            data={"error": str(e)[:100]}
+        )
+
         return {
             "current_track_data": {},
             "current_track_errors": [f"Schema 验证失败: {str(e)}"],
@@ -858,6 +1228,16 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
         # 其他错误
         logger.error(f"❌ Track 生成异常: {e}", exc_info=True)
         messages.append(AIMessage(content=f"❌ Track 生成失败: {str(e)}"))
+
+        # 发送Track生成失败事件
+        _emit_track_progress(
+            ProgressEventType.TRACK_FAILED,
+            f"Track {track_name} 生成异常",
+            track_index=current_index,
+            total_tracks=len(track_plan),
+            track_name=track_name,
+            data={"error": str(e)[:100]}
+        )
 
         return {
             "current_track_data": {},
@@ -998,34 +1378,77 @@ def track_saver_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
     职责：保存验证通过的 track，并移动到下一个 track
 
     输出：
-    - generated_tracks: 追加当前 track
+    - generated_tracks: 追加当前 track（跳过空 track）
     - current_track_index: 递增索引
     - track_retry_count: 重置为 0
+    - used_action_types: 更新已使用的 Action 类型
     """
+    from core.odin_json_parser import extract_type_name_from_odin_type
+    
     track_data = state.get("current_track_data", {})
-    generated_tracks = state.get("generated_tracks", [])
+    generated_tracks = list(state.get("generated_tracks", []))  # 创建副本避免修改原列表
     current_index = state.get("current_track_index", 0)
     track_plan = state.get("track_plan", [])
+    used_action_types = list(state.get("used_action_types", []))
 
     track_name = track_data.get("trackName", "Unknown")
-    actions_count = len(track_data.get("actions", []))
-
-    logger.info(f"💾 保存 Track '{track_name}' ({actions_count} actions)")
-
-    # 保存
-    generated_tracks.append(track_data)
+    actions = track_data.get("actions", [])
+    actions_count = len(actions)
 
     # 准备消息
     messages = []
+    
+    # 检查是否为空 Track（跳过保存）
+    if not track_data or not actions:
+        logger.warning(f"⚠️ 跳过空 Track '{track_name}'（无有效 actions）")
+        messages.append(AIMessage(
+            content=f"⚠️ Track '{track_name}' 为空或无效，已跳过"
+        ))
+        return {
+            "generated_tracks": generated_tracks,  # 不追加
+            "current_track_index": current_index + 1,
+            "track_retry_count": 0,
+            "used_action_types": used_action_types,
+            "messages": messages
+        }
+
+    logger.info(f"💾 保存 Track '{track_name}' ({actions_count} actions)")
+
+    # 保存有效 Track
+    generated_tracks.append(track_data)
+    
+    # 收集已使用的 Action 类型（用于后续 Track 避免重复）
+    # 使用 set 提高查找效率
+    used_types_set = set(used_action_types)
+    for action in actions:
+        params = action.get("parameters", {})
+        odin_type = params.get("_odin_type", "")
+        if odin_type:
+            type_name = extract_type_name_from_odin_type(odin_type)
+            if type_name:
+                used_types_set.add(type_name)
+    used_action_types = list(used_types_set)
+
     progress = f"[{len(generated_tracks)}/{len(track_plan)}]"
     messages.append(AIMessage(
         content=f"💾 Track '{track_name}' 已保存 {progress}"
     ))
 
+    # 发送Track完成事件
+    _emit_track_progress(
+        ProgressEventType.TRACK_COMPLETED,
+        f"Track {track_name} 已保存 {progress}",
+        track_index=current_index,
+        total_tracks=len(track_plan),
+        track_name=track_name,
+        data={"actions_count": actions_count, "saved_tracks": len(generated_tracks)}
+    )
+
     return {
         "generated_tracks": generated_tracks,
         "current_track_index": current_index + 1,
         "track_retry_count": 0,  # 重置重试计数
+        "used_action_types": used_action_types,
         "messages": messages
     }
 
@@ -1114,7 +1537,19 @@ def should_continue_tracks(state: ProgressiveSkillGenerationState) -> str:
 
 # ==================== 阶段3：技能组装节点 ====================
 
-def validate_cross_track_timeline(tracks: List[Dict[str, Any]]) -> Tuple[List[str], List[str]]:
+# 时间线验证配置常量
+TIMELINE_VALIDATION_CONFIG = {
+    "audio_sync_tolerance": 15,      # 动画和音效同步容差（帧）
+    "max_timeline_gap": 60,          # 时间轴最大空白警告阈值（帧）
+    "damage_after_visual_delay": 5,  # 伤害在视觉效果后的延迟（帧）
+    "effect_after_anim_delay": 3,    # 特效在动画后的延迟（帧）
+}
+
+
+def validate_cross_track_timeline(
+    tracks: List[Dict[str, Any]], 
+    config: Optional[Dict[str, int]] = None
+) -> Tuple[List[str], List[str]]:
     """
     验证跨Track时间同步
 
@@ -1125,10 +1560,16 @@ def validate_cross_track_timeline(tracks: List[Dict[str, Any]]) -> Tuple[List[st
 
     Args:
         tracks: 已生成的Track列表
+        config: 可选的验证配置，覆盖默认值
 
     Returns:
         (errors, warnings) 元组
     """
+    # 合并配置
+    cfg = {**TIMELINE_VALIDATION_CONFIG, **(config or {})}
+    audio_sync_tolerance = cfg["audio_sync_tolerance"]
+    max_timeline_gap = cfg["max_timeline_gap"]
+    
     errors = []
     warnings = []
 
@@ -1184,12 +1625,12 @@ def validate_cross_track_timeline(tracks: List[Dict[str, Any]]) -> Tuple[List[st
     if animation_frames and audio_frames:
         for anim_frame in animation_frames[:3]:  # 检查前3个动画帧
             has_nearby_audio = any(
-                abs(anim_frame - audio_frame) <= 15  # 允许±15帧偏差
+                abs(anim_frame - audio_frame) <= audio_sync_tolerance
                 for audio_frame in audio_frames
             )
             if not has_nearby_audio:
                 warnings.append(
-                    f"动画帧{anim_frame}附近缺少配套音效（±15帧内）"
+                    f"动画帧{anim_frame}附近缺少配套音效（±{audio_sync_tolerance}帧内）"
                 )
 
     # === 验证2：伤害应在动画/特效之后 ===
@@ -1222,12 +1663,85 @@ def validate_cross_track_timeline(tracks: List[Dict[str, Any]]) -> Tuple[List[st
             if gap > max_gap:
                 max_gap = gap
 
-        if max_gap > 60:  # 超过60帧（约2秒）的空白
+        if max_gap > max_timeline_gap:
             warnings.append(
                 f"时间轴存在较大空白（最大间隔{max_gap}帧），可能影响技能连贯性"
             )
 
     return errors, warnings
+
+
+def auto_fix_timeline_issues(
+    tracks: List[Dict[str, Any]], 
+    config: Optional[Dict[str, int]] = None
+) -> Tuple[List[Dict[str, Any]], List[str]]:
+    """
+    自动修复跨Track时间线问题
+    
+    修复策略：
+    1. 伤害Action早于动画 → 将伤害帧后移至动画帧+延迟
+    2. 效果Track早于动画Track → 将效果Track的起始帧后移
+    
+    Args:
+        tracks: 已生成的Track列表
+        config: 可选的修复配置，覆盖默认值
+        
+    Returns:
+        (修复后的tracks, 修复日志列表)
+    """
+    import copy
+    
+    # 合并配置
+    cfg = {**TIMELINE_VALIDATION_CONFIG, **(config or {})}
+    damage_delay = cfg["damage_after_visual_delay"]
+    effect_delay = cfg["effect_after_anim_delay"]
+    
+    fixed_tracks = copy.deepcopy(tracks)
+    fix_logs = []
+    
+    # 收集动画帧信息
+    animation_min_frame = 999
+    for track in fixed_tracks:
+        track_type = infer_track_type(track.get("trackName", ""))
+        if track_type == "animation":
+            for action in track.get("actions", []):
+                frame = action.get("frame", 999)
+                if frame < animation_min_frame:
+                    animation_min_frame = frame
+    
+    if animation_min_frame == 999:
+        animation_min_frame = 0  # 没有动画Track时使用0
+    
+    # 遍历修复
+    for track in fixed_tracks:
+        track_name = track.get("trackName", "")
+        track_type = infer_track_type(track_name)
+        actions = track.get("actions", [])
+        
+        for action in actions:
+            frame = action.get("frame", 0)
+            params = action.get("parameters", {})
+            odin_type = params.get("_odin_type", "")
+            
+            # 修复1：伤害Action早于动画
+            if "Damage" in odin_type and frame < animation_min_frame:
+                new_frame = animation_min_frame + damage_delay
+                fix_logs.append(
+                    f"修复: {track_name} 伤害帧 {frame} → {new_frame}（动画后触发）"
+                )
+                action["frame"] = new_frame
+            
+            # 修复2：效果Track早于动画Track
+            elif track_type == "effect" and frame < animation_min_frame:
+                # 只修复特效生成类（不修复伤害，上面已处理）
+                if "Effect" in odin_type or "Spawn" in odin_type:
+                    new_frame = animation_min_frame + effect_delay
+                    fix_logs.append(
+                        f"修复: {track_name} 特效帧 {frame} → {new_frame}（与动画同步）"
+                    )
+                    action["frame"] = new_frame
+    
+    return fixed_tracks, fix_logs
 
 
 def validate_complete_skill(skill_data: Dict[str, Any]) -> List[str]:
@@ -1304,8 +1818,9 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
 
     职责：
     1. 将骨架和所有生成的 tracks 组装成完整技能
-    2. 进行整体验证
-    3. 输出符合 OdinSkillSchema 格式的技能数据
+    2. 自动修复跨Track时间线问题
+    3. 进行整体验证
+    4. 输出符合 OdinSkillSchema 格式的技能数据
 
     输出：
     - assembled_skill: 组装后的完整技能
@@ -1325,6 +1840,20 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
                 f"共 {len(tracks)} 个轨道待组装"
     ))
 
+    # 跨Track时间线自动修复
+    fixed_tracks, fix_logs = auto_fix_timeline_issues(tracks)
+    if fix_logs:
+        logger.info(f"🔧 自动修复了 {len(fix_logs)} 个时间线问题")
+        for log in fix_logs:
+            logger.info(f"   - {log}")
+        messages.append(AIMessage(
+            content=f"🔧 自动修复了 {len(fix_logs)} 个时间线问题:\n" +
+                    "\n".join([f"• {log}" for log in fix_logs])
+        ))
+    
+    # 使用修复后的 tracks
+    tracks = fixed_tracks
+
     # 组装完整技能
     assembled_skill = {
         "skillName": skeleton.get("skillName", "Unnamed Skill"),
@@ -1338,7 +1867,7 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
     # 整体验证
     errors = validate_complete_skill(assembled_skill)
 
-    # 跨Track时间同步验证（新增）
+    # 跨Track时间同步验证（修复后再验证）
     timeline_errors, timeline_warnings = validate_cross_track_timeline(tracks)
     errors.extend(timeline_errors)
 
@@ -1446,11 +1975,15 @@ def finalize_progressive_node(state: ProgressiveSkillGenerationState) -> Dict[st
 
     # 保存最终技能 JSON 到文件
     if assembled_skill:
-        _save_generated_json(
+        filepath, is_odin_format = _save_generated_json(
             assembled_skill,
             stage="final",
             skill_name=assembled_skill.get("skillName", "unknown")
         )
+        if filepath and not is_odin_format:
+            messages.append(AIMessage(
+                content="⚠️ 注意：Odin 序列化失败，已保存原始格式。可能需要手动转换后导入 Unity。"
+            ))
 
     # 兼容旧版 State 的 final_result 字段
     return {
