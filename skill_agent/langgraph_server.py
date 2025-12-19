@@ -402,12 +402,19 @@ async def stream_graph_updates(
                             content = message_chunk.get('content', '')
                         
                         if content:
-                            # 发送 messages 事件（LangGraph Studio 格式）
-                            messages_event = {
+                            # 🔥 SDK 期望 messages 事件数据是 [message_dict, metadata] 数组格式
+                            # 参见: @langchain/langgraph-sdk/dist/ui/manager.js:
+                            #   const [serialized, metadata] = data;
+                            message_dict = {
                                 "content": content,
                                 "type": "ai",
+                                "id": getattr(message_chunk, 'id', None) if hasattr(message_chunk, 'id') else None,
+                            }
+                            metadata_dict = {
                                 "langgraph_node": metadata.get("langgraph_node", "unknown") if isinstance(metadata, dict) else "unknown"
                             }
+                            # 发送 [message, metadata] 数组格式
+                            messages_event = [message_dict, metadata_dict]
                             event_json = json.dumps(messages_event, ensure_ascii=False)
                             yield f"event: messages\ndata: {event_json}\n\n"
                     except Exception as e:

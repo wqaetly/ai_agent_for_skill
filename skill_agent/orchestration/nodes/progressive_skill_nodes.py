@@ -15,7 +15,7 @@ from langgraph.types import StreamWriter
 from langgraph.config import get_stream_writer
 from pydantic import ValidationError
 
-from .skill_nodes import get_llm, _prepare_payload_text
+from .skill_nodes import get_llm, get_openai_client, _prepare_payload_text
 from ..schemas import SkillSkeletonSchema, TrackPlanItem, SkillTrack, OdinSkillSchema
 from ..streaming import (
     ProgressEventType,
@@ -461,8 +461,8 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
 
     职责：
     1. 根据用户需求和相似技能，生成技能骨架和 track 计划
-    2. 使用 LangChain ChatOpenAI（streaming=True）调用 LLM
-    3. LangGraph Studio 通过 stream_mode="messages" 自动捕获 token 级别流式输出
+    2. 🔥 使用 OpenAI SDK 直接调用 DeepSeek API，支持 reasoning_content 流式输出
+    3. 通过 writer 发送 thinking_chunk/content_chunk 自定义事件
     4. 验证骨架数据
     5. 发送进度事件
 
@@ -512,28 +512,116 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
     )
 
     api_start_time = time.time()
-    logger.info("⏳ 正在调用 DeepSeek API 生成骨架（LangChain streaming）...")
+    first_chunk_time = None
+    logger.info("⏳ 正在调用 DeepSeek API 生成骨架（OpenAI SDK 流式）...")
+
+    # 🔥 生成唯一的 message_id 用于跟踪流式消息
+    thinking_message_id = f"skeleton_thinking_{api_start_time}"
+    content_message_id = f"skeleton_content_{api_start_time}"
+
+    # 收集流式输出
+    full_reasoning = ""
+    full_content = ""
 
     try:
-        # 🔥 使用 LangChain LLM（streaming=True）
-        # LangGraph Studio 通过 stream_mode="messages" 自动捕获 token 流
-        llm = get_llm(streaming=True)
-        
-        # 创建 chain
-        chain = prompt | llm
-        
-        # 调用 LLM（LangGraph 会自动追踪这个调用并流式输出 token）
-        response = chain.invoke({
+        # 🔥 使用 OpenAI SDK 直接调用 DeepSeek API
+        # LangChain 的 ChatOpenAI 不能正确处理 DeepSeek Reasoner 的 reasoning_content
+        client = get_openai_client()
+
+        # 渲染 prompt 模板
+        prompt_inputs = {
             "requirement": requirement,
             "similar_skills": similar_skills_text or "无参考技能"
-        })
+        }
+        prompt_value = prompt.invoke(prompt_inputs)
+
+        # 转换为 OpenAI 格式的 messages
+        openai_messages = []
+        for msg in prompt_value.to_messages():
+            msg_type = msg.__class__.__name__.lower()
+            if "system" in msg_type:
+                openai_messages.append({"role": "system", "content": msg.content})
+            elif "human" in msg_type:
+                openai_messages.append({"role": "user", "content": msg.content})
+            elif "ai" in msg_type:
+                openai_messages.append({"role": "assistant", "content": msg.content})
+            else:
+                openai_messages.append({"role": "user", "content": msg.content})
+
+        logger.info(f"📤 发送请求到 DeepSeek API，消息数: {len(openai_messages)}")
+
+        # 🔥 发送初始思考提示
+        if writer:
+            try:
+                writer({
+                    "type": "thinking_chunk",
+                    "message_id": thinking_message_id,
+                    "chunk": "🤔 DeepSeek Reasoner 正在分析技能需求...\n"
+                })
+            except Exception as e:
+                logger.warning(f"⚠️ 发送初始 thinking chunk 失败: {e}")
+
+        # 🔥 使用 OpenAI SDK 进行流式调用
+        response = client.chat.completions.create(
+            model="deepseek-reasoner",
+            messages=openai_messages,
+            stream=True
+        )
+
+        # 流式处理响应
+        for chunk in response:
+            # 记录首字节时间（TTFB）
+            if first_chunk_time is None:
+                first_chunk_time = time.time()
+                ttfb = first_chunk_time - api_start_time
+                logger.info(f"⚡ 首字节延迟 (TTFB): {ttfb:.2f}s")
+
+            delta = chunk.choices[0].delta if chunk.choices else None
+            if delta is None:
+                continue
+
+            # 提取 reasoning_content（思考过程）
+            reasoning_chunk = getattr(delta, 'reasoning_content', None)
+            if reasoning_chunk:
+                full_reasoning += reasoning_chunk
+                # 降低日志频率
+                if len(full_reasoning) % 500 < len(reasoning_chunk):
+                    logger.debug(f"📝 Reasoning progress: {len(full_reasoning)} chars")
+
+                # 🔥 使用 writer 实时推送 thinking chunk
+                if writer:
+                    try:
+                        writer({
+                            "type": "thinking_chunk",
+                            "message_id": thinking_message_id,
+                            "chunk": reasoning_chunk
+                        })
+                    except Exception as e:
+                        logger.debug(f"发送 thinking chunk 失败: {e}")
+
+            # 提取 content（最终输出）
+            content_chunk = getattr(delta, 'content', None)
+            if content_chunk:
+                full_content += content_chunk
+                # 降低日志频率
+                if len(full_content) % 200 < len(content_chunk):
+                    logger.debug(f"📝 Content progress: {len(full_content)} chars")
+
+                # 🔥 使用 writer 实时推送 content chunk
+                if writer:
+                    try:
+                        writer({
+                            "type": "content_chunk",
+                            "message_id": content_message_id,
+                            "chunk": content_chunk
+                        })
+                    except Exception as e:
+                        logger.debug(f"发送 content chunk 失败: {e}")
 
         api_elapsed = time.time() - api_start_time
         logger.info(f"⏱️ 骨架生成耗时: {api_elapsed:.2f}s")
-
-        # 提取响应内容
-        full_content = _prepare_payload_text(response)
-        logger.info(f"📝 LLM 响应长度: {len(full_content)} 字符")
+        logger.info(f"🧠 思考内容长度: {len(full_reasoning)} 字符")
+        logger.info(f"📝 输出内容长度: {len(full_content)} 字符")
 
         # 解析 JSON 响应
         json_content = extract_json_from_markdown(full_content)
@@ -575,6 +663,14 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
                         f"**技能ID**: {skeleton_dict['skillId']}\n" +
                         f"**总时长**: {skeleton_dict['totalDuration']} 帧\n\n" +
                         f"**Track 计划** ({len(track_plan)} 个轨道):\n{track_summary}"
+            ))
+
+        # 🔥 添加思考过程消息（如果有）
+        if full_reasoning:
+            messages.append(AIMessage(
+                content=full_reasoning,
+                additional_kwargs={"thinking": True},
+                id=thinking_message_id
             ))
 
         # 发送骨架生成完成事件
@@ -1041,14 +1137,15 @@ def validate_track(track_data: Dict[str, Any], total_duration: int) -> List[str]
 
 # ==================== 阶段2：Track 生成节点 ====================
 
-def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
+def track_action_generator_node(state: ProgressiveSkillGenerationState, writer: StreamWriter) -> Dict[str, Any]:
     """
     Track Action 生成节点（阶段2）
 
     职责：
     1. 为当前 track 生成具体的 actions
     2. 根据 track 类型检索相关 Action 定义
-    3. 使用 LLM 生成符合 SkillTrack 格式的数据
+    3. 🔥 使用 OpenAI SDK 直接调用 DeepSeek API，支持 reasoning_content 流式输出
+    4. 通过 writer 发送 thinking_chunk/content_chunk 自定义事件
 
     输出：
     - current_track_data: 当前生成的 track 数据
@@ -1126,56 +1223,130 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
     prompt_mgr = get_prompt_manager()
     prompt = prompt_mgr.get_prompt("track_action_generation")
 
-    # 调用 LLM（使用 structured output）
-    llm = get_llm(temperature=0.5)  # Track 生成使用稍低温度
-
-    try:
-        # 尝试使用 structured output（绑定 SkillTrack）
-        structured_llm = llm.with_structured_output(
-            SkillTrack,
-            method="json_mode",
-            include_raw=False
-        )
-        logger.info("✅ Track generator 使用 structured output 模式")
-    except Exception as e:
-        logger.warning(f"⚠️ Structured output 初始化失败，使用普通模式: {e}")
-        structured_llm = llm
-
-    chain = prompt | structured_llm
-
-    # 调用 LLM
+    # 🔥 使用 OpenAI SDK 进行流式调用
     api_start_time = time.time()
-    logger.info(f"⏳ 正在为 '{track_name}' 生成 actions...")
+    first_chunk_time = None
+    logger.info(f"⏳ 正在为 '{track_name}' 生成 actions（OpenAI SDK 流式）...")
+
+    # 🔥 生成唯一的 message_id 用于跟踪流式消息
+    thinking_message_id = f"track_{current_index}_thinking_{api_start_time}"
+    content_message_id = f"track_{current_index}_content_{api_start_time}"
+
+    # 收集流式输出
+    full_reasoning = ""
+    full_content = ""
 
     try:
-        response = chain.invoke({
+        # 🔥 使用 OpenAI SDK 直接调用 DeepSeek API
+        client = get_openai_client()
+
+        # 渲染 prompt 模板
+        prompt_inputs = {
             "skillName": skeleton.get("skillName", "Unknown"),
             "totalDuration": skeleton.get("totalDuration", 150),
             "trackName": track_name,
             "purpose": purpose,
             "estimatedActions": estimated_actions,
             "relevant_actions": action_schemas_text or "无特定 Action 参考"
-        })
+        }
+        prompt_value = prompt.invoke(prompt_inputs)
+
+        # 转换为 OpenAI 格式的 messages
+        openai_messages = []
+        for msg in prompt_value.to_messages():
+            msg_type = msg.__class__.__name__.lower()
+            if "system" in msg_type:
+                openai_messages.append({"role": "system", "content": msg.content})
+            elif "human" in msg_type:
+                openai_messages.append({"role": "user", "content": msg.content})
+            elif "ai" in msg_type:
+                openai_messages.append({"role": "assistant", "content": msg.content})
+            else:
+                openai_messages.append({"role": "user", "content": msg.content})
+
+        logger.info(f"📤 发送请求到 DeepSeek API，消息数: {len(openai_messages)}")
+
+        # 🔥 发送初始思考提示
+        if writer:
+            try:
+                writer({
+                    "type": "thinking_chunk",
+                    "message_id": thinking_message_id,
+                    "chunk": f"🤔 正在思考 Track '{track_name}' 的 actions 结构...\n"
+                })
+            except Exception as e:
+                logger.warning(f"⚠️ 发送初始 thinking chunk 失败: {e}")
+
+        # 🔥 使用 OpenAI SDK 进行流式调用
+        response = client.chat.completions.create(
+            model="deepseek-reasoner",
+            messages=openai_messages,
+            stream=True
+        )
+
+        # 流式处理响应
+        for chunk in response:
+            # 记录首字节时间（TTFB）
+            if first_chunk_time is None:
+                first_chunk_time = time.time()
+                ttfb = first_chunk_time - api_start_time
+                logger.info(f"⚡ Track '{track_name}' 首字节延迟 (TTFB): {ttfb:.2f}s")
+
+            delta = chunk.choices[0].delta if chunk.choices else None
+            if delta is None:
+                continue
+
+            # 提取 reasoning_content（思考过程）
+            reasoning_chunk = getattr(delta, 'reasoning_content', None)
+            if reasoning_chunk:
+                full_reasoning += reasoning_chunk
+                # 降低日志频率
+                if len(full_reasoning) % 500 < len(reasoning_chunk):
+                    logger.debug(f"📝 Track reasoning progress: {len(full_reasoning)} chars")
+
+                # 🔥 使用 writer 实时推送 thinking chunk
+                if writer:
+                    try:
+                        writer({
+                            "type": "thinking_chunk",
+                            "message_id": thinking_message_id,
+                            "chunk": reasoning_chunk
+                        })
+                    except Exception as e:
+                        logger.debug(f"发送 thinking chunk 失败: {e}")
+
+            # 提取 content（最终输出）
+            content_chunk = getattr(delta, 'content', None)
+            if content_chunk:
+                full_content += content_chunk
+                # 降低日志频率
+                if len(full_content) % 200 < len(content_chunk):
+                    logger.debug(f"📝 Track content progress: {len(full_content)} chars")
+
+                # 🔥 使用 writer 实时推送 content chunk
+                if writer:
+                    try:
+                        writer({
+                            "type": "content_chunk",
+                            "message_id": content_message_id,
+                            "chunk": content_chunk
+                        })
+                    except Exception as e:
+                        logger.debug(f"发送 content chunk 失败: {e}")
 
         api_elapsed = time.time() - api_start_time
-        logger.info(f"⏱️ Track 生成耗时: {api_elapsed:.2f}s")
+        logger.info(f"⏱️ Track '{track_name}' 生成耗时: {api_elapsed:.2f}s")
+        logger.info(f"🧠 思考内容长度: {len(full_reasoning)} 字符")
+        logger.info(f"📝 输出内容长度: {len(full_content)} 字符")
 
-        # 处理响应
-        if isinstance(response, SkillTrack):
-            # structured output 成功
-            track_dict = response.model_dump()
-            logger.info(f"✅ Track 生成成功 (structured output): {len(track_dict.get('actions', []))} actions")
-        else:
-            # 需要手动解析
-            logger.warning("⚠️ Structured output 返回非预期类型，尝试手动解析")
-            payload_text = _prepare_payload_text(response)
-            json_content = extract_json_from_markdown(payload_text)
-            track_dict = json.loads(json_content)
+        # 解析 JSON 响应
+        json_content = extract_json_from_markdown(full_content)
+        track_dict = json.loads(json_content)
 
-            # 使用 Pydantic 验证
-            validated = SkillTrack.model_validate(track_dict)
-            track_dict = validated.model_dump()
-            logger.info(f"✅ Track 手动解析成功: {len(track_dict.get('actions', []))} actions")
+        # 使用 Pydantic 验证
+        validated = SkillTrack.model_validate(track_dict)
+        track_dict = validated.model_dump()
+        logger.info(f"✅ Track 生成成功: {len(track_dict.get('actions', []))} actions")
 
         # 确保 trackName 正确
         if track_dict.get("trackName") != track_name:
@@ -1185,6 +1356,14 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState) -> Dict[
         messages.append(AIMessage(
             content=f"✅ Track 生成完成：{len(track_dict.get('actions', []))} 个 actions"
         ))
+
+        # 🔥 添加思考过程消息（如果有）
+        if full_reasoning:
+            messages.append(AIMessage(
+                content=full_reasoning,
+                additional_kwargs={"thinking": True},
+                id=thinking_message_id
+            ))
 
         # 发送Track生成完成事件（注意：这里只是LLM生成完成，还需要验证）
         _emit_track_progress(

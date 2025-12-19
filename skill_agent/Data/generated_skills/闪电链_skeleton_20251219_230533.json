@@ -1,0 +1,33 @@
+{
+  "skillName": "闪电链",
+  "skillId": "lightning-chain-001",
+  "skillDescription": "释放一道闪电链，在多个敌人间跳跃，每次跳跃造成递减的闪电伤害并可能麻痹目标",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法前摇动画和闪电链释放动画，确保动作流畅自然",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成闪电链特效、处理跳跃逻辑、造成伤害并可能施加麻痹效果",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放闪电施法音效和每次命中时的闪电音效，增强听觉反馈",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "在闪电链击中敌人时进行轻微震屏，提升视觉冲击和打击感",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}

@@ -186,7 +186,7 @@ const StreamSession = ({
     });
   }, [streamValue.messages, streamValue.values, streamValue.isLoading]);
 
-  // 🔥 清理已完成的流式消息 buffer 和 streaming 标志
+  // 🔥 清理已完成的流式消息 buffer
   useEffect(() => {
     if (!streamValue.isLoading) {
       // 流结束时清空所有 buffer
@@ -194,19 +194,6 @@ const StreamSession = ({
       if (bufferIds.length > 0) {
         console.log(`[Stream] Clearing ${bufferIds.length} chunk buffers`);
         chunkBuffersRef.current = {};
-
-        // 🔥 流结束后,移除所有消息的 streaming 标志,确保最终状态正确
-        streamValue.mutate((prev) => {
-          const updatedMessages = prev.messages.map((msg: any) => {
-            if (msg.streaming) {
-              const { streaming, ...rest } = msg;
-              console.log(`[Stream] Removing streaming flag from message: ${msg.id}`);
-              return rest;
-            }
-            return msg;
-          });
-          return { ...prev, messages: updatedMessages };
-        });
       }
     }
 
@@ -217,7 +204,7 @@ const StreamSession = ({
         delete chunkBuffersRef.current[msg.id];
       }
     });
-  }, [streamValue.isLoading, streamValue.messages, streamValue.mutate]);
+  }, [streamValue.isLoading, streamValue.messages]);
 
   useEffect(() => {
     checkGraphStatus(apiUrl, apiKey).then((ok) => {
@@ -244,9 +231,9 @@ const StreamSession = ({
   );
 };
 
-// Default values for the form
+// Default values for the form and fallbacks
 const DEFAULT_API_URL = "http://localhost:2024";
-const DEFAULT_ASSISTANT_ID = "agent";
+const DEFAULT_ASSISTANT_ID = "skill-generation";
 
 export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -275,9 +262,10 @@ export const StreamProvider: React.FC<{ children: ReactNode }> = ({
     _setApiKey(key);
   };
 
-  // Determine final values to use, prioritizing URL params then env vars
-  const finalApiUrl = apiUrl || envApiUrl;
-  const finalAssistantId = assistantId || envAssistantId;
+  // Determine final values to use, prioritizing URL params then env vars then defaults
+  // Use .trim() to handle whitespace-only values
+  const finalApiUrl = apiUrl?.trim() || envApiUrl?.trim() || DEFAULT_API_URL;
+  const finalAssistantId = assistantId?.trim() || envAssistantId?.trim() || DEFAULT_ASSISTANT_ID;
 
   // Show the form if we: don't have an API URL, or don't have an assistant ID
   if (!finalApiUrl || !finalAssistantId) {
@@ -384,8 +372,8 @@ export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <StreamSession
       apiKey={apiKey}
-      apiUrl={apiUrl}
-      assistantId={assistantId}
+      apiUrl={finalApiUrl}
+      assistantId={finalAssistantId}
     >
       {children}
     </StreamSession>
