@@ -103,19 +103,11 @@ class PgVectorStore:
                         table=table,
                     )
                 )
-                # IVFFlat index needs lists; keep it optional to avoid errors.
-                # Users can create a better index later; we create a generic one if possible.
-                try:
-                    cur.execute(
-                        self._sql.SQL(
-                            "CREATE INDEX IF NOT EXISTS {idx} ON {table} USING ivfflat (embedding vector_cosine_ops) WITH (lists = 100)"
-                        ).format(
-                            idx=self._sql.Identifier(f"{table_name}_emb_ivfflat"),
-                            table=table,
-                        )
-                    )
-                except Exception as e:
-                    logger.debug(f"Skipping ivfflat index creation: {e}")
+                # IVFFlat index needs lists; skip for small datasets as it causes issues.
+                # For small datasets, sequential scan is actually faster and more accurate.
+                # Users should create appropriate indexes manually for larger datasets.
+                # Note: IVFFlat with lists > row_count causes incorrect results with ORDER BY + LIMIT.
+                pass  # Removed automatic ivfflat index creation
 
     def _clean_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         cleaned: Dict[str, Any] = {}
@@ -212,14 +204,14 @@ class PgVectorStore:
             return False
 
     def _distance_expr(self) -> str:
-        # Return a SQL snippet for distance.
+        # Return a SQL snippet for distance with explicit vector type cast.
         if self.distance_metric in ("cosine", "cos"):
-            return "embedding <=> %s"
+            return "embedding <=> %s::vector"
         if self.distance_metric in ("l2", "euclidean"):
-            return "embedding <-> %s"
+            return "embedding <-> %s::vector"
         if self.distance_metric in ("ip", "inner_product"):
-            return "embedding <#> %s"
-        return "embedding <=> %s"
+            return "embedding <#> %s::vector"
+        return "embedding <=> %s::vector"
 
     def query(
         self,
@@ -233,6 +225,12 @@ class PgVectorStore:
         embedding = query_embeddings[0] if query_embeddings else None
         if embedding is None:
             return {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
+
+        # Convert embedding list to pgvector string format: "[0.1,0.2,...]"
+        if isinstance(embedding, (list, tuple)):
+            embedding_str = "[" + ",".join(map(str, embedding)) + "]"
+        else:
+            embedding_str = embedding
 
         filters_sql = []
         params: List[Any] = []
@@ -264,11 +262,10 @@ class PgVectorStore:
         try:
             with self._connect() as conn:
                 with conn.cursor() as cur:
+                    # Use embedding_str (pgvector string format) for the query
                     cur.execute(
                         self._sql.SQL(query_sql).format(table=table),
-                        (*params, embedding, top_k)
-                        if "%s AS distance" in query_sql
-                        else (*params, top_k),
+                        (*params, embedding_str, top_k),
                     )
                     rows = cur.fetchall()
 

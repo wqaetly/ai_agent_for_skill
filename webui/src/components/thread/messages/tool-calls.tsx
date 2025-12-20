@@ -15,7 +15,7 @@ export function ToolCalls({
   if (!toolCalls || toolCalls.length === 0) return null;
 
   return (
-    <div className="mx-auto grid max-w-3xl grid-rows-[1fr_auto] gap-2">
+    <div className="grid grid-rows-[1fr_auto] gap-1">
       {toolCalls.map((tc, idx) => {
         const args = tc.args as Record<string, any>;
         const hasArgs = Object.keys(args).length > 0;
@@ -24,7 +24,7 @@ export function ToolCalls({
             key={idx}
             className="overflow-hidden rounded-lg border border-gray-200"
           >
-            <div className="border-b border-gray-200 bg-gray-50 px-4 py-2">
+            <div className="border-b border-gray-200 bg-gray-50 px-3 py-1.5">
               <h3 className="font-medium text-gray-900">
                 {tc.name}
                 {tc.id && (
@@ -94,9 +94,9 @@ export function ToolResult({ message }: { message: ToolMessage }) {
       : contentStr;
 
   return (
-    <div className="mx-auto grid max-w-3xl grid-rows-[1fr_auto] gap-2">
+    <div className="grid grid-rows-[1fr_auto] gap-1">
       <div className="overflow-hidden rounded-lg border border-gray-200">
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-2">
+        <div className="border-b border-gray-200 bg-gray-50 px-3 py-1.5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             {message.name ? (
               <h3 className="font-medium text-gray-900">

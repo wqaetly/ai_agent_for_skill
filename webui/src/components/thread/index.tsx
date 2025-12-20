@@ -264,7 +264,7 @@ export function Thread() {
   );
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
+    <div className="flex h-full w-full overflow-hidden">
       <div className="relative hidden lg:flex">
         <motion.div
           className="absolute z-20 h-full overflow-hidden border-r bg-white"
@@ -401,10 +401,10 @@ export function Thread() {
             <StickyToBottomContent
               className={cn(
                 "absolute inset-0 overflow-y-scroll px-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent",
-                !chatStarted && "mt-[25vh] flex flex-col items-stretch",
+                !chatStarted && "flex flex-col items-center justify-center",
                 chatStarted && "grid grid-rows-[1fr_auto]",
               )}
-              contentClassName="pt-8 pb-16  max-w-3xl mx-auto flex flex-col gap-4 w-full"
+              contentClassName="pt-8 pb-4 max-w-3xl mx-auto flex flex-col gap-2 w-full"
               content={
                 <>
                   {messages
@@ -441,7 +441,10 @@ export function Thread() {
                 </>
               }
               footer={
-                <div className="sticky bottom-0 flex flex-col items-center gap-8 bg-white">
+                <div className={cn(
+                  "flex flex-col items-center",
+                  chatStarted ? "sticky bottom-0 gap-2 pb-3 pt-2 bg-gradient-to-t from-background via-background to-transparent" : "gap-4 w-full max-w-3xl"
+                )}>
                   {!chatStarted && (
                     <div className="flex items-center gap-3">
                       <LangGraphLogoSVG className="h-8 flex-shrink-0" />
@@ -456,7 +459,8 @@ export function Thread() {
                   <div
                     ref={dropRef}
                     className={cn(
-                      "bg-muted relative z-10 mx-auto mb-8 w-full max-w-3xl rounded-2xl shadow-xs transition-all",
+                      "relative z-10 w-full max-w-3xl rounded-2xl shadow-sm transition-all",
+                      chatStarted ? "mx-auto mb-2 bg-muted" : "bg-transparent border-gray-300",
                       dragOver
                         ? "border-primary border-2 border-dotted"
                         : "border border-solid",

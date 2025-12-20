@@ -163,7 +163,7 @@ export function AssistantMessage({
 
   return (
     <div className="group mr-auto flex items-start gap-2">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1 bg-white rounded-2xl px-4 py-2 shadow-sm border border-gray-100">
         {isToolResult ? (
           <>
             <ToolResult message={message} />
@@ -176,7 +176,7 @@ export function AssistantMessage({
         ) : (
           <>
             {contentString.length > 0 ? (
-              <div className="py-1">
+              <div className="py-0">
                 <MarkdownText>{contentString}</MarkdownText>
                 {/* 🔥 流式输出中的提示 */}
                 {isStreamingMessage && (
