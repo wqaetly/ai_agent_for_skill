@@ -11,7 +11,7 @@ import hashlib
 import json
 
 from .embeddings import EmbeddingGenerator
-from .vector_store import VectorStore
+from .vector_store import create_vector_store
 from .skill_indexer import SkillIndexer
 from .action_indexer import ActionIndexer
 from .structured_query_engine import StructuredQueryEngine
@@ -41,9 +41,9 @@ class RAGEngine:
         self.embedding_generator = EmbeddingGenerator(config.get('embedding', {}))
 
         # 2. 向量存储（用于技能）
-        self.vector_store = VectorStore(
+        self.vector_store = create_vector_store(
             config.get('vector_store', {}),
-            embedding_dimension=self.embedding_generator.get_embedding_dimension()
+            embedding_dimension=self.embedding_generator.get_embedding_dimension(),
         )
 
         # 3. 技能索引器
@@ -55,9 +55,9 @@ class RAGEngine:
         # 5. Action向量存储（独立collection）
         action_vector_config = config.get('vector_store', {}).copy()
         action_vector_config['collection_name'] = config.get('action_indexer', {}).get('collection_name', 'action_collection')
-        self.action_vector_store = VectorStore(
+        self.action_vector_store = create_vector_store(
             action_vector_config,
-            embedding_dimension=self.embedding_generator.get_embedding_dimension()
+            embedding_dimension=self.embedding_generator.get_embedding_dimension(),
         )
 
         # 6. 结构化查询引擎（REQ-03）

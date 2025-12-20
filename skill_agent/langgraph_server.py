@@ -9,9 +9,18 @@ import sys
 import logging
 import asyncio
 import json
+import warnings
 from typing import Dict, Any, List, Optional, AsyncIterator
 from datetime import datetime
 from contextlib import asynccontextmanager
+
+# 过滤已知的弃用警告
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="asyncio")
+warnings.filterwarnings("ignore", message="Core Pydantic V1 functionality")
+
+# Windows 兼容性：psycopg 需要 SelectorEventLoop
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -32,6 +41,7 @@ from orchestration import (
     get_skill_search_graph,
     get_skill_detail_graph,
 )
+from orchestration.graphs.utils import init_checkpointer, close_checkpointer
 from config import retry, server, rag, timeout, cors
 
 logging.basicConfig(
@@ -88,6 +98,14 @@ class RunsStreamRequest(BaseModel):
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     logger.info("🚀 LangGraph Server starting...")
+
+    # 初始化 PostgreSQL checkpointer
+    try:
+        await init_checkpointer()
+        logger.info("✅ PostgreSQL checkpointer initialized")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize PostgreSQL checkpointer: {e}")
+        logger.warning("⚠️  请确保 PostgreSQL 已启动: docker-compose -f docker-compose.pgvector.yml up -d")
 
     # 预加载图
     try:
@@ -149,7 +167,9 @@ async def lifespan(app: FastAPI):
 
     yield
 
+    # 关闭资源
     logger.info("🛑 LangGraph Server shutting down...")
+    await close_checkpointer()
 
 
 # ==================== FastAPI 应用 ====================

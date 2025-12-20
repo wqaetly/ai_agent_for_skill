@@ -522,3 +522,6 @@ webui/node_modules/
 webui/.env*.local
 webui/next-env.d.ts
 webui/.vercel
+
+# Exception for webui lib directory
+!webui/src/lib/

@@ -18,6 +18,10 @@ import "katex/dist/katex.min.css";
 interface CodeHeaderProps {
   language?: string;
   code: string;
+  allowExpand?: boolean;
+  isExpanded?: boolean;
+  onToggle?: () => void;
+  hiddenLineCount?: number;
 }
 
 const useCopyToClipboard = ({
@@ -39,7 +43,14 @@ const useCopyToClipboard = ({
   return { isCopied, copyToClipboard };
 };
 
-const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
+const CodeHeader: FC<CodeHeaderProps> = ({
+  language,
+  code,
+  allowExpand = false,
+  isExpanded = false,
+  onToggle,
+  hiddenLineCount = 0,
+}) => {
   const { isCopied, copyToClipboard } = useCopyToClipboard();
   const onCopy = () => {
     if (!code || isCopied) return;
@@ -47,15 +58,75 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-t-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">
+    <div className="flex flex-wrap items-center justify-between gap-4 rounded-t-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">
       <span className="lowercase [&>span]:text-xs">{language}</span>
-      <TooltipIconButton
-        tooltip="Copy"
-        onClick={onCopy}
-      >
-        {!isCopied && <CopyIcon />}
-        {isCopied && <CheckIcon />}
-      </TooltipIconButton>
+      <div className="flex items-center gap-3">
+        {allowExpand && (
+          <button
+            type="button"
+            className="text-xs font-medium text-zinc-300 transition-colors hover:text-white"
+            onClick={onToggle}
+          >
+            {isExpanded ? "收起" : `展开全部 (+${hiddenLineCount} 行)`}
+          </button>
+        )}
+        <TooltipIconButton
+          tooltip="Copy"
+          onClick={onCopy}
+        >
+          {!isCopied && <CopyIcon />}
+          {isCopied && <CheckIcon />}
+        </TooltipIconButton>
+      </div>
+    </div>
+  );
+};
+
+const CollapsibleCodeBlock: FC<{
+  language: string;
+  code: string;
+  className?: string;
+  maxPreviewLines?: number;
+}> = ({ language, code, className, maxPreviewLines = 50 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const lines = code.split("\n");
+  const shouldTruncate = lines.length > maxPreviewLines;
+  const hiddenLineCount = Math.max(lines.length - maxPreviewLines, 0);
+  const displayedCode =
+    shouldTruncate && !isExpanded
+      ? lines.slice(0, maxPreviewLines).join("\n")
+      : code;
+
+  return (
+    <div className="max-w-4xl overflow-hidden rounded-lg bg-black text-white">
+      <CodeHeader
+        language={language}
+        code={code}
+        allowExpand={shouldTruncate}
+        isExpanded={isExpanded}
+        hiddenLineCount={hiddenLineCount}
+        onToggle={() => setIsExpanded((prev) => !prev)}
+      />
+      <div className="relative">
+        <SyntaxHighlighter
+          language={language}
+          className={className}
+        >
+          {displayedCode}
+        </SyntaxHighlighter>
+        {shouldTruncate && !isExpanded && (
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-black to-transparent"></div>
+        )}
+      </div>
+      {shouldTruncate && !isExpanded && (
+        <button
+          type="button"
+          onClick={() => setIsExpanded(true)}
+          className="flex w-full justify-center border-t border-zinc-800 px-4 py-2 text-sm text-zinc-300 transition-colors hover:text-white"
+        >
+          展开全部 {lines.length} 行
+        </button>
+      )}
     </div>
   );
 };
@@ -217,18 +288,11 @@ const defaultComponents: any = {
       const code = String(children).replace(/\n$/, "");
 
       return (
-        <>
-          <CodeHeader
-            language={language}
-            code={code}
-          />
-          <SyntaxHighlighter
-            language={language}
-            className={className}
-          >
-            {code}
-          </SyntaxHighlighter>
-        </>
+        <CollapsibleCodeBlock
+          language={language}
+          code={code}
+          className={className}
+        />
       );
     }
 

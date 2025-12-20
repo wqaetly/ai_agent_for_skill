@@ -14,8 +14,9 @@ embedding:
 
 # ==================== 向量数据库配置 ====================
 vector_store:
-  type: "chroma"  # 可选: chroma, faiss
-  persist_directory: "Data/vector_db"
+  type: "pgvector"  # 使用 PostgreSQL pgvector 扩展
+  pg_dsn: "postgresql://postgres:postgres@localhost:5432/skill_agent"
+  table_prefix: "vs"
   collection_name: "skill_collection"
   distance_metric: "cosine"  # cosine, l2, ip
 

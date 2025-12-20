@@ -20,7 +20,7 @@ __version__ = "1.0.0"
 __all__ = [
     "RAGEngine",
     "EmbeddingGenerator",
-    "VectorStore",
+    "create_vector_store",
     "SkillIndexer",
     "ActionIndexer",
     "StructuredQueryEngine",
@@ -35,9 +35,9 @@ def __getattr__(name):
     elif name == "EmbeddingGenerator":
         from .embeddings import EmbeddingGenerator
         return EmbeddingGenerator
-    elif name == "VectorStore":
-        from .vector_store import VectorStore
-        return VectorStore
+    elif name == "create_vector_store":
+        from .vector_store import create_vector_store
+        return create_vector_store
     elif name == "SkillIndexer":
         from .skill_indexer import SkillIndexer
         return SkillIndexer

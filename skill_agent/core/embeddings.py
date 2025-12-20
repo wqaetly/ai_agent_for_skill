@@ -6,6 +6,7 @@
 
 import os
 import logging
+from pathlib import Path
 from typing import List, Union, Optional
 import torch
 from sentence_transformers import SentenceTransformer
@@ -13,6 +14,63 @@ from cachetools import LRUCache
 import hashlib
 
 logger = logging.getLogger(__name__)
+
+# HuggingFace 模型 ID
+QWEN3_EMBEDDING_HF_ID = "Qwen/Qwen3-Embedding-0.6B"
+
+
+def ensure_model_downloaded(local_path: str) -> str:
+    """
+    确保模型已下载到本地路径，如果不存在则自动下载
+    
+    Args:
+        local_path: 本地模型路径
+        
+    Returns:
+        实际可用的模型路径
+    """
+    local_path = Path(local_path)
+    
+    # 检查模型权重文件是否存在
+    weight_files = ["model.safetensors", "pytorch_model.bin", "model.ckpt.index"]
+    has_weights = any((local_path / f).exists() for f in weight_files)
+    
+    if has_weights:
+        logger.info(f"Model weights found at: {local_path}")
+        return str(local_path)
+    
+    # 模型不完整，需要下载
+    logger.warning(f"Model weights not found at {local_path}, downloading from HuggingFace...")
+    
+    try:
+        from huggingface_hub import snapshot_download
+        
+        # 确保父目录存在
+        local_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # 下载完整模型
+        logger.info(f"Downloading {QWEN3_EMBEDDING_HF_ID} to {local_path}...")
+        snapshot_download(
+            repo_id=QWEN3_EMBEDDING_HF_ID,
+            local_dir=str(local_path),
+            local_dir_use_symlinks=False,
+            resume_download=True
+        )
+        logger.info(f"Model downloaded successfully to {local_path}")
+        return str(local_path)
+        
+    except ImportError:
+        logger.error("huggingface_hub not installed. Run: pip install huggingface_hub")
+        raise RuntimeError(
+            f"Model not found at {local_path} and huggingface_hub is not installed. "
+            f"Please run: pip install huggingface_hub"
+        )
+    except Exception as e:
+        logger.error(f"Failed to download model: {e}")
+        raise RuntimeError(
+            f"Failed to download model from HuggingFace: {e}. "
+            f"Please manually download {QWEN3_EMBEDDING_HF_ID} to {local_path}"
+        )
 
 
 class EmbeddingGenerator:
