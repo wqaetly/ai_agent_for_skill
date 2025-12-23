@@ -1716,13 +1716,21 @@ def should_continue_tracks(state: ProgressiveSkillGenerationState) -> str:
 
 # ==================== 阶段3：技能组装节点 ====================
 
-# 时间线验证配置常量
-TIMELINE_VALIDATION_CONFIG = {
-    "audio_sync_tolerance": 15,      # 动画和音效同步容差（帧）
-    "max_timeline_gap": 60,          # 时间轴最大空白警告阈值（帧）
-    "damage_after_visual_delay": 5,  # 伤害在视觉效果后的延迟（帧）
-    "effect_after_anim_delay": 3,    # 特效在动画后的延迟（帧）
-}
+# 时间线验证配置从配置模块读取
+from ..config import get_skill_gen_config as _get_skill_config
+
+def _get_timeline_config_dict() -> Dict[str, int]:
+    """获取时间线验证配置字典"""
+    cfg = _get_skill_config().timeline
+    return {
+        "audio_sync_tolerance": cfg.audio_sync_tolerance,
+        "max_timeline_gap": cfg.max_timeline_gap,
+        "damage_after_visual_delay": cfg.damage_after_visual_delay,
+        "effect_after_anim_delay": cfg.effect_after_anim_delay,
+    }
+
+# 保持向后兼容的常量（从配置读取）
+TIMELINE_VALIDATION_CONFIG = _get_timeline_config_dict()
 
 
 def validate_cross_track_timeline(

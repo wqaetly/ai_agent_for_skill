@@ -98,6 +98,8 @@ def analyze_complexity(text: str) -> Dict[str, Any]:
     """
     分析用户输入的复杂度
     
+    P1-3优化：增强复杂度分析，增加更多指标和权重调整
+    
     Returns:
         {
             "score": int,  # 复杂度分数 0-100
@@ -110,12 +112,30 @@ def analyze_complexity(text: str) -> Dict[str, Any]:
     indicators = []
     score = 0
     
-    # 检测复杂度指标
+    # 检测复杂度指标（带权重）
     complexity_keywords = ROUTING_RULES[GRAPH_PROGRESSIVE].get("complexity_indicators", [])
     for keyword in complexity_keywords:
         if keyword.lower() in text_lower:
             indicators.append(keyword)
             score += 10
+    
+    # P1-3: 新增高权重复杂度指标
+    high_complexity_keywords = {
+        # 多阶段技能
+        "蓄力释放": 20, "多段攻击": 20, "连续技": 20, "combo": 20,
+        # 复杂效果
+        "范围伤害": 15, "持续伤害": 15, "dot": 15, "aoe": 15,
+        "击退": 12, "眩晕": 12, "减速": 12, "控制": 12,
+        # 多目标
+        "多目标": 15, "群体": 15, "全屏": 18,
+        # 特殊机制
+        "弹道": 15, "投射物": 15, "召唤物": 18, "分裂": 15,
+        "反弹": 15, "穿透": 12, "追踪": 15,
+    }
+    for keyword, weight in high_complexity_keywords.items():
+        if keyword.lower() in text_lower and keyword not in indicators:
+            indicators.append(keyword)
+            score += weight
     
     # 检测数字（可能表示多个track或action）
     numbers = re.findall(r'\d+', text)
@@ -130,6 +150,20 @@ def analyze_complexity(text: str) -> Dict[str, Any]:
         count = text.count(conn)
         score += count * 5
     
+    # P1-3: 检测描述长度（长描述通常意味着复杂需求）
+    text_length = len(text)
+    if text_length > 200:
+        score += 15
+    elif text_length > 100:
+        score += 8
+    elif text_length > 50:
+        score += 3
+    
+    # P1-3: 检测动词数量（多个动作通常意味着复杂技能）
+    action_verbs = ["攻击", "释放", "施放", "发射", "召唤", "治疗", "buff", "造成", "触发", "生成"]
+    verb_count = sum(1 for v in action_verbs if v in text_lower)
+    score += verb_count * 5
+    
     # 预估track数量
     track_keywords = ["track", "轨道", "阶段", "phase"]
     estimated_tracks = 1
@@ -141,13 +175,21 @@ def analyze_complexity(text: str) -> Dict[str, Any]:
                 estimated_tracks = max(estimated_tracks, int(match.group(1)))
     
     # 根据复杂度指标估算track
-    if len(indicators) >= 4:
+    if len(indicators) >= 5:
+        estimated_tracks = max(estimated_tracks, 4)
+    elif len(indicators) >= 4:
         estimated_tracks = max(estimated_tracks, 3)
     elif len(indicators) >= 2:
         estimated_tracks = max(estimated_tracks, 2)
     
     # 预估action数量
     estimated_actions = len(indicators) * 2 + estimated_tracks * 3
+    
+    # P1-3: 根据分数调整track估算
+    if score >= 70:
+        estimated_tracks = max(estimated_tracks, 4)
+    elif score >= 50:
+        estimated_tracks = max(estimated_tracks, 3)
     
     return {
         "score": min(score, 100),

@@ -1118,10 +1118,16 @@ class ActionBatchProgressiveState(TypedDict):
 
 
 # ==================== Token监控辅助函数 ====================
+# P1-2: Token配置从配置模块读取
+from ..config import get_skill_gen_config as _get_config
 
-DEFAULT_TOKEN_BUDGET = 100000  # 默认token预算
-MIN_BATCH_SIZE = 2  # 最小批次大小
-MAX_BATCH_SIZE = 6  # 最大批次大小
+def _get_batch_config():
+    """获取批次配置"""
+    return _get_config().batch
+
+DEFAULT_TOKEN_BUDGET = _get_config().batch.token_budget
+MIN_BATCH_SIZE = _get_config().batch.min_batch_size
+MAX_BATCH_SIZE = _get_config().batch.max_batch_size
 
 
 def estimate_tokens_for_batch(batch_size: int, track_purpose: str) -> int:
@@ -1628,7 +1634,15 @@ def batch_action_generator_node(state: ActionBatchProgressiveState) -> Dict[str,
         data={"action_count": len(relevant_actions)}
     )
 
-    if relevant_actions:
+    # RAG 检索容错：无结果时使用默认模板（与 progressive_skill_nodes 保持一致）
+    if not relevant_actions:
+        from .progressive_skill_nodes import get_default_actions_for_track_type
+        logger.warning(f"⚠️ RAG 检索无结果，使用 {track_type} 类型默认模板")
+        relevant_actions = get_default_actions_for_track_type(track_type)
+        messages.append(AIMessage(
+            content=f"⚠️ 未检索到相关 Action，使用 {track_type} 类型默认模板生成"
+        ))
+    else:
         messages.append(AIMessage(
             content=f"📋 检索到 {len(relevant_actions)} 个相关Action定义"
         ))

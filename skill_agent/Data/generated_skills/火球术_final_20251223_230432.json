@@ -1,0 +1,166 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "火球术",
+  "skillDescription": "发射一个火球，命中后造成火焰伤害并点燃敌人",
+  "totalDuration": 90,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 15,
+    "$type": "10|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 3,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 4,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 40,
+              "enabled": true,
+              "animationClipName": "FireballCast",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 20,
+              "enabled": true,
+              "animationClipName": "FireballShoot",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 5,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 10,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 4,
+          "$rcontent": [
+            {
+              "$id": 6,
+              "$type": "4|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 1,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 1000.0,
+              "maxRange": 1000.0,
+              "projectilePrefab": "Fireball_Projectile",
+              "projectileSize": 1.0,
+              "trailEffect": null,
+              "arcHeight": 0.0,
+              "trackingStrength": 0.0
+            },
+            {
+              "$id": 7,
+              "$type": "5|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 5,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 3.0,
+              "innerRadius": 0.0,
+              "areaAngle": 90.0,
+              "centerPosition": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0
+              },
+              "useRelativePosition": true,
+              "followCaster": false,
+              "effectType": "Damage"
+            },
+            {
+              "$id": 8,
+              "$type": "7|SkillSystem.Actions.AttributeScalingDamageAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 1,
+              "enabled": true,
+              "baseDamage": 100.0,
+              "damageType": "Magical",
+              "damageVariance": 0.1,
+              "criticalChance": 0.0,
+              "criticalMultiplier": 2.0,
+              "lifeStealPercentage": 0.0,
+              "spellVampPercentage": 0.0,
+              "targetFilter": "Enemy"
+            },
+            {
+              "$id": 9,
+              "$type": "8|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+              "frame": 41,
+              "duration": 10,
+              "enabled": true,
+              "buffType": "Debuff",
+              "buffId": "burn_debuff",
+              "stackType": "Refresh",
+              "maxStacks": 5,
+              "buffDuration": 10.0,
+              "isPermanent": false,
+              "buffIcon": null,
+              "buffName": "燃烧"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 11,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Audio Track",
+        "enabled": true,
+        "actions": {
+          "$id": 14,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 12,
+              "$type": "9|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 1,
+              "enabled": true,
+              "audioClipName": "Fireball_Cast",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": false,
+              "is3D": true
+            },
+            {
+              "$id": 13,
+              "$type": "9|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 1,
+              "enabled": true,
+              "audioClipName": "Fireball_Explosion",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": false,
+              "is3D": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "fireball-001"
+}

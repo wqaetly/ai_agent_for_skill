@@ -46,6 +46,7 @@ import {
   useArtifactContext,
 } from "./artifact";
 import { GraphSelector } from "./graph-selector";
+import { GraphVisualizer } from "./graph-visualizer";
 
 function StickyToBottomContent(props: {
   content: ReactNode;
@@ -260,6 +261,7 @@ export function Thread() {
 
   return (
     <div className="flex h-full w-full overflow-hidden">
+      {/* 左侧：历史记录面板 */}
       <div className="relative hidden lg:flex">
         <motion.div
           className="absolute z-20 h-full overflow-hidden border-r bg-white"
@@ -284,6 +286,13 @@ export function Thread() {
           </div>
         </motion.div>
       </div>
+
+      {/* 左侧：执行流程面板（对话开始后显示） */}
+      {chatStarted && (
+        <div className="hidden lg:block w-[280px] flex-shrink-0 border-r bg-gray-50 overflow-y-auto">
+          <GraphVisualizer />
+        </div>
+      )}
 
       <div
         className={cn(

@@ -1,0 +1,150 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "冰锥术",
+  "skillDescription": "发射一枚冰锥，对单个目标造成冰属性伤害并使其移动速度降低",
+  "totalDuration": 90,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 14,
+    "$type": "9|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 3,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 4,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "animationClipName": "IceSpell_Cast",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 30,
+              "duration": 30,
+              "enabled": true,
+              "animationClipName": "IceSpike_Release",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 5,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 9,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 6,
+              "$type": "4|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 30,
+              "enabled": true,
+              "effectPrefab": "IceShard_Effect",
+              "position": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 1.0,
+                "2": 2.0
+              }
+            },
+            {
+              "$id": 7,
+              "$type": "6|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 1,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 5.0,
+              "innerRadius": 0.0,
+              "areaAngle": 90.0,
+              "centerPosition": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0
+              },
+              "useRelativePosition": true,
+              "followCaster": false,
+              "effectType": "Damage"
+            },
+            {
+              "$id": 8,
+              "$type": "7|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+              "frame": 41,
+              "duration": 1,
+              "enabled": true,
+              "buffType": "Debuff",
+              "buffId": "ice_slow_debuff",
+              "stackType": "Refresh",
+              "maxStacks": 1,
+              "buffDuration": 3.0,
+              "isPermanent": false,
+              "buffIcon": null,
+              "buffName": "Ice Slow"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 10,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Audio Track",
+        "enabled": true,
+        "actions": {
+          "$id": 13,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 11,
+              "$type": "8|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 5,
+              "duration": 5,
+              "enabled": true,
+              "audioClipName": "IceCast_Sound",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": false,
+              "is3D": true
+            },
+            {
+              "$id": 12,
+              "$type": "8|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 65,
+              "duration": 5,
+              "enabled": true,
+              "audioClipName": "IceHit_Sound",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": false,
+              "is3D": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "ice-spike-001"
+}

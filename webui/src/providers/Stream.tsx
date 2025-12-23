@@ -168,6 +168,13 @@ const StreamSession = ({
         return;
       }
 
+      // 🔥 处理进度事件（来自后端 streaming.py 的 emit_progress）
+      if (event && typeof event === "object" && event.event_type) {
+        // 这是一个进度事件，通过 window 事件分发给 GraphVisualizer
+        window.dispatchEvent(new CustomEvent("langgraph-progress", { detail: event }));
+        return;
+      }
+
       // 🔥 处理 thinking_chunk 和 content_chunk 事件
       if (!event || typeof event !== "object") return;
       const { type, message_id, chunk } = event;

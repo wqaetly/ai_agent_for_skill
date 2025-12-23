@@ -12,6 +12,7 @@ from langchain_openai import ChatOpenAI
 import os
 
 from .json_utils import extract_json_from_markdown
+from ..config import get_skill_gen_config
 
 logger = logging.getLogger(__name__)
 
@@ -39,39 +40,40 @@ class SkillGenerationState(TypedDict):
 
 # ==================== LLM 初始化 ====================
 
-def get_llm(model: str = "deepseek-reasoner", temperature: float = 1.0, streaming: bool = True):
+def get_llm(model: str = None, temperature: float = None, streaming: bool = None):
     """
     获取 LLM 实例（使用 LangChain ChatOpenAI 兼容 DeepSeek）
 
     Args:
-        model: 模型名称（默认使用 deepseek-reasoner 思考模型）
-        temperature: 温度参数（deepseek-reasoner 推荐使用 1.0）
-        streaming: 是否启用流式输出（默认 True，支持 LangGraph Studio token 级别流式）
+        model: 模型名称（默认从配置读取）
+        temperature: 温度参数（默认从配置读取）
+        streaming: 是否启用流式输出（默认从配置读取）
 
     Returns:
         ChatOpenAI 实例
     """
+    config = get_skill_gen_config().llm
+    
+    # 使用传入参数或配置默认值
+    model = model or config.model
+    temperature = temperature if temperature is not None else config.temperature
+    streaming = streaming if streaming is not None else config.streaming
+    
     api_key = os.getenv("DEEPSEEK_API_KEY")
     if not api_key:
         raise ValueError("环境变量 DEEPSEEK_API_KEY 未设置")
 
-    # 从环境变量读取超时配置
-    # deepseek-reasoner 是深度思考模型，复杂任务可能需要 5 分钟以上
-    timeout = int(os.getenv("DEEPSEEK_TIMEOUT", "300"))  # 默认 5 分钟
-    max_retries = int(os.getenv("DEEPSEEK_MAX_RETRIES", "2"))
-
-    logger.info(f"初始化 LLM: model={model}, timeout={timeout}s, max_retries={max_retries}, streaming={streaming}")
+    logger.info(f"初始化 LLM: model={model}, timeout={config.timeout}s, max_retries={config.max_retries}, streaming={streaming}")
 
     return ChatOpenAI(
         model=model,
         temperature=temperature,
         api_key=api_key,
         base_url="https://api.deepseek.com/v1",
-        timeout=timeout,  # 请求超时（秒）
-        max_retries=max_retries,  # 最大重试次数
-        streaming=streaming,  # 🔥 启用流式输出，让 LangGraph 可以捕获 token
-        # 添加 HTTP 客户端配置，确保超时生效
-        http_client=None,  # 使用默认 httpx 客户端
+        timeout=config.timeout,
+        max_retries=config.max_retries,
+        streaming=streaming,
+        http_client=None,
     )
 
 
@@ -80,17 +82,24 @@ def get_openai_client():
     获取 OpenAI SDK 客户端（用于直接调用 DeepSeek API 以支持 reasoning_content 流式输出）
 
     Returns:
-        OpenAI 客户端实例
+        OpenAI 客户端实例（已配置超时和重试）
     """
     from openai import OpenAI
+    import httpx
 
+    config = get_skill_gen_config().llm
+    
     api_key = os.getenv("DEEPSEEK_API_KEY")
     if not api_key:
         raise ValueError("环境变量 DEEPSEEK_API_KEY 未设置")
 
+    logger.info(f"初始化 OpenAI SDK: timeout={config.timeout}s, max_retries={config.max_retries}")
+
     return OpenAI(
         api_key=api_key,
-        base_url="https://api.deepseek.com"
+        base_url="https://api.deepseek.com",
+        timeout=httpx.Timeout(config.timeout, connect=30.0),
+        max_retries=config.max_retries
     )
 
 
@@ -499,6 +508,14 @@ def retriever_node(state: SkillGenerationState) -> Dict[str, Any]:
         action_elapsed = time.time() - action_start
         logger.info(f"⏱️ RAG Action检索耗时: {action_elapsed:.2f}s")
         logger.info(f"📋 检索到 {len(action_results) if isinstance(action_results, list) else 0} 个相关Action")
+        
+        # P2-4: 记录 RAG 检索性能指标
+        try:
+            from ..metrics import record_rag_search
+            record_rag_search(rag_elapsed, "skill")
+            record_rag_search(action_elapsed, "action")
+        except ImportError:
+            pass  # 指标模块可选
     except Exception as e:
         # RAG检索失败时返回空结果，允许继续执行
         logger.error(f"❌ RAG检索失败: {e}", exc_info=True)
@@ -525,6 +542,32 @@ def retriever_node(state: SkillGenerationState) -> Dict[str, Any]:
         message += f"\n\n🎯 **检索到 {len(action_results)} 个相关Action：**\n\n{action_summary}"
 
     messages.append(AIMessage(content=message))
+
+    # P0-3: RAG 检索结果为空时的警告和降级策略
+    has_skills = bool(results)
+    has_actions = isinstance(action_results, list) and bool(action_results)
+
+    if not has_skills and not has_actions:
+        # 完全没有参考资料，添加强警告
+        logger.warning(f"⚠️ RAG 检索无结果，技能生成质量可能较低: {requirement}")
+        messages.append(AIMessage(
+            content="⚠️ **警告：未检索到任何参考资料**\n\n"
+                    "技能库中没有找到相似技能或相关Action定义。\n"
+                    "生成结果将完全基于需求描述，质量可能不稳定。\n"
+                    "建议：检查需求描述是否清晰，或先添加相关技能到知识库。"
+        ))
+    elif not has_skills:
+        # 没有相似技能，但有Action定义
+        logger.info(f"ℹ️ 未检索到相似技能，将仅基于Action定义生成")
+        messages.append(AIMessage(
+            content="ℹ️ 未检索到相似技能，将基于Action定义和需求描述生成。"
+        ))
+    elif not has_actions:
+        # 有相似技能，但没有Action定义
+        logger.info(f"ℹ️ 未检索到Action定义，将仅基于相似技能生成")
+        messages.append(AIMessage(
+            content="ℹ️ 未检索到相关Action定义，将基于相似技能参考生成。"
+        ))
 
     return {
         "similar_skills": results,
@@ -771,6 +814,15 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
         logger.info(f"✅ DeepSeek API 响应完成")
         logger.info(f"⏱️ DeepSeek API 总耗时: {api_total_time:.2f}s")
         logger.info(f"🧠 思考内容长度: {len(full_reasoning)} 字符")
+        
+        # P2-4: 记录性能指标
+        try:
+            from ..metrics import record_llm_latency, record_llm_ttfb
+            record_llm_latency(api_total_time)
+            if first_chunk_time:
+                record_llm_ttfb(first_chunk_time - api_start_time)
+        except ImportError:
+            pass  # 指标模块可选
         logger.info(f"📝 输出内容长度: {len(full_content)} 字符")
 
         if full_reasoning:
@@ -927,11 +979,20 @@ def validator_node(state: SkillGenerationState) -> Dict[str, Any]:
                         )
 
         except ValidationError as e:
-            # Pydantic 验证失败，提取错误信息
+            # P2-3: Pydantic 验证失败，提取详细错误信息
             for error in e.errors():
                 field_path = " -> ".join(str(loc) for loc in error["loc"])
                 error_msg = error["msg"]
-                errors.append(f"{field_path}: {error_msg}")
+                error_type = error.get("type", "unknown")
+                # 获取实际值（如果有）
+                input_value = error.get("input", None)
+                input_preview = ""
+                if input_value is not None:
+                    input_str = str(input_value)
+                    input_preview = f" (实际值: {input_str[:50]}{'...' if len(input_str) > 50 else ''})"
+                # 构建详细错误信息
+                detailed_error = f"{field_path}: {error_msg} [类型: {error_type}]{input_preview}"
+                errors.append(detailed_error)
 
     except json.JSONDecodeError as e:
         errors.append(f"JSON 解析失败: {str(e)}")

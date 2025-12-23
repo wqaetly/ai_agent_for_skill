@@ -1,0 +1,27 @@
+{
+  "skillName": "火球术",
+  "skillId": "fireball-001",
+  "skillDescription": "发射一个火球，命中后造成火焰伤害并点燃敌人",
+  "totalDuration": 90,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法动画和火球发射动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成火球飞行特效、命中爆炸特效、造成伤害、施加燃烧debuff",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法音效和火球爆炸音效",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}

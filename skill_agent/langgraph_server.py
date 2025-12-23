@@ -418,7 +418,8 @@ def serialize_event_data(data: Any) -> Any:
 async def stream_graph_updates(
     graph,
     initial_state: Dict[str, Any],
-    thread_id: str
+    thread_id: str,
+    http_request: Request = None  # P1-4: 添加 Request 对象用于检测客户端断开
 ) -> AsyncIterator[str]:
     """
     流式输出图的更新
@@ -427,6 +428,7 @@ async def stream_graph_updates(
         graph: LangGraph 图实例
         initial_state: 初始状态
         thread_id: 线程ID
+        http_request: FastAPI Request 对象（用于检测客户端断开）
 
     Yields:
         SSE 格式的事件数据
@@ -434,6 +436,10 @@ async def stream_graph_updates(
     # 🔥 心跳机制：防止连接超时
     last_event_time = asyncio.get_event_loop().time()
     HEARTBEAT_INTERVAL = 15  # 每15秒发送心跳
+    
+    # P1-4: 客户端断开检测计数器
+    disconnect_check_counter = 0
+    DISCONNECT_CHECK_INTERVAL = 10  # 每10个事件检测一次
     
     async def maybe_send_heartbeat():
         """检查是否需要发送心跳"""
@@ -443,6 +449,15 @@ async def stream_graph_updates(
             last_event_time = current_time
             return True
         return False
+    
+    async def is_client_disconnected() -> bool:
+        """P1-4: 检测客户端是否已断开连接"""
+        if http_request is None:
+            return False
+        try:
+            return await http_request.is_disconnected()
+        except Exception:
+            return False
 
     try:
         logger.info(f"Starting stream for thread {thread_id}")
@@ -463,7 +478,15 @@ async def stream_graph_updates(
                 stream_mode=["values", "messages", "custom"]
             ):
                 event_count += 1
+                disconnect_check_counter += 1
                 last_event_time = asyncio.get_event_loop().time()  # 🔥 更新最后事件时间
+                
+                # P1-4: 定期检测客户端是否断开（避免每次都检测影响性能）
+                if disconnect_check_counter >= DISCONNECT_CHECK_INTERVAL:
+                    disconnect_check_counter = 0
+                    if await is_client_disconnected():
+                        logger.info(f"Client disconnected for thread {thread_id}, stopping stream")
+                        return
                 
                 # 🔥 处理 messages 模式（LLM token 流）
                 if stream_mode == "messages":
@@ -600,6 +623,20 @@ async def health_check():
     }
 
 
+@app.get("/metrics")
+async def get_metrics():
+    """
+    P2-4: 获取性能监控指标
+    
+    返回 LLM 调用延迟、RAG 检索耗时、验证循环次数等统计信息
+    """
+    from orchestration.metrics import get_performance_summary
+    return {
+        "timestamp": datetime.now().isoformat(),
+        "metrics": get_performance_summary()
+    }
+
+
 @app.get("/info")
 async def server_info():
     """
@@ -708,10 +745,127 @@ async def list_available_graphs():
     }
 
 
+# ==================== 图结构可视化 API ====================
+
+def _extract_graph_structure(graph) -> Dict[str, Any]:
+    """
+    从编译后的图中提取节点和边结构
+    
+    Args:
+        graph: 编译后的 LangGraph
+        
+    Returns:
+        包含 nodes 和 edges 的字典
+    """
+    try:
+        graph_data = graph.get_graph()
+        nodes = []
+        edges = []
+        
+        # 提取节点
+        for node_id, node_data in graph_data.nodes.items():
+            node_type = "default"
+            if node_id == "__start__":
+                node_type = "start"
+            elif node_id == "__end__":
+                node_type = "end"
+            
+            nodes.append({
+                "id": node_id,
+                "label": node_id.replace("_", " ").title() if node_id not in ["__start__", "__end__"] else node_id,
+                "type": node_type
+            })
+        
+        # 提取边
+        for edge in graph_data.edges:
+            source = edge.source
+            target = edge.target
+            
+            # 处理条件边
+            is_conditional = hasattr(edge, 'conditional') and edge.conditional
+            
+            edges.append({
+                "source": source,
+                "target": target,
+                "conditional": is_conditional,
+                "label": getattr(edge, 'data', None) or ""
+            })
+        
+        return {
+            "nodes": nodes,
+            "edges": edges
+        }
+    except Exception as e:
+        logger.error(f"Failed to extract graph structure: {e}")
+        return {"nodes": [], "edges": []}
+
+
+@app.get("/graphs/{graph_id}/structure")
+async def get_graph_structure(graph_id: str):
+    """
+    获取指定图的结构（节点和边）
+    
+    用于前端可视化展示图的执行流程
+    """
+    try:
+        # 根据 graph_id 获取对应的图
+        graph_map = {
+            "skill-generation": get_skill_generation_graph,
+            "progressive-skill-generation": get_progressive_skill_generation_graph,
+            "action-batch-skill-generation": get_action_batch_skill_generation_graph,
+            "skill-search": get_skill_search_graph,
+            "skill-detail": get_skill_detail_graph,
+        }
+        
+        if graph_id not in graph_map:
+            raise HTTPException(status_code=404, detail=f"Graph '{graph_id}' not found")
+        
+        graph = graph_map[graph_id]()
+        structure = _extract_graph_structure(graph)
+        
+        # 添加图的元信息
+        graph_info = {
+            "skill-generation": {
+                "name": "标准技能生成",
+                "description": "检索 → 生成 → 验证 → 修复循环"
+            },
+            "progressive-skill-generation": {
+                "name": "渐进式技能生成", 
+                "description": "骨架生成 → Track逐个生成 → 组装"
+            },
+            "action-batch-skill-generation": {
+                "name": "Action批量式生成",
+                "description": "骨架 → Track规划 → 批次生成 → 组装"
+            },
+            "skill-search": {
+                "name": "技能搜索",
+                "description": "语义搜索技能库"
+            },
+            "skill-detail": {
+                "name": "技能详情",
+                "description": "查询技能详细信息"
+            }
+        }
+        
+        return {
+            "graph_id": graph_id,
+            "info": graph_info.get(graph_id, {}),
+            "structure": structure,
+            "mermaid": graph.get_graph().draw_mermaid() if hasattr(graph.get_graph(), 'draw_mermaid') else None
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Get graph structure error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/threads/{thread_id}/runs/stream")
 async def create_run_stream(
     thread_id: str,
-    request: RunsStreamRequest
+    request: RunsStreamRequest,
+    http_request: Request  # P1-4: 添加 Request 对象用于检测客户端断开
 ):
     """
     创建流式运行（兼容 agent-chat-ui）
@@ -774,7 +928,7 @@ async def create_run_stream(
 
         # 返回流式响应
         return StreamingResponse(
-            stream_graph_updates(graph, initial_state, thread_id),
+            stream_graph_updates(graph, initial_state, thread_id, http_request),
             media_type="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",

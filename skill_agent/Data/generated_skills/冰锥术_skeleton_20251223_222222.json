@@ -1,0 +1,27 @@
+{
+  "skillName": "冰锥术",
+  "skillId": "ice-spike-001",
+  "skillDescription": "发射一枚冰锥，对单个目标造成冰属性伤害并使其移动速度降低",
+  "totalDuration": 90,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法前摇动画和冰锥释放动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成冰锥飞行特效、计算伤害、施加减速debuff",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放冰锥施法音效和命中目标音效",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}

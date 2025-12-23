@@ -1,0 +1,33 @@
+{
+  "skillName": "魔法水晶箭",
+  "skillId": "magic-crystal-arrow-001",
+  "skillDescription": "发射一支魔法水晶箭，对命中的第一个敌人造成魔法伤害并可能附加短暂减速效果",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色施法前摇和发射水晶箭的动画序列",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成水晶箭飞行特效、处理命中时的伤害计算和减速debuff应用",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法时的魔力凝聚音效和箭命中时的爆炸音效",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "在箭命中目标时触发轻微的镜头震动以增强打击感",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}
