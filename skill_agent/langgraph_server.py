@@ -38,8 +38,18 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from orchestration import (
     get_skill_generation_graph,
     get_progressive_skill_generation_graph,
+    get_action_batch_skill_generation_graph,
     get_skill_search_graph,
     get_skill_detail_graph,
+)
+from orchestration.smart_router import (
+    smart_route,
+    get_available_graphs,
+    GRAPH_SKILL_GENERATION,
+    GRAPH_PROGRESSIVE,
+    GRAPH_ACTION_BATCH,
+    GRAPH_SKILL_SEARCH,
+    GRAPH_SKILL_DETAIL,
 )
 from orchestration.graphs.utils import init_checkpointer, close_checkpointer
 from config import retry, server, rag, timeout, cors
@@ -111,9 +121,10 @@ async def lifespan(app: FastAPI):
     try:
         get_skill_generation_graph()
         get_progressive_skill_generation_graph()  # 渐进式生成图
+        get_action_batch_skill_generation_graph()  # Action批量式生成图
         get_skill_search_graph()
         get_skill_detail_graph()
-        logger.info("✅ All graphs loaded successfully (including progressive generation)")
+        logger.info("✅ All graphs loaded successfully (including progressive and action-batch generation)")
     except Exception as e:
         logger.error(f"❌ Failed to load graphs: {e}")
 
@@ -300,6 +311,40 @@ def build_initial_state(
             "assembled_skill": {},
             "final_validation_errors": [],
         }
+    elif assistant_id == "action-batch-skill-generation":
+        # Action批量式生成使用 ActionBatchProgressiveState
+        return {
+            **base_state,
+            # 阶段1
+            "skill_skeleton": {},
+            "skeleton_validation_errors": [],
+            "track_plan": [],
+            # 阶段2
+            "current_track_index": 0,
+            "current_track_batch_plan": [],
+            # 阶段3
+            "current_batch_index": 0,
+            "current_batch_actions": [],
+            "current_batch_errors": [],
+            "batch_retry_count": 0,
+            "max_batch_retries": 2,
+            # 语义上下文
+            "batch_context": {},
+            # Token监控
+            "total_tokens_used": 0,
+            "batch_token_history": [],
+            "token_budget": 100000,
+            "adaptive_batch_size": 3,
+            # 阶段4
+            "accumulated_track_actions": [],
+            "generated_tracks": [],
+            # 阶段5
+            "assembled_skill": {},
+            "final_validation_errors": [],
+            # 兼容字段
+            "final_result": {},
+            "is_valid": False,
+        }
     else:
         # 标准技能生成使用 SkillGenerationState
         return {
@@ -386,12 +431,22 @@ async def stream_graph_updates(
     Yields:
         SSE 格式的事件数据
     """
-    try:
-        logger.info(f"Starting stream for thread {thread_id}, initial_state: {initial_state.get('requirement', 'N/A')}")
-        event_count = 0
+    # 🔥 心跳机制：防止连接超时
+    last_event_time = asyncio.get_event_loop().time()
+    HEARTBEAT_INTERVAL = 15  # 每15秒发送心跳
+    
+    async def maybe_send_heartbeat():
+        """检查是否需要发送心跳"""
+        nonlocal last_event_time
+        current_time = asyncio.get_event_loop().time()
+        if current_time - last_event_time > HEARTBEAT_INTERVAL:
+            last_event_time = current_time
+            return True
+        return False
 
-        # 使用 astream 进行流式处理
-        # 维护一个累积的 state
+    try:
+        logger.info(f"Starting stream for thread {thread_id}")
+        event_count = 0
         accumulated_state = {}
 
         try:
@@ -408,6 +463,7 @@ async def stream_graph_updates(
                 stream_mode=["values", "messages", "custom"]
             ):
                 event_count += 1
+                last_event_time = asyncio.get_event_loop().time()  # 🔥 更新最后事件时间
                 
                 # 🔥 处理 messages 模式（LLM token 流）
                 if stream_mode == "messages":
@@ -443,24 +499,19 @@ async def stream_graph_updates(
 
                 # 🔥 处理 custom 模式（自定义事件）
                 if stream_mode == "custom":
-                    logger.info(f"📨 Received custom event: {event}")
                     try:
                         event_json = json.dumps(event, ensure_ascii=False)
-                        logger.info(f"📤 Forwarding custom event with data: {event_json[:200]}...")
                         yield f"event: custom\ndata: {event_json}\n\n"
                     except Exception as e:
-                        logger.error(f"❌ Custom event encoding error: {e}", exc_info=True)
+                        logger.error(f"Custom event encoding error: {e}")
                     continue
 
                 # 处理 values 事件（图状态更新）
-                logger.debug(f"Raw values event: {event}")
-
                 # 序列化事件数据
                 try:
                     serialized_event = serialize_event_data(event)
-                    logger.info(f"✅ Event serialized successfully")
                 except Exception as e:
-                    logger.error(f"❌ Serialization error: {e}", exc_info=True)
+                    logger.error(f"Serialization error: {e}")
                     continue
 
                 # 从节点输出中提取 messages 到顶层
@@ -477,25 +528,10 @@ async def stream_graph_updates(
                         # 保留其他字段
                         flattened_state[node_name] = node_output
 
-                # 累积消息（追加而非覆盖）
+                # 🔥 修复：values 模式返回完整状态，直接覆盖而非追加
+                # 之前的 extend 逻辑会导致消息重复
                 if 'messages' in flattened_state:
-                    if 'messages' not in accumulated_state:
-                        accumulated_state['messages'] = []
-
-                    # 记录新增的消息内容
-                    new_messages = flattened_state['messages']
-                    logger.info(f"📨 Event contains {len(new_messages)} messages")
-                    for i, msg in enumerate(new_messages):
-                        content = msg.get('content', '')
-                        content_preview = content[:200] if len(content) > 200 else content
-                        # 🔍 检查 thinking 字段
-                        thinking_flag = msg.get('thinking', False)
-                        msg_id = msg.get('id', 'N/A')
-                        logger.info(f"  Message {i+1}: type={msg.get('type', 'unknown')}, id={msg_id}, thinking={thinking_flag}, content={content_preview}...")
-
-                    # 追加到累积状态
-                    accumulated_state['messages'].extend(new_messages)
-                    # 移除 flattened_state 中的 messages，避免重复 update
+                    accumulated_state['messages'] = flattened_state['messages']
                     flattened_state = {k: v for k, v in flattened_state.items() if k != 'messages'}
 
                 # 更新其他状态字段
@@ -504,29 +540,20 @@ async def stream_graph_updates(
                 # 发送标准 SSE 事件（发送累积状态）
                 try:
                     event_json = json.dumps(accumulated_state, ensure_ascii=False)
-                    logger.info(f"📤 Sending SSE values event (size: {len(event_json)} bytes)")
-                    logger.info(f"📋 Event data keys: {list(accumulated_state.keys())}")
-                    # 标准 SSE 格式：event: <type>\ndata: <json>\n\n
                     yield f"event: values\ndata: {event_json}\n\n"
                 except Exception as e:
-                    logger.error(f"❌ JSON encoding error: {e}", exc_info=True)
+                    logger.error(f"JSON encoding error: {e}")
                     continue
 
-                # 添加小延迟以确保流式传输（减少到 1ms 降低累积延迟）
                 await asyncio.sleep(0.001)
         except Exception as e:
-            logger.error(f"❌ Stream iteration error: {e}", exc_info=True)
+            logger.error(f"Stream iteration error: {e}", exc_info=True)
             raise
 
-        # 🔥 P0改进：状态已由 LangGraph Checkpoint 自动持久化，无需手动保存
-        # LangGraph 在每次节点执行后自动调用 checkpointer.put()
-        logger.info(f"✅ Stream completed for thread {thread_id}, state auto-persisted by checkpoint")
-
-        # 发送结束事件（保留最终状态）
-        logger.info(f"Stream completed with {event_count} events, sending end signal")
+        # 发送结束事件
+        logger.info(f"Stream completed for thread {thread_id} with {event_count} events")
         final_state_json = json.dumps(accumulated_state, ensure_ascii=False)
         yield f"event: end\ndata: {final_state_json}\n\n"
-        logger.info("End signal sent successfully")
 
     except Exception as e:
         logger.error(f"Stream error: {e}", exc_info=True)
@@ -595,31 +622,89 @@ async def list_assistants():
     return {
         "assistants": [
             {
+                "assistant_id": "smart",
+                "name": "智能路由",
+                "description": "根据输入自动选择最合适的生成方式（推荐）",
+                "graph_id": "smart",
+                "default": True,
+                "icon": "sparkles"
+            },
+            {
                 "assistant_id": "skill-generation",
-                "name": "技能生成助手",
-                "description": "根据需求描述生成技能配置JSON（一次性生成）",
-                "graph_id": "skill_generation"
+                "name": "标准技能生成",
+                "description": "一次性生成完整技能，适合简单技能",
+                "graph_id": "skill_generation",
+                "icon": "zap"
             },
             {
                 "assistant_id": "progressive-skill-generation",
-                "name": "渐进式技能生成助手",
-                "description": "三阶段渐进式生成技能：骨架→Track→组装（推荐用于复杂技能）",
+                "name": "渐进式技能生成",
+                "description": "三阶段渐进式生成：骨架→Track→组装（推荐用于复杂技能）",
                 "graph_id": "progressive_skill_generation",
-                "recommended": True
+                "recommended": True,
+                "icon": "layers"
+            },
+            {
+                "assistant_id": "action-batch-skill-generation",
+                "name": "Action批量式生成",
+                "description": "最细粒度的渐进式生成，适合超复杂技能",
+                "graph_id": "action_batch_skill_generation",
+                "icon": "boxes"
             },
             {
                 "assistant_id": "skill-search",
-                "name": "技能搜索助手",
+                "name": "技能搜索",
                 "description": "语义搜索技能库",
-                "graph_id": "skill_search"
+                "graph_id": "skill_search",
+                "icon": "search"
             },
             {
                 "assistant_id": "skill-detail",
-                "name": "技能详情助手",
+                "name": "技能详情",
                 "description": "查询技能详细信息",
-                "graph_id": "skill_detail"
+                "graph_id": "skill_detail",
+                "icon": "file-text"
             }
         ]
+    }
+
+
+# ==================== 智能路由 API ====================
+
+class SmartRouteRequest(BaseModel):
+    """智能路由请求"""
+    query: str = Field(..., description="用户输入文本")
+    prefer_progressive: bool = Field(True, description="是否偏好渐进式生成")
+
+
+@app.post("/route/smart")
+async def smart_route_endpoint(request: SmartRouteRequest):
+    """
+    智能路由端点
+    
+    根据用户输入分析并推荐最合适的 Graph
+    """
+    try:
+        result = smart_route(
+            user_input=request.query,
+            prefer_progressive=request.prefer_progressive
+        )
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        logger.error(f"Smart route error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/route/graphs")
+async def list_available_graphs():
+    """
+    获取所有可用的 Graph 列表
+    """
+    return {
+        "graphs": get_available_graphs()
     }
 
 
@@ -632,24 +717,13 @@ async def create_run_stream(
     创建流式运行（兼容 agent-chat-ui）
     
     这是 agent-chat-ui 调用的主要端点
+    支持智能路由：assistant_id="smart" 时自动选择最合适的图
     """
     try:
         logger.info(f"Stream request for thread {thread_id}: {request.input}")
 
-        # 获取助手ID（默认使用技能生成）
-        assistant_id = request.assistant_id or request.config.get("configurable", {}).get("assistant_id", "skill-generation")
-
-        # 根据助手ID选择图
-        if assistant_id == "skill-generation":
-            graph = get_skill_generation_graph()
-        elif assistant_id == "progressive-skill-generation":
-            graph = get_progressive_skill_generation_graph()
-        elif assistant_id == "skill-search":
-            graph = get_skill_search_graph()
-        elif assistant_id == "skill-detail":
-            graph = get_skill_detail_graph()
-        else:
-            raise HTTPException(status_code=404, detail=f"Assistant '{assistant_id}' not found")
+        # 获取助手ID（默认使用智能路由）
+        assistant_id = request.assistant_id or request.config.get("configurable", {}).get("assistant_id", "smart")
 
         # 准备初始状态
         input_data = request.input
@@ -664,13 +738,39 @@ async def create_run_stream(
         else:
             requirement = input_data.get("requirement", "")
 
+        # 🔥 智能路由：根据用户输入自动选择图
+        routed_assistant_id = assistant_id
+        routing_info = None
+        if assistant_id == "smart":
+            routing_info = smart_route(requirement)
+            routed_assistant_id = routing_info["graph_id"]
+            logger.info(f"🧠 Smart routing: '{requirement[:50]}...' -> {routed_assistant_id} (confidence: {routing_info['confidence']:.2f}, reason: {routing_info['reason']})")
+
+        # 根据助手ID选择图
+        if routed_assistant_id == "skill-generation":
+            graph = get_skill_generation_graph()
+        elif routed_assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
+        elif routed_assistant_id == "action-batch-skill-generation":
+            graph = get_action_batch_skill_generation_graph()
+        elif routed_assistant_id == "skill-search":
+            graph = get_skill_search_graph()
+        elif routed_assistant_id == "skill-detail":
+            graph = get_skill_detail_graph()
+        else:
+            raise HTTPException(status_code=404, detail=f"Assistant '{routed_assistant_id}' not found")
+
         # 使用抽取的辅助函数构建初始状态
         initial_state = build_initial_state(
-            assistant_id=assistant_id,
+            assistant_id=routed_assistant_id,
             requirement=requirement,
             thread_id=thread_id,
             normalized_messages=normalized_messages
         )
+
+        # 如果是智能路由，添加路由信息到状态
+        if routing_info:
+            initial_state["routing_info"] = routing_info
 
         # 返回流式响应
         return StreamingResponse(
@@ -694,25 +794,13 @@ async def create_run(
     request: RunsStreamRequest
 ):
     """
-    创建非流式运行
+    创建非流式运行（支持智能路由）
     """
     try:
         logger.info(f"Run request for thread {thread_id}: {request.input}")
 
-        # 获取助手ID
-        assistant_id = request.assistant_id or request.config.get("configurable", {}).get("assistant_id", "skill-generation")
-
-        # 根据助手ID选择图
-        if assistant_id == "skill-generation":
-            graph = get_skill_generation_graph()
-        elif assistant_id == "progressive-skill-generation":
-            graph = get_progressive_skill_generation_graph()
-        elif assistant_id == "skill-search":
-            graph = get_skill_search_graph()
-        elif assistant_id == "skill-detail":
-            graph = get_skill_detail_graph()
-        else:
-            raise HTTPException(status_code=404, detail=f"Assistant '{assistant_id}' not found")
+        # 获取助手ID（默认使用智能路由）
+        assistant_id = request.assistant_id or request.config.get("configurable", {}).get("assistant_id", "smart")
         
         # 准备初始状态
         input_data = request.input
@@ -727,9 +815,31 @@ async def create_run(
         else:
             requirement = input_data.get("requirement", "")
 
+        # 🔥 智能路由
+        routed_assistant_id = assistant_id
+        routing_info = None
+        if assistant_id == "smart":
+            routing_info = smart_route(requirement)
+            routed_assistant_id = routing_info["graph_id"]
+            logger.info(f"🧠 Smart routing: '{requirement[:50]}...' -> {routed_assistant_id}")
+
+        # 根据助手ID选择图
+        if routed_assistant_id == "skill-generation":
+            graph = get_skill_generation_graph()
+        elif routed_assistant_id == "progressive-skill-generation":
+            graph = get_progressive_skill_generation_graph()
+        elif routed_assistant_id == "action-batch-skill-generation":
+            graph = get_action_batch_skill_generation_graph()
+        elif routed_assistant_id == "skill-search":
+            graph = get_skill_search_graph()
+        elif routed_assistant_id == "skill-detail":
+            graph = get_skill_detail_graph()
+        else:
+            raise HTTPException(status_code=404, detail=f"Assistant '{routed_assistant_id}' not found")
+
         # 使用抽取的辅助函数构建初始状态
         initial_state = build_initial_state(
-            assistant_id=assistant_id,
+            assistant_id=routed_assistant_id,
             requirement=requirement,
             thread_id=thread_id,
             normalized_messages=normalized_messages
@@ -741,10 +851,15 @@ async def create_run(
         # 转换消息格式
         result["messages"] = convert_from_langgraph_messages(result.get("messages", []))
         
+        # 添加路由信息
+        if routing_info:
+            result["routing_info"] = routing_info
+        
         return {
             "thread_id": thread_id,
             "run_id": f"run_{datetime.now().timestamp()}",
             "status": "completed",
+            "routed_assistant_id": routed_assistant_id,
             "result": result
         }
         

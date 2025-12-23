@@ -98,7 +98,7 @@ export function HumanMessage({
                       acc.push(
                         <MultimodalPreview
                           key={idx}
-                          block={block}
+                          block={block as any}
                           size="md"
                         />,
                       );

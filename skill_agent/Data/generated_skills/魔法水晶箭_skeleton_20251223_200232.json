@@ -1,0 +1,39 @@
+{
+  "skillName": "魔法水晶箭",
+  "skillId": "magic-crystal-arrow-001",
+  "skillDescription": "发射一枚追踪敌人的魔法冰箭，命中时造成伤害并附带短暂的冰冻效果",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色拉弓或施法蓄力动画，以及释放箭矢的投掷或射击动画",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成飞行的冰箭特效、命中目标时的冰爆特效，并计算伤害、施加冰冻Debuff",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法凝聚冰元素的音效、冰箭飞行音效和命中爆炸时的冰裂音效",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制冰箭发射瞬间的后坐力，以及命中敌人时造成的轻微击退效果",
+      "estimatedActions": 2,
+      "priority": 4
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "在冰箭命中目标时，触发一个轻微但快速的镜头震屏，增强打击感",
+      "estimatedActions": 1,
+      "priority": 5
+    }
+  ]
+}

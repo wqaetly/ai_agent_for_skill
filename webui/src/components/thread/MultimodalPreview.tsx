@@ -1,10 +1,18 @@
 import React from "react";
-import { File, Image as ImageIcon, X as XIcon } from "lucide-react";
-import type { Base64ContentBlock } from "@langchain/core/messages";
+import { File, X as XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+
+// 定义多模态内容块类型
+interface MultimodalDataBlock {
+  type: "image" | "file" | "audio";
+  data: string;
+  mimeType?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export interface MultimodalPreviewProps {
-  block: Base64ContentBlock;
+  block: MultimodalDataBlock;
   removable?: boolean;
   onRemove?: () => void;
   className?: string;
@@ -21,11 +29,11 @@ export const MultimodalPreview: React.FC<MultimodalPreviewProps> = ({
   // Image block
   if (
     block.type === "image" &&
-    block.source_type === "base64" &&
-    typeof block.mime_type === "string" &&
-    block.mime_type.startsWith("image/")
+    "mimeType" in block &&
+    typeof block.mimeType === "string" &&
+    block.mimeType.startsWith("image/")
   ) {
-    const url = `data:${block.mime_type};base64,${block.data}`;
+    const url = `data:${block.mimeType};base64,${block.data}`;
     let imgClass: string = "rounded-md object-cover h-16 w-16 text-lg";
     if (size === "sm") imgClass = "rounded-md object-cover h-10 w-10 text-base";
     if (size === "lg") imgClass = "rounded-md object-cover h-24 w-24 text-xl";
@@ -55,11 +63,11 @@ export const MultimodalPreview: React.FC<MultimodalPreviewProps> = ({
   // PDF block
   if (
     block.type === "file" &&
-    block.source_type === "base64" &&
-    block.mime_type === "application/pdf"
+    "mimeType" in block &&
+    block.mimeType === "application/pdf"
   ) {
     const filename =
-      block.metadata?.filename || block.metadata?.name || "PDF file";
+      (block.metadata as any)?.filename || (block.metadata as any)?.name || "PDF file";
     return (
       <div
         className={cn(

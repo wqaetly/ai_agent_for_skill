@@ -1,0 +1,33 @@
+{
+  "skillName": "弹射火球术",
+  "skillId": "bouncing-fireball-001",
+  "skillDescription": "发射一个火球，击中敌人后会弹射到其他敌人，造成火焰伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色施法动作和火球生成动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成火球特效、计算命中伤害、触发弹射效果并应用debuff",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制火球的飞行轨迹和弹射后的移动路径",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法音效、火球飞行音效和命中爆炸音效",
+      "estimatedActions": 3,
+      "priority": 4
+    }
+  ]
+}

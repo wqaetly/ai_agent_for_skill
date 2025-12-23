@@ -84,9 +84,73 @@ const StreamSession = ({
   // 🔥 存储流式 chunk 的累积缓冲区 (使用 useRef 避免闭包问题)
   type ChunkBuffer = { text: string; thinking: boolean };
   const chunkBuffersRef = useRef<Record<string, ChunkBuffer>>({});
+  // 🔥 防抖定时器，减少频繁的 React 重渲染
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingMutateRef = useRef<((options: any) => void) | null>(null);
 
   const updateChunkBuffer = (id: string, updater: (prev?: ChunkBuffer) => ChunkBuffer) => {
     chunkBuffersRef.current[id] = updater(chunkBuffersRef.current[id]);
+  };
+
+  // 🔥 防抖更新 UI，将多个 chunk 合并成一次更新
+  // 🔥 跟踪已创建的流式消息ID，避免重复创建
+  const createdStreamingIdsRef = useRef<Set<string>>(new Set());
+  
+  const debouncedMutate = (options: any) => {
+    pendingMutateRef.current = options.mutate;
+    
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    debounceTimerRef.current = setTimeout(() => {
+      if (pendingMutateRef.current) {
+        pendingMutateRef.current((prev: any) => {
+          const messages = prev.messages || [];
+          const updatedMessages = [...messages];
+          let hasChanges = false;
+          
+          // 批量更新所有 buffer 中的消息
+          for (const [msgId, buffer] of Object.entries(chunkBuffersRef.current)) {
+            // 🔥 检查是否已存在非流式的完整消息（后端返回的最终消息）
+            const existingIndex = updatedMessages.findIndex((m: any) => m.id === msgId);
+            
+            if (existingIndex >= 0) {
+              const existingMsg = updatedMessages[existingIndex];
+              // 🔥 如果已存在非流式消息，说明后端已返回完整消息，跳过更新
+              if (!existingMsg.streaming) {
+                continue;
+              }
+              if (existingMsg.content !== buffer.text) {
+                updatedMessages[existingIndex] = {
+                  ...existingMsg,
+                  content: buffer.text,
+                  streaming: true,
+                  thinking: buffer.thinking,
+                };
+                hasChanges = true;
+              }
+            } else {
+              // 🔥 只有当该ID未被创建过时才添加新消息
+              if (!createdStreamingIdsRef.current.has(msgId)) {
+                createdStreamingIdsRef.current.add(msgId);
+                updatedMessages.push({
+                  id: msgId,
+                  type: "ai",
+                  content: buffer.text,
+                  streaming: true,
+                  thinking: buffer.thinking,
+                });
+                hasChanges = true;
+              }
+            }
+          }
+          
+          return hasChanges ? { ...prev, messages: updatedMessages } : prev;
+        });
+      }
+      debounceTimerRef.current = null;
+    }, 50); // 50ms 防抖延迟
   };
 
   const streamValue = useTypedStream({
@@ -115,49 +179,14 @@ const StreamSession = ({
 
       const isThinking = type === "thinking_chunk";
 
-      console.log(`[Stream] Received ${type}:`, {
-        message_id,
-        chunk: chunk.substring(0, 50),
-        isThinking,
-      });
-
       // 累积 chunk 到 buffer
       updateChunkBuffer(message_id, (prev) => ({
         text: (prev?.text ?? "") + chunk,
         thinking: prev?.thinking || isThinking,
       }));
 
-      // 实时更新到 messages
-      options.mutate((prev) => {
-        const messages = prev.messages || [];
-        const buffer = chunkBuffersRef.current[message_id];
-        if (!buffer) return prev;
-
-        const existingIndex = messages.findIndex((m: any) => m.id === message_id);
-
-        if (existingIndex >= 0) {
-          // 更新现有消息
-          const updatedMessages = [...messages];
-          const existingMsg = updatedMessages[existingIndex];
-          updatedMessages[existingIndex] = {
-            ...existingMsg,
-            content: buffer.text,
-            streaming: true,
-            thinking: buffer.thinking,
-          };
-          return { ...prev, messages: updatedMessages };
-        } else {
-          // 创建新消息
-          const newMessage: any = {
-            id: message_id,
-            type: "ai",
-            content: buffer.text,
-            streaming: true,
-            thinking: buffer.thinking,
-          };
-          return { ...prev, messages: [...messages, newMessage] };
-        }
-      });
+      // 🔥 使用防抖更新 UI
+      debouncedMutate(options);
     },
     onThreadId: (id) => {
       setThreadId(id);
@@ -167,44 +196,29 @@ const StreamSession = ({
     },
   });
 
-  // 调试日志
-  useEffect(() => {
-    console.log('[StreamProvider Debug] messages:', streamValue.messages);
-    console.log('[StreamProvider Debug] values:', streamValue.values);
-    console.log('[StreamProvider Debug] isLoading:', streamValue.isLoading);
 
-    // 🔍 检查 thinking 字段
-    streamValue.messages.forEach((msg: any) => {
-      if (msg.thinking || (msg.content && typeof msg.content === 'string' && msg.content.includes('思考'))) {
-        console.log(`[StreamProvider Debug] Message with thinking field:`, {
-          id: msg.id,
-          thinking: msg.thinking,
-          streaming: msg.streaming,
-          content_preview: msg.content?.substring(0, 100)
-        });
-      }
-    });
-  }, [streamValue.messages, streamValue.values, streamValue.isLoading]);
 
   // 🔥 清理已完成的流式消息 buffer
   useEffect(() => {
     if (!streamValue.isLoading) {
-      // 流结束时清空所有 buffer
+      // 流结束时清空所有 buffer 和已创建ID记录
       const bufferIds = Object.keys(chunkBuffersRef.current);
       if (bufferIds.length > 0) {
-        console.log(`[Stream] Clearing ${bufferIds.length} chunk buffers`);
         chunkBuffersRef.current = {};
       }
+      // 🔥 清空已创建的流式消息ID记录，为下次流做准备
+      createdStreamingIdsRef.current.clear();
     }
-
-    // 检查每个消息,如果不再是 streaming 状态,清理对应的 buffer
+  }, [streamValue.isLoading]);
+  
+  // 🔥 单独处理消息状态变化，清理对应的 buffer
+  useEffect(() => {
     streamValue.messages.forEach((msg: any) => {
       if (!msg.streaming && msg.id && chunkBuffersRef.current[msg.id]) {
-        console.log(`[Stream] Clearing buffer for completed message: ${msg.id}`);
         delete chunkBuffersRef.current[msg.id];
       }
     });
-  }, [streamValue.isLoading, streamValue.messages]);
+  }, [streamValue.messages]);
 
   useEffect(() => {
     checkGraphStatus(apiUrl, apiKey).then((ok) => {
@@ -224,8 +238,49 @@ const StreamSession = ({
     });
   }, [apiKey, apiUrl]);
 
+  // 🔥 对消息进行去重处理，优先保留非流式消息
+  const deduplicatedMessages = React.useMemo(() => {
+    const messageMap = new Map<string, Message>();
+    const noIdMessages: Message[] = [];
+    
+    for (const msg of streamValue.messages) {
+      if (!msg.id) {
+        noIdMessages.push(msg);
+        continue;
+      }
+      
+      const existing = messageMap.get(msg.id);
+      if (!existing) {
+        messageMap.set(msg.id, msg);
+      } else {
+        // 🔥 优先保留非流式消息（后端返回的完整消息）
+        const existingIsStreaming = (existing as any).streaming === true;
+        const currentIsStreaming = (msg as any).streaming === true;
+        
+        if (existingIsStreaming && !currentIsStreaming) {
+          // 用完整消息替换流式消息
+          messageMap.set(msg.id, msg);
+        } else if (!existingIsStreaming && currentIsStreaming) {
+          // 保留完整消息，忽略流式消息
+          // do nothing
+        } else {
+          // 两者状态相同，保留后来的（内容更完整）
+          messageMap.set(msg.id, msg);
+        }
+      }
+    }
+    
+    return [...messageMap.values(), ...noIdMessages];
+  }, [streamValue.messages]);
+
+  // 🔥 创建包装后的 streamValue，使用去重后的消息
+  const wrappedStreamValue = React.useMemo(() => ({
+    ...streamValue,
+    messages: deduplicatedMessages,
+  }), [streamValue, deduplicatedMessages]);
+
   return (
-    <StreamContext.Provider value={streamValue}>
+    <StreamContext.Provider value={wrappedStreamValue}>
       {children}
     </StreamContext.Provider>
   );
@@ -233,7 +288,7 @@ const StreamSession = ({
 
 // Default values for the form and fallbacks
 const DEFAULT_API_URL = "http://localhost:2024";
-const DEFAULT_ASSISTANT_ID = "skill-generation";
+const DEFAULT_ASSISTANT_ID = "smart";  // 🔥 默认使用智能路由
 
 export const StreamProvider: React.FC<{ children: ReactNode }> = ({
   children,

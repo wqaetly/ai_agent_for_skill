@@ -142,10 +142,7 @@ export function AssistantMessage({
   // 🔥 检查是否为流式输出中
   const isStreamingMessage = (message as any)?.streaming === true;
 
-  // 🔍 调试日志
-  if (message?.id && (isThinking || contentString.includes("思考") || contentString.includes("DeepSeek"))) {
-    console.log(`[AI Message Debug] id=${message.id}, thinking=${isThinking}, streaming=${isStreamingMessage}, content preview:`, contentString.substring(0, 100));
-  }
+
 
   if (isToolResult && hideToolCalls) {
     return null;

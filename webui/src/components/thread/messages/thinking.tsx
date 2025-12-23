@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronDown, ChevronRight, Brain, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MarkdownText } from "../markdown-text";
@@ -14,13 +14,35 @@ export function ThinkingMessage({
 }: ThinkingMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // 检测用户是否在底部附近（允许10px误差）
+  const isNearBottom = useCallback(() => {
+    if (!contentRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = contentRef.current;
+    return scrollHeight - scrollTop - clientHeight < 10;
+  }, []);
+
+  // 处理滚动事件
+  const handleScroll = useCallback(() => {
+    setShouldAutoScroll(isNearBottom());
+  }, [isNearBottom]);
 
   // 流式输出时自动展开
   useEffect(() => {
     if (isStreaming) {
       setIsExpanded(true);
+      setShouldAutoScroll(true);
     }
   }, [isStreaming]);
+
+  // 流式输出时自动滚动到底部（仅当用户未手动滚动时）
+  useEffect(() => {
+    if (isStreaming && isExpanded && shouldAutoScroll && contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight;
+    }
+  }, [content, isStreaming, isExpanded, shouldAutoScroll]);
 
   // 计时器 - 显示已思考时间
   useEffect(() => {
@@ -82,7 +104,11 @@ export function ThinkingMessage({
         )}
       >
         <div className="p-3 pt-0 border-t border-purple-200 dark:border-purple-800">
-          <div className="text-sm text-purple-800 dark:text-purple-200 max-h-[500px] overflow-y-auto">
+          <div 
+            ref={contentRef}
+            onScroll={handleScroll}
+            className="text-sm text-purple-800 dark:text-purple-200 max-h-[500px] overflow-y-auto"
+          >
             <MarkdownText>{content}</MarkdownText>
           </div>
         </div>

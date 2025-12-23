@@ -1,0 +1,228 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "魔法水晶箭",
+  "skillDescription": "发射一枚追踪敌人的魔法冰箭，命中时造成伤害并附带短暂的冰冻效果",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 19,
+    "$type": "11|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 4,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 5,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 40,
+              "enabled": true,
+              "animationClipName": "MagicArrow_Charge",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 30,
+              "enabled": true,
+              "animationClipName": "MagicArrow_Shoot",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 4,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 70,
+              "duration": 20,
+              "enabled": true,
+              "animationClipName": "MagicArrow_Recover",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 6,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 11,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 4,
+          "$rcontent": [
+            {
+              "$id": 7,
+              "$type": "4|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 50,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 800.0,
+              "maxRange": 1000.0,
+              "projectilePrefab": "IceArrow_Effect",
+              "projectileSize": 1.0,
+              "trailEffect": null,
+              "arcHeight": 0.0,
+              "trackingStrength": 0.0
+            },
+            {
+              "$id": 8,
+              "$type": "5|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 50,
+              "duration": 10,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 5.0,
+              "innerRadius": 0.0,
+              "areaAngle": 90.0,
+              "centerPosition": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0
+              },
+              "useRelativePosition": true,
+              "followCaster": false,
+              "effectType": "Damage"
+            },
+            {
+              "$id": 9,
+              "$type": "7|SkillSystem.Actions.DamageAction, Assembly-CSharp",
+              "frame": 55,
+              "duration": 1,
+              "enabled": true,
+              "baseDamage": 80.0,
+              "damageType": "Magical",
+              "scaleWithLevel": true,
+              "damagePerLevel": 30.0,
+              "spellPowerRatio": 0.5,
+              "maxHealthRatio": 0.0,
+              "useTargetMaxHealth": false,
+              "damageCaps": []
+            },
+            {
+              "$id": 10,
+              "$type": "8|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 1,
+              "enabled": true,
+              "buffType": "Debuff",
+              "buffId": "freeze_debuff",
+              "stackType": "Refresh",
+              "maxStacks": 1,
+              "buffDuration": 30.0,
+              "isPermanent": false,
+              "buffIcon": null,
+              "buffName": "Freeze"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 12,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Movement Track",
+        "enabled": true,
+        "actions": {
+          "$id": 15,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 13,
+              "$type": "9|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 15,
+              "enabled": true,
+              "movementType": "Linear",
+              "movementSpeed": 500.0,
+              "targetPosition": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": -1.5
+              },
+              "useRelativePosition": true,
+              "arcHeight": 0.0,
+              "movementCurve": null,
+              "faceMovementDirection": true,
+              "allowMovementCancel": false
+            },
+            {
+              "$id": 14,
+              "$type": "9|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 20,
+              "enabled": true,
+              "movementType": "Linear",
+              "movementSpeed": 300.0,
+              "targetPosition": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": -3.0
+              },
+              "useRelativePosition": true,
+              "arcHeight": 0.0,
+              "movementCurve": null,
+              "faceMovementDirection": true,
+              "allowMovementCancel": false
+            }
+          ]
+        }
+      },
+      {
+        "$id": 16,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Camera Track",
+        "enabled": true,
+        "actions": {
+          "$id": 18,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 1,
+          "$rcontent": [
+            {
+              "$id": 17,
+              "$type": "10|SkillSystem.Actions.CameraAction, Assembly-CSharp",
+              "frame": 80,
+              "duration": 10,
+              "enabled": true,
+              "shakeIntensity": 0.3,
+              "zoomScale": 1.0,
+              "positionOffset": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0
+              },
+              "rotationOffset": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0
+              },
+              "fadeInTime": 0.1
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "magic-crystal-arrow-001"
+}

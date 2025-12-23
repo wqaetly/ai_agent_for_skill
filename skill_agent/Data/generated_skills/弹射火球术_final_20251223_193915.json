@@ -1,0 +1,231 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "弹射火球术",
+  "skillDescription": "发射一个火球，击中敌人后会弹射到其他敌人，造成火焰伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 20,
+    "$type": "11|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 4,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 4,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "animationClipName": "CastFireball"
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 30,
+              "duration": 30,
+              "enabled": true,
+              "animationClipName": "SpawnFireball"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 5,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 10,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 4,
+          "$rcontent": [
+            {
+              "$id": 6,
+              "$type": "4|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 30,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 1000.0,
+              "maxRange": 1000.0,
+              "projectilePrefab": "Fireball_Effect",
+              "projectileSize": 1.0,
+              "trailEffect": null,
+              "arcHeight": 5.0,
+              "trackingStrength": 0.8
+            },
+            {
+              "$id": 7,
+              "$type": "5|SkillSystem.Actions.UnitTypeDamageCapAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 1,
+              "enabled": true,
+              "baseDamage": 40.0,
+              "damageType": "Magical",
+              "scaleWithLevel": true,
+              "damagePerLevel": 25.0,
+              "spellPowerRatio": 0.4,
+              "maxHealthRatio": 0.14,
+              "useTargetMaxHealth": false,
+              "damageCaps": [
+                {
+                  "unitType": "Minion",
+                  "damageCap": 100.0
+                },
+                {
+                  "unitType": "Monster",
+                  "damageCap": 150.0
+                }
+              ]
+            },
+            {
+              "$id": 8,
+              "$type": "6|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 45,
+              "duration": 20,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 5.0,
+              "innerRadius": 2.0,
+              "areaAngle": 90.0,
+              "centerPosition": {
+                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0
+              },
+              "useRelativePosition": true,
+              "followCaster": false,
+              "effectType": "Damage"
+            },
+            {
+              "$id": 9,
+              "$type": "8|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+              "frame": 65,
+              "duration": 10,
+              "enabled": true,
+              "buffType": "Debuff",
+              "buffId": "burn_debuff",
+              "stackType": "Refresh",
+              "maxStacks": 5,
+              "buffDuration": 10.0,
+              "isPermanent": false,
+              "buffIcon": null,
+              "buffName": "Burn"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 11,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Movement Track",
+        "enabled": true,
+        "actions": {
+          "$id": 14,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 12,
+              "$type": "9|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "movementType": "Linear",
+              "movementSpeed": 600.0,
+              "targetPosition": {
+                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 0.0,
+                "1": 1.5,
+                "2": 15.0
+              },
+              "useRelativePosition": true,
+              "faceMovementDirection": true,
+              "allowMovementCancel": false
+            },
+            {
+              "$id": 13,
+              "$type": "9|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 60,
+              "enabled": true,
+              "movementType": "Arc",
+              "movementSpeed": 500.0,
+              "targetPosition": {
+                "$type": "7|UnityEngine.Vector3, UnityEngine.CoreModule",
+                "0": 8.0,
+                "1": 0.0,
+                "2": 10.0
+              },
+              "useRelativePosition": true,
+              "arcHeight": 3.0,
+              "faceMovementDirection": true,
+              "allowMovementCancel": false
+            }
+          ]
+        }
+      },
+      {
+        "$id": 15,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Audio Track",
+        "enabled": true,
+        "actions": {
+          "$id": 19,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 16,
+              "$type": "10|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "audioClipName": "FireballCast",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": false,
+              "is3D": true
+            },
+            {
+              "$id": 17,
+              "$type": "10|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 80,
+              "enabled": true,
+              "audioClipName": "FireballFly",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": true,
+              "is3D": true
+            },
+            {
+              "$id": 18,
+              "$type": "10|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 90,
+              "duration": 30,
+              "enabled": true,
+              "audioClipName": "FireballExplosion",
+              "volume": 1.0,
+              "pitch": 1.0,
+              "loop": false,
+              "is3D": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "bouncing-fireball-001"
+}

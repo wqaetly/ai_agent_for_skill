@@ -45,6 +45,7 @@ import {
   ArtifactTitle,
   useArtifactContext,
 } from "./artifact";
+import { GraphSelector } from "./graph-selector";
 
 function StickyToBottomContent(props: {
   content: ReactNode;
@@ -142,13 +143,7 @@ export function Thread() {
   const messages = stream.messages;
   const isLoading = stream.isLoading;
 
-  // 调试日志
-  useEffect(() => {
-    console.log('[Thread Debug] Messages count:', messages.length);
-    console.log('[Thread Debug] Messages:', messages);
-    console.log('[Thread Debug] Stream values:', stream.values);
-    console.log('[Thread Debug] isLoading:', isLoading);
-  }, [messages, stream.values, isLoading]);
+
 
   const lastError = useRef<string | undefined>(undefined);
 
@@ -400,11 +395,13 @@ export function Thread() {
           <StickToBottom className="relative flex-1 overflow-hidden">
             <StickyToBottomContent
               className={cn(
-                "absolute inset-0 overflow-y-scroll px-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent",
+                "absolute inset-0 overflow-y-auto px-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent",
                 !chatStarted && "flex flex-col items-center justify-center",
-                chatStarted && "grid grid-rows-[1fr_auto]",
               )}
-              contentClassName="pt-8 pb-4 max-w-3xl mx-auto flex flex-col gap-2 w-full"
+              contentClassName={cn(
+                "pt-8 pb-4 max-w-3xl mx-auto flex flex-col gap-2 w-full",
+                chatStarted && "min-h-full"
+              )}
               content={
                 <>
                   {messages
@@ -412,13 +409,13 @@ export function Thread() {
                     .map((message, index) =>
                       message.type === "human" ? (
                         <HumanMessage
-                          key={`${message.type}-${index}-${message.id || 'no-id'}`}
+                          key={message.id || `human-${index}`}
                           message={message}
                           isLoading={isLoading}
                         />
                       ) : (
                         <AssistantMessage
-                          key={`${message.type}-${index}-${message.id || 'no-id'}`}
+                          key={message.id || `ai-${index}`}
                           message={message}
                           isLoading={isLoading}
                           handleRegenerate={handleRegenerate}
@@ -495,7 +492,10 @@ export function Thread() {
                         className="field-sizing-content resize-none border-none bg-transparent p-3.5 pb-0 shadow-none ring-0 outline-none focus:ring-0 focus:outline-none"
                       />
 
-                      <div className="flex items-center gap-6 p-2 pt-4">
+                      <div className="flex items-center gap-4 p-2 pt-4">
+                        <div className="relative">
+                          <GraphSelector compact />
+                        </div>
                         <div>
                           <div className="flex items-center space-x-2">
                             <Switch
@@ -516,8 +516,8 @@ export function Thread() {
                           className="flex cursor-pointer items-center gap-2"
                         >
                           <Plus className="size-5 text-gray-600" />
-                          <span className="text-sm text-gray-600">
-                            Upload PDF or Image
+                          <span className="text-sm text-gray-600 hidden md:inline">
+                            Upload
                           </span>
                         </Label>
                         <input

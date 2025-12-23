@@ -1,20 +1,19 @@
-import { Interrupt } from "@langchain/langgraph-sdk";
-import { HITLRequest } from "@/components/thread/agent-inbox/types";
+import { HumanInterrupt } from "@langchain/langgraph/prebuilt";
 
 export function isAgentInboxInterruptSchema(
   value: unknown,
-): value is Interrupt<HITLRequest> | Interrupt<HITLRequest>[] {
+): value is HumanInterrupt | HumanInterrupt[] {
   const valueAsObject = Array.isArray(value) ? value[0] : value;
   if (!valueAsObject || typeof valueAsObject !== "object") {
     return false;
   }
 
-  const interrupt = valueAsObject as Interrupt<HITLRequest>;
+  const interrupt = valueAsObject as Record<string, unknown>;
   if (!interrupt.value || typeof interrupt.value !== "object") {
     return false;
   }
 
-  const hitlValue = interrupt.value as Partial<HITLRequest>;
+  const hitlValue = interrupt.value as Record<string, unknown>;
   const { action_requests: actionRequests, review_configs: reviewConfigs } =
     hitlValue;
 

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, ChangeEvent } from "react";
 import { toast } from "sonner";
-import type { Base64ContentBlock } from "@langchain/core/messages";
-import { fileToContentBlock } from "@/lib/multimodal-utils";
+import { fileToContentBlock, MultimodalDataBlock } from "@/lib/multimodal-utils";
 
 export const SUPPORTED_FILE_TYPES = [
   "image/jpeg",
@@ -12,33 +11,33 @@ export const SUPPORTED_FILE_TYPES = [
 ];
 
 interface UseFileUploadOptions {
-  initialBlocks?: Base64ContentBlock[];
+  initialBlocks?: MultimodalDataBlock[];
 }
 
 export function useFileUpload({
   initialBlocks = [],
 }: UseFileUploadOptions = {}) {
   const [contentBlocks, setContentBlocks] =
-    useState<Base64ContentBlock[]>(initialBlocks);
+    useState<MultimodalDataBlock[]>(initialBlocks);
   const dropRef = useRef<HTMLDivElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const dragCounter = useRef(0);
 
-  const isDuplicate = (file: File, blocks: Base64ContentBlock[]) => {
+  const isDuplicate = (file: File, blocks: MultimodalDataBlock[]) => {
     if (file.type === "application/pdf") {
       return blocks.some(
         (b) =>
           b.type === "file" &&
-          b.mime_type === "application/pdf" &&
-          b.metadata?.filename === file.name,
+          b.mimeType === "application/pdf" &&
+          (b.metadata as any)?.filename === file.name,
       );
     }
     if (SUPPORTED_FILE_TYPES.includes(file.type)) {
       return blocks.some(
         (b) =>
           b.type === "image" &&
-          b.metadata?.name === file.name &&
-          b.mime_type === file.type,
+          (b.metadata as any)?.name === file.name &&
+          b.mimeType === file.type,
       );
     }
     return false;
@@ -225,16 +224,16 @@ export function useFileUpload({
         return contentBlocks.some(
           (b) =>
             b.type === "file" &&
-            b.mime_type === "application/pdf" &&
-            b.metadata?.filename === file.name,
+            b.mimeType === "application/pdf" &&
+            (b.metadata as any)?.filename === file.name,
         );
       }
       if (SUPPORTED_FILE_TYPES.includes(file.type)) {
         return contentBlocks.some(
           (b) =>
             b.type === "image" &&
-            b.metadata?.name === file.name &&
-            b.mime_type === file.type,
+            (b.metadata as any)?.name === file.name &&
+            b.mimeType === file.type,
         );
       }
       return false;
