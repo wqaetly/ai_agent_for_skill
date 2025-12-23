@@ -1,0 +1,27 @@
+{
+  "skillName": "基础攻击",
+  "skillId": "basic-attack-001",
+  "skillDescription": "进行一次快速攻击，造成物理伤害",
+  "totalDuration": 90,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放攻击前摇动画和攻击命中动画，确保动作流畅自然",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成武器挥动特效、计算伤害值并显示伤害数字反馈",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放挥砍音效和命中时的打击音效，增强攻击反馈",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}
