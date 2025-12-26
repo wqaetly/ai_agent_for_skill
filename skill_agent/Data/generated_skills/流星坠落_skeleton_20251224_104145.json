@@ -1,0 +1,33 @@
+{
+  "skillName": "流星坠落",
+  "skillId": "meteor-fall-001",
+  "skillDescription": "召唤一颗陨石从天而降，对目标区域造成大范围高额伤害并可能附加击晕效果",
+  "totalDuration": 150,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法者召唤动作、引导姿势以及陨石下落和撞击的动画表现",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成召唤法阵、陨石拖尾轨迹、落地冲击特效、伤害范围圈以及伤害/击晕判定",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放召唤吟唱音效、陨石破空音效和猛烈撞击爆炸的音效",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "在陨石撞击地面的瞬间触发强烈的镜头震动效果，增强冲击感",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}

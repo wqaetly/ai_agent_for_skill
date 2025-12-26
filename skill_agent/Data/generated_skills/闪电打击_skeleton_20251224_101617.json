@@ -1,0 +1,33 @@
+{
+  "skillName": "闪电打击",
+  "skillId": "lightning-strike-001",
+  "skillDescription": "召唤一道闪电从天而降，对目标区域造成高额雷电伤害，并有几率麻痹敌人",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色召唤闪电的施法前摇动画和释放后收招动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成闪电从天而降的特效、计算区域伤害、施加麻痹debuff效果",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放雷电汇聚的施法音效和闪电击中地面的爆炸音效",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "在闪电击中目标区域时触发镜头震动，增强技能打击感",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}

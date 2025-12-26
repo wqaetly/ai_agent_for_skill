@@ -1,0 +1,27 @@
+{
+  "skillName": "基础火球术",
+  "skillId": "basic-fireball-001",
+  "skillDescription": "释放一个火球，对单个目标造成火焰伤害",
+  "totalDuration": 80,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法前摇和释放火球的动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成火球飞行的特效，并在命中时造成伤害计算",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法音效和火球命中音效",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}

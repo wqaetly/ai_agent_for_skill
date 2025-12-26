@@ -1,0 +1,27 @@
+{
+  "skillName": "基础攻击",
+  "skillId": "basic-attack-001",
+  "skillDescription": "执行一次基础攻击，对目标造成伤害",
+  "totalDuration": 90,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色攻击动画，包括起手和收招动作",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成攻击特效，计算并应用伤害到目标",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放攻击挥砍音效和命中音效",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}

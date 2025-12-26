@@ -39,6 +39,20 @@ from .graphs.action_batch_skill_generation import (
     generate_skill_action_batch_sync,
 )
 
+# 导出并行渐进式生成图
+from .graphs.parallel_progressive_skill_generation import (
+    get_parallel_progressive_graph,
+    generate_skill_parallel,
+    generate_skill_parallel_sync,
+)
+
+# 导出 RAG ReAct Agent
+from .agents.rag_react_agent import (
+    get_rag_agent,
+    analyze_requirement_with_rag,
+    analyze_requirement_with_rag_sync,
+)
+
 # 导出工具
 from .tools.rag_tools import RAG_TOOLS
 
@@ -50,6 +64,7 @@ __all__ = [
     "get_skill_generation_graph",
     "get_progressive_skill_generation_graph",
     "get_action_batch_skill_generation_graph",
+    "get_parallel_progressive_graph",
     "get_skill_search_graph",
     "get_skill_detail_graph",
     "get_skill_validation_graph",
@@ -61,6 +76,12 @@ __all__ = [
     "generate_skill_progressive_sync",
     "generate_skill_action_batch",
     "generate_skill_action_batch_sync",
+    "generate_skill_parallel",
+    "generate_skill_parallel_sync",
+    # RAG Agent
+    "get_rag_agent",
+    "analyze_requirement_with_rag",
+    "analyze_requirement_with_rag_sync",
     # 工具和管理器
     "RAG_TOOLS",
     "get_prompt_manager",

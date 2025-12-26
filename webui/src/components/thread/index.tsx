@@ -58,12 +58,13 @@ function StickyToBottomContent(props: {
   return (
     <div
       ref={context.scrollRef}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%", overflow: "auto" }}
       className={props.className}
     >
       <div
         ref={context.contentRef}
         className={props.contentClassName}
+        style={{ minHeight: "100%" }}
       >
         {props.content}
       </div>
@@ -289,8 +290,10 @@ export function Thread() {
 
       {/* 左侧：执行流程面板（对话开始后显示） */}
       {chatStarted && (
-        <div className="hidden lg:block w-[280px] flex-shrink-0 border-r bg-gray-50 overflow-y-auto">
-          <GraphVisualizer />
+        <div className="hidden lg:flex w-[280px] flex-shrink-0 border-r bg-gray-50 h-full overflow-hidden">
+          <div className="w-full h-full">
+            <GraphVisualizer />
+          </div>
         </div>
       )}
 
@@ -401,15 +404,15 @@ export function Thread() {
             </div>
           )}
 
-          <StickToBottom className="relative flex-1 overflow-hidden">
+          <StickToBottom className="relative flex-1 overflow-hidden" resize="smooth">
             <StickyToBottomContent
               className={cn(
                 "absolute inset-0 overflow-y-auto px-4 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent",
                 !chatStarted && "flex flex-col items-center justify-center",
               )}
               contentClassName={cn(
-                "pt-8 pb-4 max-w-3xl mx-auto flex flex-col gap-2 w-full",
-                chatStarted && "min-h-full"
+                "pt-8 pb-16 max-w-3xl mx-auto flex flex-col gap-2 w-full",
+                chatStarted && "min-h-full justify-end"
               )}
               content={
                 <>
@@ -448,8 +451,8 @@ export function Thread() {
               }
               footer={
                 <div className={cn(
-                  "flex flex-col items-center",
-                  chatStarted ? "sticky bottom-0 gap-2 pb-3 pt-2 bg-gradient-to-t from-background via-background to-transparent" : "gap-4 w-full max-w-3xl"
+                  "flex flex-col items-center bg-background",
+                  chatStarted ? "sticky bottom-0 gap-2 pb-3 pt-2" : "gap-4 w-full max-w-3xl"
                 )}>
                   {!chatStarted && (
                     <div className="flex items-center gap-3">

@@ -26,6 +26,30 @@ from .action_batch_skill_generation import (
     generate_skill_action_batch_sync,
 )
 
+# 并行渐进式技能生成图 - 使用 Send API 实现 Track 并行生成
+from .parallel_progressive_skill_generation import (
+    build_parallel_progressive_graph,
+    get_parallel_progressive_graph,
+    generate_skill_parallel,
+    generate_skill_parallel_sync,
+    visualize_parallel_graph,
+)
+
+# 通用修复子图 - 可复用的验证-修复循环
+from .fix_subgraph import (
+    create_fix_subgraph,
+    get_skeleton_fix_subgraph,
+    get_track_fix_subgraph,
+)
+
+# Human-in-the-loop 技能生成图
+from .hitl_skill_generation import (
+    get_hitl_skill_generation_graph,
+    start_skill_generation_hitl,
+    approve_and_continue,
+    get_current_state,
+)
+
 __all__ = [
     # 基础生成
     "build_skill_generation_graph",
@@ -42,4 +66,19 @@ __all__ = [
     "get_action_batch_skill_generation_graph",
     "generate_skill_action_batch",
     "generate_skill_action_batch_sync",
+    # 并行渐进式生成图
+    "build_parallel_progressive_graph",
+    "get_parallel_progressive_graph",
+    "generate_skill_parallel",
+    "generate_skill_parallel_sync",
+    "visualize_parallel_graph",
+    # 通用修复子图
+    "create_fix_subgraph",
+    "get_skeleton_fix_subgraph",
+    "get_track_fix_subgraph",
+    # Human-in-the-loop
+    "get_hitl_skill_generation_graph",
+    "start_skill_generation_hitl",
+    "approve_and_continue",
+    "get_current_state",
 ]

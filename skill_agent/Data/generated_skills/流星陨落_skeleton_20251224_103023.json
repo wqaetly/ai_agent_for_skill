@@ -1,0 +1,33 @@
+{
+  "skillName": "流星陨落",
+  "skillId": "meteor-fall-001",
+  "skillDescription": "召唤流星从天而降，造成超大范围AOE伤害并眩晕敌人",
+  "totalDuration": 180,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法前摇动画和流星召唤释放动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成流星下落特效、爆炸视觉特效、计算范围伤害、施加眩晕debuff",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法吟唱音效、流星下落呼啸音效和爆炸冲击音效",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "控制镜头震动和聚焦，增强流星击中时的视觉冲击力",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}
