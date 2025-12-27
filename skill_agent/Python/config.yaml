@@ -27,12 +27,12 @@ embedding:
   cache_dir: null  # null表示使用系统默认缓存位置，避免Windows路径问题
   use_flash_attention: false  # 仅在GPU上启用，CPU不支持
 
-# 向量数据库配置
+# 向量数据库配置 (PostgreSQL + pgvector)
 vector_store:
-  type: "chroma"  # 可选: chroma, faiss
-  persist_directory: "../Data/vector_db"  # 相对于config.yaml的路径
+  type: "pgvector"
   collection_name: "skill_collection"
   distance_metric: "cosine"  # cosine, l2, ip
+  pg_dsn: "postgresql://postgres:postgres@localhost:5432/skill_agent"
 
 # 技能索引配置
 skill_indexer:

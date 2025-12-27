@@ -514,30 +514,26 @@ if errorlevel 1 (
         pause
         exit /b 1
     ) else (
-        REM npm found, check if node_modules exists
-        if not exist "node_modules" (
-            echo [Setup] Installing WebUI dependencies with npm...
-            npm install
-            if errorlevel 1 (
-                echo [Error] Failed to install WebUI dependencies
-                cd /d "%~dp0"
-                pause
-                exit /b 1
-            )
-        )
-        start "WebUI" cmd /k "set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && npm run dev"
-    )
-) else (
-    REM pnpm found, check if node_modules exists
-    if not exist "node_modules" (
-        echo [Setup] Installing WebUI dependencies with pnpm...
-        pnpm install
+        REM npm found, always run npm install to ensure deps are complete
+        echo [Setup] Ensuring WebUI dependencies are installed...
+        npm install
         if errorlevel 1 (
             echo [Error] Failed to install WebUI dependencies
             cd /d "%~dp0"
             pause
             exit /b 1
         )
+        start "WebUI" cmd /k "set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && npm run dev"
+    )
+) else (
+    REM pnpm found, always run pnpm install to ensure deps are complete
+    echo [Setup] Ensuring WebUI dependencies are installed...
+    pnpm install
+    if errorlevel 1 (
+        echo [Error] Failed to install WebUI dependencies
+        cd /d "%~dp0"
+        pause
+        exit /b 1
     )
     start "WebUI" cmd /k "set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && pnpm run dev"
 )

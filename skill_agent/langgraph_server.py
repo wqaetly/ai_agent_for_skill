@@ -1497,6 +1497,119 @@ async def rag_health_check():
         }
 
 
+# ==================== Agentic RAG API ====================
+
+class AgenticRAGRequest(BaseModel):
+    """Agentic RAG 查询请求"""
+    question: str = Field(..., description="用户问题")
+    thread_id: Optional[str] = Field(None, description="会话线程ID")
+
+
+@app.post("/rag/agentic/query")
+async def agentic_rag_query_endpoint(request: AgenticRAGRequest):
+    """
+    Agentic RAG 智能问答
+
+    基于 LangGraph 的智能检索增强生成，支持:
+    - LLM 自动决策是否需要检索
+    - 文档相关性评分
+    - 查询自动重写
+    """
+    try:
+        from orchestration.graphs.agentic_rag import agentic_rag_query
+
+        logger.info(f"Agentic RAG query: '{request.question[:50]}...'")
+
+        result = await agentic_rag_query(
+            question=request.question,
+            thread_id=request.thread_id
+        )
+
+        # 提取最终答案
+        messages = result.get("messages", [])
+        final_answer = messages[-1].content if messages else "无法生成答案"
+
+        return {
+            "success": True,
+            "question": request.question,
+            "answer": final_answer,
+            "message_count": len(messages)
+        }
+
+    except Exception as e:
+        logger.error(f"Agentic RAG query error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/rag/agentic/stream")
+async def agentic_rag_stream_endpoint(request: AgenticRAGRequest):
+    """
+    Agentic RAG 流式问答
+
+    返回 SSE 流，实时展示每个节点的处理结果
+    """
+    from orchestration.graphs.agentic_rag import agentic_rag_stream
+
+    async def generate():
+        try:
+            for update in agentic_rag_stream(
+                question=request.question,
+                thread_id=request.thread_id
+            ):
+                node = update.get("node", "unknown")
+                messages = update.get("messages", [])
+
+                # 格式化消息
+                formatted_messages = []
+                for msg in messages:
+                    formatted_messages.append({
+                        "type": msg.__class__.__name__.lower().replace("message", ""),
+                        "content": msg.content
+                    })
+
+                event_data = {
+                    "node": node,
+                    "messages": formatted_messages
+                }
+
+                yield f"data: {json.dumps(event_data, ensure_ascii=False)}\n\n"
+
+            yield f"data: {json.dumps({'done': True})}\n\n"
+
+        except Exception as e:
+            logger.error(f"Agentic RAG stream error: {e}", exc_info=True)
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        }
+    )
+
+
+@app.get("/rag/agentic/graph")
+async def agentic_rag_graph_visualization():
+    """
+    获取 Agentic RAG 图的 Mermaid 可视化
+    """
+    try:
+        from orchestration.graphs.agentic_rag import visualize_graph
+
+        mermaid = visualize_graph()
+
+        return {
+            "success": True,
+            "mermaid": mermaid
+        }
+
+    except Exception as e:
+        logger.error(f"Graph visualization error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== 主函数 ====================
 
 def kill_process_on_port(port: int) -> bool:

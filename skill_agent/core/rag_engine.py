@@ -161,7 +161,7 @@ class RAGEngine:
                 'frame_rate': skill.get('frameRate', 30),
                 'num_tracks': len(skill.get('tracks', [])),
                 'num_actions': sum(len(track.get('actions', [])) for track in skill.get('tracks', [])),
-                'action_type_list': json.dumps(action_types)  # 存储为JSON字符串，支持Chroma过滤
+                'action_type_list': json.dumps(action_types)  # 存储为JSON字符串，支持过滤
             }
             metadatas.append(metadata)
 

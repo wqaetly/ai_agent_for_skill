@@ -247,7 +247,7 @@ ai_agent_for_skill/
 │   ├── core/                         # RAG核心引擎
 │   │   ├── rag_engine.py            # RAG引擎主逻辑
 │   │   ├── embeddings.py            # Qwen3向量生成
-│   │   ├── vector_store.py          # ChromaDB封装
+│   │   ├── vector_store.py          # pgvector封装
 │   │   ├── skill_indexer.py         # 技能索引器
 │   │   ├── action_indexer.py        # Action元数据索引
 │   │   └── odin_json_parser.py      # Odin格式JSON解析器
@@ -261,7 +261,7 @@ ai_agent_for_skill/
 │   │       └── prompts.yaml         # 🔥 Prompt模板集中管理 (思考链提示词)
 │   ├── Data/
 │   │   ├── models/                  # Qwen3-Embedding-0.6B本地模型
-│   │   ├── vector_db/               # ChromaDB数据库文件
+│   │   ├── vector_db/               # 向量数据库文件 (已迁移至PostgreSQL)
 │   │   └── skill_index.json         # 技能索引缓存
 │   ├── langgraph_server.py          # LangGraph HTTP服务器 (端口2024)
 │   ├── Python/
@@ -280,7 +280,7 @@ ai_agent_for_skill/
 - **RPC通信**: 与Python服务交互
 
 #### Python服务
-- **RAG引擎**: Qwen3-Embedding-0.6B + ChromaDB
+- **RAG引擎**: Qwen3-Embedding-0.6B + PostgreSQL (pgvector)
 - **LLM**: DeepSeek Reasoner API（思考链模型，temperature=1.0）
 - **工作流编排**: LangGraph (StateGraph)
 - **Schema验证**: Pydantic V2（Structured Output）

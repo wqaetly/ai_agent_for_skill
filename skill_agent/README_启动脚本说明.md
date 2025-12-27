@@ -167,11 +167,11 @@ npm install
    - DeepSeek API Key 未配置
    - 向量数据库初始化失败
 
-### 5. Windows 编译错误（重要）
+### 5. Windows 编译错误
 
 **错误信息：** `error: Microsoft Visual C++ 14.0 or greater is required`
 
-**原因：** `chromadb` 的依赖 `chroma-hnswlib` 需要编译 C++ 扩展
+**原因：** 某些 Python 包需要编译 C++ 扩展
 
 **✅ 已自动解决：**
 启动脚本已集成预编译包策略，会自动使用 `--only-binary=:all:` 参数，**无需安装 Visual Studio Build Tools**。

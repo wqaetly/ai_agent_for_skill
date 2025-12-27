@@ -18,7 +18,7 @@ from .progressive_skill_generation import (
     generate_skill_progressive_sync,
 )
 
-# Action 批量式技能生成图 - 新增
+# Action 批量式技能生成图
 from .action_batch_skill_generation import (
     build_action_batch_skill_generation_graph,
     get_action_batch_skill_generation_graph,
@@ -48,6 +48,15 @@ from .hitl_skill_generation import (
     start_skill_generation_hitl,
     approve_and_continue,
     get_current_state,
+)
+
+# Agentic RAG 图 - 智能检索增强生成
+from .agentic_rag import (
+    build_agentic_rag_graph,
+    get_agentic_rag_graph,
+    agentic_rag_query,
+    agentic_rag_query_sync,
+    agentic_rag_stream,
 )
 
 __all__ = [
@@ -81,4 +90,10 @@ __all__ = [
     "start_skill_generation_hitl",
     "approve_and_continue",
     "get_current_state",
+    # Agentic RAG
+    "build_agentic_rag_graph",
+    "get_agentic_rag_graph",
+    "agentic_rag_query",
+    "agentic_rag_query_sync",
+    "agentic_rag_stream",
 ]

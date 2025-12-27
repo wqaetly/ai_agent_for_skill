@@ -130,7 +130,7 @@ embedding:
 
 - `torch>=2.0.0` - PyTorch 张量计算
 - `sentence-transformers>=2.2.0` - 模型加载框架
-- `chromadb>=0.4.0` - 向量数据库
+- `psycopg[binary]>=3.2.0` - PostgreSQL 向量数据库驱动
 - `huggingface-hub>=1.0.0` - 模型下载工具
 
 ## 相关文件
