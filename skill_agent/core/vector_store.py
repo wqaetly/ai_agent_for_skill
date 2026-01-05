@@ -1,7 +1,7 @@
-"""Vector store abstraction - pgvector only.
+"""Vector store abstraction - LanceDB.
 
-This module provides a vector store implementation using PostgreSQL with pgvector extension.
-ChromaDB support has been removed to simplify deployment and avoid native dependency issues.
+This module provides a vector store implementation using LanceDB embedded database.
+No external services or Docker required - data is stored locally.
 """
 
 import os
@@ -55,20 +55,20 @@ class VectorStore(Protocol):
 
 
 def create_vector_store(config: dict, embedding_dimension: int = 768) -> VectorStore:
-    """Factory that creates a pgvector-based vector store.
+    """Factory that creates a LanceDB vector store.
     
     Args:
-        config: Configuration dictionary. Must contain pg_dsn for PostgreSQL connection.
+        config: Configuration dictionary with 'lancedb_path' or 'path'.
         embedding_dimension: Dimension of embedding vectors (default: 768 for Qwen3).
     
     Returns:
-        A VectorStore implementation using pgvector.
+        A LanceDBVectorStore instance.
     
     Raises:
-        RuntimeError: If pgvector dependencies are not available.
+        RuntimeError: If lancedb is not installed.
     """
-    from .vector_store_pgvector import PgVectorStore
-    return PgVectorStore(config, embedding_dimension=embedding_dimension)
+    from .vector_store_lancedb import LanceDBVectorStore
+    return LanceDBVectorStore(config, embedding_dimension=embedding_dimension)
 
 
 if __name__ == "__main__":
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         {
             "collection_name": "test_collection",
             "distance_metric": "cosine",
-            "pg_dsn": "postgresql://postgres:postgres@localhost:5432/skill_agent",
+            "lancedb_path": "Data/lancedb_test",
         },
         embedding_dimension=3,
     )

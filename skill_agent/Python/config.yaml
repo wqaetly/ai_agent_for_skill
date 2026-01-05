@@ -27,12 +27,12 @@ embedding:
   cache_dir: null  # null表示使用系统默认缓存位置，避免Windows路径问题
   use_flash_attention: false  # 仅在GPU上启用，CPU不支持
 
-# 向量数据库配置 (PostgreSQL + pgvector)
+# 向量数据库配置 (LanceDB 嵌入式)
 vector_store:
-  type: "pgvector"
+  type: "lancedb"
   collection_name: "skill_collection"
-  distance_metric: "cosine"  # cosine, l2, ip
-  pg_dsn: "postgresql://postgres:postgres@localhost:5432/skill_agent"
+  distance_metric: "cosine"  # cosine, l2, dot
+  lancedb_path: "../Data/lancedb"  # 本地存储路径
 
 # 技能索引配置
 skill_indexer:

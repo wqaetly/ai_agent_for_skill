@@ -805,7 +805,7 @@ Python版本: 3.9+
   - pandas: ^2.0.0              # 数据分析
 
 RAG系统集成:
-  - chromadb: ^0.4.0            # 向量数据库
+  - lancedb: ^0.17.0            # 向量数据库
   - transformers: ^4.30.0       # Qwen3-Embedding
   - fastapi: ^0.100.0           # HTTP服务器
 

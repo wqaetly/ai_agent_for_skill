@@ -347,9 +347,6 @@ if "%USER_API_KEY%"=="" (
 REM Create or update .env file
 echo # DeepSeek API Key>"%ENV_FILE%"
 echo DEEPSEEK_API_KEY=%USER_API_KEY%>>"%ENV_FILE%"
-echo.>>"%ENV_FILE%"
-echo # PostgreSQL connection (optional, defaults to localhost)>>"%ENV_FILE%"
-echo # POSTGRES_URI=postgresql://postgres:postgres@localhost:5432/skill_agent?sslmode=disable>>"%ENV_FILE%"
 
 echo.
 echo [OK] API Key saved to skill_agent\.env
@@ -386,43 +383,8 @@ echo [OK] Embedding model downloaded successfully
 cd /d "%~dp0"
 exit /b 0
 
-:ensure_pgvector
-echo [Setup] Checking pgvector Postgres (localhost:5432)...
-docker --version >nul 2>&1
-if errorlevel 1 (
-    echo [FATAL] Docker not found.
-    echo.
-    echo Please install Docker Desktop: https://www.docker.com/products/docker-desktop/
-    echo After installation, restart your terminal and rerun this script.
-    exit /b 1
-)
-
-set "PGVECTOR_COMPOSE=%~dp0skill_agent\docker-compose.pgvector.yml"
-if not exist "%PGVECTOR_COMPOSE%" (
-    echo [FATAL] Missing compose file: %PGVECTOR_COMPOSE%
-    exit /b 1
-)
-
-echo [Setup] Starting pgvector Postgres container...
-docker compose -f "%PGVECTOR_COMPOSE%" up -d
-if errorlevel 1 (
-    echo [FATAL] Failed to start pgvector Postgres. Please ensure Docker Desktop is running.
-    exit /b 1
-)
-
-echo [OK] Postgres(pgvector) started
-exit /b 0
-
 :launch_server
 echo [Start] LangGraph Server (port 2024)...
-call :ensure_pgvector
-if errorlevel 1 (
-    echo.
-    echo [ABORT] Backend start canceled due to pgvector Postgres failure.
-    cd /d "%~dp0"
-    if "%1"=="" pause
-    exit /b 1
-)
 call :ensure_venv
 if errorlevel 1 (
     pause
@@ -451,14 +413,6 @@ exit /b 0
 
 :launch_devserver
 echo [Start] LangGraph Dev Server (port 8123)...
-call :ensure_pgvector
-if errorlevel 1 (
-    echo.
-    echo [ABORT] Dev backend start canceled due to pgvector Postgres failure.
-    cd /d "%~dp0"
-    if "%1"=="" pause
-    exit /b 1
-)
 call :ensure_venv
 if errorlevel 1 (
     pause

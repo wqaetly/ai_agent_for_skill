@@ -242,7 +242,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 │  │                  RAG Engine                         │ │
 │  │  ┌──────────────┐ ┌──────────────┐ ┌───────────┐  │ │
 │  │  │ Embedding    │ │ Vector Store │ │  Skill    │  │ │
-│  │  │ Generator    │ │  (pgvector)  │ │  Indexer  │  │ │
+│  │  │ Generator    │ │  (LanceDB)   │ │  Indexer  │  │ │
 │  │  └──────────────┘ └──────────────┘ └───────────┘  │ │
 │  └────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────┘
@@ -261,7 +261,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 | **Unity客户端** | C# / UnityWebRequest | 编辑器集成和HTTP通信 |
 | **Python服务** | FastAPI / Uvicorn | RESTful API服务器 |
 | **嵌入模型** | Qwen3-Embedding-0.6B | 通义千问嵌入模型（1024维向量，支持100+语言） |
-| **向量数据库** | PostgreSQL + pgvector | Docker部署的向量存储 |
+| **向量数据库** | LanceDB | 嵌入式向量存储（无需Docker） |
 | **文件监听** | Watchdog | 自动检测文件变化 |
 
 ### 核心模块
@@ -269,7 +269,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 #### Python后端
 
 - **embeddings.py**：文本向量化，缓存管理
-- **vector_store.py**：pgvector封装，向量CRUD
+- **vector_store.py**：LanceDB封装，向量CRUD
 - **skill_indexer.py**：技能解析，索引构建
 - **rag_engine.py**：RAG核心逻辑，检索排序
 - **server.py**：FastAPI服务器，API路由

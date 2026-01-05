@@ -39,41 +39,26 @@
 
 ### 环境依赖
 
-#### 必需：Docker Desktop + pgvector Postgres（强制）
-
-本项目**强制**使用 Docker 启动 `pgvector Postgres` 作为向量数据库后端。
-
-1. 安装 Docker Desktop（Windows）：https://www.docker.com/products/docker-desktop/
-2. 启动 Docker Desktop，等待状态变为 Running
-3. 打开一个新的终端，确认：
-
-```bash
-docker --version
-docker compose version
-```
-
-如果上述命令不可用，`launch.bat` 会直接以 **[FATAL]** 终止（不会继续启动 WebUI），避免出现 504/400 这类“上游失败”的迷惑报错。
-
 #### Python环境
 ```bash
 Python >= 3.10
-依赖包: requirements_langchain.txt
+依赖包: requirements.txt
 ```
+
+本项目使用 LanceDB 嵌入式向量数据库，无需 Docker。
 
 #### API Key配置
 在 `skill_agent/.env` 文件中配置（如不存在请创建）:
 ```bash
 # DeepSeek API Key（必需）
 DEEPSEEK_API_KEY=your-deepseek-api-key
-
-# PostgreSQL 连接配置（可选，默认使用 localhost）
-# POSTGRES_URI=postgresql://postgres:postgres@localhost:5432/skill_agent?sslmode=disable
 ```
 
 **重要说明**：
 - 默认使用 `deepseek-reasoner` 模型（具备思考链能力）
 - reasoner 模型需要较长推理时间（3-15秒），请调整超时配置
 - 推荐配置：`temperature=1.0`, `timeout=120s`
+- 向量数据库使用 LanceDB（嵌入式，无需 Docker）
 
 ### 一键启动 (推荐方式)
 
@@ -84,7 +69,7 @@ DEEPSEEK_API_KEY=your-deepseek-api-key
 
 **手动启动**:
 ```bash
-REM 推荐：使用根目录 launch.bat（会强制 docker/pgvector 并做失败终止）
+REM 推荐：使用根目录 launch.bat
 launch.bat full
 
 # 或分别启动
@@ -93,10 +78,6 @@ launch.bat server
 
 REM 仅前端（需要确保后端已启动）
 launch.bat webui
-
-REM 旧脚本（不推荐：不保证 pgvector 强制检查逻辑一致）
-cd skill_agent
-start_webui.bat
 
 # 或手动运行（开发用）
 python langgraph_server.py  # 启动LangGraph服务 (端口2024)
@@ -247,7 +228,7 @@ ai_agent_for_skill/
 │   ├── core/                         # RAG核心引擎
 │   │   ├── rag_engine.py            # RAG引擎主逻辑
 │   │   ├── embeddings.py            # Qwen3向量生成
-│   │   ├── vector_store.py          # pgvector封装
+│   │   ├── vector_store.py          # LanceDB封装
 │   │   ├── skill_indexer.py         # 技能索引器
 │   │   ├── action_indexer.py        # Action元数据索引
 │   │   └── odin_json_parser.py      # Odin格式JSON解析器
@@ -261,7 +242,7 @@ ai_agent_for_skill/
 │   │       └── prompts.yaml         # 🔥 Prompt模板集中管理 (思考链提示词)
 │   ├── Data/
 │   │   ├── models/                  # Qwen3-Embedding-0.6B本地模型
-│   │   ├── vector_db/               # 向量数据库文件 (已迁移至PostgreSQL)
+│   │   ├── vector_db/               # 向量数据库文件 (LanceDB)
 │   │   └── skill_index.json         # 技能索引缓存
 │   ├── langgraph_server.py          # LangGraph HTTP服务器 (端口2024)
 │   ├── Python/
@@ -280,7 +261,7 @@ ai_agent_for_skill/
 - **RPC通信**: 与Python服务交互
 
 #### Python服务
-- **RAG引擎**: Qwen3-Embedding-0.6B + PostgreSQL (pgvector)
+- **RAG引擎**: Qwen3-Embedding-0.6B + LanceDB (嵌入式向量数据库)
 - **LLM**: DeepSeek Reasoner API（思考链模型，temperature=1.0）
 - **工作流编排**: LangGraph (StateGraph)
 - **Schema验证**: Pydantic V2（Structured Output）
@@ -526,8 +507,8 @@ embedding:
   device: "cuda"  # 或 "cpu"
 
 vector_store:
-  type: "chromadb"
-  persist_directory: "./Data/vector_db"
+  type: "lancedb"
+  lancedb_path: "./Data/lancedb"
   collection_name: "skills"
 
 skill_indexer:
@@ -640,7 +621,6 @@ workflow.add_edge("balance_check", "finalize")
 ### Q1: 启动服务失败
 
 **检查清单**:
-0. **Docker/pgvector（必需）**：确认 Docker Desktop 正在运行，且命令可用：`docker --version`、`docker compose version`
 1. Python环境是否正确安装依赖: `pip install -r requirements.txt`
 2. DEEPSEEK_API_KEY是否配置（必须，用于 Reasoner 模型）
 3. 端口2024、7860、8766是否被占用: `netstat -ano | findstr :2024`
@@ -648,10 +628,6 @@ workflow.add_edge("balance_check", "finalize")
 5. 检查 `skill_agent/langgraph_server.py` 中的模型配置是否正确
 
 **常见启动报错与处理**:
-
-- `launch.bat` 提示 `[FATAL] Docker not found in PATH`：安装 Docker Desktop，并重开终端后再试
-- `launch.bat` 提示 `[FATAL] Failed to start pgvector Postgres with docker compose`：确认 Docker Desktop Running；执行 `docker compose version`
-- `launch.bat` 提示 `pgvector Postgres did not reach running state`：执行 `docker compose -f skill_agent/docker-compose.pgvector.yml logs --tail 200` 查看容器日志
 
 ### Q2: 生成的技能配置不符合预期
 

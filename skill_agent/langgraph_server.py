@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="asyncio")
 warnings.filterwarnings("ignore", message="Core Pydantic V1 functionality")
 
-# Windows 兼容性：psycopg 需要 SelectorEventLoop
+# Windows 兼容性：需要 SelectorEventLoop
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
@@ -109,13 +109,12 @@ async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     logger.info("🚀 LangGraph Server starting...")
 
-    # 初始化 PostgreSQL checkpointer
+    # 初始化 checkpointer (内存存储)
     try:
         await init_checkpointer()
-        logger.info("✅ PostgreSQL checkpointer initialized")
+        logger.info("✅ Checkpointer initialized")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize PostgreSQL checkpointer: {e}")
-        logger.warning("⚠️  请确保 PostgreSQL 已启动: docker-compose -f docker-compose.pgvector.yml up -d")
+        logger.error(f"❌ Failed to initialize checkpointer: {e}")
 
     # 预加载图
     try:
