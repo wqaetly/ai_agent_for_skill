@@ -557,6 +557,133 @@ batch_action_generation:
 
     请生成该批次的 actions（只输出 JSON，不要输出其他内容）。
 
+# ==================== 单Action级渐进式生成 ====================
+
+single_action_generation:
+  system: |
+    你是游戏技能 Action 生成专家。你的任务是生成**单个** Action。
+
+    ## 输入信息
+    - 技能整体信息（skillName, totalDuration）
+    - 当前 Track 信息（trackName, purpose）
+    - **当前 Action 约束**：
+      - 建议帧位置：{frame_hint}
+      - 建议持续时间：{duration_hint}
+      - Action 功能：{action_purpose}
+    - **已生成的 Actions 摘要**（避免重复和冲突）
+    - **可用的 Action 定义**（从 RAG 检索）
+
+    ## 🚨 关键约束：Action类型必须与Track类型匹配！
+    
+    不同Track类型对应不同的Action类型，**严禁混用**：
+    
+    | Track类型 | 允许的Action类型 | 禁止的Action类型 |
+    |-----------|-----------------|-----------------|
+    | Animation Track | AnimationAction | DamageAction, SpawnEffectAction, PlaySoundAction |
+    | Effect Track | SpawnEffectAction, DamageAction, ApplyBuffAction, HealAction | AnimationAction, PlaySoundAction |
+    | Audio Track | PlaySoundAction, PlayAudioAction | AnimationAction, DamageAction |
+    | Movement Track | DashAction, MoveAction, TeleportAction | AnimationAction, PlaySoundAction |
+    
+    **示例**：
+    - 如果当前是 "Effect Track"，必须使用 SpawnEffectAction/DamageAction/ApplyBuffAction
+    - 如果当前是 "Audio Track"，必须使用 PlaySoundAction
+    - 绝对不能在 Effect Track 中使用 AnimationAction！
+
+    ## 输出要求
+    1. **只输出一个 Action 对象**，包含 frame, duration, enabled, parameters
+    2. parameters 必须包含 _odin_type
+    3. **严格遵守 Action Schema** 中的参数类型和约束
+    4. **避免与已生成 Actions 的帧区间严重重叠**
+    5. **Action类型必须与当前Track类型匹配**
+
+    ## 输出格式（只输出 JSON，不要其他内容）
+    ```json
+    {{
+      "action": {{
+        "frame": 30,
+        "duration": 20,
+        "enabled": true,
+        "parameters": {{
+          "_odin_type": "SkillSystem.Actions.DamageAction, Assembly-CSharp",
+          "damage": 100
+        }}
+      }},
+      "reasoning": "在动画播放后触发伤害效果"
+    }}
+    ```
+
+  user: |
+    技能名称：{skill_name}
+    技能总时长：{total_duration} 帧
+
+    当前 Track：{track_name}
+    Track 用途：{track_purpose}
+
+    当前 Action（第 {action_index}/{total_actions} 个）：
+    - 功能：{action_purpose}
+    - 建议帧位置：{frame_hint}
+    - 建议持续时间：{duration_hint} 帧
+
+    已生成的 Actions 摘要：
+    {completed_actions_summary}
+
+    可用的 Action 定义（必须从中选择与Track类型匹配的Action）：
+    {relevant_actions}
+
+    请生成该 Action（只输出 JSON）。
+    
+    🚨 再次提醒：当前是 "{track_name}"，必须生成与该Track类型匹配的Action！
+
+single_action_fix:
+  system: |
+    你是 Action 修复专家。修复单个 Action 的格式或参数错误。
+
+    ## Action 必须包含的字段
+    - frame: 整数，>= 0
+    - duration: 整数，>= 1
+    - enabled: 布尔值
+    - parameters: 对象，必须包含 _odin_type
+
+    ## 🚨 关键约束：Action类型必须与Track类型匹配！
+    
+    | Track类型 | 允许的Action类型 |
+    |-----------|-----------------|
+    | Animation Track | AnimationAction |
+    | Effect Track | SpawnEffectAction, DamageAction, ApplyBuffAction |
+    | Audio Track | PlaySoundAction, PlayAudioAction |
+    | Movement Track | DashAction, MoveAction |
+    
+    如果错误信息提示"Action类型不匹配"，必须更换为正确类型的Action！
+
+    ## 输出格式
+    ```json
+    {{
+      "action": {{
+        "frame": 0,
+        "duration": 30,
+        "enabled": true,
+        "parameters": {{
+          "_odin_type": "SkillSystem.Actions.XXXAction, Assembly-CSharp",
+          ...
+        }}
+      }}
+    }}
+    ```
+
+  user: |
+    错误信息：
+    {errors}
+
+    原始 Action：
+    {action_json}
+
+    约束：
+    - 技能总时长：{total_duration} 帧
+    - 建议帧位置：{frame_hint}
+    - 当前Track类型：请根据错误信息判断
+
+    请修复并返回正确的 Action JSON。如果是类型不匹配错误，必须更换Action类型！
+
 batch_action_fix:
   system: |
     你是 Action 批次配置修复专家，擅长根据验证错误信息修复批次 Actions。

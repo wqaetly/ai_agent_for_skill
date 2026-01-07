@@ -1,0 +1,93 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "雪球术",
+  "skillDescription": "投掷雪球攻击敌人，命中后造成伤害并施加30%移动速度降低效果",
+  "totalDuration": 75,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 11,
+    "$type": "5|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 3,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 4,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 25,
+              "enabled": true,
+              "animationClipName": "SnowballWindup",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 25,
+              "duration": 50,
+              "enabled": true,
+              "animationClipName": "SnowballRelease",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 5,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "MainTrack",
+        "enabled": true,
+        "actions": {
+          "$id": 7,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 1,
+          "$rcontent": [
+            {
+              "$id": 6,
+              "$type": "4|SkillSystem.Actions.PlayAnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "animationName": "Attack01"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 8,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "MainTrack",
+        "enabled": true,
+        "actions": {
+          "$id": 10,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 1,
+          "$rcontent": [
+            {
+              "$id": 9,
+              "$type": "4|SkillSystem.Actions.PlayAnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "animationName": "Attack01"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "snowball-001"
+}

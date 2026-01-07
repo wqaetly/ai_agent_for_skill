@@ -343,3 +343,29 @@ class ActionBatch(BaseModel):
         max_length=10
     )
     # 注：移除了 min_length=1，允许空批次用于错误恢复场景
+
+
+# ==== 单Action级渐进式生成 Schema ====
+
+class SingleActionPlan(BaseModel):
+    """单个Action的生成计划"""
+    action_index: int = Field(..., description="Action索引(0-based)", ge=0)
+    suggested_type: Optional[str] = Field(None, description="建议的Action类型")
+    frame_hint: int = Field(..., description="建议起始帧", ge=0)
+    duration_hint: int = Field(30, description="建议持续帧数", ge=1)
+    purpose: str = Field(
+        ...,
+        description="该Action的功能描述",
+        min_length=2,
+        max_length=100
+    )
+
+
+class SingleActionOutput(BaseModel):
+    """单个Action生成输出"""
+    action: SkillAction = Field(..., description="生成的单个Action")
+    reasoning: Optional[str] = Field(
+        None,
+        description="生成该Action的简要理由（可选）",
+        max_length=200
+    )

@@ -1,0 +1,27 @@
+{
+  "skillName": "雪球术",
+  "skillId": "snowball-001",
+  "skillDescription": "投掷雪球攻击敌人，命中后造成伤害并施加30%移动速度降低效果",
+  "totalDuration": 75,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放投掷雪球的前摇动画和释放动画，展现施法动作",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成雪球飞行特效，命中时计算伤害并施加30%减速debuff",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放投掷雪球的施法音效和命中敌人时的碰撞音效",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}

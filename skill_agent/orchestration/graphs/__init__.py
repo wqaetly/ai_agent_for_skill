@@ -59,6 +59,15 @@ from .agentic_rag import (
     agentic_rag_stream,
 )
 
+# 单Action级渐进式生成图 - 最细粒度生成
+from .single_action_skill_generation import (
+    build_single_action_skill_generation_graph,
+    get_single_action_skill_generation_graph,
+    generate_skill_single_action,
+    generate_skill_single_action_sync,
+    visualize_single_action_graph,
+)
+
 __all__ = [
     # 基础生成
     "build_skill_generation_graph",
@@ -96,4 +105,10 @@ __all__ = [
     "agentic_rag_query",
     "agentic_rag_query_sync",
     "agentic_rag_stream",
+    # 单Action级生成
+    "build_single_action_skill_generation_graph",
+    "get_single_action_skill_generation_graph",
+    "generate_skill_single_action",
+    "generate_skill_single_action_sync",
+    "visualize_single_action_graph",
 ]
