@@ -16,7 +16,6 @@
 > - ✅ 代码精简31.6%，架构更清晰
 > - 🔥 **新增 Odin 格式支持**：使用 Pydantic Schema 和 Structured Output 确保生成符合 tracks 嵌套结构
 > - 🧠 **升级至 DeepSeek Reasoner 模型**：具备思考链能力，生成质量更高
-> - 📖 详见 **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** 了解迁移详情
 
 <img width="3019" height="1484" alt="image" src="https://github.com/user-attachments/assets/e8393a5b-e5bc-47f4-ad4e-6c0417d8a905" />
 

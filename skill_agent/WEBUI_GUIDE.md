@@ -385,9 +385,9 @@ NEXT_PUBLIC_ASSISTANT_ID=skill-generation
 ## 📚 相关文档
 
 - [skill_agent 核心文档](./README.md)
-- [LangGraph 官方文档](https://langchain-ai.github.io/langgraph/)
-- [agent-chat-ui 文档](https://github.com/langchain-ai/agent-chat-ui)
-- [FastAPI 文档](https://fastapi.tiangolo.com/)
+- [Unity集成指南](./UNITY集成指南.md)
+- [API文档](./Docs/API.md)
+- [技能设计模式](./Docs/SkillPatterns.md)
 
 ## 🤝 贡献
 

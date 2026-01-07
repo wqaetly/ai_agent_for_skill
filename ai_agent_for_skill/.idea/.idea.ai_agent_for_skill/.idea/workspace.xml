@@ -5,8 +5,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/../.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/../.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/../AGENTS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../LAUNCHER_README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MCP_Development_Plan.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../MIGRATION_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ODIN_JSON_MIGRATION_COMPLETE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../QUICK_START.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RAG_MIGRATION_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../STREAMING_FIX_STEPS.md" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/ACTION_BATCH_GENERATION_README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/ARCHITECTURE_IMPROVEMENTS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/ARCHITECTURE_WEBUI.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/DESIGN_ACTION_BATCH_PROGRESSIVE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/PROGRESSIVE_GENERATION_DESIGN.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/QUICKSTART.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/README_启动脚本说明.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/README_模型下载.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/UNITY集成指南.md" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/UNITY集成指南.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/WEBUI_GUIDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/WEBUI_GUIDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/WEBUI_QUICKSTART.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/core/odin_json_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core/odin_json_parser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../skill_agent/orchestration/nodes/progressive_skill_nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/orchestration/nodes/progressive_skill_nodes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,6 +169,7 @@
       <workItem from="1762760565986" duration="1228000" />
       <workItem from="1762831692108" duration="1826000" />
       <workItem from="1763006484772" duration="2886000" />
+      <workItem from="1767774521275" duration="637000" />
     </task>
     <servers />
   </component>

@@ -21,7 +21,7 @@ from ..streaming import (
     ProgressEventType,
     emit_progress,
 )
-from core.odin_json_parser import serialize_to_odin
+from core.odin_json_parser import serialize_to_odin, serialize_to_odin_string, odin_json_encode
 
 logger = logging.getLogger(__name__)
 
@@ -95,8 +95,13 @@ def _save_generated_json(
             data_to_save = data
 
         # 保存 JSON（格式化输出，支持中文）
+        # 对于 Odin 格式，使用自定义编码器以正确输出 Vector3 等类型的裸数组索引格式
         with open(filepath, "w", encoding="utf-8") as f:
-            json.dump(data_to_save, f, ensure_ascii=False, indent=2)
+            if is_odin_format:
+                # 使用 Odin 自定义编码器（支持 Vector3 裸数组索引格式）
+                f.write(odin_json_encode(data_to_save, indent=2))
+            else:
+                json.dump(data_to_save, f, ensure_ascii=False, indent=2)
 
         logger.info(f"📁 已保存 {stage} JSON: {filepath}")
         return filepath, is_odin_format

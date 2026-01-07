@@ -230,9 +230,9 @@ Debug.Log(result);
 
 ## 🔗 下一步
 
-- **Web UI使用**：查看 `QUICKSTART.md`
-- **API参考**：查看 `llm_providers.py` 的注释
-- **开发文档**：查看 `docs/mcp_requirements/`
+- **WebUI使用**：查看 `WEBUI_GUIDE.md`
+- **API参考**：查看 `Docs/API.md`
+- **技能模式**：查看 `Docs/SkillPatterns.md`
 
 ---
 

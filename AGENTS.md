@@ -9,7 +9,7 @@ Unity技能配置智能助手系统，通过RAG（检索增强生成）+ LangGra
 - **后端**: Python 3.10+, FastAPI, LangGraph, LangChain
 - **LLM**: DeepSeek Reasoner (思考链模型)
 - **向量化**: Qwen3-Embedding-0.6B (本地部署)
-- **向量数据库**: ChromaDB
+- **向量数据库**: LanceDB (嵌入式)
 - **前端**: Next.js 14, React, Tailwind CSS
 - **Unity集成**: C# Editor Scripts
 

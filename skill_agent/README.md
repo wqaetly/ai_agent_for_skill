@@ -261,7 +261,7 @@ Tryndamere Spinning Slash (相似度: 76%)
 | **Unity客户端** | C# / UnityWebRequest | 编辑器集成和HTTP通信 |
 | **Python服务** | FastAPI / Uvicorn | RESTful API服务器 |
 | **嵌入模型** | Qwen3-Embedding-0.6B | 通义千问嵌入模型（1024维向量，支持100+语言） |
-| **向量数据库** | LanceDB | 嵌入式向量存储（无需Docker） |
+| **向量数据库** | LanceDB | 嵌入式向量存储（无需外部服务） |
 | **文件监听** | Watchdog | 自动检测文件变化 |
 
 ### 核心模块
