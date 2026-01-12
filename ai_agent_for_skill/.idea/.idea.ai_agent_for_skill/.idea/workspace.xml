@@ -16,7 +16,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/30c894378d1d4d5dae14bfc5b403a5c7180800/3c/f5eb110c/GraphicsSettings.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/30c894378d1d4d5dae14bfc5b403a5c7180800/ee/ae38d112/RenderPipelineAsset.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/1e/2de7bb0f/Serializer`1.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/1e/2de7bb0f/Serializer`1.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/95/0eb67528/SerializationUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.claude/settings.local.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionExportModels.cs" root0="FORCE_HIGHLIGHTING" />
@@ -144,7 +144,7 @@
       <workItem from="1762760565986" duration="1228000" />
       <workItem from="1762831692108" duration="1826000" />
       <workItem from="1763006484772" duration="2886000" />
-      <workItem from="1767774521275" duration="1242000" />
+      <workItem from="1767774521275" duration="1830000" />
     </task>
     <servers />
   </component>

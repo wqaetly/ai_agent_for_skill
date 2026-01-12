@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class LLMConfig:
     """LLM 调用配置"""
-    model: str = "deepseek-reasoner"
+    model: str = "deepseek-chat"
     temperature: float = 1.0
     fix_temperature: float = 0.3  # 修复时使用更低温度
     timeout: int = 300  # 请求超时（秒）
@@ -25,7 +25,7 @@ class LLMConfig:
     def from_env(cls) -> "LLMConfig":
         """从环境变量加载配置"""
         return cls(
-            model=os.getenv("DEEPSEEK_MODEL", "deepseek-reasoner"),
+            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
             temperature=float(os.getenv("DEEPSEEK_TEMPERATURE", "1.0")),
             fix_temperature=float(os.getenv("DEEPSEEK_FIX_TEMPERATURE", "0.3")),
             timeout=int(os.getenv("DEEPSEEK_TIMEOUT", "300")),

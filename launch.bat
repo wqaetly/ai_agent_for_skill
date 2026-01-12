@@ -456,6 +456,8 @@ call :start_webui_process
 exit /b 0
 
 :start_webui_process
+REM Ensure we are in webui directory
+cd /d "%~dp0webui"
 REM Check for pnpm or npm by trying to run them
 pnpm --version >nul 2>&1
 if errorlevel 1 (
@@ -468,28 +470,32 @@ if errorlevel 1 (
         pause
         exit /b 1
     ) else (
-        REM npm found, always run npm install to ensure deps are complete
+        REM npm found, always run npm install to ensure deps are complete (including @next/swc)
         echo [Setup] Ensuring WebUI dependencies are installed...
-        npm install
+        npm install >nul 2>&1
         if errorlevel 1 (
             echo [Error] Failed to install WebUI dependencies
             cd /d "%~dp0"
             pause
             exit /b 1
         )
-        start "WebUI" cmd /k "set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && npm run dev"
+        REM Run npm install again to ensure @next/swc dependencies are downloaded after lockfile patching
+        npm install >nul 2>&1
+        start "WebUI" cmd /k "cd /d "%~dp0webui" && set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && npm run dev"
     )
 ) else (
-    REM pnpm found, always run pnpm install to ensure deps are complete
+    REM pnpm found, always run pnpm install to ensure deps are complete (including @next/swc)
     echo [Setup] Ensuring WebUI dependencies are installed...
-    pnpm install
+    pnpm install >nul 2>&1
     if errorlevel 1 (
         echo [Error] Failed to install WebUI dependencies
         cd /d "%~dp0"
         pause
         exit /b 1
     )
-    start "WebUI" cmd /k "set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && pnpm run dev"
+    REM Run pnpm install again to ensure @next/swc dependencies are downloaded after lockfile patching
+    pnpm install >nul 2>&1
+    start "WebUI" cmd /k "cd /d "%~dp0webui" && set NEXT_PUBLIC_API_URL=%NEXT_PUBLIC_API_URL% && pnpm run dev"
 )
 
 cd /d "%~dp0"

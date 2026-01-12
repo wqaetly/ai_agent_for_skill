@@ -752,8 +752,9 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
         logger.info(f"📤 Sending request to DeepSeek API with {len(openai_messages)} messages")
 
         # 🔥 使用 OpenAI SDK 进行流式调用，正确获取 reasoning_content
+        model_name = get_skill_gen_config().llm.model
         response = client.chat.completions.create(
-            model="deepseek-reasoner",
+            model=model_name,
             messages=openai_messages,
             stream=True
         )

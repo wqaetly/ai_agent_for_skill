@@ -60,6 +60,9 @@ class ProgressEventType(str, Enum):
     # RAG检索
     RAG_SEARCHING = "rag_searching"                # RAG检索中
     RAG_COMPLETED = "rag_completed"                # RAG检索完成
+    
+    # Action匹配问题（需要用户介入）
+    ACTION_MISMATCH = "action_mismatch"            # Action不匹配，需要用户补全
 
     # 通用
     INFO = "info"                                  # 普通信息

@@ -1,0 +1,33 @@
+{
+  "skillName": "巨大火球术",
+  "skillId": "giant-fireball-001",
+  "skillDescription": "发射一个巨大火球，命中敌人后分裂成三个小火球继续前进，造成持续伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色施法动画和巨大火球发射的视觉动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成巨大火球特效、处理命中伤害、触发分裂并生成小火球特效和伤害",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制巨大火球的飞行轨迹，以及分裂后小火球的移动路径",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法音效、火球飞行音效、命中爆炸音效和分裂音效",
+      "estimatedActions": 4,
+      "priority": 4
+    }
+  ]
+}

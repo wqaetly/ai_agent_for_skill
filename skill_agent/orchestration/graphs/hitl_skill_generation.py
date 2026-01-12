@@ -91,7 +91,12 @@ def build_hitl_skill_generation_graph(
     workflow.add_conditional_edges(
         "track_validator",
         should_fix_track,
-        {"save": "track_saver", "fix": "track_fixer", "skip": "track_saver"}
+        {
+            "save": "track_saver",
+            "fix": "track_fixer",
+            "skip": "track_saver",
+            "action_mismatch": "finalize"  # Action不匹配 -> 中断流程
+        }
     )
     
     workflow.add_edge("track_fixer", "track_validator")
@@ -190,6 +195,10 @@ async def start_skill_generation_hitl(
         "track_retry_count": 0,
         "max_track_retries": 3,
         "used_action_types": [],
+        # Action匹配中断状态
+        "action_mismatch": False,
+        "missing_action_types": [],
+        "action_mismatch_details": "",
         "assembled_skill": {},
         "final_validation_errors": [],
         "final_result": {},

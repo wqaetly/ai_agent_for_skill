@@ -283,6 +283,11 @@ class ProgressiveSkillGenerationState(TypedDict):
     track_retry_count: int  # 当前 track 重试次数
     max_track_retries: int  # 单个 track 最大重试次数（默认 3）
     used_action_types: List[str]  # 已使用的 Action 类型（跨 Track 传递）
+    
+    # === Action匹配中断状态 ===
+    action_mismatch: bool  # 是否存在Action不匹配问题
+    missing_action_types: List[str]  # 缺失的Action类型列表
+    action_mismatch_details: str  # Action不匹配的详细说明
 
     # === 阶段3输出 ===
     assembled_skill: Dict[str, Any]  # 组装后的完整技能（OdinSkillSchema）
@@ -567,8 +572,10 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
                 logger.warning(f"⚠️ 发送初始 thinking chunk 失败: {e}")
 
         # 🔥 使用 OpenAI SDK 进行流式调用
+        from ..config import get_skill_gen_config
+        model_name = get_skill_gen_config().llm.model
         response = client.chat.completions.create(
-            model="deepseek-reasoner",
+            model=model_name,
             messages=openai_messages,
             stream=True
         )
@@ -585,7 +592,7 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
             if delta is None:
                 continue
 
-            # 提取 reasoning_content（思考过程）
+            # 提取 reasoning_content（思考过程）- 仅 deepseek-reasoner 模型支持
             reasoning_chunk = getattr(delta, 'reasoning_content', None)
             if reasoning_chunk:
                 full_reasoning += reasoning_chunk
@@ -1064,6 +1071,144 @@ def search_actions_by_track_type(
     return final_results
 
 
+# ==================== Action 匹配验证 ====================
+
+# Action匹配验证配置
+ACTION_MATCH_CONFIG = {
+    "min_similarity_threshold": 0.3,  # 最低相似度阈值
+    "min_required_actions": 1,        # 每个Track至少需要的Action数量
+    "high_similarity_threshold": 0.6, # 高相似度阈值（认为是好的匹配）
+}
+
+
+class ActionMatchResult:
+    """Action匹配结果"""
+    def __init__(
+        self,
+        is_valid: bool,
+        actions: List[Dict[str, Any]],
+        missing_types: List[str] = None,
+        low_similarity_actions: List[Dict[str, Any]] = None,
+        mismatch_reason: str = ""
+    ):
+        self.is_valid = is_valid
+        self.actions = actions
+        self.missing_types = missing_types or []
+        self.low_similarity_actions = low_similarity_actions or []
+        self.mismatch_reason = mismatch_reason
+    
+    def get_user_prompt(self, track_name: str, purpose: str) -> str:
+        """生成用户提示信息"""
+        if self.is_valid:
+            return ""
+        
+        prompt_lines = [
+            f"⚠️ **Track '{track_name}' 的Action匹配存在问题**",
+            f"",
+            f"**轨道用途**: {purpose}",
+            f"",
+            f"**问题详情**: {self.mismatch_reason}",
+            f"",
+        ]
+        
+        if self.missing_types:
+            prompt_lines.append("**缺失的Action类型**:")
+            for t in self.missing_types:
+                prompt_lines.append(f"  - {t}")
+            prompt_lines.append("")
+        
+        if self.low_similarity_actions:
+            prompt_lines.append("**相似度较低的Action** (可能不符合需求):")
+            for action in self.low_similarity_actions[:3]:
+                name = action.get("display_name") or action.get("type_name", "Unknown")
+                sim = action.get("similarity", 0)
+                prompt_lines.append(f"  - {name} (相似度: {sim:.1%})")
+            prompt_lines.append("")
+        
+        prompt_lines.extend([
+            "**建议操作**:",
+            "1. 在RAG数据库中补充相关的Action定义",
+            "2. 或者修改技能需求描述，使用已有的Action类型",
+            "3. 或者手动指定要使用的Action类型",
+        ])
+        
+        return "\n".join(prompt_lines)
+
+
+def validate_action_match(
+    actions: List[Dict[str, Any]],
+    track_type: str,
+    purpose: str,
+    config: Optional[Dict[str, Any]] = None
+) -> ActionMatchResult:
+    """
+    验证RAG检索的Action是否符合需求
+    
+    验证规则：
+    1. 检索结果不能为空
+    2. 至少有一个Action的相似度超过最低阈值
+    3. 检查是否有高相似度的匹配
+    
+    Args:
+        actions: RAG检索到的Action列表
+        track_type: Track类型
+        purpose: Track用途描述
+        config: 可选的验证配置
+        
+    Returns:
+        ActionMatchResult 验证结果
+    """
+    cfg = {**ACTION_MATCH_CONFIG, **(config or {})}
+    min_sim = cfg["min_similarity_threshold"]
+    min_required = cfg["min_required_actions"]
+    high_sim = cfg["high_similarity_threshold"]
+    
+    # 检查1：结果为空
+    if not actions:
+        return ActionMatchResult(
+            is_valid=False,
+            actions=[],
+            mismatch_reason=f"RAG检索无结果，数据库中可能缺少 {track_type} 类型的Action定义",
+            missing_types=[f"{track_type}相关Action"]
+        )
+    
+    # 检查2：过滤低相似度结果
+    valid_actions = []
+    low_sim_actions = []
+    
+    for action in actions:
+        similarity = action.get("similarity", 0)
+        if similarity >= min_sim:
+            valid_actions.append(action)
+        else:
+            low_sim_actions.append(action)
+    
+    # 检查3：有效结果数量不足
+    if len(valid_actions) < min_required:
+        return ActionMatchResult(
+            is_valid=False,
+            actions=actions,
+            low_similarity_actions=low_sim_actions,
+            mismatch_reason=f"检索到的Action相似度过低（阈值: {min_sim:.0%}），可能不符合 '{purpose}' 的需求"
+        )
+    
+    # 检查4：是否有高相似度匹配
+    high_sim_count = sum(1 for a in valid_actions if a.get("similarity", 0) >= high_sim)
+    
+    if high_sim_count == 0:
+        # 没有高相似度匹配，发出警告但不中断
+        logger.warning(
+            f"⚠️ Track '{track_type}' 没有高相似度Action匹配 "
+            f"(最高: {max(a.get('similarity', 0) for a in valid_actions):.1%})"
+        )
+    
+    return ActionMatchResult(
+        is_valid=True,
+        actions=valid_actions,
+        low_similarity_actions=low_sim_actions
+    )
+
+
 def validate_track(track_data: Dict[str, Any], total_duration: int) -> List[str]:
     """
     验证单个 Track 的合法性
@@ -1209,7 +1354,48 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState, writer: 
         used_types=used_action_types
     )
 
-    # RAG 检索容错：无结果时使用默认模板
+    # === Action 匹配验证（中断检查点） ===
+    match_result = validate_action_match(
+        actions=relevant_actions,
+        track_type=track_type,
+        purpose=purpose
+    )
+    
+    if not match_result.is_valid:
+        # Action不匹配，中断流程并提示用户
+        user_prompt = match_result.get_user_prompt(track_name, purpose)
+        logger.warning(f"⚠️ Action匹配失败，中断流程: {match_result.mismatch_reason}")
+        
+        messages.append(AIMessage(content=user_prompt))
+        
+        # 发送Action不匹配事件
+        _emit_track_progress(
+            ProgressEventType.ACTION_MISMATCH,
+            f"Track '{track_name}' Action匹配失败，需要用户补全",
+            track_index=current_index,
+            total_tracks=len(track_plan),
+            track_name=track_name,
+            data={
+                "mismatch_reason": match_result.mismatch_reason,
+                "missing_types": match_result.missing_types,
+                "low_similarity_count": len(match_result.low_similarity_actions)
+            }
+        )
+        
+        # 返回中断状态
+        return {
+            "current_track_data": {},
+            "current_track_errors": [match_result.mismatch_reason],
+            "action_mismatch": True,
+            "missing_action_types": match_result.missing_types,
+            "action_mismatch_details": user_prompt,
+            "messages": messages
+        }
+    
+    # 使用验证后的有效Actions
+    relevant_actions = match_result.actions
+    
+    # RAG 检索容错：无结果时使用默认模板（此时match_result.is_valid为True说明有有效结果）
     if not relevant_actions:
         logger.warning(f"⚠️ RAG 检索无结果，使用 {track_type} 类型默认模板")
         relevant_actions = get_default_actions_for_track_type(track_type)
@@ -1283,8 +1469,10 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState, writer: 
                 logger.warning(f"⚠️ 发送初始 thinking chunk 失败: {e}")
 
         # 🔥 使用 OpenAI SDK 进行流式调用
+        from ..config import get_skill_gen_config
+        model_name = get_skill_gen_config().llm.model
         response = client.chat.completions.create(
-            model="deepseek-reasoner",
+            model=model_name,
             messages=openai_messages,
             stream=True
         )
@@ -1681,10 +1869,16 @@ def should_fix_track(state: ProgressiveSkillGenerationState) -> str:
     判断是否需要修复 track
 
     条件：
+    - Action不匹配 → "action_mismatch" (中断流程)
     - 无错误 → "save"
     - 有错误且未达重试上限 → "fix"
     - 有错误且达到上限 → "skip"
     """
+    # 检查是否存在Action不匹配问题（需要用户介入）
+    if state.get("action_mismatch", False):
+        logger.warning("⚠️ Action不匹配，中断流程等待用户补全")
+        return "action_mismatch"
+    
     errors = state.get("current_track_errors", [])
     retry_count = state.get("track_retry_count", 0)
     max_retries = state.get("max_track_retries", 3)
@@ -2106,12 +2300,13 @@ def skill_assembler_node(state: ProgressiveSkillGenerationState) -> Dict[str, An
 
 def finalize_progressive_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
     """
-    渐进式生成最终化节点 - 增强版：支持流式输出
+    渐进式生成最终化节点 - 增强版：支持流式输出和Action不匹配中断
 
     职责：
     1. 输出最终结果
     2. 生成摘要消息
     3. 发送生成完成/失败事件
+    4. 处理Action不匹配中断情况
 
     输出：
     - final_result: 最终技能配置（与旧版 SkillGenerationState 兼容）
@@ -2119,11 +2314,47 @@ def finalize_progressive_node(state: ProgressiveSkillGenerationState) -> Dict[st
     assembled_skill = state.get("assembled_skill", {})
     final_errors = state.get("final_validation_errors", [])
     tracks = assembled_skill.get("tracks", [])
+    
+    # 检查是否因Action不匹配而中断
+    action_mismatch = state.get("action_mismatch", False)
+    action_mismatch_details = state.get("action_mismatch_details", "")
+    missing_action_types = state.get("missing_action_types", [])
 
     logger.info(f"🏁 渐进式技能生成完成: {assembled_skill.get('skillName', 'Unknown')}")
 
     # 准备消息
     messages = []
+    
+    # 处理Action不匹配中断
+    if action_mismatch:
+        logger.warning("⚠️ 技能生成因Action不匹配而中断")
+        
+        messages.append(AIMessage(
+            content=f"[INTERRUPTED] **技能生成已中断**\n\n"
+                    f"原因：RAG数据库中缺少所需的Action类型\n\n"
+                    f"{action_mismatch_details}"
+        ))
+        
+        # 发送生成失败事件
+        _emit_finalize_progress(
+            ProgressEventType.GENERATION_FAILED,
+            "技能生成因Action不匹配而中断，需要用户补全Action类型",
+            is_valid=False,
+            data={
+                "reason": "action_mismatch",
+                "missing_types": missing_action_types,
+                "generated_tracks": len(state.get("generated_tracks", []))
+            }
+        )
+        
+        return {
+            "final_result": {},
+            "is_valid": False,
+            "action_mismatch": True,
+            "missing_action_types": missing_action_types,
+            "action_mismatch_details": action_mismatch_details,
+            "messages": messages
+        }
 
     if final_errors:
         # 有错误但仍输出结果（标记为不完整）

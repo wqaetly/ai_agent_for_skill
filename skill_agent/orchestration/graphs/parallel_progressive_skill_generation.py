@@ -18,6 +18,7 @@ from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
 
 from .utils import get_checkpointer
+from ..config import get_skill_gen_config
 from ..nodes.progressive_skill_nodes import (
     skeleton_generator_node,
     skeleton_fixer_node,
@@ -186,8 +187,9 @@ def parallel_track_generator_node(state: ParallelTrackState) -> Dict[str, Any]:
                     openai_messages.append({"role": "user", "content": msg.content})
             
             # 非流式调用（并行时流式意义不大）
+            model_name = get_skill_gen_config().llm.model
             response = client.chat.completions.create(
-                model="deepseek-reasoner",
+                model=model_name,
                 messages=openai_messages,
                 stream=False
             )

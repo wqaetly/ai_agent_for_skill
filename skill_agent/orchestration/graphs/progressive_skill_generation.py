@@ -115,9 +115,10 @@ def build_progressive_skill_generation_graph():
         "track_validator",
         should_fix_track,
         {
-            "save": "track_saver",   # 验证通过 → 保存
-            "fix": "track_fixer",    # 需要修复 → 进入 fixer
-            "skip": "track_saver"    # 达到上限 → 跳过（保存空或部分结果）
+            "save": "track_saver",           # 验证通过 -> 保存
+            "fix": "track_fixer",            # 需要修复 -> 进入 fixer
+            "skip": "track_saver",           # 达到上限 -> 跳过（保存空或部分结果）
+            "action_mismatch": "finalize"    # Action不匹配 -> 中断流程，进入最终化（带错误信息）
         }
     )
 
@@ -220,6 +221,10 @@ def _create_progressive_initial_state(
         "track_retry_count": 0,
         "max_track_retries": max_track_retries,
         "used_action_types": [],
+        # Action匹配中断状态
+        "action_mismatch": False,
+        "missing_action_types": [],
+        "action_mismatch_details": "",
         # 阶段3输出
         "assembled_skill": {},
         "final_validation_errors": [],
