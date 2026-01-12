@@ -50,14 +50,14 @@ from .hitl_skill_generation import (
     get_current_state,
 )
 
-# Agentic RAG 图 - 智能检索增强生成
-from .agentic_rag import (
-    build_agentic_rag_graph,
-    get_agentic_rag_graph,
-    agentic_rag_query,
-    agentic_rag_query_sync,
-    agentic_rag_stream,
-)
+# Agentic RAG 图 - 智能检索增强生成 (暂时禁用，需要更新 langgraph 版本)
+# from .agentic_rag import (
+#     build_agentic_rag_graph,
+#     get_agentic_rag_graph,
+#     agentic_rag_query,
+#     agentic_rag_query_sync,
+#     agentic_rag_stream,
+# )
 
 # 单Action级渐进式生成图 - 最细粒度生成
 from .single_action_skill_generation import (
@@ -99,12 +99,12 @@ __all__ = [
     "start_skill_generation_hitl",
     "approve_and_continue",
     "get_current_state",
-    # Agentic RAG
-    "build_agentic_rag_graph",
-    "get_agentic_rag_graph",
-    "agentic_rag_query",
-    "agentic_rag_query_sync",
-    "agentic_rag_stream",
+    # Agentic RAG (暂时禁用)
+    # "build_agentic_rag_graph",
+    # "get_agentic_rag_graph",
+    # "agentic_rag_query",
+    # "agentic_rag_query_sync",
+    # "agentic_rag_stream",
     # 单Action级生成
     "build_single_action_skill_generation_graph",
     "get_single_action_skill_generation_graph",

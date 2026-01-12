@@ -1,0 +1,33 @@
+{
+  "skillName": "冰球术",
+  "skillId": "ice-bolt-001",
+  "skillDescription": "发射一枚冰球攻击目标，造成冰霜伤害并有几率使敌人减速",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法动作和冰球投掷动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成冰球飞行特效、命中爆炸特效并计算伤害与减速效果",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放冰晶凝聚音效和冰球命中音效",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制冰球从施法者向目标点的飞行轨迹",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}

@@ -14,7 +14,8 @@ export function ThinkingMessage({
   isStreaming = false,
   isContentOutput = false
 }: ThinkingMessageProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  // 🔥 isContentOutput 内容默认展开且保持展开
+  const [isExpanded, setIsExpanded] = useState(isContentOutput);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -61,15 +62,34 @@ export function ThinkingMessage({
   }, [isStreaming]);
 
   // 输出完成后自动收起（仅对思考内容，不对 content 输出）
+  // 🔥 修复：当 isContentOutput 为 true 时，永远不要自动收起
+  // 🔥 使用 useRef 记录是否为 content 输出，避免 props 变化导致的问题
+  const isContentOutputRef = useRef(isContentOutput);
+  
+  // 🔥 更新 ref，确保始终使用最新的 isContentOutput 值
   useEffect(() => {
-    if (!isStreaming && isExpanded && !isContentOutput) {
+    if (isContentOutput) {
+      isContentOutputRef.current = true;
+    }
+  }, [isContentOutput]);
+  
+  useEffect(() => {
+    // 如果是 content 输出（包括 JSON、设计思路等），永远保持展开
+    // 🔥 使用 ref 来确保即使 props 变化也能保持正确状态
+    if (isContentOutput || isContentOutputRef.current) {
+      setIsExpanded(true);
+      return;
+    }
+    
+    // 只有纯思考内容才会自动收起
+    if (!isStreaming && isExpanded) {
       const timer = setTimeout(() => {
         setIsExpanded(false);
       }, 1000); // 1秒后自动收起
 
       return () => clearTimeout(timer);
     }
-  }, [isStreaming, isExpanded, isContentOutput]);
+  }, [isStreaming, isContentOutput]);
 
   return (
     <div className={cn(

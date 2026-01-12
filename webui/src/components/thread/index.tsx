@@ -222,7 +222,7 @@ export function Thread() {
     stream.submit(
       { messages: [...toolMessages, newHumanMessage], context },
       {
-        streamMode: ["values"],
+        streamMode: ["values", "messages"],  // 🔥 添加 messages 模式以接收 AI 输出
         streamSubgraphs: true,
         streamResumable: true,
         optimisticValues: (prev) => ({
@@ -249,7 +249,7 @@ export function Thread() {
     setFirstTokenReceived(false);
     stream.submit(undefined, {
       checkpoint: parentCheckpoint,
-      streamMode: ["values"],
+      streamMode: ["values", "messages"],  // 🔥 添加 messages 模式
       streamSubgraphs: true,
       streamResumable: true,
     });

@@ -1,0 +1,135 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "火球术",
+  "skillDescription": "凝聚火焰能量形成火球并投掷，命中目标后爆炸，造成范围火焰伤害。",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 13,
+    "$type": "9|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 3,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 4,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "animationClipName": "Fireball_Charge",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.2,
+              "animationLayer": 1
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 60,
+              "enabled": true,
+              "animationClipName": "Fireball_Throw",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.2,
+              "animationLayer": 1
+            }
+          ]
+        }
+      },
+      {
+        "$id": 5,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 9,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 6,
+              "$type": "4|ProjectileAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 90,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 15.0,
+              "maxRange": 30.0,
+              "projectilePrefab": "Fireball_Projectile",
+              "projectileSize": 1.0
+            },
+            {
+              "$id": 7,
+              "$type": "5|AreaOfEffectAction, Assembly-CSharp",
+              "frame": 90,
+              "duration": 10,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 5.0,
+              "innerRadius": 0.0,
+              "areaAngle": 360.0,
+              "centerPosition": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                0.0
+              }
+            },
+            {
+              "$id": 8,
+              "$type": "7|这是一个专门针对不同单位类型设置独立伤害上限的伤害计算Action。核心功能是造成基于属性缩放的伤害，并对特定单位类型应用伤害上限，防止对小兵、野怪等非英雄单位造成过高伤害。支持基础伤害、法术强度缩放, Assembly-CSharp",
+              "frame": 90,
+              "duration": 1,
+              "enabled": true,
+              "baseDamage": 100.0,
+              "damageType": "Magic",
+              "scaleWithLevel": true,
+              "damagePerLevel": 20.0,
+              "spellPowerRatio": 0.8
+            }
+          ]
+        }
+      },
+      {
+        "$id": 10,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Movement Track",
+        "enabled": true,
+        "actions": {
+          "$id": 12,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 1,
+          "$rcontent": [
+            {
+              "$id": 11,
+              "$type": "8|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 120,
+              "enabled": true,
+              "movementType": "Linear",
+              "movementSpeed": 5.0,
+              "targetPosition": {
+                "$type": "6|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                10.0
+              },
+              "useRelativePosition": true,
+              "arcHeight": 0.0
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "fireball-001"
+}

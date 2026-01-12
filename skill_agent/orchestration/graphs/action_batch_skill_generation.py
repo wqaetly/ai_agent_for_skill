@@ -24,22 +24,19 @@ import logging
 from typing import Optional, Callable, Dict, Any
 from .utils import get_checkpointer
 from ..nodes.action_batch_skill_nodes import (
-    ActionBatchProgressiveState,
+    ActionBatchSkillGenerationState,
     # 阶段1: 骨架生成（复用）
     skeleton_generator_node,
     should_continue_to_track_generation,
     # 阶段2: Track批次规划
-    plan_track_batches_node,
+    batch_planner_node,
     # 阶段3: 批次Action生成
-    batch_action_generator_node,
-    batch_action_validator_node,
-    batch_action_fixer_node,
-    batch_action_saver_node,
-    should_fix_batch,
-    should_continue_batches,
+    batch_generator_node,
+    batch_accumulator_node,
+    should_continue_batch_loop,
     # 阶段4: Track组装
-    track_assembler_node_batch,
-    should_continue_tracks_batch,
+    track_assembler_node,
+    should_continue_track_loop,
     # 阶段5: 技能组装（复用）
     skill_assembler_node,
     finalize_progressive_node,
@@ -82,7 +79,7 @@ def build_action_batch_skill_generation_graph():
     Returns:
         编译后的 LangGraph
     """
-    workflow = StateGraph(ActionBatchProgressiveState)
+    workflow = StateGraph(ActionBatchSkillGenerationState)
 
     # ==================== 添加节点 ====================
 
@@ -90,16 +87,14 @@ def build_action_batch_skill_generation_graph():
     workflow.add_node("skeleton_generator", skeleton_generator_node)
 
     # 阶段2: Track批次规划
-    workflow.add_node("plan_track_batches", plan_track_batches_node)
+    workflow.add_node("batch_planner", batch_planner_node)
 
     # 阶段3: 批次Action生成循环
-    workflow.add_node("batch_action_generator", batch_action_generator_node)
-    workflow.add_node("batch_action_validator", batch_action_validator_node)
-    workflow.add_node("batch_action_fixer", batch_action_fixer_node)
-    workflow.add_node("batch_action_saver", batch_action_saver_node)
+    workflow.add_node("batch_generator", batch_generator_node)
+    workflow.add_node("batch_accumulator", batch_accumulator_node)
 
     # 阶段4: Track组装
-    workflow.add_node("track_assembler", track_assembler_node_batch)
+    workflow.add_node("track_assembler", track_assembler_node)
 
     # 阶段5: 技能组装
     workflow.add_node("skill_assembler", skill_assembler_node)
@@ -115,48 +110,35 @@ def build_action_batch_skill_generation_graph():
         "skeleton_generator",
         should_continue_to_track_generation,
         {
-            "generate_tracks": "plan_track_batches",  # 骨架有效 → 规划Track批次
-            "skeleton_failed": "finalize"              # 骨架无效 → 直接结束
+            "generate_tracks": "batch_planner",
+            "fix_skeleton": "batch_planner",  # 简化：跳过修复
+            "skeleton_failed": "finalize"
         }
     )
 
     # Track批次规划 → 开始生成第一个批次
-    workflow.add_edge("plan_track_batches", "batch_action_generator")
+    workflow.add_edge("batch_planner", "batch_generator")
 
-    # 批次生成 → 验证
-    workflow.add_edge("batch_action_generator", "batch_action_validator")
+    # 批次生成 → 累积
+    workflow.add_edge("batch_generator", "batch_accumulator")
 
-    # 批次验证后的条件分支
+    # 批次累积后的条件分支
     workflow.add_conditional_edges(
-        "batch_action_validator",
-        should_fix_batch,
+        "batch_accumulator",
+        should_continue_batch_loop,
         {
-            "save": "batch_action_saver",   # 验证通过 → 保存
-            "fix": "batch_action_fixer",    # 需要修复 → 进入fixer
-            "skip": "batch_action_saver"    # 达到上限 → 跳过（保存空或部分结果）
-        }
-    )
-
-    # 批次修复 → 重新验证
-    workflow.add_edge("batch_action_fixer", "batch_action_validator")
-
-    # 批次保存后的条件分支
-    workflow.add_conditional_edges(
-        "batch_action_saver",
-        should_continue_batches,
-        {
-            "continue": "batch_action_generator",  # 继续下一个批次
-            "assemble_track": "track_assembler"    # 所有批次完成 → 组装Track
+            "next_batch": "batch_generator",
+            "assemble_track": "track_assembler"
         }
     )
 
     # Track组装后的条件分支
     workflow.add_conditional_edges(
         "track_assembler",
-        should_continue_tracks_batch,
+        should_continue_track_loop,
         {
-            "continue": "plan_track_batches",  # 继续下一个Track
-            "assemble_skill": "skill_assembler"  # 所有Track完成 → 组装技能
+            "next_track": "batch_planner",
+            "assemble_skill": "skill_assembler"
         }
     )
 
@@ -165,8 +147,8 @@ def build_action_batch_skill_generation_graph():
         "skill_assembler",
         should_finalize_or_fail,
         {
-            "finalize": "finalize",  # 组装成功 → 最终化
-            "failed": "finalize"      # 组装失败 → 也进入最终化（带错误信息）
+            "finalize": "finalize",
+            "failed": "finalize"
         }
     )
 

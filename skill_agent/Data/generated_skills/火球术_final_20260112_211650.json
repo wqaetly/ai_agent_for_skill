@@ -1,0 +1,177 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "火球术",
+  "skillDescription": "凝聚火焰能量发射一枚火球，命中后爆炸造成范围火焰伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 17,
+    "$type": "9|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 3,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 5,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 40,
+              "enabled": true,
+              "animationClipName": "Fireball_Charge",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 30,
+              "enabled": true,
+              "animationClipName": "Fireball_Throw",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 4,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 90,
+              "duration": 30,
+              "enabled": true,
+              "animationClipName": "Fireball_Recovery",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 6,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 11,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 4,
+          "$rcontent": [
+            {
+              "$id": 7,
+              "$type": "4|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "effectPrefab": "Fireball_Charge_Effect",
+              "position": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                0.0
+              }
+            },
+            {
+              "$id": 8,
+              "$type": "6|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 50,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 15.0,
+              "maxRange": 30.0,
+              "projectilePrefab": "Fireball_Projectile",
+              "projectileSize": 1.0
+            },
+            {
+              "$id": 9,
+              "$type": "4|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 20,
+              "enabled": true,
+              "effectPrefab": "Fireball_Explosion_Effect",
+              "position": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                15.0
+              }
+            },
+            {
+              "$id": 10,
+              "$type": "7|SkillSystem.Actions.CollisionAction, Assembly-CSharp",
+              "frame": 65,
+              "duration": 5,
+              "enabled": true,
+              "shape": "Sphere",
+              "position": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                15.0
+              },
+              "size": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                5.0,
+                5.0,
+                5.0
+              },
+              "layerMask": "Enemy",
+              "damage": 100.0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 12,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Audio Track",
+        "enabled": true,
+        "actions": {
+          "$id": 16,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 13,
+              "$type": "8|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "audioClipName": "Fireball_Charge",
+              "volume": 0.8
+            },
+            {
+              "$id": 14,
+              "$type": "8|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 20,
+              "duration": 15,
+              "enabled": true,
+              "audioClipName": "Fireball_Launch",
+              "volume": 1.0
+            },
+            {
+              "$id": 15,
+              "$type": "8|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 80,
+              "duration": 40,
+              "enabled": true,
+              "audioClipName": "Fireball_Explosion",
+              "volume": 1.2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "fireball-001"
+}

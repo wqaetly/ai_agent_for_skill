@@ -137,12 +137,23 @@ export function AssistantMessage({
   const hasAnthropicToolCalls = !!anthropicStreamedToolCalls?.length;
   const isToolResult = message?.type === "tool";
 
-  // 检查是否为思考内容
-  const isThinking = (message as any)?.thinking === true;
+  // 检查是否为思考内容 (支持直接属性和 additional_kwargs)
+  const isThinking = (message as any)?.thinking === true || 
+                     (message as any)?.additional_kwargs?.thinking === true;
   // 🔥 检查是否为流式输出中
   const isStreamingMessage = (message as any)?.streaming === true;
-  // 🔥 检查是否为 content 输出（deepseek-chat 模型的输出，ID 包含 _content_）
-  const isContentOutput = message?.id?.includes('_content_') ?? false;
+  // 🔥 检查是否为 content 输出（deepseek-chat 模型的输出，ID 以 content_ 开头）
+  const isContentOutput = message?.id?.startsWith('content_') ?? false;
+  
+  // 🔥 检查是否为设计思路/分析内容或JSON输出（应该用专门的 UI 组件展示）
+  const isDesignAnalysis = contentString.startsWith('**设计思路') || 
+                           contentString.startsWith('设计思路') ||
+                           contentString.includes('设计思路分析');
+  
+  // 🔥 检查是否为 JSON 输出（包含代码块的技能配置）
+  const isJsonOutput = contentString.includes('```json') || 
+                       contentString.includes('```JSON') ||
+                       (contentString.includes('"skillName"') && contentString.includes('"tracks"'));
 
   // 🔥 调试日志
   if (message?.type === 'ai') {
@@ -155,13 +166,13 @@ export function AssistantMessage({
     return null;
   }
 
-  // 如果是思考内容或 content 输出，使用专门的ThinkingMessage组件
-  if (isThinking || isContentOutput) {
+  // 如果是思考内容、content 输出、设计思路或JSON输出，使用专门的ThinkingMessage组件
+  if (isThinking || isContentOutput || isDesignAnalysis || isJsonOutput) {
     return (
       <ThinkingMessage
         content={contentString}
-        isStreaming={isStreamingMessage || (isLoading && isLastMessage)} // 🔥 优先使用 streaming 字段
-        isContentOutput={isContentOutput} // 🔥 传递标记，用于区分显示样式
+        isStreaming={isStreamingMessage || (isLoading && isLastMessage)}
+        isContentOutput={isContentOutput || isDesignAnalysis || isJsonOutput} // 都用蓝色样式
       />
     );
   }

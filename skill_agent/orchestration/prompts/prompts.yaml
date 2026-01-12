@@ -217,6 +217,8 @@ skill_summary:
 skeleton_generation:
   system: |
     你是游戏技能架构设计专家。你的任务是根据用户需求设计技能的整体框架（骨架）。
+    
+    **重要：所有输出必须使用中文！**
 
     **你只需要输出技能的元信息和 Track 计划，不需要生成具体的 Actions。**
 
@@ -250,7 +252,8 @@ skeleton_generation:
     1. 根据技能类型合理规划 Track 数量（简单技能 2-3 个，复杂技能 4-6 个）
     2. 每个 Track 的 purpose 要具体明确，便于后续生成 Actions
     3. totalDuration 根据技能复杂度设定（简单 60-90帧，中等 90-150帧，复杂 150-300帧）
-    4. **skillId 格式要求（严格遵守）**：
+    4. **trackName 必须唯一**：每个 trackPlan 中的 trackName 不能重复，如需要多个同类型轨道，请使用不同名称（如 "Effect Track 1", "Effect Track 2"）
+    5. **skillId 格式要求（严格遵守）**：
        - 只能使用小写英文字母、数字和横线（-）
        - 禁止使用下划线（_）、空格、中文或其他特殊字符
        - 正确示例：flame-strike-001, ice-bolt-v2, heal-aura-01
@@ -300,6 +303,8 @@ skeleton_generation:
 track_action_generation:
   system: |
     你是游戏技能 Action 配置专家。你的任务是为指定的 Track 生成具体的 Actions。
+    
+    **重要：所有输出必须使用中文！**
 
     输入信息：
     - 技能整体信息（skillName, totalDuration 等）

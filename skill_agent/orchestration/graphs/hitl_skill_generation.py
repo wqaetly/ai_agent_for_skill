@@ -22,12 +22,10 @@ from ..nodes.progressive_skill_nodes import (
     skeleton_generator_node,
     skeleton_fixer_node,
     should_continue_to_track_generation,
-    track_action_generator_node,
+    track_generator_node,
     track_validator_node,
-    track_fixer_node,
-    track_saver_node,
-    should_fix_track,
-    should_continue_tracks,
+    track_accumulator_node,
+    should_continue_track_loop,
     skill_assembler_node,
     finalize_progressive_node,
     should_finalize_or_fail,
@@ -55,22 +53,21 @@ def build_hitl_skill_generation_graph(
     # 添加节点
     workflow.add_node("skeleton_generator", skeleton_generator_node)
     workflow.add_node("skeleton_fixer", skeleton_fixer_node)
-    workflow.add_node("track_action_generator", track_action_generator_node)
+    workflow.add_node("track_generator", track_generator_node)
     workflow.add_node("track_validator", track_validator_node)
-    workflow.add_node("track_fixer", track_fixer_node)
-    workflow.add_node("track_saver", track_saver_node)
+    workflow.add_node("track_accumulator", track_accumulator_node)
     workflow.add_node("skill_assembler", skill_assembler_node)
     workflow.add_node("finalize", finalize_progressive_node)
     
     # 入口点
     workflow.set_entry_point("skeleton_generator")
     
-    # 边定义（与原版相同）
+    # 边定义
     workflow.add_conditional_edges(
         "skeleton_generator",
         should_continue_to_track_generation,
         {
-            "generate_tracks": "track_action_generator",
+            "generate_tracks": "track_generator",
             "fix_skeleton": "skeleton_fixer",
             "skeleton_failed": "finalize"
         }
@@ -80,31 +77,23 @@ def build_hitl_skill_generation_graph(
         "skeleton_fixer",
         should_continue_to_track_generation,
         {
-            "generate_tracks": "track_action_generator",
+            "generate_tracks": "track_generator",
             "fix_skeleton": "skeleton_fixer",
             "skeleton_failed": "finalize"
         }
     )
     
-    workflow.add_edge("track_action_generator", "track_validator")
+    workflow.add_edge("track_generator", "track_validator")
+    workflow.add_edge("track_validator", "track_accumulator")
     
     workflow.add_conditional_edges(
-        "track_validator",
-        should_fix_track,
+        "track_accumulator",
+        should_continue_track_loop,
         {
-            "save": "track_saver",
-            "fix": "track_fixer",
-            "skip": "track_saver",
-            "action_mismatch": "finalize"  # Action不匹配 -> 中断流程
+            "next_track": "track_generator",
+            "assemble": "skill_assembler",
+            "fix_track": "track_generator"
         }
-    )
-    
-    workflow.add_edge("track_fixer", "track_validator")
-    
-    workflow.add_conditional_edges(
-        "track_saver",
-        should_continue_tracks,
-        {"continue": "track_action_generator", "assemble": "skill_assembler"}
     )
     
     workflow.add_conditional_edges(

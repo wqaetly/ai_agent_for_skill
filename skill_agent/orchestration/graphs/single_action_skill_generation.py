@@ -23,17 +23,14 @@ from ..nodes.single_action_skill_nodes import (
     skeleton_generator_node,
     should_continue_to_track_generation,
     # Phase 2: Track Action Planning
-    plan_track_actions_node,
+    action_planner_node,
     # Phase 3: Single Action Loop
     single_action_generator_node,
-    single_action_validator_node,
-    single_action_fixer_node,
-    single_action_saver_node,
-    should_fix_action,
-    should_continue_actions,
+    action_accumulator_node,
+    should_continue_action_loop,
     # Phase 4: Track Assembly
-    track_assembler_node_single,
-    should_continue_tracks_single,
+    track_assembler_node,
+    should_continue_track_loop,
     # Phase 5: Skill Assembly (reused)
     skill_assembler_node,
     finalize_progressive_node,
@@ -70,12 +67,10 @@ def build_single_action_skill_generation_graph():
 
     # Add nodes
     workflow.add_node("skeleton_generator", skeleton_generator_node)
-    workflow.add_node("plan_track_actions", plan_track_actions_node)
+    workflow.add_node("action_planner", action_planner_node)
     workflow.add_node("single_action_generator", single_action_generator_node)
-    workflow.add_node("single_action_validator", single_action_validator_node)
-    workflow.add_node("single_action_fixer", single_action_fixer_node)
-    workflow.add_node("single_action_saver", single_action_saver_node)
-    workflow.add_node("track_assembler", track_assembler_node_single)
+    workflow.add_node("action_accumulator", action_accumulator_node)
+    workflow.add_node("track_assembler", track_assembler_node)
     workflow.add_node("skill_assembler", skill_assembler_node)
     workflow.add_node("finalize", finalize_progressive_node)
 
@@ -87,41 +82,29 @@ def build_single_action_skill_generation_graph():
         "skeleton_generator",
         should_continue_to_track_generation,
         {
-            "generate_tracks": "plan_track_actions",
-            "fix_skeleton": "skeleton_generator",  # Simplified: retry skeleton
+            "generate_tracks": "action_planner",
+            "fix_skeleton": "skeleton_generator",
             "skeleton_failed": "finalize"
         }
     )
 
-    workflow.add_edge("plan_track_actions", "single_action_generator")
-    workflow.add_edge("single_action_generator", "single_action_validator")
+    workflow.add_edge("action_planner", "single_action_generator")
+    workflow.add_edge("single_action_generator", "action_accumulator")
 
     workflow.add_conditional_edges(
-        "single_action_validator",
-        should_fix_action,
+        "action_accumulator",
+        should_continue_action_loop,
         {
-            "save": "single_action_saver",
-            "fix": "single_action_fixer",
-            "skip": "single_action_saver"
-        }
-    )
-
-    workflow.add_edge("single_action_fixer", "single_action_validator")
-
-    workflow.add_conditional_edges(
-        "single_action_saver",
-        should_continue_actions,
-        {
-            "continue": "single_action_generator",
+            "next_action": "single_action_generator",
             "assemble_track": "track_assembler"
         }
     )
 
     workflow.add_conditional_edges(
         "track_assembler",
-        should_continue_tracks_single,
+        should_continue_track_loop,
         {
-            "continue": "plan_track_actions",
+            "next_track": "action_planner",
             "assemble_skill": "skill_assembler"
         }
     )

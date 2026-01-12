@@ -1,0 +1,103 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "火球术",
+  "skillDescription": "发射一个火球攻击敌人",
+  "totalDuration": 60,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 10,
+    "$type": "6|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 2,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation",
+        "enabled": true,
+        "actions": {
+          "$id": 5,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 20,
+              "enabled": true,
+              "animationClipName": "Fireball_CastStart",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 1
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 20,
+              "duration": 20,
+              "enabled": true,
+              "animationClipName": "Fireball_Release",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 1
+            },
+            {
+              "$id": 4,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 20,
+              "enabled": true,
+              "animationClipName": "Fireball_CastEnd",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 1
+            }
+          ]
+        }
+      },
+      {
+        "$id": 6,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "VFX",
+        "enabled": true,
+        "actions": {
+          "$id": 9,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 7,
+              "$type": "4|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "effectPrefab": "Fireball_Core",
+              "position": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                1.5,
+                0.0
+              }
+            },
+            {
+              "$id": 8,
+              "$type": "4|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
+              "frame": 10,
+              "duration": 50,
+              "enabled": true,
+              "effectPrefab": "Fireball_Trail",
+              "position": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                1.5,
+                0.0
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "fireball-001"
+}

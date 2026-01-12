@@ -1,0 +1,33 @@
+{
+  "skillName": "魔法水晶箭",
+  "skillId": "magic-crystal-arrow-001",
+  "skillDescription": "射出一支魔法水晶箭，对路径上首个命中的敌人造成伤害并附带短暂眩晕",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放拉弓蓄力动画和释放箭矢的出手动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成箭矢飞行轨迹特效、命中爆炸特效，计算伤害并施加眩晕效果",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放蓄力音效、箭矢发射音效和命中爆炸音效",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制箭矢的飞行位移，支持追踪或直线飞行逻辑",
+      "estimatedActions": 2,
+      "priority": 4
+    }
+  ]
+}

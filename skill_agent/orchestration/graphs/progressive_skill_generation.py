@@ -21,12 +21,10 @@ from ..nodes.progressive_skill_nodes import (
     skeleton_fixer_node,
     should_continue_to_track_generation,
     # 阶段2：Track 生成循环
-    track_action_generator_node,
+    track_generator_node,
     track_validator_node,
-    track_fixer_node,
-    track_saver_node,
-    should_fix_track,
-    should_continue_tracks,
+    track_accumulator_node,
+    should_continue_track_loop,
     # 阶段3：技能组装
     skill_assembler_node,
     finalize_progressive_node,
@@ -71,10 +69,9 @@ def build_progressive_skill_generation_graph():
     workflow.add_node("skeleton_fixer", skeleton_fixer_node)
 
     # 阶段2：Track 生成循环
-    workflow.add_node("track_action_generator", track_action_generator_node)
+    workflow.add_node("track_generator", track_generator_node)
     workflow.add_node("track_validator", track_validator_node)
-    workflow.add_node("track_fixer", track_fixer_node)
-    workflow.add_node("track_saver", track_saver_node)
+    workflow.add_node("track_accumulator", track_accumulator_node)
 
     # 阶段3：技能组装
     workflow.add_node("skill_assembler", skill_assembler_node)
@@ -90,9 +87,9 @@ def build_progressive_skill_generation_graph():
         "skeleton_generator",
         should_continue_to_track_generation,
         {
-            "generate_tracks": "track_action_generator",  # 骨架有效 → 开始生成 tracks
-            "fix_skeleton": "skeleton_fixer",             # 骨架需要修复
-            "skeleton_failed": "finalize"                 # 骨架无效 → 直接结束
+            "generate_tracks": "track_generator",
+            "fix_skeleton": "skeleton_fixer",
+            "skeleton_failed": "finalize"
         }
     )
     
@@ -101,37 +98,26 @@ def build_progressive_skill_generation_graph():
         "skeleton_fixer",
         should_continue_to_track_generation,
         {
-            "generate_tracks": "track_action_generator",
-            "fix_skeleton": "skeleton_fixer",  # 继续修复
+            "generate_tracks": "track_generator",
+            "fix_skeleton": "skeleton_fixer",
             "skeleton_failed": "finalize"
         }
     )
 
     # Track 生成 → 验证
-    workflow.add_edge("track_action_generator", "track_validator")
+    workflow.add_edge("track_generator", "track_validator")
 
-    # Track 验证后的条件分支
+    # Track 验证后 → 累积
+    workflow.add_edge("track_validator", "track_accumulator")
+
+    # Track 累积后的条件分支
     workflow.add_conditional_edges(
-        "track_validator",
-        should_fix_track,
+        "track_accumulator",
+        should_continue_track_loop,
         {
-            "save": "track_saver",           # 验证通过 -> 保存
-            "fix": "track_fixer",            # 需要修复 -> 进入 fixer
-            "skip": "track_saver",           # 达到上限 -> 跳过（保存空或部分结果）
-            "action_mismatch": "finalize"    # Action不匹配 -> 中断流程，进入最终化（带错误信息）
-        }
-    )
-
-    # Track 修复 → 重新验证
-    workflow.add_edge("track_fixer", "track_validator")
-
-    # Track 保存后的条件分支
-    workflow.add_conditional_edges(
-        "track_saver",
-        should_continue_tracks,
-        {
-            "continue": "track_action_generator",  # 继续生成下一个 track
-            "assemble": "skill_assembler"          # 全部完成 → 组装
+            "next_track": "track_generator",
+            "assemble": "skill_assembler",
+            "fix_track": "track_generator"  # 简化：重新生成
         }
     )
 
@@ -140,8 +126,8 @@ def build_progressive_skill_generation_graph():
         "skill_assembler",
         should_finalize_or_fail,
         {
-            "finalize": "finalize",  # 组装成功 → 最终化
-            "failed": "finalize"      # 组装失败 → 也进入最终化（带错误信息）
+            "finalize": "finalize",
+            "failed": "finalize"
         }
     )
 

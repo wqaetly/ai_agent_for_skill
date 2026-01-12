@@ -158,6 +158,7 @@ const StreamSession = ({
     apiKey: apiKey ?? undefined,
     assistantId,
     threadId: threadId ?? null,
+    messagesKey: "messages",  // 🔥 关键：告诉 hook 从 values 事件中提取 messages
     fetchStateHistory: true,
     onCustomEvent: (event: any, options) => {
       if (isUIMessage(event) || isRemoveUIMessage(event)) {

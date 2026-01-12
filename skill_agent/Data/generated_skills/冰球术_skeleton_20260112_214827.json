@@ -1,0 +1,39 @@
+{
+  "skillName": "冰球术",
+  "skillId": "ice-bolt-001",
+  "skillDescription": "向目标发射一枚寒冰球体，命中后造成冰霜伤害并使其移动速度降低",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放角色施法动作，包含起手和释放冰球的动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制冰球从施法者向目标点飞行的轨迹和速度",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track 1",
+      "purpose": "生成冰球飞行时的拖尾特效，并在命中时生成爆炸与冰晶碎裂特效",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Effect Track 2",
+      "purpose": "在冰球命中时计算伤害，并为目标施加移动速度降低的debuff",
+      "estimatedActions": 2,
+      "priority": 4
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法时的寒冰凝聚音效和冰球命中时的破碎音效",
+      "estimatedActions": 2,
+      "priority": 5
+    }
+  ]
+}
