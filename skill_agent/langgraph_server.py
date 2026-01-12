@@ -532,23 +532,38 @@ async def stream_graph_updates(
                 # 序列化事件数据
                 try:
                     serialized_event = serialize_event_data(event)
+                    # 🔥 调试日志：打印序列化后的事件结构
+                    logger.debug(f"📦 Serialized event keys: {serialized_event.keys() if isinstance(serialized_event, dict) else type(serialized_event)}")
+                    if isinstance(serialized_event, dict) and 'messages' in serialized_event:
+                        msg_count = len(serialized_event['messages']) if isinstance(serialized_event['messages'], list) else 'N/A'
+                        logger.info(f"📨 Values event contains {msg_count} messages at top level")
                 except Exception as e:
                     logger.error(f"Serialization error: {e}")
                     continue
 
                 # 从节点输出中提取 messages 到顶层
-                # LangGraph 输出格式：{node_name: {messages: [...], ...}}
-                # 前端期望格式：{messages: [...], node_name: {...}}
+                # LangGraph 输出格式可能是：
+                # 1. {node_name: {messages: [...], ...}} - 节点输出格式
+                # 2. {messages: [...], ...} - 直接状态格式
+                # 前端期望格式：{messages: [...], ...}
                 flattened_state = {}
-                for node_name, node_output in serialized_event.items():
-                    if isinstance(node_output, dict) and 'messages' in node_output:
-                        # 将 messages 提升到顶层
-                        flattened_state['messages'] = node_output['messages']
-                        # 保留节点输出（不包含 messages）
-                        flattened_state[node_name] = {k: v for k, v in node_output.items() if k != 'messages'}
-                    else:
-                        # 保留其他字段
-                        flattened_state[node_name] = node_output
+                
+                # 🔥 修复：检查是否是直接状态格式（messages 在顶层）
+                if isinstance(serialized_event, dict) and 'messages' in serialized_event and isinstance(serialized_event['messages'], list):
+                    # 直接状态格式，messages 已经在顶层
+                    flattened_state = serialized_event
+                    logger.debug(f"📨 Direct state format with {len(serialized_event['messages'])} messages")
+                else:
+                    # 节点输出格式，需要提取 messages
+                    for node_name, node_output in serialized_event.items():
+                        if isinstance(node_output, dict) and 'messages' in node_output:
+                            # 将 messages 提升到顶层
+                            flattened_state['messages'] = node_output['messages']
+                            # 保留节点输出（不包含 messages）
+                            flattened_state[node_name] = {k: v for k, v in node_output.items() if k != 'messages'}
+                        else:
+                            # 保留其他字段
+                            flattened_state[node_name] = node_output
 
                 # 🔥 修复：values 模式返回完整状态，直接覆盖而非追加
                 # 之前的 extend 逻辑会导致消息重复

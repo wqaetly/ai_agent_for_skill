@@ -141,6 +141,13 @@ export function AssistantMessage({
   const isThinking = (message as any)?.thinking === true;
   // 🔥 检查是否为流式输出中
   const isStreamingMessage = (message as any)?.streaming === true;
+  // 🔥 检查是否为 content 输出（deepseek-chat 模型的输出，ID 包含 _content_）
+  const isContentOutput = message?.id?.includes('_content_') ?? false;
+
+  // 🔥 调试日志
+  if (message?.type === 'ai') {
+    console.log(`🎨 Rendering AI message: id=${message.id}, isThinking=${isThinking}, isContentOutput=${isContentOutput}, contentPreview=${contentString.substring(0, 50)}...`);
+  }
 
 
 
@@ -148,12 +155,13 @@ export function AssistantMessage({
     return null;
   }
 
-  // 如果是思考内容，使用专门的ThinkingMessage组件
-  if (isThinking) {
+  // 如果是思考内容或 content 输出，使用专门的ThinkingMessage组件
+  if (isThinking || isContentOutput) {
     return (
       <ThinkingMessage
         content={contentString}
         isStreaming={isStreamingMessage || (isLoading && isLastMessage)} // 🔥 优先使用 streaming 字段
+        isContentOutput={isContentOutput} // 🔥 传递标记，用于区分显示样式
       />
     );
   }

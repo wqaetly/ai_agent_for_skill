@@ -1,0 +1,168 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "闪电球",
+  "skillDescription": "发射一个移动的闪电球，命中敌人后造成伤害并施加持续3秒的减速效果",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 16,
+    "$type": "10|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 4,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 4,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "animationClipName": "CastSpell",
+              "normalizedTime": 0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 30,
+              "duration": 60,
+              "enabled": true,
+              "animationClipName": "SummonLightningBall",
+              "normalizedTime": 0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 1
+            }
+          ]
+        }
+      },
+      {
+        "$id": 5,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Movement Track",
+        "enabled": true,
+        "actions": {
+          "$id": 7,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 1,
+          "$rcontent": [
+            {
+              "$id": 6,
+              "$type": "4|SkillSystem.Actions.MovementAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 120,
+              "enabled": true,
+              "movementType": "Linear",
+              "movementSpeed": 500.0,
+              "targetPosition": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                100.0
+              },
+              "useRelativePosition": true,
+              "arcHeight": 2.0,
+              "movementCurve": null,
+              "faceMovementDirection": true,
+              "allowMovementCancel": false
+            }
+          ]
+        }
+      },
+      {
+        "$id": 8,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track",
+        "enabled": true,
+        "actions": {
+          "$id": 12,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 9,
+              "$type": "6|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 800.0,
+              "maxRange": 1000.0,
+              "projectilePrefab": "LightningBall_Projectile",
+              "projectileSize": 1.0,
+              "trailEffect": null,
+              "arcHeight": 0.0,
+              "trackingStrength": 0.0
+            },
+            {
+              "$id": 10,
+              "$type": "7|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 10,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 3.0,
+              "innerRadius": 0.0,
+              "areaAngle": 90.0,
+              "centerPosition": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                0.0,
+                0.0
+              },
+              "useRelativePosition": false,
+              "followCaster": false,
+              "effectType": "Damage"
+            },
+            {
+              "$id": 11,
+              "$type": "8|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 10,
+              "enabled": true,
+              "buffType": "Debuff",
+              "buffId": "lightning_slow",
+              "stackType": "Refresh",
+              "maxStacks": 1,
+              "buffDuration": 3.0,
+              "isPermanent": false,
+              "buffIcon": null,
+              "buffName": "Lightning Slow"
+            }
+          ]
+        }
+      },
+      {
+        "$id": 13,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Unknown Track",
+        "enabled": true,
+        "actions": {
+          "$id": 15,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 1,
+          "$rcontent": [
+            {
+              "$id": 14,
+              "$type": "9|SkillSystem.Actions.PlayAnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 30,
+              "enabled": true,
+              "animationName": "Attack01"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "lightning-ball-001"
+}

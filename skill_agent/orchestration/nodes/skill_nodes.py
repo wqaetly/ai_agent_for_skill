@@ -607,17 +607,7 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
     else:
         logger.info(f"✅ Got stream writer from parameter: {type(writer)}")
 
-    # 🔥 立即发送一个测试事件，验证 writer 是否工作
-    if writer:
-        try:
-            writer({
-                "type": "thinking_chunk",
-                "message_id": f"test_{time.time()}",
-                "chunk": "🤔 DeepSeek Reasoner 开始思考...\n"
-            })
-            logger.info("✅ Test thinking_chunk sent successfully")
-        except Exception as e:
-            logger.error(f"❌ Failed to send test chunk: {e}")
+    # 不在这里发送测试消息，等 message_id 生成后再发送
 
     logger.info(f"生成技能 JSON: {requirement}")
 
@@ -717,9 +707,34 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
     full_content = ""    # 最终输出
     structured_result = None  # 🔥 结构化结果
 
-    # 🔥 生成唯一的 message_id 用于跟踪流式消息
+    # 生成唯一的 message_id 用于跟踪流式消息
     thinking_message_id = f"thinking_{api_start_time}"
     content_message_id = f"content_{api_start_time}"
+
+    # 发送开始消息，使用正确的 message_id
+    model_name = get_skill_gen_config().llm.model
+    is_reasoner_model = "reasoner" in model_name.lower()
+    
+    if writer:
+        try:
+            if is_reasoner_model:
+                writer({
+                    "type": "thinking_chunk",
+                    "message_id": thinking_message_id,
+                    "chunk": "DeepSeek Reasoner 开始思考...\n"
+                })
+            else:
+                # deepseek-chat: 发送 content_chunk 初始消息
+                writer({
+                    "type": "content_chunk",
+                    "message_id": content_message_id,
+                    "chunk": ""  # 空内容，让后续的实际内容显示
+                })
+            logger.info(f"Initial chunk sent with message_id: {content_message_id}, model: {model_name}")
+        except Exception as e:
+            logger.error(f"Failed to send initial chunk: {e}")
+    else:
+        logger.warning(f"Writer is None at initialization, streaming will not work")
 
     # 准备 prompt 输入（用于流式和可能的 structured fallback）
     prompt_inputs = {
@@ -795,11 +810,10 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
             content_chunk = getattr(delta, 'content', None)
             if content_chunk:
                 full_content += content_chunk
-                # 降低日志频率
-                if len(full_content) % 200 < len(content_chunk):
-                    logger.info(f"📝 Content progress: {len(full_content)} chars")
+                # 每个 chunk 都记录日志，方便调试
+                logger.debug(f"Content chunk received: {len(content_chunk)} chars, total: {len(full_content)}")
 
-                # 🔥 使用 LangGraph 标准 writer 实时推送 content chunk
+                # 使用 LangGraph 标准 writer 实时推送 content chunk
                 if writer:
                     try:
                         writer({
@@ -807,8 +821,13 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
                             "message_id": content_message_id,
                             "chunk": content_chunk
                         })
+                        logger.debug(f"Content chunk sent successfully")
                     except Exception as e:
-                        logger.error(f"❌ Failed to send content chunk: {e}")
+                        logger.error(f"Failed to send content chunk: {e}")
+                else:
+                    # 记录 writer 为空的情况
+                    if len(full_content) <= len(content_chunk):  # 只在第一个 chunk 时记录
+                        logger.warning("Writer is None, content chunks will not be streamed to frontend")
 
         # 记录完整响应和性能指标
         api_total_time = time.time() - api_start_time
@@ -883,20 +902,36 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
             ))
 
         # 如果有思考过程，作为单独的消息添加（标记为 thinking）
-        # 🔥 使用与流式chunk相同的 message_id，确保前端可以正确更新消息
+        # 使用与流式chunk相同的 message_id，确保前端可以正确更新消息
         if full_reasoning:
             messages.append(AIMessage(
                 content=full_reasoning,
                 additional_kwargs={"thinking": True},
-                id=thinking_message_id  # 🔥 使用相同的 ID
+                id=thinking_message_id
             ))
 
         # 添加 DeepSeek 的最终输出
-        # 🔥 使用与流式chunk相同的 message_id
-        messages.append(AIMessage(
-            content=full_content,
-            id=content_message_id  # 🔥 使用相同的 ID
-        ))
+        # 使用与流式chunk相同的 message_id，前端会用最终消息替换流式消息
+        # 🔥 修复：对于 deepseek-chat（没有 reasoning_content），content 就是最终输出
+        # 对于 deepseek-reasoner，reasoning_content 是思考过程，content 是最终输出
+        if full_content:
+            # 判断是否为 reasoner 模型
+            is_reasoner = "reasoner" in model_name.lower()
+            
+            if is_reasoner and full_reasoning:
+                # reasoner 模型：content 是 JSON 输出，不需要单独显示（已经在 generated_json 中）
+                # 只添加一个简短的完成消息
+                messages.append(AIMessage(
+                    content=f"📝 技能配置已生成完成",
+                    id=content_message_id
+                ))
+            else:
+                # chat 模型：content 是完整输出，需要显示给用户
+                # 或者 reasoner 模型但没有 reasoning（异常情况）
+                messages.append(AIMessage(
+                    content=full_content,
+                    id=content_message_id
+                ))
 
     except TimeoutError as e:
         # LLM调用超时
@@ -918,6 +953,14 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
             "messages": messages,
             "validation_errors": [f"api_error: {str(e)}"]
         }
+
+    # 🔥 调试日志：打印返回的消息数量和内容预览
+    logger.info(f"📤 generator_node 返回 {len(messages)} 条消息")
+    for i, msg in enumerate(messages):
+        content_preview = msg.content[:100] if len(msg.content) > 100 else msg.content
+        msg_id = getattr(msg, 'id', 'no-id')
+        is_thinking = msg.additional_kwargs.get('thinking', False) if hasattr(msg, 'additional_kwargs') else False
+        logger.info(f"  消息[{i}]: id={msg_id}, thinking={is_thinking}, content={content_preview}...")
 
     return {
         "generated_json": generated_json,

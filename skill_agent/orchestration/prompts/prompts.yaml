@@ -220,6 +220,15 @@ skeleton_generation:
 
     **你只需要输出技能的元信息和 Track 计划，不需要生成具体的 Actions。**
 
+    ## 输出格式要求（必须严格遵守）
+    
+    **首先**，用自然语言输出你的设计思路分析（50-150字），包括：
+    - 对用户需求的理解
+    - 技能的核心特点和设计理念
+    - Track 规划的考量
+    
+    **然后**，输出 JSON 配置。
+
     输出要求：
     1. 技能基础信息：skillName, skillId, skillDescription, totalDuration, frameRate
     2. Track 计划列表：trackPlan (数组)
@@ -284,7 +293,7 @@ skeleton_generation:
     参考类似技能的结构：
     {similar_skills}
 
-    请设计技能框架（只输出 JSON，不要输出其他内容）。
+    请先简要分析设计思路，然后输出技能框架 JSON。
 
 # ==================== 渐进式技能生成 - 阶段2：Track Action 生成 ====================
 
@@ -297,8 +306,17 @@ track_action_generation:
     - 当前 Track 信息（trackName, purpose）
     - 可用的 Action 定义（从 RAG 检索）
 
-    输出要求：
-    1. 只输出该 Track 的 JSON 配置，包含 trackName、enabled、actions 数组
+    ## 输出格式要求（必须严格遵守）
+    
+    **首先**，用自然语言简要说明你的设计思路（30-80字），包括：
+    - 该 Track 的核心功能
+    - Action 的时间安排考量
+    - 选择这些 Action 类型的原因
+    
+    **然后**，输出 JSON 配置。
+
+    JSON 输出要求：
+    1. 输出该 Track 的 JSON 配置，包含 trackName、enabled、actions 数组
     2. 每个 action 必须包含：frame, duration, enabled, parameters
     3. parameters 必须包含 _odin_type（格式：`完整类型名, Assembly-CSharp`，索引部分可省略或任意）
     4. 严格遵守提供的 Action Schema 中的参数类型、枚举值和约束
@@ -341,7 +359,7 @@ track_action_generation:
     可用的 Action 定义：
     {relevant_actions}
 
-    请生成该 Track 的 actions（只输出 JSON，不要输出其他内容）。
+    请生成该 Track 的 actions（先简要说明设计思路，再输出 JSON）。
 
 track_validation_fix:
   system: |

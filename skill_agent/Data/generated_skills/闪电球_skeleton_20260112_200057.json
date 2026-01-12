@@ -1,0 +1,33 @@
+{
+  "skillName": "闪电球",
+  "skillId": "lightning-ball-001",
+  "skillDescription": "发射一个移动的闪电球，命中敌人后造成伤害并施加持续3秒的减速效果",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法动作和闪电球生成动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制闪电球从施法者向目标方向直线移动",
+      "estimatedActions": 1,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成闪电球特效、命中时造成伤害并施加持续3秒的减速debuff",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放闪电球发射音效和命中时的电击音效",
+      "estimatedActions": 2,
+      "priority": 3
+    }
+  ]
+}

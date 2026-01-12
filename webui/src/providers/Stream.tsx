@@ -220,6 +220,15 @@ const StreamSession = ({
   
   // 🔥 单独处理消息状态变化，清理对应的 buffer
   useEffect(() => {
+    // 🔥 调试日志：打印消息状态变化
+    console.log("📨 Messages updated:", streamValue.messages.length, "messages");
+    streamValue.messages.forEach((msg: any, i: number) => {
+      const contentPreview = typeof msg.content === 'string' 
+        ? msg.content.substring(0, 50) 
+        : JSON.stringify(msg.content).substring(0, 50);
+      console.log(`  [${i}] id=${msg.id}, type=${msg.type}, thinking=${msg.thinking}, content=${contentPreview}...`);
+    });
+    
     streamValue.messages.forEach((msg: any) => {
       if (!msg.streaming && msg.id && chunkBuffersRef.current[msg.id]) {
         delete chunkBuffersRef.current[msg.id];

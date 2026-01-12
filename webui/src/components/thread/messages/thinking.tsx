@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronDown, ChevronRight, Brain, Clock } from "lucide-react";
+import { ChevronDown, ChevronRight, Brain, Clock, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MarkdownText } from "../markdown-text";
 
 interface ThinkingMessageProps {
   content: string;
   isStreaming?: boolean;
+  isContentOutput?: boolean; // 🔥 新增：标记是否为 content 输出（deepseek-chat）
 }
 
 export function ThinkingMessage({
   content,
-  isStreaming = false
+  isStreaming = false,
+  isContentOutput = false
 }: ThinkingMessageProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -31,11 +33,11 @@ export function ThinkingMessage({
 
   // 流式输出时自动展开
   useEffect(() => {
-    if (isStreaming) {
+    if (isStreaming || isContentOutput) {
       setIsExpanded(true);
       setShouldAutoScroll(true);
     }
-  }, [isStreaming]);
+  }, [isStreaming, isContentOutput]);
 
   // 流式输出时自动滚动到底部（仅当用户未手动滚动时）
   useEffect(() => {
@@ -58,42 +60,85 @@ export function ThinkingMessage({
     }
   }, [isStreaming]);
 
-  // 输出完成后自动收起
+  // 输出完成后自动收起（仅对思考内容，不对 content 输出）
   useEffect(() => {
-    if (!isStreaming && isExpanded) {
+    if (!isStreaming && isExpanded && !isContentOutput) {
       const timer = setTimeout(() => {
         setIsExpanded(false);
       }, 1000); // 1秒后自动收起
 
       return () => clearTimeout(timer);
     }
-  }, [isStreaming, isExpanded]);
+  }, [isStreaming, isExpanded, isContentOutput]);
 
   return (
-    <div className="my-2 rounded-lg border border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950 overflow-hidden">
+    <div className={cn(
+      "my-2 rounded-lg border overflow-hidden",
+      isContentOutput 
+        ? "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950"
+        : "border-purple-200 bg-purple-50 dark:border-purple-800 dark:bg-purple-950"
+    )}>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-2 p-3 hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors"
+        className={cn(
+          "w-full flex items-center gap-2 p-3 transition-colors",
+          isContentOutput
+            ? "hover:bg-blue-100 dark:hover:bg-blue-900"
+            : "hover:bg-purple-100 dark:hover:bg-purple-900"
+        )}
       >
-        <Brain className={cn(
-          "h-4 w-4 text-purple-600 dark:text-purple-400 flex-shrink-0",
-          isStreaming && "animate-pulse"
-        )} />
+        {isContentOutput ? (
+          <Sparkles className={cn(
+            "h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0",
+            isStreaming && "animate-pulse"
+          )} />
+        ) : (
+          <Brain className={cn(
+            "h-4 w-4 text-purple-600 dark:text-purple-400 flex-shrink-0",
+            isStreaming && "animate-pulse"
+          )} />
+        )}
         <div className="flex-1 text-left">
-          <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
-            {isStreaming ? "DeepSeek 正在深度思考..." : "思考过程"}
+          <span className={cn(
+            "text-sm font-medium",
+            isContentOutput
+              ? "text-blue-900 dark:text-blue-100"
+              : "text-purple-900 dark:text-purple-100"
+          )}>
+            {isStreaming 
+              ? (isContentOutput ? "AI 正在生成..." : "DeepSeek 正在深度思考...") 
+              : (isContentOutput ? "AI 输出" : "思考过程")}
           </span>
           {isStreaming && (
-            <div className="flex items-center gap-2 mt-1 text-xs text-purple-600 dark:text-purple-400">
+            <div className={cn(
+              "flex items-center gap-2 mt-1 text-xs",
+              isContentOutput
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-purple-600 dark:text-purple-400"
+            )}>
               <Clock className="h-3 w-3" />
-              <span>已思考 {elapsedTime}s {elapsedTime < 30 ? "(推理中，预计 30-60s)" : "(即将完成)"}</span>
+              <span>
+                {isContentOutput 
+                  ? `已生成 ${elapsedTime}s`
+                  : `已思考 ${elapsedTime}s ${elapsedTime < 30 ? "(推理中，预计 30-60s)" : "(即将完成)"}`}
+              </span>
             </div>
           )}
         </div>
         {isExpanded ? (
-          <ChevronDown className="h-4 w-4 ml-auto text-purple-600 dark:text-purple-400 flex-shrink-0" />
+          <ChevronDown className={cn(
+            "h-4 w-4 ml-auto flex-shrink-0",
+            isContentOutput
+              ? "text-blue-600 dark:text-blue-400"
+              : "text-purple-600 dark:text-purple-400"
+          )} />
         ) : (
-          <ChevronRight className="h-4 w-4 ml-auto text-purple-600 dark:text-purple-400 flex-shrink-0" />
+          <ChevronRight className={cn(
+            "h-4 w-4 ml-auto flex-shrink-0",
+            isContentOutput
+              ? "text-blue-600 dark:text-blue-400"
+              : "text-purple-600 dark:text-purple-400"
+          )} />
         )}
       </button>
 
@@ -103,11 +148,21 @@ export function ThinkingMessage({
           isExpanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="p-3 pt-0 border-t border-purple-200 dark:border-purple-800">
+        <div className={cn(
+          "p-3 pt-0 border-t",
+          isContentOutput
+            ? "border-blue-200 dark:border-blue-800"
+            : "border-purple-200 dark:border-purple-800"
+        )}>
           <div 
             ref={contentRef}
             onScroll={handleScroll}
-            className="text-sm text-purple-800 dark:text-purple-200 max-h-[500px] overflow-y-auto"
+            className={cn(
+              "text-sm max-h-[500px] overflow-y-auto",
+              isContentOutput
+                ? "text-blue-800 dark:text-blue-200"
+                : "text-purple-800 dark:text-purple-200"
+            )}
           >
             <MarkdownText>{content}</MarkdownText>
           </div>

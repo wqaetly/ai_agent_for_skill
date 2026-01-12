@@ -1,0 +1,33 @@
+{
+  "skillName": "火球术",
+  "skillId": "fireball-001",
+  "skillDescription": "凝聚火焰能量形成火球并投掷，命中目标后爆炸造成范围火焰伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法蓄力动画和投掷火球的释放动画",
+      "estimatedActions": 2,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成手中凝聚的火球特效、控制火球弹道飞行、触发命中爆炸特效并造成范围伤害",
+      "estimatedActions": 4,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放蓄力吟唱音效、火球发射音效以及命中爆炸音效",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "模拟施法后坐力，使角色在投掷后轻微后移",
+      "estimatedActions": 1,
+      "priority": 4
+    }
+  ]
+}

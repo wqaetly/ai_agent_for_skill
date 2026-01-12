@@ -684,6 +684,19 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
                 additional_kwargs={"thinking": True},
                 id=thinking_message_id
             ))
+        
+        # 🔥 添加 content 输出消息（对于 deepseek-chat 模型，没有 reasoning_content）
+        # 判断是否为 reasoner 模型
+        model_name = get_skill_gen_config().llm.model
+        is_reasoner = "reasoner" in model_name.lower()
+        
+        if full_content and not (is_reasoner and full_reasoning):
+            # chat 模型：显示完整的 content 输出
+            # 或者 reasoner 模型但没有 reasoning（异常情况）
+            messages.append(AIMessage(
+                content=full_content,
+                id=content_message_id
+            ))
 
         # 发送骨架生成完成事件
         _emit_skeleton_progress(
@@ -1556,6 +1569,16 @@ def track_action_generator_node(state: ProgressiveSkillGenerationState, writer: 
                 content=full_reasoning,
                 additional_kwargs={"thinking": True},
                 id=thinking_message_id
+            ))
+        
+        # 🔥 添加 content 输出消息（对于 deepseek-chat 模型，没有 reasoning_content）
+        model_name = get_skill_gen_config().llm.model
+        is_reasoner = "reasoner" in model_name.lower()
+        
+        if full_content and not (is_reasoner and full_reasoning):
+            messages.append(AIMessage(
+                content=full_content,
+                id=content_message_id
             ))
 
         # 发送Track生成完成事件（注意：这里只是LLM生成完成，还需要验证）

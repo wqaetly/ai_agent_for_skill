@@ -1,0 +1,27 @@
+{
+  "skillName": "火球术",
+  "skillId": "fireball-001",
+  "skillDescription": "凝聚火焰能量发射一枚火球，对命中的第一个敌人造成单体火焰伤害",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放施法动作、发射火球动画以及施法后摇动画",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "在施法点生成火球特效，火球飞行轨迹特效，命中目标时产生爆炸特效并计算伤害",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放施法吟唱音效、火球发射音效和命中爆炸音效",
+      "estimatedActions": 3,
+      "priority": 3
+    }
+  ]
+}

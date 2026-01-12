@@ -1,0 +1,33 @@
+{
+  "skillName": "引力火球",
+  "skillId": "gravity-fireball-001",
+  "skillDescription": "发射一个缓慢飞行的引力火球，持续牵引周围敌人并最终爆炸造成范围伤害",
+  "totalDuration": 180,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放双手凝聚火焰能量的施法动画，以及火球发射后的收尾动作",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制引力火球的飞行轨迹，使其缓慢前进并带有轻微的上下浮动",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track",
+      "purpose": "生成火球本体特效、持续性的引力牵引场特效、以及最终的爆炸伤害与范围特效",
+      "estimatedActions": 4,
+      "priority": 1
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放低沉的火焰凝聚音效、持续的引力嗡鸣声以及剧烈的爆炸音效",
+      "estimatedActions": 3,
+      "priority": 3
+    }
+  ]
+}
