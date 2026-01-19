@@ -14,8 +14,9 @@ Human-in-the-loop 技能生成图
 from langgraph.graph import StateGraph, END
 import os
 import logging
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Literal
 
+from langchain_core.messages import AIMessage
 from .utils import get_checkpointer
 from ..nodes.progressive_skill_nodes import (
     ProgressiveSkillGenerationState,
@@ -37,6 +38,7 @@ logger = logging.getLogger(__name__)
 def build_hitl_skill_generation_graph(
     interrupt_after_skeleton: bool = True,
     interrupt_after_assembly: bool = True,
+    interrupt_on_action_mismatch: bool = True,
 ):
     """
     构建支持 Human-in-the-loop 的技能生成图
@@ -44,6 +46,7 @@ def build_hitl_skill_generation_graph(
     Args:
         interrupt_after_skeleton: 骨架生成后是否中断
         interrupt_after_assembly: 技能组装后是否中断
+        interrupt_on_action_mismatch: 检测到无效 Action 类型时是否中断
     
     Returns:
         编译后的 LangGraph
@@ -58,6 +61,27 @@ def build_hitl_skill_generation_graph(
     workflow.add_node("track_accumulator", track_accumulator_node)
     workflow.add_node("skill_assembler", skill_assembler_node)
     workflow.add_node("finalize", finalize_progressive_node)
+    
+    # Action 类型不匹配时的中断节点（空节点，仅用于中断）
+    def action_mismatch_interrupt_node(state):
+        """当检测到无效 Action 类型时，此节点会被中断，等待用户决定"""
+        missing_types = state.get("missing_action_types", [])
+        details = state.get("action_mismatch_details", "")
+        logger.info(f"Action mismatch interrupt: {missing_types}")
+        return {
+            "messages": [AIMessage(content=f"[等待用户确认] 检测到无效的 Action 类型:\n{details}\n\n请选择:\n1. 继续生成（忽略此问题）\n2. 终止生成")]
+        }
+    
+    workflow.add_node("action_mismatch_interrupt", action_mismatch_interrupt_node)
+    
+    # 用户确认后继续或终止的条件函数
+    def should_continue_after_mismatch(state) -> Literal["continue_generation", "abort_generation"]:
+        """用户确认后决定是否继续"""
+        # 检查用户是否选择继续（通过 update_state 设置）
+        user_choice = state.get("user_action_mismatch_choice", "continue")
+        if user_choice == "abort":
+            return "abort_generation"
+        return "continue_generation"
     
     # 入口点
     workflow.set_entry_point("skeleton_generator")
@@ -92,7 +116,18 @@ def build_hitl_skill_generation_graph(
         {
             "next_track": "track_generator",
             "assemble": "skill_assembler",
-            "fix_track": "track_generator"
+            "fix_track": "track_generator",
+            "action_mismatch_interrupt": "action_mismatch_interrupt"
+        }
+    )
+    
+    # Action mismatch 中断后的条件边
+    workflow.add_conditional_edges(
+        "action_mismatch_interrupt",
+        should_continue_after_mismatch,
+        {
+            "continue_generation": "track_accumulator",
+            "abort_generation": "finalize"
         }
     )
     
@@ -116,6 +151,10 @@ def build_hitl_skill_generation_graph(
         # 技能组装后中断，让用户审核最终配置
         interrupt_after.append("skill_assembler")
     
+    if interrupt_on_action_mismatch:
+        # 检测到无效 Action 类型时中断，让用户决定是否继续
+        interrupt_before.append("action_mismatch_interrupt")
+    
     # 持久化配置
     checkpoint_dir = os.path.join(
         os.path.dirname(__file__), "..", "..", "Data", "checkpoints"
@@ -123,7 +162,7 @@ def build_hitl_skill_generation_graph(
     checkpoint_db = os.path.join(checkpoint_dir, "hitl_skill_generation.db")
     checkpointer = get_checkpointer(checkpoint_db)
     
-    logger.info(f"HITL graph: interrupt_after={interrupt_after}")
+    logger.info(f"HITL graph: interrupt_before={interrupt_before}, interrupt_after={interrupt_after}")
     
     return workflow.compile(
         checkpointer=checkpointer,
@@ -188,6 +227,7 @@ async def start_skill_generation_hitl(
         "action_mismatch": False,
         "missing_action_types": [],
         "action_mismatch_details": "",
+        "user_action_mismatch_choice": "continue",  # 默认继续
         "assembled_skill": {},
         "final_validation_errors": [],
         "final_result": {},
@@ -240,10 +280,42 @@ def get_current_state(thread_id: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+async def handle_action_mismatch_response(
+    thread_id: str,
+    user_choice: str = "continue"
+) -> Dict[str, Any]:
+    """
+    处理用户对 Action 类型不匹配的响应
+    
+    Args:
+        thread_id: 线程ID
+        user_choice: 用户选择 - "continue" 继续生成, "abort" 终止生成
+    
+    Returns:
+        继续执行后的状态
+    """
+    graph = get_hitl_skill_generation_graph()
+    config = create_hitl_config(thread_id)
+    
+    # 更新用户选择并重置 action_mismatch 标记
+    modifications = {
+        "user_action_mismatch_choice": user_choice,
+        "action_mismatch": False,  # 重置标记，允许继续
+    }
+    
+    graph.update_state(config, modifications)
+    logger.info(f"User chose to {user_choice} after action mismatch")
+    
+    # 继续执行
+    result = await graph.ainvoke(None, config)
+    return result
+
+
 __all__ = [
     "build_hitl_skill_generation_graph",
     "get_hitl_skill_generation_graph",
     "start_skill_generation_hitl",
     "approve_and_continue",
     "get_current_state",
+    "handle_action_mismatch_response",
 ]

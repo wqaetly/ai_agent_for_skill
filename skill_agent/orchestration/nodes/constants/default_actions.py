@@ -22,13 +22,13 @@ DEFAULT_ACTIONS_BY_TRACK_TYPE: Dict[str, List[Dict[str, Any]]] = {
     ],
     "effect": [
         {
-            "action_name": "SpawnEffectAction",
-            "action_type": "SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
-            "description": "生成特效（火焰、冰霜、闪电等视觉效果）",
+            "action_name": "CollisionAction",
+            "action_type": "SkillSystem.Actions.CollisionAction, Assembly-CSharp",
+            "description": "碰撞检测（用于伤害判定、触发效果等）",
             "parameters": [
-                {"name": "effectPrefabPath", "type": "string", "description": "特效预制体路径"},
-                {"name": "spawnPosition", "type": "Vector3", "defaultValue": "(0,0,0)"},
-                {"name": "duration", "type": "float", "defaultValue": "1.0"}
+                {"name": "shape", "type": "string", "description": "碰撞形状"},
+                {"name": "position", "type": "Vector3", "defaultValue": "(0,0,0)"},
+                {"name": "size", "type": "Vector3", "defaultValue": "(1,1,1)"}
             ]
         },
         {
@@ -42,23 +42,33 @@ DEFAULT_ACTIONS_BY_TRACK_TYPE: Dict[str, List[Dict[str, Any]]] = {
             ]
         },
         {
-            "action_name": "ApplyBuffAction",
-            "action_type": "SkillSystem.Actions.ApplyBuffAction, Assembly-CSharp",
+            "action_name": "BuffAction",
+            "action_type": "SkillSystem.Actions.BuffAction, Assembly-CSharp",
             "description": "施加Buff/Debuff效果（减速、燃烧、冰冻等）",
             "parameters": [
                 {"name": "buffId", "type": "string", "description": "Buff ID"},
                 {"name": "duration", "type": "float", "description": "持续时间"},
                 {"name": "stackCount", "type": "int", "defaultValue": "1"}
             ]
+        },
+        {
+            "action_name": "AreaOfEffectAction",
+            "action_type": "SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+            "description": "范围效果（AOE伤害、治疗等）",
+            "parameters": [
+                {"name": "centerPosition", "type": "Vector3", "defaultValue": "(0,0,0)"},
+                {"name": "radius", "type": "float", "defaultValue": "3.0"},
+                {"name": "duration", "type": "float", "defaultValue": "1.0"}
+            ]
         }
     ],
     "audio": [
         {
-            "action_name": "PlaySoundAction",
-            "action_type": "SkillSystem.Actions.PlaySoundAction, Assembly-CSharp",
+            "action_name": "AudioAction",
+            "action_type": "SkillSystem.Actions.AudioAction, Assembly-CSharp",
             "description": "播放音效（施法音效、命中音效、环境音效）",
             "parameters": [
-                {"name": "soundClipPath", "type": "string", "description": "音效文件路径"},
+                {"name": "audioClipName", "type": "string", "description": "音效文件名称"},
                 {"name": "volume", "type": "float", "defaultValue": "1.0"},
                 {"name": "pitch", "type": "float", "defaultValue": "1.0"},
                 {"name": "loop", "type": "bool", "defaultValue": "false"}
@@ -67,42 +77,42 @@ DEFAULT_ACTIONS_BY_TRACK_TYPE: Dict[str, List[Dict[str, Any]]] = {
     ],
     "movement": [
         {
-            "action_name": "DashAction",
-            "action_type": "SkillSystem.Actions.DashAction, Assembly-CSharp",
-            "description": "角色冲刺/位移",
+            "action_name": "MovementAction",
+            "action_type": "SkillSystem.Actions.MovementAction, Assembly-CSharp",
+            "description": "角色位移/冲刺",
             "parameters": [
-                {"name": "direction", "type": "Vector3", "defaultValue": "(0,0,1)"},
-                {"name": "distance", "type": "float", "description": "位移距离"},
+                {"name": "targetPosition", "type": "Vector3", "defaultValue": "(0,0,0)"},
+                {"name": "duration", "type": "float", "defaultValue": "0.5"},
                 {"name": "speed", "type": "float", "description": "移动速度"}
             ]
         },
         {
-            "action_name": "MoveAction",
-            "action_type": "SkillSystem.Actions.MoveAction, Assembly-CSharp",
-            "description": "角色位移",
+            "action_name": "TeleportAction",
+            "action_type": "SkillSystem.Actions.TeleportAction, Assembly-CSharp",
+            "description": "瞬间传送",
             "parameters": [
-                {"name": "direction", "type": "Vector3", "defaultValue": "(0,0,1)"},
-                {"name": "distance", "type": "float", "defaultValue": "2.0"},
-                {"name": "speed", "type": "float", "defaultValue": "5.0"}
+                {"name": "targetPosition", "type": "Vector3", "defaultValue": "(0,0,10)"},
+                {"name": "duration", "type": "float", "defaultValue": "0.1"}
             ]
         }
     ],
     "camera": [
         {
-            "action_name": "CameraShakeAction",
-            "action_type": "SkillSystem.Actions.CameraShakeAction, Assembly-CSharp",
-            "description": "镜头震动效果",
+            "action_name": "CameraAction",
+            "action_type": "SkillSystem.Actions.CameraAction, Assembly-CSharp",
+            "description": "镜头效果（震动、缩放等）",
             "parameters": [
-                {"name": "intensity", "type": "float", "defaultValue": "0.5"},
+                {"name": "positionOffset", "type": "Vector3", "defaultValue": "(0,0,0)"},
+                {"name": "rotationOffset", "type": "Vector3", "defaultValue": "(0,0,0)"},
                 {"name": "duration", "type": "float", "defaultValue": "0.3"}
             ]
         }
     ],
     "other": [
         {
-            "action_name": "GenericAction",
-            "action_type": "SkillSystem.Actions.GenericAction, Assembly-CSharp",
-            "description": "通用Action",
+            "action_name": "LogAction",
+            "action_type": "SkillSystem.Actions.LogAction, Assembly-CSharp",
+            "description": "日志输出（调试用）",
             "parameters": []
         }
     ]

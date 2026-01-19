@@ -23,7 +23,7 @@ MonoBehaviour:
     searchKeywords: "\u52A8\u753B\u64AD\u653E,Animation,Animator,CrossFade,\u52A8\u753B\u5C42\u7EA7,\u5F52\u4E00\u5316\u65F6\u95F4,\u89C6\u89C9\u8868\u73B0,\u6280\u80FD\u7279\u6548,\u653B\u51FB\u52A8\u753B,\u79FB\u52A8\u52A8\u753B"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: AreaOfEffectAction
     namespaceName: SkillSystem.Actions
@@ -39,7 +39,7 @@ MonoBehaviour:
     searchKeywords: "AOE,\u533A\u57DF\u6548\u679C,\u8303\u56F4\u4F24\u5BB3,\u5149\u73AF,\u6301\u7EED\u6548\u679C,AreaOfEffect,\u5706\u5F62\u533A\u57DF,\u6247\u5F62\u533A\u57DF,\u73AF\u5F62\u533A\u57DF,\u8DDD\u79BB\u8870\u51CF,\u76EE\u6807\u7B5B\u9009,\u89C6\u89C9\u6548\u679C,DOTA2\u6280\u80FD,\u66B4\u96EA,\u5730\u9707,\u706B\u5899"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: AttributeScaledDamageAction
     namespaceName: SkillSystem.Actions
@@ -50,7 +50,7 @@ MonoBehaviour:
     searchKeywords: "\u5C5E\u6027\u4F24\u5BB3,\u7F29\u653E\u4F24\u5BB3,\u591A\u5C5E\u6027\u52A0\u6210,AttributeScaling,\u4F24\u5BB3\u8BA1\u7B97,\u66B4\u51FB\u7CFB\u7EDF,\u6CF0\u8FBE\u7C73\u5C14E,\u745E\u6587R,\u989D\u5916\u653B\u51FB\u529B,\u6CD5\u672F\u5F3A\u5EA6,\u751F\u547D\u503C\u7F29\u653E,DamageScaling,\u6DF7\u5408\u4F24\u5BB3"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: AttributeScaledShieldAction
     namespaceName: SkillSystem.Actions
@@ -61,7 +61,7 @@ MonoBehaviour:
       Scaled Shield,Shield Scaling,Spell Power Ratio,Health Ratio,\u62A4\u76FE\u8BA1\u7B97,\u8D5B\u6069W,\u585E\u62C9\u65AFW,\u591A\u5C5E\u6027\u52A0\u6210,\u7B49\u7EA7\u7F29\u653E"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: AudioAction
     namespaceName: SkillSystem.Actions
@@ -71,7 +71,7 @@ MonoBehaviour:
     searchKeywords: "\u97F3\u9891\u6548\u679C,\u97F3\u6548\u64AD\u653E,Audio,3D\u97F3\u6548,\u7A7A\u95F4\u97F3\u6548,\u97F3\u91CF\u63A7\u5236,\u97F3\u8C03\u8C03\u6574,\u6DE1\u5165\u6DE1\u51FA,\u97F3\u9891\u4F18\u5148\u7EA7,AudioSource"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: BuffAction
     namespaceName: SkillSystem.Actions
@@ -81,7 +81,7 @@ MonoBehaviour:
     searchKeywords: "\u589E\u76CA\u6548\u679C,Buff,Debuff,\u72B6\u6001\u6548\u679C,\u5C5E\u6027\u4FEE\u6B63,\u53E0\u52A0\u673A\u5236,\u7729\u6655,\u6C89\u9ED8,\u51CF\u901F,\u9690\u8EAB,\u9B54\u6CD5\u514D\u75AB,Stun,Silence,Slow,Invisibility,MagicImmune,\u6301\u7EED\u6548\u679C,\u72B6\u6001\u7BA1\u7406"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: CameraAction
     namespaceName: SkillSystem.Actions
@@ -94,7 +94,7 @@ MonoBehaviour:
       Action,Shake Effect,Zoom Control,Position Offset,Rotation Offset,\u89C6\u89C9\u7279\u6548,\u5C4F\u5E55\u6296\u52A8,\u955C\u5934\u8DDF\u968F,\u6280\u80FD\u7279\u6548"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: CollisionAction
     namespaceName: SkillSystem.Actions
@@ -105,7 +105,7 @@ MonoBehaviour:
       Detection,Hit Box,Sphere Collider,Box Collider,Capsule Collider,Layer Mask,\u4F24\u5BB3\u8BA1\u7B97,\u8FD1\u6218\u653B\u51FB,\u7206\u70B8\u6280\u80FD,\u8303\u56F4\u4F24\u5BB3"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: ControlAction
     namespaceName: SkillSystem.Actions
@@ -115,7 +115,7 @@ MonoBehaviour:
     searchKeywords: "\u63A7\u5236\u6548\u679C,\u7729\u6655,\u6C89\u9ED8,\u5B9A\u8EAB,\u51CF\u901F,\u6050\u60E7,\u9B45\u60D1,\u7F34\u68B0,\u653E\u9010,ControlAction,Stun,Silence,Root,Slow,Fear,Charm,Disable,Banish,\u514D\u75AB\u7A7F\u900F,\u53E0\u52A0\u63A7\u5236,DOTA2\u63A7\u5236\u6280\u80FD"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: DamageAction
     namespaceName: SkillSystem.Actions
@@ -126,7 +126,7 @@ MonoBehaviour:
     searchKeywords: "\u5C5E\u6027\u4F24\u5BB3,\u7F29\u653E\u4F24\u5BB3,\u590D\u5408\u4F24\u5BB3,AttributeScaledDamage,\u591A\u5C5E\u6027\u4F24\u5BB3,\u653B\u51FB\u529B\u7F29\u653E,\u6CD5\u672F\u5F3A\u5EA6,\u66B4\u51FB\u7CFB\u7EDF,\u4F24\u5BB3\u8BA1\u7B97,\u6CF0\u8FBE\u7C73\u5C14E,\u745E\u6587R,\u989D\u5916\u653B\u51FB\u529B,BonusAD,SpellPower,DamageScaling"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: HealAction
     namespaceName: SkillSystem.Actions
@@ -136,7 +136,7 @@ MonoBehaviour:
     searchKeywords: "\u6CBB\u7597,\u6062\u590D,\u56DE\u8840,\u52A0\u8840,\u56DE\u84DD,heal,recovery,health,mana,overheal,\u6301\u7EED\u6CBB\u7597,\u77AC\u95F4\u6CBB\u7597,\u751F\u547D\u6062\u590D,\u6CD5\u529B\u6062\u590D,\u8F85\u52A9\u6280\u80FD,Support,\u6CBB\u7597\u672F,\u751F\u547D\u6C72\u53D6,\u9B54\u6CD5\u6062\u590D,\u7D22\u62C9\u5361,\u7434\u5973"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: LogAction
     namespaceName: SkillSystem.Actions
@@ -146,7 +146,7 @@ MonoBehaviour:
     searchKeywords: "\u65E5\u5FD7\u8F93\u51FA,\u8C03\u8BD5,Log,Debug,\u6280\u80FD\u76D1\u63A7,\u6267\u884C\u6D41\u7A0B,Unity\u65E5\u5FD7,\u5F00\u53D1\u5DE5\u5177,\u9519\u8BEF\u8FFD\u8E2A,\u6027\u80FD\u5206\u6790"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: MovementAction
     namespaceName: SkillSystem.Actions
@@ -159,7 +159,7 @@ MonoBehaviour:
       movement,\u77AC\u95F4\u4F20\u9001,instant teleport"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: ProjectileAction
     namespaceName: SkillSystem.Actions
@@ -171,7 +171,7 @@ MonoBehaviour:
     searchKeywords: "\u6295\u5C04\u7269,\u5F39\u9053,Projectile,\u5BFC\u5F39,\u98DE\u5F39,\u5F39\u9053\u7CFB\u7EDF,\u8FFD\u8E2A\u5BFC\u5F39,\u629B\u7269\u7EBF,\u76F4\u7EBF\u98DE\u884C,\u7A7F\u900F\u653B\u51FB,\u8FDC\u7A0B\u653B\u51FB,\u5F39\u9053\u6548\u679C,\u98DE\u884C\u7269,\u5F39\u9053\u8BA1\u7B97,\u5F39\u9053\u8F68\u8FF9,\u5F39\u9053\u7C7B\u578B,\u5F39\u9053\u901F\u5EA6,\u5F39\u9053\u8303\u56F4,\u5F39\u9053\u78B0\u649E,\u5F39\u9053\u7279\u6548"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: ResourceAction
     namespaceName: SkillSystem.Actions
@@ -184,7 +184,7 @@ MonoBehaviour:
     searchKeywords: "\u8D44\u6E90\u64CD\u4F5C,ResourceAction,\u751F\u547D\u503C,\u6CD5\u529B\u503C,Health,Mana,\u91D1\u5E01,Gold,\u7ECF\u9A8C\u503C,Experience,\u6062\u590D,\u6D88\u8017,\u8F6C\u79FB,\u5077\u53D6,\u6CD5\u529B\u71C3\u70E7,\u5438\u8840\u5149\u73AF,\u8D44\u6E90\u8F6C\u6362,ResourceType,OperationType"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: ResourceDependentHealAction
     namespaceName: SkillSystem.Actions
@@ -199,7 +199,7 @@ MonoBehaviour:
       Power Scaling,Level Scaling"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: ShieldAction
     namespaceName: SkillSystem.Actions
@@ -219,7 +219,7 @@ MonoBehaviour:
       Absorption,\u62A4\u76FE\u5237\u65B0,\u7834\u76FE\u6761\u4EF6"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: SummonAction
     namespaceName: SkillSystem.Actions
@@ -229,7 +229,7 @@ MonoBehaviour:
     searchKeywords: "\u53EC\u5524,summon,\u53EC\u5524\u7269,\u53EC\u5524\u751F\u7269,\u5355\u4F4D\u751F\u6210,spawn,creature,building,trap,totem,AI\u884C\u4E3A,\u5C5E\u6027\u7EE7\u627F,\u751F\u547D\u5468\u671F,\u6570\u91CF\u9650\u5236,\u4F4D\u7F6E\u751F\u6210,\u53EC\u5524\u7279\u6548,DOTA2\u53EC\u5524\u6280\u80FD"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: TeleportAction
     namespaceName: SkillSystem.Actions
@@ -243,7 +243,7 @@ MonoBehaviour:
       Teleport,Channeled Teleport,Delayed Teleport,Instant Teleport,\u4F4D\u7F6E\u79FB\u52A8,\u7A7A\u95F4\u4F20\u9001"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   - typeName: UnitTypeCappedDamageAction
     namespaceName: SkillSystem.Actions
@@ -255,9 +255,9 @@ MonoBehaviour:
       Damage Cap,Monster Damage Cap,UnitType Damage,\u8D5B\u6069W,\u585E\u62C9\u65AF\u88AB\u52A8,\u975E\u82F1\u96C4\u4F24\u5BB3\u9650\u5236,PVE\u4F24\u5BB3\u63A7\u5236"
     isAIGenerated: 1
     aiGeneratedTime: 2025-11-01 11:28:20
-    lastModifiedTime: 2025-11-01 18:37:11
+    lastModifiedTime: 2026-01-13 15:23:52
     lastModifiedBy: developli
   totalActions: 20
   aiGeneratedCount: 20
   manuallyEditedCount: 20
-  lastUpdateTime: 2025-11-01 18:37:11
+  lastUpdateTime: 2026-01-13 15:23:52

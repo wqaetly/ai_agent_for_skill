@@ -8,7 +8,7 @@
       "hash": "73a63b7f672b88f7e9992f6917eb458a8cbb6fa9"
     },
     "com.unity.burst": {
-      "version": "1.8.19",
+      "version": "1.8.26",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -60,7 +60,7 @@
       "url": "https://packages.tuanjie.cn"
     },
     "com.unity.inputsystem": {
-      "version": "1.14.1",
+      "version": "1.14.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -93,6 +93,7 @@
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
         "com.unity.burst": "1.8.9",
+        "com.unity.modules.tuanjiegi": "1.0.0",
         "com.unity.render-pipelines.core": "14.1.0",
         "com.unity.shadergraph": "14.1.0",
         "com.unity.render-pipelines.universal-config": "14.0.9"
@@ -114,7 +115,7 @@
       "url": "https://packages.tuanjie.cn"
     },
     "com.unity.settings-manager": {
-      "version": "2.0.1",
+      "version": "2.1.0",
       "depth": 2,
       "source": "registry",
       "dependencies": {},
@@ -302,6 +303,12 @@
       "dependencies": {
         "com.unity.modules.physics2d": "1.0.0"
       }
+    },
+    "com.unity.modules.tuanjiegi": {
+      "version": "1.0.0",
+      "depth": 1,
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.modules.ui": {
       "version": "1.0.0",

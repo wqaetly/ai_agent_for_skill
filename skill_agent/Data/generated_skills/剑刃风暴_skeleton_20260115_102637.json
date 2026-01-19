@@ -1,0 +1,39 @@
+{
+  "skillName": "剑刃风暴",
+  "skillId": "blade-storm-001",
+  "skillDescription": "角色高速旋转形成剑刃风暴，对范围内敌人造成多段高频物理伤害。同一目标被连续击中5次后，后续受到的伤害将转化为真实伤害。",
+  "totalDuration": 180,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放技能起手、持续旋转及收招的完整角色动画序列。",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track 1",
+      "purpose": "生成并维持角色周身旋转的剑刃风暴视觉特效，作为技能的主要表现。",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track 2",
+      "purpose": "核心逻辑轨道。周期性触发范围伤害判定，管理每个目标的命中计数，并在计数达标后将伤害类型切换为真实伤害。",
+      "estimatedActions": 8,
+      "priority": 1
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放技能启动的呼啸声、持续旋转的音效以及剑刃命中敌人的打击音效。",
+      "estimatedActions": 3,
+      "priority": 3
+    },
+    {
+      "trackName": "Camera Track",
+      "purpose": "在技能启动和结束时添加轻微的镜头震动，增强力量感和终结感。",
+      "estimatedActions": 2,
+      "priority": 4
+    }
+  ]
+}

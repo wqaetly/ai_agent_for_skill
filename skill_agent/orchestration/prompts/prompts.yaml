@@ -337,9 +337,10 @@ track_action_generation:
           "duration": 30,
           "enabled": true,
           "parameters": {{
-            "_odin_type": "6|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
-            "effectPrefab": "IceShard_Effect",
-            "position": {{"x": 0.0, "y": 1.0, "z": 2.0}}
+            "_odin_type": "6|SkillSystem.Actions.CollisionAction, Assembly-CSharp",
+            "shape": "Sphere",
+            "position": {{"x": 0.0, "y": 1.0, "z": 2.0}},
+            "size": {{"x": 3.0, "y": 3.0, "z": 3.0}}
           }}
         }}
       ]
@@ -527,9 +528,9 @@ batch_action_generation:
           "duration": 20,
           "enabled": true,
           "parameters": {{
-            "_odin_type": "6|SkillSystem.Actions.SpawnEffectAction, Assembly-CSharp",
-            "effectPrefab": "FireBall_Effect",
-            "position": {{"x": 0.0, "y": 1.0, "z": 2.0}}
+            "_odin_type": "6|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+            "centerPosition": {{"x": 0.0, "y": 1.0, "z": 2.0}},
+            "radius": 5.0
           }}
         }},
         {{
@@ -602,14 +603,14 @@ single_action_generation:
     
     | Track类型 | 允许的Action类型 | 禁止的Action类型 |
     |-----------|-----------------|-----------------|
-    | Animation Track | AnimationAction | DamageAction, SpawnEffectAction, PlaySoundAction |
-    | Effect Track | SpawnEffectAction, DamageAction, ApplyBuffAction, HealAction | AnimationAction, PlaySoundAction |
-    | Audio Track | PlaySoundAction, PlayAudioAction | AnimationAction, DamageAction |
-    | Movement Track | DashAction, MoveAction, TeleportAction | AnimationAction, PlaySoundAction |
+    | Animation Track | AnimationAction | DamageAction, CollisionAction, AudioAction |
+    | Effect Track | CollisionAction, DamageAction, BuffAction, HealAction, AreaOfEffectAction | AnimationAction, AudioAction |
+    | Audio Track | AudioAction | AnimationAction, DamageAction |
+    | Movement Track | MovementAction, TeleportAction | AnimationAction, AudioAction |
     
     **示例**：
-    - 如果当前是 "Effect Track"，必须使用 SpawnEffectAction/DamageAction/ApplyBuffAction
-    - 如果当前是 "Audio Track"，必须使用 PlaySoundAction
+    - 如果当前是 "Effect Track"，必须使用 CollisionAction/DamageAction/BuffAction
+    - 如果当前是 "Audio Track"，必须使用 AudioAction
     - 绝对不能在 Effect Track 中使用 AnimationAction！
 
     ## 输出要求
@@ -672,9 +673,9 @@ single_action_fix:
     | Track类型 | 允许的Action类型 |
     |-----------|-----------------|
     | Animation Track | AnimationAction |
-    | Effect Track | SpawnEffectAction, DamageAction, ApplyBuffAction |
-    | Audio Track | PlaySoundAction, PlayAudioAction |
-    | Movement Track | DashAction, MoveAction |
+    | Effect Track | CollisionAction, DamageAction, BuffAction, AreaOfEffectAction |
+    | Audio Track | AudioAction |
+    | Movement Track | MovementAction, TeleportAction |
     
     如果错误信息提示"Action类型不匹配"，必须更换为正确类型的Action！
 

@@ -347,6 +347,58 @@ namespace SkillSystem.RAG
             }
         }
 
+        /// <summary>
+        /// 重建RAG索引（调用新API /rag/index/rebuild）
+        /// </summary>
+        public IEnumerator RebuildIndex(Action<bool, RebuildIndexResponse, string> callback = null)
+        {
+            string url = $"{baseUrl}/rag/index/rebuild";
+
+            using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+            {
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.timeout = 120; // 索引重建可能需要较长时间
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    try
+                    {
+                        string responseJson = request.downloadHandler.text;
+                        var response = JsonUtility.FromJson<RebuildIndexResponse>(responseJson);
+                        callback?.Invoke(true, response, null);
+                    }
+                    catch (Exception e)
+                    {
+                        callback?.Invoke(false, null, $"Parse error: {e.Message}");
+                    }
+                }
+                else
+                {
+                    callback?.Invoke(false, null, $"Request error: {request.error}");
+                }
+            }
+        }
+
+        [Serializable]
+        public class RebuildIndexResponse
+        {
+            public bool success;
+            public IndexResult skill_index;
+            public IndexResult action_index;
+            public string timestamp;
+        }
+
+        [Serializable]
+        public class IndexResult
+        {
+            public string status;
+            public int count;
+            public float elapsed_time;
+        }
+
         #endregion
     }
 }

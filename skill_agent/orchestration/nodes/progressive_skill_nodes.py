@@ -62,6 +62,7 @@ class ProgressiveSkillGenerationState(TypedDict):
     action_mismatch: bool
     missing_action_types: List[str]
     action_mismatch_details: str
+    user_action_mismatch_choice: str  # "continue" or "abort"
     
     # Phase 3: Assembly
     assembled_skill: Dict[str, Any]
@@ -451,12 +452,30 @@ def track_generator_node(state: ProgressiveSkillGenerationState, writer: StreamW
 
 
 def track_validator_node(state: ProgressiveSkillGenerationState) -> Dict[str, Any]:
-    """Validate generated track"""
+    """Validate generated track, including action type existence check"""
+    from .validators import validate_track_action_types
+    
     track_data = state.get("current_track_data", {})
     skeleton = state.get("skill_skeleton", {})
     total_duration = skeleton.get("totalDuration", 180)
 
     errors = validate_track(track_data, total_duration)
+    
+    # 验证 Action 类型是否存在
+    missing_types, type_errors = validate_track_action_types(track_data)
+    
+    if missing_types:
+        logger.warning(f"Track contains invalid action types: {missing_types}")
+        track_name = track_data.get("trackName", "Unknown")
+        details = f"Track '{track_name}' 使用了不存在的 Action 类型: {', '.join(missing_types)}"
+        
+        return {
+            "current_track_errors": errors + type_errors,
+            "action_mismatch": True,
+            "missing_action_types": missing_types,
+            "action_mismatch_details": details,
+            "messages": [AIMessage(content=f"[需要确认] {details}")]
+        }
 
     if errors:
         logger.warning(f"Track validation: {len(errors)} errors")
@@ -581,8 +600,13 @@ def should_continue_to_track_generation(state: ProgressiveSkillGenerationState) 
     return "skeleton_failed"
 
 
-def should_continue_track_loop(state: ProgressiveSkillGenerationState) -> Literal["next_track", "assemble", "fix_track"]:
+def should_continue_track_loop(state: ProgressiveSkillGenerationState) -> Literal["next_track", "assemble", "fix_track", "action_mismatch_interrupt"]:
     """Determine next step in track generation loop"""
+    # 检查是否有无效 Action 类型
+    action_mismatch = state.get("action_mismatch", False)
+    if action_mismatch:
+        return "action_mismatch_interrupt"
+    
     errors = state.get("current_track_errors", [])
     retry_count = state.get("track_retry_count", 0)
     max_retries = state.get("max_track_retries", 3)

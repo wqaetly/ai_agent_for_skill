@@ -16,10 +16,10 @@ namespace RAGSystem.Editor
     {
         // ==================== 配置 ====================
 
-        private const string SERVER_SCRIPT_PATH = "start_webui.bat";      // 启动脚本（新架构）
+        private const string SERVER_SCRIPT_PATH = "langgraph_server.py";  // Python服务器脚本
         private const string INSTALL_DEPS_SCRIPT = "安装依赖.bat";        // 依赖安装脚本
-        private const string WEB_UI_URL = "http://127.0.0.1:3000";        // WebUI地址（新架构）
-        private const int WEB_UI_PORT = 3000;                             // WebUI端口
+        private const string WEB_UI_URL = "http://127.0.0.1:2024";        // API地址
+        private const int WEB_UI_PORT = 2024;                             // API端口（与LangGraph相同）
         private const int LANGGRAPH_PORT = 2024;                          // LangGraph后端端口
         private const string PROCESS_ID_KEY = "SkillAgent_ServerProcessID";
 
@@ -48,26 +48,35 @@ namespace RAGSystem.Editor
 
             try
             {
-                // 查找bat文件路径
-                string batPath = FindServerBatchFile();
+                // 查找Python脚本路径
+                string scriptPath = FindServerScript();
 
-                if (string.IsNullOrEmpty(batPath))
+                if (string.IsNullOrEmpty(scriptPath))
                 {
                     EditorUtility.DisplayDialog(
                         "错误",
-                        $"未找到启动脚本：{SERVER_SCRIPT_PATH}\n\n" +
-                        "请确保SkillAgent文件夹在项目根目录。",
+                        $"未找到服务器脚本：{SERVER_SCRIPT_PATH}\n\n" +
+                        "请确保skill_agent文件夹在项目根目录。",
                         "确定"
                     );
                     return;
                 }
 
+                string workingDir = Path.GetDirectoryName(scriptPath);
+                
+                // 查找Python解释器（优先使用venv）
+                string pythonPath = FindPythonExecutable(workingDir);
+                
+                Debug.Log($"[SkillAgent] 使用Python: {pythonPath}");
+                Debug.Log($"[SkillAgent] 脚本路径: {scriptPath}");
+
                 // 启动进程
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
-                    FileName = batPath,
-                    WorkingDirectory = Path.GetDirectoryName(batPath),
-                    UseShellExecute = true, // 需要shell执行bat
+                    FileName = pythonPath,
+                    Arguments = $"\"{scriptPath}\"",
+                    WorkingDirectory = workingDir,
+                    UseShellExecute = true,
                     CreateNoWindow = false,  // 显示控制台窗口（方便查看日志）
                 };
 
@@ -268,17 +277,17 @@ namespace RAGSystem.Editor
         // ==================== 工具方法 ====================
 
         /// <summary>
-        /// 查找启动脚本
+        /// 查找Python服务器脚本
         /// </summary>
-        private static string FindServerBatchFile()
+        private static string FindServerScript()
         {
             string projectRoot = GetProjectRoot();
 
             // 尝试多个可能的路径
             string[] possiblePaths = new[]
             {
-                Path.Combine(projectRoot, "skill_agent", SERVER_SCRIPT_PATH),
                 Path.Combine(projectRoot, "..", "skill_agent", SERVER_SCRIPT_PATH),
+                Path.Combine(projectRoot, "skill_agent", SERVER_SCRIPT_PATH),
                 Path.Combine(Application.dataPath, "..", "..", "skill_agent", SERVER_SCRIPT_PATH),
             };
 
@@ -287,13 +296,49 @@ namespace RAGSystem.Editor
                 string fullPath = Path.GetFullPath(path);
                 if (File.Exists(fullPath))
                 {
-                    Debug.Log($"[SkillAgent] 找到启动脚本: {fullPath}");
+                    Debug.Log($"[SkillAgent] 找到服务器脚本: {fullPath}");
                     return fullPath;
                 }
             }
 
-            Debug.LogError($"[SkillAgent] 未找到启动脚本，搜索路径: {string.Join(", ", possiblePaths)}");
+            Debug.LogError($"[SkillAgent] 未找到服务器脚本，搜索路径: {string.Join(", ", possiblePaths)}");
             return null;
+        }
+        
+        /// <summary>
+        /// 查找Python解释器（优先使用venv）
+        /// </summary>
+        private static string FindPythonExecutable(string workingDir)
+        {
+            // 优先使用venv中的Python
+            string[] venvPaths = new[]
+            {
+                Path.Combine(workingDir, "venv", "Scripts", "python.exe"),
+                Path.Combine(workingDir, ".venv", "Scripts", "python.exe"),
+                Path.Combine(workingDir, "venv", "bin", "python"),
+                Path.Combine(workingDir, ".venv", "bin", "python"),
+            };
+
+            foreach (string venvPath in venvPaths)
+            {
+                if (File.Exists(venvPath))
+                {
+                    Debug.Log($"[SkillAgent] 使用venv Python: {venvPath}");
+                    return venvPath;
+                }
+            }
+
+            // 回退到系统Python
+            Debug.Log("[SkillAgent] 未找到venv，使用系统Python");
+            return "python";
+        }
+
+        /// <summary>
+        /// 查找启动脚本（保留兼容）
+        /// </summary>
+        private static string FindServerBatchFile()
+        {
+            return FindServerScript();
         }
 
         /// <summary>

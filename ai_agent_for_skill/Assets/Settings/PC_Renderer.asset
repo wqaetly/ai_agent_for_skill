@@ -15,6 +15,9 @@ MonoBehaviour:
   debugShaders:
     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
+    debugVisibilityShader: {fileID: 4800000, guid: 3619753c663387743934d88a20720796, type: 3}
+    debugMaterialIDShader: {fileID: 4800000, guid: 4cad10f498f948a4db366954d3d91f01, type: 3}
+    blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
   m_RendererFeatures:
   - {fileID: 7833122117494664109}
   m_RendererFeatureMap: ad6b866f10d7b46c
@@ -27,6 +30,7 @@ MonoBehaviour:
     screenSpaceShadowPS: {fileID: 0}
     samplingPS: {fileID: 4800000, guid: 04c410c9937594faa893a11dceb85f7e, type: 3}
     stencilDeferredPS: {fileID: 4800000, guid: e9155b26e1bc55942a41e518703fe304, type: 3}
+    deferredPlusPS: {fileID: 4800000, guid: bbe27b0fca5a0402ba52a7b8fc629e3e, type: 3}
     fallbackErrorPS: {fileID: 4800000, guid: e6e9a19c3678ded42a3bc431ebef7dbd, type: 3}
     fallbackLoadingPS: {fileID: 4800000, guid: 7f888aff2ac86494babad1c2c5daeee2, type: 3}
     materialErrorPS: {fileID: 4800000, guid: 5fd9a8feb75a4b5894c241777f519d4e, type: 3}
@@ -36,6 +40,15 @@ MonoBehaviour:
     shadingRate: {fileID: 4800000, guid: f34b9751d8317eb4b8bc8c90fe059a92, type: 3}
     cameraMotionVector: {fileID: 4800000, guid: c56b7e0d4c7cb484e959caeeedae9bbf, type: 3}
     objectMotionVector: {fileID: 4800000, guid: 7b3ede40266cd49a395def176e1bc486, type: 3}
+    GIMotionVector: {fileID: 4800000, guid: 8dd6fbbf59aebb74f9801a17d14b652c, type: 3}
+    gpuMotionVector: {fileID: 4800000, guid: 4d40ad15f09d31f498b06194570be767, type: 3}
+    stencilSplat: {fileID: 4800000, guid: 4361274285192ec4e8d9fd73c2aed78a, type: 3}
+    visibilityBuffer: {fileID: 4800000, guid: 4ab855ed39b8e3e44a79874f2b9df72a, type: 3}
+    materialRange: {fileID: 4800000, guid: d0c174eabeeeab94b8663e0dcec9ff75, type: 3}
+    materialDepth: {fileID: 4800000, guid: df470c58dc5d9fe42935813a52e80faa, type: 3}
+    decalBufferEmit: {fileID: 4800000, guid: cd3fda72164244d4994d641176af7ff8, type: 3}
+    depthPyramid: {fileID: 7200000, guid: be538ed67d13b1e4a8d26a28702fdf51, type: 3}
+    reflectionProbeCulling: {fileID: 7200000, guid: c834315fbc7836a40bf0fabcbc241bc1, type: 3}
     dataDrivenLensFlare: {fileID: 4800000, guid: 6cda457ac28612740adb23da5d39ea92, type: 3}
     terrainDetailLitPS: {fileID: 4800000, guid: f6783ab646d374f94b199774402a5144, type: 3}
     terrainDetailGrassPS: {fileID: 4800000, guid: e507fdfead5ca47e8b9a768b51c291a1, type: 3}

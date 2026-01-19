@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,7 @@ using Cysharp.Threading.Tasks;
 using SkillSystem.Actions;
 using SkillSystem.Editor;
 using SkillSystem.Editor.Data;
+using RAGSystem.Editor;
 using Debug = UnityEngine.Debug;
 
 namespace SkillSystem.RAG
@@ -37,15 +39,28 @@ namespace SkillSystem.RAG
 
         #region 字段
 
-        // ==================== 迁移提示 ====================
-        [TitleGroup("⚠️ 重要提示")]
-        [InfoBox("RAG索引功能已迁移至WebUI\n" +
-                 "请在WebUI中进行索引重建操作。\n" +
-                 "使用 Tools → SkillAgent → 启动服务器 启动后端，然后在WebUI的RAG管理页面重建索引。",
-                 InfoMessageType.Warning)]
+        // ==================== RAG服务配置 ====================
+        private const string RAG_SERVER_HOST = "127.0.0.1";
+        private const int RAG_SERVER_PORT = 2024;
+        
+        [TitleGroup("🔧 RAG服务配置")]
+        [InfoBox("配置RAG服务器地址，用于一键导出后自动重建索引", InfoMessageType.Info)]
+        [LabelText("服务器地址")]
         [PropertyOrder(0)]
         [SerializeField]
-        private bool _migrationNotice = true;
+        private string ragServerHost = RAG_SERVER_HOST;
+        
+        [TitleGroup("🔧 RAG服务配置")]
+        [LabelText("服务器端口")]
+        [PropertyOrder(0)]
+        [SerializeField]
+        private int ragServerPort = RAG_SERVER_PORT;
+        
+        [TitleGroup("🔧 RAG服务配置")]
+        [LabelText("导出后自动重建索引")]
+        [PropertyOrder(0)]
+        [SerializeField]
+        private bool autoRebuildIndex = true;
 
         // ==================== 统计信息 ====================
         [TitleGroup("📊 统计信息")]
@@ -208,9 +223,80 @@ namespace SkillSystem.RAG
             }
         }
 
+        // ==================== 步骤6: 重建RAG索引 ====================
+        [TitleGroup("🔄 步骤6: 重建RAG索引")]
+        [InfoBox("导出JSON后，调用RAG服务器API重建向量索引", InfoMessageType.Info)]
+        [HorizontalGroup("🔄 步骤6: 重建RAG索引/Buttons")]
+        [Button("🔄 重建RAG索引", ButtonSizes.Large), GUIColor(0.3f, 0.8f, 1f)]
+        [PropertyOrder(6)]
+        private void Step6_RebuildRAGIndex()
+        {
+            RebuildRAGIndexManualAsync().Forget();
+        }
+        
+        [HorizontalGroup("🔄 步骤6: 重建RAG索引/Buttons")]
+        [Button("🔍 检查服务器状态", ButtonSizes.Large), GUIColor(0.8f, 0.8f, 0.8f)]
+        [PropertyOrder(6)]
+        private void Step6_CheckServerStatus()
+        {
+            CheckRAGServerStatusAsync().Forget();
+        }
+        
+        private async UniTaskVoid CheckRAGServerStatusAsync()
+        {
+            Log("\n[检查] 正在检查RAG服务器状态...");
+            EditorUtility.DisplayProgressBar("检查服务器", "正在连接...", 0.5f);
+            
+            try
+            {
+                var client = new RAGClient(ragServerHost, ragServerPort, 10);
+                bool completed = false;
+                bool serverOnline = false;
+                string statusMessage = "";
+                
+                var enumerator = client.CheckHealth((success, status) =>
+                {
+                    completed = true;
+                    serverOnline = success;
+                    statusMessage = success ? status : "无法连接";
+                });
+                
+                while (enumerator.MoveNext())
+                {
+                    await UniTask.Yield();
+                }
+                
+                int waitCount = 0;
+                while (!completed && waitCount < 50)
+                {
+                    await UniTask.Delay(100);
+                    waitCount++;
+                }
+                
+                EditorUtility.ClearProgressBar();
+                
+                if (serverOnline)
+                {
+                    Log($"  ✅ RAG服务器在线: {statusMessage}");
+                    EditorUtility.DisplayDialog("服务器状态", $"✅ RAG服务器在线\n\n地址: http://{ragServerHost}:{ragServerPort}\n状态: {statusMessage}", "确定");
+                }
+                else
+                {
+                    Log($"  ❌ RAG服务器离线");
+                    EditorUtility.DisplayDialog("服务器状态", $"❌ RAG服务器离线\n\n地址: http://{ragServerHost}:{ragServerPort}\n\n请使用 Tools → SkillAgent → 启动服务器", "确定");
+                }
+            }
+            catch (Exception e)
+            {
+                EditorUtility.ClearProgressBar();
+                Log($"  ❌ 检查失败: {e.Message}");
+                EditorUtility.DisplayDialog("检查失败", $"无法检查服务器状态:\n{e.Message}", "确定");
+            }
+        }
+
         // ==================== 快捷操作 ====================
         [TitleGroup("⚡ 快捷操作")]
-        [InfoBox("一键完成所有步骤（扫描→生成→保存→导出→提示索引）", InfoMessageType.None)]
+        [InfoBox("一键完成所有步骤（扫描→生成→保存→导出→重建索引）", InfoMessageType.None)]
         [Button("⚡ 一键完成全流程", ButtonSizes.Large), GUIColor(0.2f, 1f, 0.3f)]
         [PropertyOrder(6)]
         private void QuickAction_FullWorkflow()
@@ -747,30 +833,29 @@ namespace SkillSystem.RAG
 
         private async UniTaskVoid OneClickPublishAllAsync()
         {
+            string stepInfo = autoRebuildIndex 
+                ? "1. 扫描所有Action\n2. AI生成缺失的描述\n3. 保存到数据库\n4. 导出JSON文件\n5. 启动RAG服务器（如未运行）\n6. 自动重建RAG索引"
+                : "1. 扫描所有Action\n2. AI生成缺失的描述\n3. 保存到数据库\n4. 导出JSON文件";
+            
             if (!EditorUtility.DisplayDialog(
                 "确认一键发布",
-                "将依次执行以下操作:\n\n" +
-                "1. 扫描所有Action\n" +
-                "2. AI生成缺失的描述\n" +
-                "3. 保存到数据库\n" +
-                "4. 导出JSON文件\n" +
-                "5. 显示索引重建提示\n\n" +
-                "是否继续?",
+                $"将依次执行以下操作:\n\n{stepInfo}\n\n是否继续?",
                 "继续",
                 "取消"))
             {
                 return;
             }
 
+            int totalSteps = autoRebuildIndex ? 6 : 4;
             Log($"\n{new string('=', 60)}\n[一键发布] 开始自动化流程...\n{new string('=', 60)}");
 
             // 步骤1: 扫描
-            Log("\n[步骤1/5] 扫描Actions...");
+            Log($"\n[步骤1/{totalSteps}] 扫描Actions...");
             ScanActions();
             await UniTask.Delay(500);
 
             // 步骤2: AI生成
-            Log("\n[步骤2/5] AI生成缺失描述...");
+            Log($"\n[步骤2/{totalSteps}] AI生成缺失描述...");
             var missingCount = actionEntries.Count(e => string.IsNullOrEmpty(e.description));
             if (missingCount > 0)
             {
@@ -782,55 +867,257 @@ namespace SkillSystem.RAG
             }
 
             // 步骤3: 保存数据库
-            Log("\n[步骤3/5] 保存到数据库...");
+            Log($"\n[步骤3/{totalSteps}] 保存到数据库...");
             SaveAllToDatabaseSilent();
             await UniTask.Delay(500);
 
             // 步骤4: 导出JSON
-            Log("\n[步骤4/5] 导出JSON文件...");
+            Log($"\n[步骤4/{totalSteps}] 导出JSON文件...");
             ExportActionsToJSONSilent();
             await UniTask.Delay(500);
 
-            // 步骤5: 显示索引重建提示
-            Log("\n[步骤5/5] 显示索引重建提示...");
+            // 步骤5-6: 启动服务器并重建RAG索引
+            bool indexSuccess = false;
+            string indexMessage = "";
+            
+            if (autoRebuildIndex)
+            {
+                // 步骤5: 检查并启动服务器
+                Log($"\n[步骤5/{totalSteps}] 检查RAG服务器状态...");
+                bool serverReady = await EnsureRAGServerRunningAsync();
+                
+                if (serverReady)
+                {
+                    // 步骤6: 重建索引
+                    Log($"\n[步骤6/{totalSteps}] 自动重建RAG索引...");
+                    (indexSuccess, indexMessage) = await RebuildRAGIndexAsync();
+                }
+                else
+                {
+                    indexMessage = "服务器启动失败或超时";
+                    Log($"  ❌ {indexMessage}");
+                }
+            }
 
             Log($"\n{new string('=', 60)}\n[一键发布] 流程完成!\n{new string('=', 60)}");
 
-            // 显示完成对话框，引导用户到WebUI重建索引
-            var choice = EditorUtility.DisplayDialogComplex(
-                "一键发布完成",
-                $"所有操作已完成!\n\n" +
-                $"✅ Action总数: {TotalActions}\n" +
-                $"✅ 已生成描述: {GeneratedActions}\n" +
-                $"✅ JSON已导出\n\n" +
-                $"⚠️ 下一步：重建RAG索引\n\n" +
-                $"RAG索引功能已迁移至WebUI。\n" +
-                $"请使用以下步骤重建索引：\n\n" +
-                $"1. 使用 Tools → SkillAgent → 启动服务器\n" +
-                $"2. 在WebUI的RAG管理页面点击重建索引\n",
-                "打开WebUI说明",
-                "稍后操作",
-                "确定"
-            );
-
-            if (choice == 0)
+            // 显示完成对话框
+            if (autoRebuildIndex && indexSuccess)
             {
-                // 用户选择了解更多，可以在这里打开说明文档或URL
-                Log("[提示] 请在浏览器中打开WebUI进行RAG索引重建");
                 EditorUtility.DisplayDialog(
-                    "WebUI索引重建说明",
-                    "重建RAG索引步骤：\n\n" +
-                    "1. 在Unity顶部菜单栏选择：\n" +
-                    "   Tools → SkillAgent → 启动服务器\n\n" +
-                    "2. 等待服务器启动完成\n\n" +
-                    "3. 在浏览器中访问WebUI\n" +
-                    "   (通常是 http://localhost:端口号)\n\n" +
-                    "4. 在WebUI的RAG管理页面\n" +
-                    "   点击【重建索引】按钮\n\n" +
-                    "5. 等待索引重建完成\n\n" +
-                    "完成后即可在WebUI中进行RAG查询。",
-                    "知道了"
+                    "一键发布完成",
+                    $"所有操作已完成!\n\n" +
+                    $"✅ Action总数: {TotalActions}\n" +
+                    $"✅ 已生成描述: {GeneratedActions}\n" +
+                    $"✅ JSON已导出\n" +
+                    $"✅ RAG索引已重建\n\n" +
+                    $"{indexMessage}",
+                    "确定"
                 );
+            }
+            else if (autoRebuildIndex && !indexSuccess)
+            {
+                var choice = EditorUtility.DisplayDialogComplex(
+                    "一键发布完成（索引重建失败）",
+                    $"导出操作已完成，但RAG索引重建失败!\n\n" +
+                    $"✅ Action总数: {TotalActions}\n" +
+                    $"✅ 已生成描述: {GeneratedActions}\n" +
+                    $"✅ JSON已导出\n" +
+                    $"❌ RAG索引重建失败: {indexMessage}\n\n" +
+                    $"请确保RAG服务器已启动 (http://{ragServerHost}:{ragServerPort})",
+                    "手动重建索引",
+                    "稍后操作",
+                    "确定"
+                );
+                
+                if (choice == 0)
+                {
+                    // 重试重建索引
+                    RebuildRAGIndexManualAsync().Forget();
+                }
+            }
+            else
+            {
+                EditorUtility.DisplayDialog(
+                    "一键发布完成",
+                    $"所有操作已完成!\n\n" +
+                    $"✅ Action总数: {TotalActions}\n" +
+                    $"✅ 已生成描述: {GeneratedActions}\n" +
+                    $"✅ JSON已导出\n\n" +
+                    $"⚠️ 请手动重建RAG索引",
+                    "确定"
+                );
+            }
+        }
+        
+        /// <summary>
+        /// 确保RAG服务器正在运行，如果没有则自动启动
+        /// </summary>
+        private async UniTask<bool> EnsureRAGServerRunningAsync()
+        {
+            // 检查服务器是否已运行
+            if (IsRAGServerRunning())
+            {
+                Log("  ✅ RAG服务器已在运行");
+                return true;
+            }
+            
+            Log("  ⚠️ RAG服务器未运行，正在启动...");
+            EditorUtility.DisplayProgressBar("启动RAG服务器", "正在启动服务器，请稍候...", 0.2f);
+            
+            try
+            {
+                // 调用 SkillAgentServerManager 启动服务器
+                SkillAgentServerManager.StartServer();
+                
+                // 等待服务器启动（最多等待30秒）
+                int maxWaitSeconds = 30;
+                for (int i = 0; i < maxWaitSeconds; i++)
+                {
+                    EditorUtility.DisplayProgressBar(
+                        "启动RAG服务器", 
+                        $"等待服务器启动... ({i + 1}/{maxWaitSeconds}秒)", 
+                        0.2f + 0.6f * i / maxWaitSeconds
+                    );
+                    
+                    await UniTask.Delay(1000);
+                    
+                    if (IsRAGServerRunning())
+                    {
+                        EditorUtility.ClearProgressBar();
+                        Log($"  ✅ RAG服务器启动成功（等待了 {i + 1} 秒）");
+                        // 额外等待1秒确保服务完全就绪
+                        await UniTask.Delay(1000);
+                        return true;
+                    }
+                }
+                
+                EditorUtility.ClearProgressBar();
+                Log($"  ❌ RAG服务器启动超时（{maxWaitSeconds}秒）");
+                return false;
+            }
+            catch (Exception e)
+            {
+                EditorUtility.ClearProgressBar();
+                Log($"  ❌ 启动服务器异常: {e.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// 检查RAG服务器是否正在运行
+        /// </summary>
+        private bool IsRAGServerRunning()
+        {
+            return IsPortOpen(ragServerHost, ragServerPort);
+        }
+        
+        /// <summary>
+        /// 检查端口是否开放
+        /// </summary>
+        private bool IsPortOpen(string host, int port)
+        {
+            try
+            {
+                using (TcpClient tcpClient = new TcpClient())
+                {
+                    var result = tcpClient.BeginConnect(host, port, null, null);
+                    bool success = result.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(500));
+                    if (success)
+                    {
+                        tcpClient.EndConnect(result);
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// 异步重建RAG索引
+        /// </summary>
+        private async UniTask<(bool success, string message)> RebuildRAGIndexAsync()
+        {
+            try
+            {
+                EditorUtility.DisplayProgressBar("重建RAG索引", "正在连接RAG服务器...", 0.1f);
+                
+                var client = new RAGClient(ragServerHost, ragServerPort, 120);
+                bool completed = false;
+                bool success = false;
+                string message = "";
+                
+                // 使用EditorCoroutineUtility运行协程
+                EditorApplication.update += CheckCompletion;
+                var enumerator = client.RebuildIndex((s, response, error) =>
+                {
+                    completed = true;
+                    if (s && response != null)
+                    {
+                        success = true;
+                        int skillCount = response.skill_index?.count ?? 0;
+                        int actionCount = response.action_index?.count ?? 0;
+                        message = $"技能索引: {skillCount} 个\nAction索引: {actionCount} 个";
+                        Log($"  ✅ RAG索引重建成功");
+                        Log($"     技能索引: {skillCount} 个");
+                        Log($"     Action索引: {actionCount} 个");
+                    }
+                    else
+                    {
+                        success = false;
+                        message = error ?? "未知错误";
+                        Log($"  ❌ RAG索引重建失败: {message}");
+                    }
+                });
+                
+                // 手动驱动协程
+                while (enumerator.MoveNext())
+                {
+                    EditorUtility.DisplayProgressBar("重建RAG索引", "正在重建索引，请稍候...", 0.5f);
+                    await UniTask.Yield();
+                }
+                
+                // 等待回调完成
+                int waitCount = 0;
+                while (!completed && waitCount < 100)
+                {
+                    await UniTask.Delay(100);
+                    waitCount++;
+                }
+                
+                void CheckCompletion() { }
+                EditorApplication.update -= CheckCompletion;
+                EditorUtility.ClearProgressBar();
+                
+                return (success, message);
+            }
+            catch (Exception e)
+            {
+                EditorUtility.ClearProgressBar();
+                Log($"  ❌ RAG索引重建异常: {e.Message}");
+                return (false, e.Message);
+            }
+        }
+        
+        /// <summary>
+        /// 手动重建RAG索引（带UI反馈）
+        /// </summary>
+        private async UniTaskVoid RebuildRAGIndexManualAsync()
+        {
+            Log("\n[手动重建] 开始重建RAG索引...");
+            var (success, message) = await RebuildRAGIndexAsync();
+            
+            if (success)
+            {
+                EditorUtility.DisplayDialog("索引重建成功", $"RAG索引已成功重建!\n\n{message}", "确定");
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("索引重建失败", $"RAG索引重建失败!\n\n{message}\n\n请检查RAG服务器是否已启动。", "确定");
             }
         }
 
