@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:yousandi.cn,2023:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb4a4034cdc1ba940b7bcea564c03936, type: 3}
+  m_Name: RAGConfig
+  m_EditorClassIdentifier: 
+  deepSeekApiUrl: https://api.deepseek.com/v1/chat/completions
+  deepSeekModel: deepseek-chat
+  deepSeekTemperature: 0.3
+  deepSeekMaxTokens: 1000
+  serverHost: 127.0.0.1
+  serverPort: 2024
+  webUIUrl: http://127.0.0.1:2024
+  serverStartTimeout: 30
+  actionDatabasePath: Assets/Data/ActionDescriptionDatabase.asset
+  exportDirectory: ../skill_agent/Data/Actions
+  serverScriptName: langgraph_server.py
+  installDepsScriptName: "\u5B89\u88C5\u4F9D\u8D56.bat"
+  promptSystemRole: "\u4F60\u662F\u4E00\u4E2AUnity\u6280\u80FD\u7CFB\u7EDF\u7684\u4E13\u5BB6\uFF0C\u8D1F\u8D23\u4E3AAction\u811A\u672C\u751F\u6210\u9AD8\u8D28\u91CF\u7684\u63CF\u8FF0\u6587\u672C\uFF0C\u7528\u4E8ERAG\u8BED\u4E49\u641C\u7D22\u7CFB\u7EDF\u3002"
+  promptOutputFormat: "\u8BF7\u4EE5JSON\u683C\u5F0F\u8F93\u51FA\uFF0C\u5305\u542B\u4EE5\u4E0B\u5B57\u6BB5\uFF1A\r\n{\r\n 
+    \"displayName\": \"\u7B80\u77ED\u7684\u4E2D\u6587\u663E\u793A\u540D\u79F0\uFF082-4\u4E2A\u5B57\uFF09\",\r\n 
+    \"category\": \"\u5206\u7C7B\uFF08Movement/Control/Damage/Visual/Audio/Buff\u7B49\uFF09\",\r\n 
+    \"description\": \"\u8BE6\u7EC6\u7684\u529F\u80FD\u63CF\u8FF0\uFF08150-300\u5B57\uFF09\",\r\n 
+    \"searchKeywords\": \"\u9017\u53F7\u5206\u9694\u7684\u641C\u7D22\u5173\u952E\u8BCD\uFF085-10\u4E2A\uFF09\"\r\n}"
+  promptDescriptionSpec: "# description\u5B57\u6BB5\u7F16\u5199\u89C4\u8303\r\n1.
+    **\u6838\u5FC3\u529F\u80FD**\uFF1A\u75281-2\u53E5\u8BDD\u6982\u62ECAction\u7684\u6838\u5FC3\u529F\u80FD\r\n2.
+    **\u8BE6\u7EC6\u8BF4\u660E**\uFF1A\u8BF4\u660E\u652F\u6301\u7684\u4E3B\u8981\u53C2\u6570\u3001\u6A21\u5F0F\u3001\u914D\u7F6E\u9879\r\n3.
+    **\u4F7F\u7528\u573A\u666F**\uFF1A\u5217\u4E3E3-5\u4E2A\u5178\u578B\u7684\u4F7F\u7528\u573A\u666F\u6216\u793A\u4F8B\u6280\u80FD\r\n4.
+    **\u5173\u952E\u533A\u522B**\uFF1A\u5F3A\u8C03\u4E0E\u5176\u4ED6\u76F8\u4F3CAction\u7684\u533A\u522B\uFF08\u4F8B\u5982\"\u7EAF\u7CB9\u4F4D\u79FB\uFF0C\u4E0D\u5305\u542B\u4F24\u5BB3\u548C\u63A7\u5236\u6548\u679C\"\uFF09\r\n5.
+    **\u4E2D\u82F1\u6DF7\u5408**\uFF1A\u5173\u952E\u672F\u8BED\u4F7F\u7528\u4E2D\u82F1\u6587\u6DF7\u5408\uFF08\u5982\"\u7EBF\u6027\u79FB\u52A8(Linear)\"\uFF09\uFF0C\u63D0\u9AD8\u641C\u7D22\u5339\u914D\u7387"
+  promptKeywordsSpec: "# searchKeywords\u5B57\u6BB5\u7F16\u5199\u89C4\u8303\r\n\u5305\u542B\uFF1A\r\n-
+    \u529F\u80FD\u76F8\u5173\u7684\u4E2D\u6587\u8BCD\u6C47\uFF08\u5982\uFF1A\u4F4D\u79FB\u3001\u79FB\u52A8\u3001\u51B2\u523A\u3001\u95EA\u73B0\uFF09\r\n-
+    \u82F1\u6587\u672F\u8BED\uFF08\u5982\uFF1Amovement\u3001teleport\u3001dash\uFF09\r\n-
+    \u5178\u578B\u6280\u80FD\u540D\u79F0\uFF08\u5982\uFF1A\u95EA\u73B0\u3001\u8DF3\u65A9\u3001\u51B2\u950B\uFF09\r\n-
+    DOTA2/LOL\u4E2D\u7684\u7C7B\u4F3C\u6280\u80FD"
+  promptNotes: "# \u6CE8\u610F\u4E8B\u9879\r\n- description\u5FC5\u987B\u5305\u542B\u8DB3\u591F\u7684\u5173\u952E\u8BCD\uFF0C\u786E\u4FDDRAG\u641C\u7D22\u65F6\u80FD\u51C6\u786E\u5339\u914D\r\n-
+    \u5982\u679CAction\u540D\u79F0\u5305\u542B\u63A7\u5236\u7C7B\u578B\uFF08\u5982ControlAction\u6709Stun/Silence/Root\u7B49\uFF09\uFF0C\u5FC5\u987B\u5168\u90E8\u5217\u4E3E\r\n-
+    \u5F3A\u8C03Action\u7684\u72EC\u7279\u6027\uFF0C\u907F\u514D\u4E0E\u5176\u4ED6Action\u6DF7\u6DC6\r\n-
+    \u4F7F\u7528\u4E2D\u6587\u4E3A\u4E3B\uFF0C\u5173\u952E\u672F\u8BED\u4E2D\u82F1\u6DF7\u5408\r\n-
+    \u8BF7\u76F4\u63A5\u8F93\u51FAJSON\uFF0C\u4E0D\u8981\u5305\u542B\u5176\u4ED6\u89E3\u91CA\u6587\u5B57\u3002"
+  autoNotifyRebuild: 1
+  aiRequestInterval: 1000
