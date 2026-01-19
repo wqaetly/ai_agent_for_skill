@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="actionItemContainer" class="action-item">
+        <ui:VisualElement name="mainRow" class="action-item-row">
+            <ui:Toggle name="selectToggle" class="select-toggle"/>
+            <ui:Button name="expandBtn" text="▶" class="expand-button"/>
+            <ui:Label name="typeLabel" class="type-label"/>
+            <ui:TextField name="displayNameField" class="displayname-field"/>
+            <ui:TextField name="categoryField" class="category-field"/>
+            <ui:Label name="paramCountLabel" class="param-count-label"/>
+            <ui:TextField name="descriptionField" multiline="true" class="description-field"/>
+            <ui:Label name="aiLabel" class="ai-label"/>
+        </ui:VisualElement>
+        <ui:VisualElement name="paramPanel" class="param-panel"/>
+    </ui:VisualElement>
+</ui:UXML>

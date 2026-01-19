@@ -3,7 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace RAGSystem.Editor
+namespace RAG
 {
     /// <summary>
     /// RAG系统全局配置
@@ -101,7 +101,11 @@ namespace RAGSystem.Editor
   ""displayName"": ""简短的中文显示名称（2-4个字）"",
   ""category"": ""分类（Movement/Control/Damage/Visual/Audio/Buff等）"",
   ""description"": ""详细的功能描述（150-300字）"",
-  ""searchKeywords"": ""逗号分隔的搜索关键词（5-10个）""
+  ""searchKeywords"": ""逗号分隔的搜索关键词（5-10个）"",
+  ""parameterDescriptions"": {
+    ""参数名1"": ""参数1的中文描述（20-50字）"",
+    ""参数名2"": ""参数2的中文描述（20-50字）""
+  }
 }";
         
         [TextArea(15, 30)]
@@ -121,6 +125,17 @@ namespace RAGSystem.Editor
 - 英文术语（如：movement、teleport、dash）
 - 典型技能名称（如：闪现、跳斩、冲锋）
 - DOTA2/LOL中的类似技能";
+        
+        [TextArea(10, 20)]
+        [Tooltip("参数描述编写规范")]
+        public string promptParameterDescSpec = @"# parameterDescriptions字段编写规范
+为源代码中每个public字段生成描述：
+1. 描述该参数的作用和用途
+2. 说明参数的取值范围或典型值（如有）
+3. 举例说明不同取值对技能效果的影响
+4. 使用中文，关键术语可中英混合
+5. 每个参数描述控制在20-50字
+6. 参数名必须与源代码中的字段名完全一致";
         
         [TextArea(8, 15)]
         [Tooltip("注意事项")]
@@ -167,6 +182,8 @@ namespace RAGSystem.Editor
             sb.AppendLine(promptDescriptionSpec);
             sb.AppendLine();
             sb.AppendLine(promptKeywordsSpec);
+            sb.AppendLine();
+            sb.AppendLine(promptParameterDescSpec);
             sb.AppendLine();
             
             if (!string.IsNullOrEmpty(existingDisplayName))
@@ -283,7 +300,11 @@ namespace RAGSystem.Editor
   ""displayName"": ""简短的中文显示名称（2-4个字）"",
   ""category"": ""分类（Movement/Control/Damage/Visual/Audio/Buff等）"",
   ""description"": ""详细的功能描述（150-300字）"",
-  ""searchKeywords"": ""逗号分隔的搜索关键词（5-10个）""
+  ""searchKeywords"": ""逗号分隔的搜索关键词（5-10个）"",
+  ""parameterDescriptions"": {
+    ""参数名1"": ""参数1的中文描述（20-50字）"",
+    ""参数名2"": ""参数2的中文描述（20-50字）""
+  }
 }";
             
             promptDescriptionSpec = @"# description字段编写规范
@@ -299,6 +320,15 @@ namespace RAGSystem.Editor
 - 英文术语（如：movement、teleport、dash）
 - 典型技能名称（如：闪现、跳斩、冲锋）
 - DOTA2/LOL中的类似技能";
+            
+            promptParameterDescSpec = @"# parameterDescriptions字段编写规范
+为源代码中每个public字段生成描述：
+1. 描述该参数的作用和用途
+2. 说明参数的取值范围或典型值（如有）
+3. 举例说明不同取值对技能效果的影响
+4. 使用中文，关键术语可中英混合
+5. 每个参数描述控制在20-50字
+6. 参数名必须与源代码中的字段名完全一致";
             
             promptNotes = @"# 注意事项
 - description必须包含足够的关键词，确保RAG搜索时能准确匹配

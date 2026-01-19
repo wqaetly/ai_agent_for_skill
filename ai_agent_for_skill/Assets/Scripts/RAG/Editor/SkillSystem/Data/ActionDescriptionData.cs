@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
-namespace SkillSystem.Editor.Data
+namespace RAG
 {
     /// <summary>
     /// 单个Action的描述数据
@@ -38,6 +38,10 @@ namespace SkillSystem.Editor.Data
         public string searchKeywords;
 
         [HideInInspector]
+        [LabelText("参数描述")]
+        public SerializableDictionary<string, string> parameterDescriptions = new SerializableDictionary<string, string>();
+
+        [HideInInspector]
         public bool isAIGenerated;
 
         [HideInInspector]
@@ -51,5 +55,38 @@ namespace SkillSystem.Editor.Data
         [HideInInspector]
         [LabelText("最后修改人")]
         public string lastModifiedBy;
+    }
+
+    /// <summary>
+    /// 可序列化的字典，Unity默认不支持序列化Dictionary
+    /// </summary>
+    [Serializable]
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
+    {
+        [SerializeField]
+        private List<TKey> keys = new List<TKey>();
+
+        [SerializeField]
+        private List<TValue> values = new List<TValue>();
+
+        public void OnBeforeSerialize()
+        {
+            keys.Clear();
+            values.Clear();
+            foreach (var kvp in this)
+            {
+                keys.Add(kvp.Key);
+                values.Add(kvp.Value);
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            Clear();
+            for (int i = 0; i < Math.Min(keys.Count, values.Count); i++)
+            {
+                this[keys[i]] = values[i];
+            }
+        }
     }
 }

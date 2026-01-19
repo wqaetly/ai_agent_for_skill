@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SkillSystem.RAG
+namespace RAG
 {
     /// <summary>
     /// Action导出JSON文件的根对象
@@ -41,6 +41,7 @@ namespace SkillSystem.RAG
         public string type;
         public string defaultValue;
         public string label;
+        public string description;  // AI generated parameter description
         public string group;
         public string infoBox;
         public bool isArray;

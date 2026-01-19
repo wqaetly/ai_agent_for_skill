@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace RAGSystem.Editor
+namespace RAG
 {
     /// <summary>
     /// RAG Configuration Editor Window

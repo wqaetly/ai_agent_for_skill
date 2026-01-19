@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace RAGSystem.Editor
+namespace RAG
 {
     /// <summary>
     /// DeepSeek API客户端
@@ -117,6 +117,10 @@ namespace RAGSystem.Editor
                 // 解析Action描述JSON
                 var result = JsonUtility.FromJson<ActionDescriptionResult>(content);
                 result.success = true;
+                
+                // 手动解析parameterDescriptions字典
+                result.RawParameterDescriptionsJson = ExtractParameterDescriptionsJson(content);
+                
                 return result;
             }
             catch (Exception e)
@@ -132,6 +136,41 @@ namespace RAGSystem.Editor
                     searchKeywords = ""
                 };
             }
+        }
+        
+        /// <summary>
+        /// 从JSON字符串中提取parameterDescriptions部分
+        /// </summary>
+        private string ExtractParameterDescriptionsJson(string jsonContent)
+        {
+            try
+            {
+                // 找到 "parameterDescriptions": { 的位置
+                int startIndex = jsonContent.IndexOf("\"parameterDescriptions\"");
+                if (startIndex < 0) return null;
+                
+                // 找到第一个 { 的位置
+                int braceStart = jsonContent.IndexOf('{', startIndex);
+                if (braceStart < 0) return null;
+                
+                // 找到匹配的 } 的位置
+                int braceCount = 1;
+                int braceEnd = braceStart + 1;
+                while (braceEnd < jsonContent.Length && braceCount > 0)
+                {
+                    if (jsonContent[braceEnd] == '{') braceCount++;
+                    else if (jsonContent[braceEnd] == '}') braceCount--;
+                    braceEnd++;
+                }
+                
+                if (braceCount == 0)
+                {
+                    return jsonContent.Substring(braceStart, braceEnd - braceStart);
+                }
+            }
+            catch { }
+            
+            return null;
         }
 
         #region 数据结构
@@ -187,5 +226,122 @@ namespace RAGSystem.Editor
         public string category;
         public string description;
         public string searchKeywords;
+        
+        /// <summary>
+        /// 原始的参数描述JSON字符串（用于手动解析）
+        /// </summary>
+        [NonSerialized]
+        public string RawParameterDescriptionsJson;
+        
+        /// <summary>
+        /// 获取指定参数的描述
+        /// </summary>
+        /// <param name="parameterName">参数名</param>
+        /// <returns>参数描述，如果不存在则返回null</returns>
+        public string GetParameterDescription(string parameterName)
+        {
+            if (string.IsNullOrEmpty(RawParameterDescriptionsJson))
+                return null;
+                
+            try
+            {
+                // 查找 "parameterName": "description" 模式
+                string searchPattern = $"\"{parameterName}\"";
+                int keyIndex = RawParameterDescriptionsJson.IndexOf(searchPattern);
+                if (keyIndex < 0) return null;
+                
+                // 找到冒号后的引号
+                int colonIndex = RawParameterDescriptionsJson.IndexOf(':', keyIndex);
+                if (colonIndex < 0) return null;
+                
+                int valueStartQuote = RawParameterDescriptionsJson.IndexOf('"', colonIndex);
+                if (valueStartQuote < 0) return null;
+                
+                // 找到结束引号（需要处理转义引号）
+                int valueEndQuote = valueStartQuote + 1;
+                while (valueEndQuote < RawParameterDescriptionsJson.Length)
+                {
+                    if (RawParameterDescriptionsJson[valueEndQuote] == '"' && 
+                        RawParameterDescriptionsJson[valueEndQuote - 1] != '\\')
+                    {
+                        break;
+                    }
+                    valueEndQuote++;
+                }
+                
+                if (valueEndQuote > valueStartQuote + 1)
+                {
+                    string value = RawParameterDescriptionsJson.Substring(
+                        valueStartQuote + 1, 
+                        valueEndQuote - valueStartQuote - 1);
+                    // 处理转义字符
+                    return value.Replace("\\\"", "\"").Replace("\\n", "\n");
+                }
+            }
+            catch { }
+            
+            return null;
+        }
+        
+        /// <summary>
+        /// 获取所有参数描述
+        /// </summary>
+        /// <returns>参数名到描述的字典</returns>
+        public System.Collections.Generic.Dictionary<string, string> GetAllParameterDescriptions()
+        {
+            var result = new System.Collections.Generic.Dictionary<string, string>();
+            
+            if (string.IsNullOrEmpty(RawParameterDescriptionsJson))
+                return result;
+                
+            try
+            {
+                // 简单的JSON解析：找所有的 "key": "value" 模式
+                int index = 0;
+                while (index < RawParameterDescriptionsJson.Length)
+                {
+                    // 找到下一个key的开始引号
+                    int keyStart = RawParameterDescriptionsJson.IndexOf('"', index);
+                    if (keyStart < 0) break;
+                    
+                    int keyEnd = RawParameterDescriptionsJson.IndexOf('"', keyStart + 1);
+                    if (keyEnd < 0) break;
+                    
+                    string key = RawParameterDescriptionsJson.Substring(keyStart + 1, keyEnd - keyStart - 1);
+                    
+                    // 找到冒号后的值
+                    int colonIndex = RawParameterDescriptionsJson.IndexOf(':', keyEnd);
+                    if (colonIndex < 0) break;
+                    
+                    int valueStart = RawParameterDescriptionsJson.IndexOf('"', colonIndex);
+                    if (valueStart < 0) break;
+                    
+                    int valueEnd = valueStart + 1;
+                    while (valueEnd < RawParameterDescriptionsJson.Length)
+                    {
+                        if (RawParameterDescriptionsJson[valueEnd] == '"' && 
+                            RawParameterDescriptionsJson[valueEnd - 1] != '\\')
+                        {
+                            break;
+                        }
+                        valueEnd++;
+                    }
+                    
+                    if (valueEnd > valueStart + 1)
+                    {
+                        string value = RawParameterDescriptionsJson.Substring(
+                            valueStart + 1, 
+                            valueEnd - valueStart - 1);
+                        value = value.Replace("\\\"", "\"").Replace("\\n", "\n");
+                        result[key] = value;
+                    }
+                    
+                    index = valueEnd + 1;
+                }
+            }
+            catch { }
+            
+            return result;
+        }
     }
 }

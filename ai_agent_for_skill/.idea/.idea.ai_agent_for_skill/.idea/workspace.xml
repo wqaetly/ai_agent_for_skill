@@ -6,59 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RAGSystem.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RAGSystem/ActionSemanticConfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/RAGSystem/ActionSemanticConfig.json.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionConstraintValidator.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionConstraintValidator.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionExportModels.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionExportModels.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionParameterDependencyGraph.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionParameterDependencyGraph.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationEnhancer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationEnhancer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationExplainer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationExplainer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationScorer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionRecommendationScorer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticConfigWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticConfigWindow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticModels.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticModels.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticRegistry.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ActionSemanticRegistry.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionData.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionData.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionDatabase.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Data/ActionDescriptionDatabase.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/DescriptionManagerWindow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ParameterGranularityEnhancer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ParameterGranularityEnhancer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ParameterInferencer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/ParameterInferencer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/RAGEditorIntegration.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentServerManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillAgentServerManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillContextAssembler.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/SkillContextAssembler.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Tests.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Tests/ParameterGranularityTests.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/Editor/Tests/ParameterGranularityTests.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/OdinJsonStandardizer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/OdinJsonStandardizer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/OdinRPCSerializer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/OdinRPCSerializer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/RAGClient.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/RAGClient.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCBridge.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCBridge.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCClient.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAGSystem/UnityRPCClient.cs.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionExportModels.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionExportModels.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionDatabase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionDatabase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DeepSeekClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DeepSeekClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManagerWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManagerWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfigEditorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfigEditorWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Models/ExportModels.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Models/ExportModels.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,6 +30,16 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/1e/2de7bb0f/Serializer`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/95/0eb67528/SerializationUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.claude/settings.local.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionExportModels.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionData.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionDatabase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManagerWindow.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinJsonStandardizer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinRPCSerializer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCBridge.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCClient.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Utils/JsonStandardizer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/ActionSemanticConfig.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" root0="FORCE_HIGHLIGHTING" />
@@ -198,6 +164,7 @@
       <workItem from="1763006484772" duration="2886000" />
       <workItem from="1767774521275" duration="1830000" />
       <workItem from="1768826810139" duration="1540000" />
+      <workItem from="1768828371104" duration="2715000" />
     </task>
     <servers />
   </component>

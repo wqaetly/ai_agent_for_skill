@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace RAGSystem.Editor
+namespace RAG
 {
     /// <summary>
     /// SkillAgent服务器管理器（Unity Editor）

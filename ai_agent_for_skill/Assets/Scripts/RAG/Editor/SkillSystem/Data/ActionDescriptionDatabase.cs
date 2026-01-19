@@ -4,7 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 
-namespace SkillSystem.Editor.Data
+namespace RAG
 {
     /// <summary>
     /// Action描述数据库 - ScriptableObject
@@ -55,6 +55,19 @@ namespace SkillSystem.Editor.Data
                 existing.description = data.description;
                 existing.searchKeywords = data.searchKeywords;
                 existing.lastModifiedTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                
+                // 更新参数描述
+                if (data.parameterDescriptions != null)
+                {
+                    if (existing.parameterDescriptions == null)
+                        existing.parameterDescriptions = new SerializableDictionary<string, string>();
+                    
+                    existing.parameterDescriptions.Clear();
+                    foreach (var kvp in data.parameterDescriptions)
+                    {
+                        existing.parameterDescriptions[kvp.Key] = kvp.Value;
+                    }
+                }
             }
             else
             {
