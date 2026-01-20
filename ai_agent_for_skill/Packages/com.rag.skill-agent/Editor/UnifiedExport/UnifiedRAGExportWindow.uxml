@@ -1,0 +1,34 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="rootContainer" class="root-container">
+        <!-- Top Toolbar with Tab Buttons -->
+        <ui:VisualElement name="topToolbar" class="top-toolbar">
+            <ui:Label text="RAG 数据导出中心" class="window-title"/>
+            <ui:VisualElement name="tabContainer" class="tab-container">
+                <ui:Button name="actionTabBtn" text="技能 Actions" class="tab-button tab-active"/>
+                <ui:Button name="buffTabBtn" text="Buff 系统" class="tab-button"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="toolbar-spacer"/>
+            <ui:Button name="openConfigBtn" text="全局配置" class="config-button"/>
+        </ui:VisualElement>
+        
+        <!-- Content Container - will hold embedded panels -->
+        <ui:VisualElement name="contentContainer" class="content-container">
+            <!-- Action Panel Container -->
+            <ui:VisualElement name="actionPanelContainer" class="panel-container">
+                <!-- Action content will be loaded here -->
+            </ui:VisualElement>
+            
+            <!-- Buff Panel Container -->
+            <ui:VisualElement name="buffPanelContainer" class="panel-container" style="display: none;">
+                <!-- Buff content will be loaded here -->
+            </ui:VisualElement>
+        </ui:VisualElement>
+        
+        <!-- Bottom Status Bar -->
+        <ui:VisualElement name="statusBar" class="status-bar">
+            <ui:Label name="statusLabel" text="就绪" class="status-label"/>
+            <ui:Label name="serverStatusLabel" text="服务器: 未检测" class="server-status-label"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

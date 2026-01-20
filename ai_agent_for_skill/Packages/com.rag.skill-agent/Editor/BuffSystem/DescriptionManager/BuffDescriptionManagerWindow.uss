@@ -1,0 +1,493 @@
+/* BuffDescriptionManagerWindow.uss - Styles for Buff Description Manager */
+
+/* Root and Section Styles */
+.root-scroll-view {
+    flex-grow: 1;
+}
+
+.section {
+    margin-bottom: 4px;
+    background-color: rgba(56, 56, 56, 0.8);
+    border-radius: 3px;
+    padding: 4px 6px;
+}
+
+.list-section {
+    flex-grow: 1;
+}
+
+.section-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+    color: rgb(217, 230, 255);
+}
+
+/* Row Styles */
+.row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.button-row {
+    flex-wrap: wrap;
+}
+
+.api-key-row {
+    margin-bottom: 4px;
+}
+
+.stats-row {
+    flex-wrap: wrap;
+}
+
+.progress-row {
+    margin-top: 2px;
+}
+
+.search-filter-row {
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+/* Label Styles */
+.info-label {
+    margin-right: 10px;
+    color: rgb(179, 179, 179);
+    font-size: 11px;
+}
+
+.field-label {
+    width: 60px;
+    font-size: 11px;
+}
+
+.filter-label {
+    width: 35px;
+    font-size: 11px;
+}
+
+.desc-filter-label {
+    margin-left: 10px;
+}
+
+.stat-label {
+    width: 90px;
+    font-size: 11px;
+}
+
+.stat-label-wide {
+    width: 100px;
+}
+
+.stat-label-narrow {
+    width: 80px;
+}
+
+.dir-label {
+    flex-grow: 1;
+    font-size: 10px;
+    color: rgb(153, 153, 153);
+}
+
+.progress-label {
+    width: 35px;
+    font-size: 10px;
+}
+
+/* Button Styles */
+Button {
+    height: 22px;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 11px;
+}
+
+.config-button {
+    width: 120px;
+    background-color: rgb(102, 115, 153);
+}
+
+.ai-button {
+    background-color: rgb(77, 128, 179);
+}
+
+.ai-batch-button {
+    background-color: rgb(51, 140, 77);
+}
+
+.save-button {
+    background-color: rgb(140, 115, 51);
+}
+
+.action-button {
+    /* Default button style */
+}
+
+.export-button {
+    background-color: rgb(153, 102, 51);
+}
+
+.server-button {
+    background-color: rgb(51, 128, 179);
+}
+
+.one-click-button {
+    height: 26px;
+    -unity-font-style: bold;
+    background-color: rgb(38, 128, 64);
+}
+
+.clear-search-button {
+    width: 45px;
+    height: 18px;
+    font-size: 10px;
+    margin-right: 10px;
+}
+
+/* Input Field Styles */
+.api-key-field {
+    flex-grow: 1;
+    height: 18px;
+}
+
+.search-field {
+    width: 200px;
+    height: 18px;
+}
+
+.filter-dropdown {
+    width: 100px;
+    height: 18px;
+}
+
+.filter-dropdown-wide {
+    width: 110px;
+    height: 18px;
+}
+
+/* Progress Bar */
+.progress-bar {
+    height: 14px;
+    flex-grow: 1;
+}
+
+/* Header Row Styles */
+.header-row {
+    flex-direction: row;
+    background-color: rgb(71, 71, 71);
+    padding: 3px 3px 3px 3px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(102, 102, 102);
+}
+
+.header-cell {
+    flex-direction: row;
+    align-items: center;
+}
+
+.header-label {
+    flex-grow: 1;
+    font-size: 10px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.header-select {
+    width: 25px;
+}
+
+.header-expand {
+    width: 25px;
+}
+
+.header-type {
+    width: 140px;
+}
+
+.header-displayname {
+    width: 90px;
+}
+
+.header-category {
+    width: 60px;
+}
+
+.header-params {
+    width: 45px;
+}
+
+.header-desc {
+    width: 300px;
+}
+
+.header-ai {
+    width: 30px;
+}
+
+/* List View Styles */
+.action-list-view {
+    flex-grow: 1;
+    height: 400px;
+}
+
+/* Action Item Styles */
+.action-item {
+    padding: 2px 3px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(77, 77, 77);
+}
+
+.action-item-even {
+    background-color: rgb(56, 56, 56);
+}
+
+.action-item-odd {
+    background-color: rgb(46, 46, 46);
+}
+
+.action-item-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.select-toggle {
+    width: 25px;
+}
+
+.expand-button {
+    width: 22px;
+    height: 18px;
+    font-size: 9px;
+    margin-right: 3px;
+}
+
+.type-label {
+    width: 140px;
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.displayname-field {
+    width: 90px;
+    height: 18px;
+    font-size: 10px;
+}
+
+.category-field {
+    width: 60px;
+    height: 18px;
+    font-size: 10px;
+}
+
+.param-count-label {
+    width: 45px;
+    font-size: 10px;
+    -unity-text-align: middle-center;
+}
+
+.param-count-none {
+    color: rgb(128, 128, 128);
+}
+
+.param-count-full {
+    color: rgb(102, 204, 102);
+}
+
+.param-count-partial {
+    color: rgb(230, 179, 77);
+}
+
+.param-count-empty {
+    color: rgb(230, 102, 102);
+}
+
+.description-field {
+    width: 300px;
+    height: 36px;
+    font-size: 10px;
+}
+
+.ai-label {
+    width: 30px;
+    font-size: 10px;
+    -unity-text-align: middle-center;
+}
+
+.ai-label-yes {
+    color: rgb(102, 204, 102);
+}
+
+.ai-label-no {
+    color: rgb(128, 128, 128);
+}
+
+
+/* Parameter Panel Styles */
+.param-panel {
+    margin-left: 30px;
+    margin-top: 4px;
+    background-color: rgb(46, 51, 56);
+    border-radius: 3px;
+    padding: 4px 6px;
+}
+
+.param-header-row {
+    flex-direction: row;
+    margin-bottom: 2px;
+    padding-bottom: 2px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(89, 89, 89);
+}
+
+.param-header-label {
+    font-size: 9px;
+    -unity-font-style: bold;
+    color: rgb(179, 179, 179);
+}
+
+.param-header-name {
+    width: 100px;
+}
+
+.param-header-type {
+    width: 80px;
+}
+
+.param-header-default {
+    width: 80px;
+}
+
+.param-header-label-col {
+    width: 80px;
+}
+
+.param-header-desc {
+    flex-grow: 1;
+    min-width: 100px;
+}
+
+.param-row {
+    flex-direction: row;
+    margin-bottom: 2px;
+    align-items: center;
+}
+
+.param-name {
+    width: 100px;
+    font-size: 10px;
+    color: rgb(179, 217, 255);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.param-type {
+    width: 80px;
+    font-size: 10px;
+    color: rgb(153, 204, 153);
+}
+
+.param-default {
+    width: 80px;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.param-label-value {
+    width: 80px;
+    font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.param-desc-field {
+    flex-grow: 1;
+    min-width: 100px;
+    height: 18px;
+    font-size: 10px;
+}
+
+.param-desc-field-filled {
+    background-color: rgba(51, 77, 51, 0.5);
+}
+
+.param-info-row {
+    margin-left: 10px;
+    margin-bottom: 4px;
+}
+
+.param-info-label {
+    font-size: 9px;
+    color: rgb(153, 153, 179);
+    white-space: normal;
+}
+
+.no-param-label {
+    color: rgb(128, 128, 128);
+    font-size: 10px;
+}
+
+/* Logs Field */
+.logs-field {
+    height: 100px;
+    font-size: 10px;
+    white-space: normal;
+}
+
+/* Tab Styles */
+.tab-container {
+    flex-direction: row;
+    margin-bottom: 4px;
+}
+
+.tab-button {
+    height: 26px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-right: 2px;
+    border-radius: 3px 3px 0 0;
+    background-color: rgb(56, 56, 56);
+    border-bottom-width: 0;
+}
+
+.tab-button-active {
+    background-color: rgb(71, 71, 71);
+    -unity-font-style: bold;
+}
+
+.tab-button:hover {
+    background-color: rgb(66, 66, 66);
+}
+
+/* Buff-specific Aliases (same as action-item styles) */
+.buff-item {
+    padding: 2px 3px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(77, 77, 77);
+}
+
+.buff-item-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.buff-list-view {
+    flex-grow: 1;
+    height: 400px;
+}
+
+/* Effect/Trigger Indicator Colors */
+.effect-indicator {
+    color: rgb(153, 204, 255);
+}
+
+.trigger-indicator {
+    color: rgb(255, 204, 153);
+}
+

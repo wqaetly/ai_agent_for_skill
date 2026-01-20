@@ -1,6 +1,6 @@
 # skill_agent Core Configuration
 # 纯 RAG 逻辑配置，无 MCP/Unity/WebUI 依赖
-# 版本: 1.0.0
+# 版本: 1.1.0 (RAG 优化版)
 
 # ==================== 嵌入模型配置 ====================
 embedding:
@@ -11,6 +11,10 @@ embedding:
   max_length: 8192  # Qwen3 支持 32K，设为 8192 平衡性能
   cache_dir: null  # null 使用系统默认缓存
   use_flash_attention: false  # CPU 不支持
+
+  # 多级缓存配置 (v1.1.0 新增)
+  cache_path: "Data/embedding_cache"  # 磁盘缓存路径，null 禁用磁盘缓存
+  l1_cache_size: 2000  # L1 内存缓存大小
 
 # ==================== 向量数据库配置 ====================
 vector_store:
@@ -60,12 +64,28 @@ rag:
   top_k: 5  # 返回最相似的 K 个结果
   similarity_threshold: 0.1  # 相似度阈值（0-1），降低以提高召回率
 
-  # 重排序
-  rerank_enabled: false  # 可扩展
+  # 重排序配置 (v1.1.0 增强)
+  rerank_enabled: true  # 启用重排序
+  use_semantic_rerank: false  # 是否使用语义重排序（需要额外计算）
+  use_cross_encoder: false  # 是否使用 Cross-Encoder（需要额外模型）
+
+  # 混合检索配置 (v1.1.0 新增)
+  hybrid_search:
+    enabled: true  # 是否启用混合检索
+    use_dynamic_weights: true  # 动态权重调整
+    default_bm25_weight: 0.3  # 默认 BM25 权重
+    default_vector_weight: 0.7  # 默认向量检索权重
+    rrf_k: 60  # RRF 融合参数
 
   # 缓存配置
   cache_enabled: true
   cache_ttl: 3600  # 缓存生存时间（秒）
+
+# ==================== 性能监控配置 (v1.1.0 新增) ====================
+performance:
+  enabled: true
+  slow_threshold_ms: 500  # 慢查询阈值（毫秒）
+  max_history: 1000  # 保留的历史记录数量
 
 # ==================== 日志配置 ====================
 logging:

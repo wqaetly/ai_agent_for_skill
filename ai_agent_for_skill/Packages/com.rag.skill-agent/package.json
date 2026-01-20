@@ -1,0 +1,28 @@
+{
+  "name": "com.rag.skill-agent",
+  "version": "1.0.0",
+  "displayName": "RAG Skill Agent",
+  "description": "Unity RAG (Retrieval Augmented Generation) 技能配置智能助手系统，支持技能和Buff的扫描、导出和AI辅助描述生成。",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "keywords": [
+    "rag",
+    "skill",
+    "buff",
+    "ai",
+    "editor",
+    "tool"
+  ],
+  "author": {
+    "name": "wqaetly",
+    "email": "",
+    "url": ""
+  },
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0.0"
+  }
+}
+

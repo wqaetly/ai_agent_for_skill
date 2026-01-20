@@ -369,3 +369,230 @@ class SingleActionOutput(BaseModel):
         description="生成该Action的简要理由（可选）",
         max_length=200
     )
+
+
+
+# ==== Buff 系统 Schema ====
+
+class BuffEffectType(str, Enum):
+    """Buff效果类型"""
+    ATTRIBUTE_MODIFIER = "AttributeModifierEffect"
+    DAMAGE_OVER_TIME = "DamageOverTimeEffect"
+    HEAL_OVER_TIME = "HealOverTimeEffect"
+    SPECIAL_STATE = "SpecialStateEffect"
+    SHIELD = "ShieldEffect"
+
+
+class BuffTriggerType(str, Enum):
+    """Buff触发器类型"""
+    PERIODIC = "PeriodicTrigger"
+    EVENT = "EventTrigger"
+    THRESHOLD = "ThresholdTrigger"
+    CONDITIONAL = "ConditionalTrigger"
+
+
+class BuffType(str, Enum):
+    """Buff类型"""
+    BUFF = "Buff"
+    DEBUFF = "Debuff"
+    NEUTRAL = "Neutral"
+
+
+class BuffCategory(str, Enum):
+    """Buff分类"""
+    COMMON = "Common"
+    ATTRIBUTE_BOOST = "AttributeBoost"
+    ATTRIBUTE_REDUCTION = "AttributeReduction"
+    DAMAGE_OVER_TIME = "DamageOverTime"
+    HEAL_OVER_TIME = "HealOverTime"
+    CROWD_CONTROL = "CrowdControl"
+    SHIELD = "Shield"
+    SPECIAL_STATE = "SpecialState"
+    AURA = "Aura"
+    PASSIVE = "Passive"
+
+
+class DurationType(str, Enum):
+    """持续时间类型"""
+    TIMED = "Timed"
+    PERMANENT = "Permanent"
+    CHARGES = "Charges"
+
+
+class StackingType(str, Enum):
+    """叠加类型"""
+    NONE = "None"
+    REFRESH = "Refresh"
+    STACKABLE = "Stackable"
+    INDEPENDENT = "Independent"
+
+
+class AttributeModifier(BaseModel):
+    """属性修改器"""
+    attributeType: str = Field(..., description="属性类型，如：Health, AttackDamage, Armor等")
+    modifierType: str = Field("Flat", description="修改类型：Flat(固定值), PercentAdd(百分比加成), PercentMult(百分比乘算)")
+    value: float = Field(..., description="修改值")
+
+
+class BuffEffect(BaseModel):
+    """Buff效果定义"""
+    effectType: str = Field(..., description="效果类型，如：AttributeModifierEffect, DamageOverTimeEffect等")
+    effectName: str = Field("", description="效果名称")
+    description: str = Field("", description="效果描述")
+    parameters: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="效果参数，根据effectType不同而不同"
+    )
+
+
+class BuffTrigger(BaseModel):
+    """Buff触发器定义"""
+    triggerType: str = Field(..., description="触发器类型，如：PeriodicTrigger, EventTrigger等")
+    triggerName: str = Field("", description="触发器名称")
+    description: str = Field("", description="触发器描述")
+    parameters: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="触发器参数，根据triggerType不同而不同"
+    )
+
+
+class BuffTemplateSchema(BaseModel):
+    """
+    Buff模板Schema - 用于LLM生成Buff配置
+
+    对应Unity BuffTemplate结构
+    """
+    buffId: str = Field(
+        ...,
+        description="Buff唯一ID，格式：小写英文-数字，如：strength-boost-001",
+        pattern=r"^[a-z0-9-]+$",
+        min_length=3,
+        max_length=50
+    )
+    buffName: str = Field(..., description="Buff名称", min_length=2, max_length=50)
+    displayName: str = Field("", description="显示名称（UI中显示）")
+    description: str = Field(
+        ...,
+        description="Buff描述（10-200字）",
+        min_length=10,
+        max_length=300
+    )
+
+    # 类型配置
+    buffType: str = Field("Buff", description="Buff类型：Buff(增益), Debuff(减益), Neutral(中性)")
+    category: str = Field("Common", description="Buff分类")
+    priority: int = Field(0, description="优先级，高优先级先计算", ge=0, le=100)
+
+    # 持续时间配置
+    durationType: str = Field("Timed", description="持续时间类型：Timed(定时), Permanent(永久), Charges(次数)")
+    duration: float = Field(5.0, description="持续时间（秒）", ge=0.1)
+    canRefresh: bool = Field(True, description="重复施加时是否刷新持续时间")
+
+    # 叠加配置
+    stackingType: str = Field("Refresh", description="叠加类型：None(替换), Refresh(刷新), Stackable(叠加), Independent(独立)")
+    maxStacks: int = Field(1, description="最大层数", ge=1, le=99)
+
+    # 效果列表
+    effects: List[BuffEffect] = Field(
+        default_factory=list,
+        description="Buff效果列表"
+    )
+
+    # 触发器列表
+    triggers: List[BuffTrigger] = Field(
+        default_factory=list,
+        description="Buff触发器列表"
+    )
+
+    # 驱散配置
+    canBeDispelled: bool = Field(True, description="是否可被驱散")
+    dispelType: str = Field("Magic", description="驱散类型：Magic(魔法), Physical(物理), Strong(强驱散), None(不可驱散)")
+    removeOnDeath: bool = Field(True, description="死亡时是否移除")
+
+    # 互斥配置
+    exclusionGroup: str = Field("", description="互斥组，同组Buff不能共存")
+    incompatibleBuffs: List[str] = Field(
+        default_factory=list,
+        description="不可共存的Buff ID列表"
+    )
+
+    # 标签
+    tags: List[str] = Field(
+        default_factory=list,
+        description="Buff标签，用于分类和查询"
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "buffId": "strength-boost-001",
+                "buffName": "力量增强",
+                "displayName": "力量增强",
+                "description": "增加目标的攻击力，持续10秒，可叠加3层",
+                "buffType": "Buff",
+                "category": "AttributeBoost",
+                "priority": 10,
+                "durationType": "Timed",
+                "duration": 10.0,
+                "canRefresh": True,
+                "stackingType": "Stackable",
+                "maxStacks": 3,
+                "effects": [
+                    {
+                        "effectType": "AttributeModifierEffect",
+                        "effectName": "攻击力提升",
+                        "description": "提升攻击力",
+                        "parameters": {
+                            "modifiers": [
+                                {"attributeType": "AttackDamage", "modifierType": "PercentAdd", "value": 0.1}
+                            ],
+                            "scaleWithStacks": True
+                        }
+                    }
+                ],
+                "triggers": [],
+                "canBeDispelled": True,
+                "dispelType": "Magic",
+                "removeOnDeath": True,
+                "exclusionGroup": "",
+                "incompatibleBuffs": [],
+                "tags": ["增益", "攻击", "可叠加"]
+            }
+        }
+    )
+
+
+class BuffSkeletonSchema(BaseModel):
+    """Buff骨架Schema（用于渐进式生成的第一阶段）"""
+    buffId: str = Field(
+        ...,
+        description="Buff唯一ID",
+        pattern=r"^[a-z0-9-]+$"
+    )
+    buffName: str = Field(..., description="Buff名称")
+    description: str = Field(..., description="Buff描述")
+    buffType: str = Field("Buff", description="Buff类型")
+    category: str = Field("Common", description="Buff分类")
+
+    # 效果计划
+    effectPlan: List[Dict[str, str]] = Field(
+        default_factory=list,
+        description="计划的效果列表，每项包含effectType和purpose"
+    )
+
+    # 触发器计划
+    triggerPlan: List[Dict[str, str]] = Field(
+        default_factory=list,
+        description="计划的触发器列表，每项包含triggerType和purpose"
+    )
+
+
+class BuffGenerationRequest(BaseModel):
+    """Buff生成请求"""
+    user_prompt: str = Field(..., description="用户的Buff需求描述")
+    buff_type_hint: Optional[str] = Field(None, description="Buff类型提示")
+    category_hint: Optional[str] = Field(None, description="分类提示")
+    reference_buffs: List[str] = Field(
+        default_factory=list,
+        description="参考的已有Buff ID列表"
+    )

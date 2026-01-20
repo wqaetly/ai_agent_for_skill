@@ -299,6 +299,42 @@ class SkillReranker(RuleBasedReranker):
         
         self.add_boost_rule(contains_query_numbers, 1.2)
 
+        # 规则5: 技能描述与查询的关键词重叠加分
+        def keyword_overlap(doc: Dict, query: str) -> bool:
+            document = doc.get('document', '').lower()
+            query_words = set(query.lower().split())
+            # 移除停用词
+            stopwords = {'的', '是', '在', '和', '与', '或', '一个', '这个', 'the', 'a', 'an', 'is', 'are'}
+            query_words = query_words - stopwords
+            if not query_words:
+                return False
+            overlap_count = sum(1 for word in query_words if word in document)
+            return overlap_count >= len(query_words) * 0.5
+
+        self.add_boost_rule(keyword_overlap, 1.25)
+
+        # 规则6: 技能复杂度匹配（根据查询推断）
+        def complexity_match(doc: Dict, query: str) -> bool:
+            metadata = doc.get('metadata', {})
+            num_actions = metadata.get('num_actions', 0)
+            query_lower = query.lower()
+
+            # 简单技能关键词
+            simple_keywords = ['简单', '基础', '普通', 'simple', 'basic']
+            # 复杂技能关键词
+            complex_keywords = ['复杂', '高级', '连招', '组合', 'complex', 'advanced', 'combo']
+
+            is_simple_query = any(kw in query_lower for kw in simple_keywords)
+            is_complex_query = any(kw in query_lower for kw in complex_keywords)
+
+            if is_simple_query and num_actions <= 3:
+                return True
+            if is_complex_query and num_actions >= 5:
+                return True
+            return False
+
+        self.add_boost_rule(complexity_match, 1.2)
+
 
 class ActionReranker(RuleBasedReranker):
     """
@@ -350,8 +386,155 @@ class ActionReranker(RuleBasedReranker):
             metadata = doc.get('metadata', {})
             param_count = metadata.get('param_count', 0)
             return 3 <= param_count <= 8
-        
+
         self.add_boost_rule(reasonable_param_count, 1.1)
+
+        # 规则4: 参数名称匹配加分
+        def param_name_match(doc: Dict, query: str) -> bool:
+            metadata = doc.get('metadata', {})
+            param_names = metadata.get('param_names', '').lower()
+            query_lower = query.lower()
+
+            # 常见参数关键词映射
+            param_keywords = {
+                'damage': ['伤害', 'damage', '攻击力'],
+                'duration': ['持续', 'duration', '时间'],
+                'range': ['范围', 'range', '距离'],
+                'speed': ['速度', 'speed', '快'],
+                'target': ['目标', 'target', '敌人'],
+            }
+
+            for param, keywords in param_keywords.items():
+                if any(kw in query_lower for kw in keywords):
+                    if param in param_names:
+                        return True
+            return False
+
+        self.add_boost_rule(param_name_match, 1.2)
+
+        # 规则5: 描述相关性加分
+        def description_relevance(doc: Dict, query: str) -> bool:
+            document = doc.get('document', '').lower()
+            query_lower = query.lower()
+
+            # 计算查询词在描述中的出现次数
+            query_words = [w for w in query_lower.split() if len(w) > 1]
+            if not query_words:
+                return False
+
+            match_count = sum(1 for word in query_words if word in document)
+            return match_count >= 2
+
+        self.add_boost_rule(description_relevance, 1.15)
+
+
+class SemanticReranker(BaseReranker):
+    """
+    语义重排序器
+    基于查询和文档的语义相似度进行重排序
+    """
+
+    def __init__(self, embedding_generator=None, weight: float = 0.3):
+        """
+        Args:
+            embedding_generator: 嵌入生成器实例（可选）
+            weight: 语义分数权重（与原始分数融合）
+        """
+        self.embedding_generator = embedding_generator
+        self.weight = weight
+
+    def set_embedding_generator(self, generator):
+        """设置嵌入生成器"""
+        self.embedding_generator = generator
+
+    def rerank(
+        self,
+        query: str,
+        documents: List[Dict[str, Any]],
+        top_k: Optional[int] = None
+    ) -> List[RerankResult]:
+        """
+        基于语义相似度重排序
+        """
+        if not documents:
+            return []
+
+        # 如果没有嵌入生成器，降级为原始分数
+        if self.embedding_generator is None:
+            return self._fallback_rerank(documents, top_k)
+
+        try:
+            # 获取查询向量
+            query_embedding = self.embedding_generator.encode(query, prompt_name="query")
+
+            results = []
+            for i, doc in enumerate(documents):
+                original_score = doc.get('score', doc.get('fused_score', 0.0))
+
+                # 获取文档向量（如果有缓存的话会很快）
+                doc_text = doc.get('document', '') or doc.get('text', '')
+                if doc_text:
+                    doc_embedding = self.embedding_generator.encode(doc_text)
+                    # 计算余弦相似度
+                    semantic_score = self._cosine_similarity(query_embedding, doc_embedding)
+                else:
+                    semantic_score = 0.0
+
+                # 融合分数
+                combined_score = (1 - self.weight) * original_score + self.weight * semantic_score
+
+                results.append(RerankResult(
+                    doc_id=doc.get('doc_id', str(i)),
+                    original_rank=i,
+                    new_rank=-1,
+                    original_score=original_score,
+                    rerank_score=combined_score,
+                    document=doc_text,
+                    metadata=doc.get('metadata', {})
+                ))
+
+            # 排序
+            results.sort(key=lambda x: x.rerank_score, reverse=True)
+            for i, result in enumerate(results):
+                result.new_rank = i
+
+            if top_k:
+                results = results[:top_k]
+
+            return results
+
+        except Exception as e:
+            logger.warning(f"Semantic reranking failed, falling back: {e}")
+            return self._fallback_rerank(documents, top_k)
+
+    def _cosine_similarity(self, vec1: List[float], vec2: List[float]) -> float:
+        """计算余弦相似度"""
+        import math
+        dot_product = sum(a * b for a, b in zip(vec1, vec2))
+        norm1 = math.sqrt(sum(a * a for a in vec1))
+        norm2 = math.sqrt(sum(b * b for b in vec2))
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+        return dot_product / (norm1 * norm2)
+
+    def _fallback_rerank(self, documents: List[Dict], top_k: Optional[int]) -> List[RerankResult]:
+        """降级重排序（使用原始分数）"""
+        results = []
+        for i, doc in enumerate(documents):
+            results.append(RerankResult(
+                doc_id=doc.get('doc_id', str(i)),
+                original_rank=i,
+                new_rank=i,
+                original_score=doc.get('score', doc.get('fused_score', 0.0)),
+                rerank_score=doc.get('score', doc.get('fused_score', 0.0)),
+                document=doc.get('document', ''),
+                metadata=doc.get('metadata', {})
+            ))
+
+        if top_k:
+            results = results[:top_k]
+
+        return results
 
 
 class RerankerPipeline:
@@ -407,32 +590,59 @@ class RerankerPipeline:
         return current_docs
 
 
-def create_skill_reranker_pipeline(use_cross_encoder: bool = False) -> RerankerPipeline:
+def create_skill_reranker_pipeline(
+    use_cross_encoder: bool = False,
+    use_semantic: bool = False,
+    embedding_generator=None
+) -> RerankerPipeline:
     """
     创建技能检索的重排序管道
-    
+
     Args:
         use_cross_encoder: 是否使用Cross-Encoder（需要额外模型）
+        use_semantic: 是否使用语义重排序
+        embedding_generator: 嵌入生成器（语义重排序需要）
     """
     pipeline = RerankerPipeline()
-    
+
     # 阶段1: 规则重排序
     pipeline.add_stage(SkillReranker())
-    
-    # 阶段2: Cross-Encoder（可选）
+
+    # 阶段2: 语义重排序（可选）
+    if use_semantic and embedding_generator:
+        pipeline.add_stage(SemanticReranker(embedding_generator))
+
+    # 阶段3: Cross-Encoder（可选）
     if use_cross_encoder:
         pipeline.add_stage(CrossEncoderReranker())
-    
+
     return pipeline
 
 
-def create_action_reranker_pipeline(use_cross_encoder: bool = False) -> RerankerPipeline:
-    """创建Action检索的重排序管道"""
+def create_action_reranker_pipeline(
+    use_cross_encoder: bool = False,
+    use_semantic: bool = False,
+    embedding_generator=None
+) -> RerankerPipeline:
+    """
+    创建Action检索的重排序管道
+
+    Args:
+        use_cross_encoder: 是否使用Cross-Encoder（需要额外模型）
+        use_semantic: 是否使用语义重排序
+        embedding_generator: 嵌入生成器（语义重排序需要）
+    """
     pipeline = RerankerPipeline()
-    
+
+    # 阶段1: 规则重排序
     pipeline.add_stage(ActionReranker())
-    
+
+    # 阶段2: 语义重排序（可选）
+    if use_semantic and embedding_generator:
+        pipeline.add_stage(SemanticReranker(embedding_generator))
+
+    # 阶段3: Cross-Encoder（可选）
     if use_cross_encoder:
         pipeline.add_stage(CrossEncoderReranker())
-    
+
     return pipeline

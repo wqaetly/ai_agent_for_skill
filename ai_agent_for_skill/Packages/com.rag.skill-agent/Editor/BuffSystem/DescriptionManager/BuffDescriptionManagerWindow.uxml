@@ -1,0 +1,134 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:ScrollView name="rootScrollView" mode="Vertical" class="root-scroll-view">
+        <!-- Global Config Section -->
+        <ui:VisualElement name="globalConfigSection" class="section">
+            <ui:Label text="[Config] 全局配置" class="section-header"/>
+            <ui:VisualElement class="row">
+                <ui:Label text="点击按钮打开RAG全局配置" class="info-label"/>
+                <ui:Button name="openConfigBtn" text="打开全局配置" class="config-button"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- AI Config Section -->
+        <ui:VisualElement name="aiConfigSection" class="section">
+            <ui:Label text="[DeepSeek] AI描述生成" class="section-header"/>
+            <ui:VisualElement class="row api-key-row">
+                <ui:Label text="API Key:" class="field-label"/>
+                <ui:TextField name="apiKeyField" password="true" class="api-key-field"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="row button-row">
+                <ui:Button name="generateSelectedBtn" text="为选中项生成" class="ai-button"/>
+                <ui:Button name="generateMissingBtn" text="批量生成(无描述)" class="ai-batch-button"/>
+                <ui:Button name="saveDbBtn" text="保存到数据库" class="save-button"/>
+                <ui:Button name="selectAllBtn" text="全选" class="action-button"/>
+                <ui:Button name="deselectAllBtn" text="取消全选" class="action-button"/>
+            </ui:VisualElement>
+            <ui:VisualElement class="row progress-row">
+                <ui:Label text="进度:" class="progress-label"/>
+                <ui:ProgressBar name="progressBar" title="0%" class="progress-bar"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Statistics Section -->
+        <ui:VisualElement name="statisticsSection" class="section">
+            <ui:Label text="[Stats] 统计信息" class="section-header"/>
+            <ui:VisualElement class="row stats-row">
+                <ui:Label name="totalEffectsLabel" text="效果总数: 0" class="stat-label"/>
+                <ui:Label name="totalTriggersLabel" text="触发器总数: 0" class="stat-label"/>
+                <ui:Label name="withDescriptionLabel" text="有描述: 0" class="stat-label"/>
+                <ui:Label name="selectedCountLabel" text="已选: 0" class="stat-label stat-label-narrow"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Export Section -->
+        <ui:VisualElement name="exportSection" class="section">
+            <ui:Label text="[Export] 导出JSON" class="section-header"/>
+            <ui:VisualElement class="row">
+                <ui:Label name="exportDirLabel" text="目录:" class="dir-label"/>
+                <ui:Button name="exportJsonBtn" text="导出JSON" class="export-button"/>
+                <ui:Button name="openFolderBtn" text="打开目录" class="action-button"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Server Section -->
+        <ui:VisualElement name="serverSection" class="section">
+            <ui:Label text="[Server] 服务器" class="section-header"/>
+            <ui:VisualElement class="row button-row">
+                <ui:Button name="rebuildIndexBtn" text="通知重建索引" class="server-button"/>
+                <ui:Button name="checkStatusBtn" text="检查状态" class="action-button"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Quick Actions Section -->
+        <ui:VisualElement name="quickActionsSection" class="section">
+            <ui:Label text="[Quick] 快捷操作" class="section-header"/>
+            <ui:VisualElement class="row button-row">
+                <ui:Button name="oneClickExportBtn" text="&gt;&gt;&gt; 一键导出并通知 &lt;&lt;&lt;" class="one-click-button"/>
+                <ui:Button name="refreshBtn" text="刷新列表" class="action-button"/>
+                <ui:Button name="clearLogsBtn" text="清空日志" class="action-button"/>
+                <ui:Button name="expandAllBtn" text="展开全部参数" class="action-button"/>
+                <ui:Button name="collapseAllBtn" text="收起全部参数" class="action-button"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Tab Section -->
+        <ui:VisualElement name="tabSection" class="section">
+            <ui:Label text="[Tab] 类型切换" class="section-header"/>
+            <ui:VisualElement class="row tab-row">
+                <ui:RadioButtonGroup name="buffTypeTabGroup" class="tab-group">
+                    <ui:RadioButton name="effectsTab" text="Buff效果" value="true" class="tab-button"/>
+                    <ui:RadioButton name="triggersTab" text="Buff触发器" class="tab-button"/>
+                </ui:RadioButtonGroup>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Buff List Section -->
+        <ui:VisualElement name="buffListSection" class="section list-section">
+            <ui:Label text="[List] Buff列表" class="section-header"/>
+            <!-- Search and Filter Row -->
+            <ui:VisualElement class="row search-filter-row">
+                <ui:Label text="搜索:" class="filter-label"/>
+                <ui:TextField name="searchField" class="search-field"/>
+                <ui:Button name="clearSearchBtn" text="清除" class="clear-search-button"/>
+                <ui:Label text="分类:" class="filter-label"/>
+                <ui:DropdownField name="categoryFilter" class="filter-dropdown"/>
+                <ui:Label text="描述:" class="filter-label desc-filter-label"/>
+                <ui:DropdownField name="descriptionFilter" class="filter-dropdown-wide"/>
+            </ui:VisualElement>
+            <!-- Header Row -->
+            <ui:VisualElement name="headerRow" class="header-row">
+                <ui:VisualElement name="headerCell_0" class="header-cell header-select"/>
+                <ui:VisualElement name="headerCell_1" class="header-cell header-expand">
+                    <ui:Label text="▼" class="header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_2" class="header-cell header-type">
+                    <ui:Label text="类型" class="header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_3" class="header-cell header-displayname">
+                    <ui:Label text="显示名" class="header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_4" class="header-cell header-category">
+                    <ui:Label text="分类" class="header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_5" class="header-cell header-params">
+                    <ui:Label text="参数" class="header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_6" class="header-cell header-desc">
+                    <ui:Label text="描述" class="header-label"/>
+                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_7" class="header-cell header-ai">
+                    <ui:Label text="AI" class="header-label"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <!-- List View -->
+            <ui:ListView name="buffListView" class="action-list-view"/>
+        </ui:VisualElement>
+
+        <!-- Logs Section -->
+        <ui:VisualElement name="logsSection" class="section">
+            <ui:Label text="[Log] 日志" class="section-header"/>
+            <ui:TextField name="operationLogsField" multiline="true" readonly="true" class="logs-field"/>
+        </ui:VisualElement>
+    </ui:ScrollView>
+</ui:UXML>
+

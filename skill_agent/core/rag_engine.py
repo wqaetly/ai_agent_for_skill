@@ -15,6 +15,7 @@ from .vector_store import create_vector_store
 from .skill_indexer import SkillIndexer
 from .action_indexer import ActionIndexer
 from .structured_query_engine import StructuredQueryEngine
+from .performance_monitor import PerformanceMonitor, get_global_monitor
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +87,10 @@ class RAGEngine:
             'total_indexed': 0,
             'last_index_time': None
         }
+
+        # 性能监控器
+        self.performance_monitor = get_global_monitor()
+        logger.info("Performance monitor integrated")
 
         logger.info("RAG Engine initialized successfully")
 
@@ -237,6 +242,9 @@ class RAGEngine:
         """
         self._stats['total_queries'] += 1
 
+        import time
+        search_start = time.perf_counter()
+
         # 使用默认值
         top_k = top_k or self.top_k
 
@@ -249,6 +257,9 @@ class RAGEngine:
                 logger.debug(f"Cache hit for query: {query[:50]}")
                 return self._query_cache[cache_key]
 
+        # 性能监控 - 开始
+        embedding_start = time.perf_counter()
+
         # 1. 生成查询向量（使用query prompt优化Qwen3等模型性能）
         query_embedding = self.embedding_generator.encode(
             query,
@@ -256,12 +267,20 @@ class RAGEngine:
             prompt_name="query"
         )
 
+        embedding_time = (time.perf_counter() - embedding_start) * 1000
+        self.performance_monitor.record("embedding", embedding_time, {"query_length": len(query)})
+
+        vector_search_start = time.perf_counter()
+
         # 2. 向量检索
         results = self.vector_store.query(
             query_embeddings=[query_embedding],
             top_k=top_k,
             where=filters
         )
+
+        vector_search_time = (time.perf_counter() - vector_search_start) * 1000
+        self.performance_monitor.record("vector_search", vector_search_time, {"top_k": top_k})
 
         # 3. 处理结果
         matched_skills = []
@@ -309,6 +328,15 @@ class RAGEngine:
             self._query_cache[cache_key] = matched_skills
 
         logger.info(f"Search query '{query[:50]}' returned {len(matched_skills)} results")
+
+        # 记录总检索时间
+        total_time = (time.perf_counter() - search_start) * 1000
+        self.performance_monitor.record("search_skills_total", total_time, {
+            "query": query[:50],
+            "results_count": len(matched_skills),
+            "cache_hit": cache_key in self._query_cache if self._query_cache and cache_key else False
+        })
+
         return matched_skills
 
     def get_skill_by_id(self, skill_id: str) -> Optional[Dict[str, Any]]:
@@ -459,7 +487,8 @@ class RAGEngine:
             'vector_store': vector_stats,
             'embedding_cache': embedding_cache,
             'query_cache_size': len(self._query_cache) if self._query_cache else 0,
-            'action_stats': action_stats
+            'action_stats': action_stats,
+            'performance': self.performance_monitor.get_statistics()
         }
 
     # ============ Action相关方法 ============
@@ -557,6 +586,12 @@ class RAGEngine:
         """
         top_k = top_k or self.top_k
 
+        import time
+        search_start = time.perf_counter()
+
+        # 性能监控 - 开始
+        embedding_start = time.perf_counter()
+
         # 1. 生成查询向量
         query_embedding = self.embedding_generator.encode(
             query,
@@ -564,10 +599,15 @@ class RAGEngine:
             prompt_name="query"
         )
 
+        embedding_time = (time.perf_counter() - embedding_start) * 1000
+        self.performance_monitor.record("action_embedding", embedding_time, {"query_length": len(query)})
+
         # 2. 构建过滤条件
         where_filter = None
         if category_filter:
             where_filter = {"category": category_filter}
+
+        vector_search_start = time.perf_counter()
 
         # 3. 向量检索
         results = self.action_vector_store.query(
@@ -575,6 +615,9 @@ class RAGEngine:
             top_k=top_k,
             where=where_filter
         )
+
+        vector_search_time = (time.perf_counter() - vector_search_start) * 1000
+        self.performance_monitor.record("action_vector_search", vector_search_time, {"top_k": top_k})
 
         # 4. 处理结果
         matched_actions = []
@@ -611,6 +654,15 @@ class RAGEngine:
                 matched_actions.append(action_result)
 
         logger.info(f"Action search query '{query[:50]}' returned {len(matched_actions)} results")
+
+        # 记录总检索时间
+        total_time = (time.perf_counter() - search_start) * 1000
+        self.performance_monitor.record("search_actions_total", total_time, {
+            "query": query[:50],
+            "results_count": len(matched_actions),
+            "category_filter": category_filter
+        })
+
         return matched_actions
 
     def get_action_by_type(self, type_name: str) -> Optional[Dict[str, Any]]:

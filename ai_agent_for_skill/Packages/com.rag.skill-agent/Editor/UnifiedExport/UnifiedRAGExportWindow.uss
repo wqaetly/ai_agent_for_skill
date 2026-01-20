@@ -1,0 +1,118 @@
+/* UnifiedRAGExportWindow.uss - Styles for Unified RAG Export Window */
+
+/* Root Container */
+.root-container {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+/* Top Toolbar */
+.top-toolbar {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgb(60, 60, 60);
+    padding: 6px 10px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(35, 35, 35);
+    min-height: 36px;
+}
+
+.window-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(220, 220, 220);
+    margin-right: 20px;
+}
+
+/* Tab Container */
+.tab-container {
+    flex-direction: row;
+    align-items: center;
+}
+
+.tab-button {
+    padding: 6px 16px;
+    margin-right: 4px;
+    background-color: rgb(70, 70, 70);
+    border-radius: 4px 4px 0 0;
+    border-width: 1px;
+    border-color: rgb(50, 50, 50);
+    border-bottom-width: 0;
+    color: rgb(180, 180, 180);
+    font-size: 12px;
+    -unity-font-style: normal;
+}
+
+.tab-button:hover {
+    background-color: rgb(80, 80, 80);
+    color: rgb(220, 220, 220);
+}
+
+.tab-active {
+    background-color: rgb(56, 56, 56);
+    color: rgb(100, 180, 255);
+    -unity-font-style: bold;
+    border-color: rgb(100, 180, 255);
+    border-top-width: 2px;
+}
+
+.tab-active:hover {
+    background-color: rgb(56, 56, 56);
+}
+
+.toolbar-spacer {
+    flex-grow: 1;
+}
+
+.config-button {
+    padding: 4px 12px;
+    background-color: rgb(70, 70, 70);
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+.config-button:hover {
+    background-color: rgb(90, 90, 90);
+}
+
+/* Content Container */
+.content-container {
+    flex-grow: 1;
+    background-color: rgb(56, 56, 56);
+}
+
+.panel-container {
+    flex-grow: 1;
+    padding: 0;
+}
+
+/* Status Bar */
+.status-bar {
+    flex-direction: row;
+    align-items: center;
+    background-color: rgb(50, 50, 50);
+    padding: 4px 10px;
+    border-top-width: 1px;
+    border-top-color: rgb(35, 35, 35);
+    min-height: 24px;
+}
+
+.status-label {
+    font-size: 11px;
+    color: rgb(180, 180, 180);
+    flex-grow: 1;
+}
+
+.server-status-label {
+    font-size: 11px;
+    color: rgb(150, 150, 150);
+    margin-left: 20px;
+}
+
+.server-online {
+    color: rgb(100, 200, 100);
+}
+
+.server-offline {
+    color: rgb(200, 100, 100);
+}

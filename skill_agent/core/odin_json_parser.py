@@ -1025,21 +1025,33 @@ class OdinJsonSerializer:
     """
     Odin JSON 序列化器（线程安全）
     将 Python 对象（LLM 生成格式）转换为 Unity Odin 序列化格式
-    
+
     支持的格式（基于 odin_test_data.json）：
     - 类型引用: "$type": "index|FullType, Assembly"
     - 对象ID: "$id": N
     - 集合: $rlength/$rcontent (引用类型), $plength/$pcontent (基元类型)
     - Dictionary: $rcontent 包含 {$k, $v} 对象
     - Unity类型: 裸值数组格式
+
+    配置驱动：
+    - 从 skill_system_config.json 加载类型配置
+    - 支持适配不同项目的技能架构
     """
 
-    def __init__(self):
-        """初始化序列化器"""
+    def __init__(self, config=None):
+        """
+        初始化序列化器
+
+        Args:
+            config: SkillSystemConfig 实例，为 None 时使用全局配置
+        """
+        from .skill_system_config import get_skill_system_config
+
         self._lock = threading.Lock()
         self._id_counter = 0
         self._type_registry: Dict[str, int] = {}  # type_str -> type_index
         self._warnings: List[str] = []  # 序列化过程中的警告
+        self._config = config or get_skill_system_config()
 
     def serialize(self, skill_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -1057,10 +1069,14 @@ class OdinJsonSerializer:
             self._type_registry.clear()
             self._warnings.clear()
 
+            # 使用配置的类型字符串
+            skill_data_type = self._config.skill_data_full
+            skill_track_list_type = self._config.get_list_type_string(self._config.skill_track_type)
+
             # 构建根对象
             result = {
                 "$id": self._next_id(),
-                "$type": self._get_type_ref("SkillSystem.Data.SkillData, Assembly-CSharp"),
+                "$type": self._get_type_ref(skill_data_type),
                 "skillName": skill_data.get("skillName", ""),
                 "skillDescription": skill_data.get("skillDescription", ""),
                 "totalDuration": skill_data.get("totalDuration", 0),
@@ -1070,8 +1086,8 @@ class OdinJsonSerializer:
             # 序列化 tracks
             tracks = skill_data.get("tracks", [])
             result["tracks"] = self._serialize_list(
-                tracks, 
-                "System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+                tracks,
+                skill_track_list_type,
                 self._serialize_track
             )
 
@@ -1145,8 +1161,9 @@ class OdinJsonSerializer:
         }
 
     def _serialize_track(self, track: Dict[str, Any]) -> Dict[str, Any]:
-        """序列化单个 Track"""
-        track_type = "SkillSystem.Data.SkillTrack, Assembly-CSharp"
+        """序列化单个 Track（使用配置的类型字符串）"""
+        track_type = self._config.skill_track_full
+        action_list_type = self._config.get_list_type_string(self._config.base_action_type)
 
         result = {
             "$id": self._next_id(),
@@ -1159,26 +1176,27 @@ class OdinJsonSerializer:
         actions = track.get("actions", [])
         result["actions"] = self._serialize_list(
             actions,
-            "System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+            action_list_type,
             self._serialize_action
         )
 
         return result
 
     def _serialize_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        """序列化单个 Action"""
+        """序列化单个 Action（使用配置的默认类型）"""
         # 从 parameters 中提取 _odin_type
         parameters = action.get("parameters", {})
         odin_type = parameters.get("_odin_type", "")
 
         # 验证并解析 _odin_type 格式
         is_valid, type_name, error_msg = validate_odin_type(odin_type)
-        
+
         if not is_valid:
             self._warnings.append(
                 f"Action (frame={action.get('frame', '?')}) {error_msg}，使用默认类型"
             )
-            type_name = "SkillSystem.Actions.BaseAction, Assembly-CSharp"
+            # 使用配置的基类类型作为默认值
+            type_name = self._config.base_action_full
 
         result = {
             "$id": self._next_id(),

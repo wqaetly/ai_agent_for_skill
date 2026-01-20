@@ -13,6 +13,111 @@ import json
 logger = logging.getLogger(__name__)
 
 
+class QueryAnalyzer:
+    """
+    查询分析器
+    识别查询类型并推荐最佳检索策略
+    """
+
+    # 关键词类型查询的特征词
+    KEYWORD_INDICATORS = [
+        # 精确匹配词
+        'DamageAction', 'HealAction', 'MoveAction', 'BuffAction',
+        # 技能名称模式
+        r'^[A-Z][a-zA-Z]+$',  # PascalCase
+        # 参数名
+        'baseDamage', 'duration', 'cooldown',
+    ]
+
+    # 语义类型查询的特征
+    SEMANTIC_INDICATORS = [
+        '如何', '怎么', '什么样', '类似', '相似',
+        'how', 'what', 'like', 'similar',
+        '造成', '产生', '实现', '效果',
+    ]
+
+    @classmethod
+    def analyze(cls, query: str) -> Dict[str, Any]:
+        """
+        分析查询并返回推荐的检索策略
+
+        Returns:
+            {
+                'query_type': 'keyword' | 'semantic' | 'hybrid',
+                'bm25_weight': float,
+                'vector_weight': float,
+                'confidence': float,
+                'features': List[str]
+            }
+        """
+        query_lower = query.lower()
+        features = []
+
+        # 检测关键词特征
+        keyword_score = 0
+        for indicator in cls.KEYWORD_INDICATORS:
+            if indicator.startswith(r'^'):
+                # 正则模式
+                if re.match(indicator, query):
+                    keyword_score += 2
+                    features.append(f'regex_match:{indicator}')
+            elif indicator in query:
+                keyword_score += 1
+                features.append(f'keyword:{indicator}')
+
+        # 检测语义特征
+        semantic_score = 0
+        for indicator in cls.SEMANTIC_INDICATORS:
+            if indicator in query_lower:
+                semantic_score += 1
+                features.append(f'semantic:{indicator}')
+
+        # 查询长度也是一个因素
+        word_count = len(query.split())
+        if word_count >= 5:
+            semantic_score += 1
+            features.append('long_query')
+        elif word_count <= 2:
+            keyword_score += 1
+            features.append('short_query')
+
+        # 确定查询类型和权重
+        total_score = keyword_score + semantic_score
+        if total_score == 0:
+            # 默认混合
+            query_type = 'hybrid'
+            bm25_weight = 0.3
+            vector_weight = 0.7
+            confidence = 0.5
+        elif keyword_score > semantic_score * 1.5:
+            # 关键词主导
+            query_type = 'keyword'
+            bm25_weight = 0.6
+            vector_weight = 0.4
+            confidence = min(keyword_score / 5, 1.0)
+        elif semantic_score > keyword_score * 1.5:
+            # 语义主导
+            query_type = 'semantic'
+            bm25_weight = 0.2
+            vector_weight = 0.8
+            confidence = min(semantic_score / 5, 1.0)
+        else:
+            # 混合
+            query_type = 'hybrid'
+            ratio = keyword_score / max(keyword_score + semantic_score, 1)
+            bm25_weight = 0.2 + 0.4 * ratio  # 0.2 ~ 0.6
+            vector_weight = 1.0 - bm25_weight
+            confidence = 0.6
+
+        return {
+            'query_type': query_type,
+            'bm25_weight': round(bm25_weight, 2),
+            'vector_weight': round(vector_weight, 2),
+            'confidence': round(confidence, 2),
+            'features': features
+        }
+
+
 class BM25Index:
     """BM25关键词检索索引"""
     
@@ -210,10 +315,14 @@ class HybridSearchEngine:
         self.bm25_weight = bm25_weight
         self.vector_weight = vector_weight
         self.rrf_k = rrf_k
-        
+
+        # 动态权重支持
+        self.use_dynamic_weights = True  # 是否使用动态权重
+        self.query_analyzer = QueryAnalyzer()
+
         # BM25索引
         self.bm25_index = BM25Index()
-        
+
         # 文档元数据缓存
         self._metadata_cache: Dict[str, Dict] = {}
     
@@ -283,12 +392,22 @@ class HybridSearchEngine:
         Returns:
             检索结果列表
         """
+        # 动态权重调整
+        if self.use_dynamic_weights:
+            analysis = self.query_analyzer.analyze(query)
+            effective_bm25_weight = analysis['bm25_weight']
+            effective_vector_weight = analysis['vector_weight']
+            logger.debug(f"Query analysis: {analysis}")
+        else:
+            effective_bm25_weight = self.bm25_weight
+            effective_vector_weight = self.vector_weight
+
         # 获取更多候选以便融合
         candidate_k = min(top_k * 3, 100)
-        
+
         # 1. BM25检索
         bm25_results = self.bm25_index.search(query, top_k=candidate_k)
-        
+
         # 2. 向量检索
         query_embedding = self.embedding_generator.encode(query, prompt_name="query")
         vector_results = self.vector_store.query(
@@ -296,7 +415,7 @@ class HybridSearchEngine:
             top_k=candidate_k,
             where=filters
         )
-        
+
         # 解析向量检索结果
         vector_scores: Dict[str, float] = {}
         if vector_results and vector_results['ids'] and vector_results['ids'][0]:
@@ -305,12 +424,16 @@ class HybridSearchEngine:
                 # 转换距离为相似度
                 similarity = 1.0 - distance
                 vector_scores[doc_id] = similarity
-        
+
         # 3. 融合排序
         if fusion_method == "rrf":
             fused_results = self._rrf_fusion(bm25_results, vector_scores, top_k)
         else:
-            fused_results = self._weighted_fusion(bm25_results, vector_scores, top_k)
+            fused_results = self._weighted_fusion(
+                bm25_results, vector_scores, top_k,
+                bm25_weight=effective_bm25_weight,
+                vector_weight=effective_vector_weight
+            )
         
         # 4. 构建返回结果
         results = []
@@ -369,29 +492,35 @@ class HybridSearchEngine:
         self,
         bm25_results: List[Tuple[str, float]],
         vector_scores: Dict[str, float],
-        top_k: int
+        top_k: int,
+        bm25_weight: Optional[float] = None,
+        vector_weight: Optional[float] = None
     ) -> List[Tuple[str, float]]:
         """加权融合"""
+        # 使用传入的权重或默认权重
+        bm25_w = bm25_weight if bm25_weight is not None else self.bm25_weight
+        vector_w = vector_weight if vector_weight is not None else self.vector_weight
+
         # 归一化BM25分数
         bm25_dict = dict(bm25_results)
         max_bm25 = max(bm25_dict.values()) if bm25_dict else 1.0
-        
+
         # 归一化向量分数
         max_vector = max(vector_scores.values()) if vector_scores else 1.0
-        
+
         # 融合
         all_doc_ids = set(bm25_dict.keys()) | set(vector_scores.keys())
         fused_scores: Dict[str, float] = {}
-        
+
         for doc_id in all_doc_ids:
             bm25_norm = bm25_dict.get(doc_id, 0.0) / max_bm25 if max_bm25 > 0 else 0
             vector_norm = vector_scores.get(doc_id, 0.0) / max_vector if max_vector > 0 else 0
-            
+
             fused_scores[doc_id] = (
-                self.bm25_weight * bm25_norm + 
-                self.vector_weight * vector_norm
+                bm25_w * bm25_norm +
+                vector_w * vector_norm
             )
-        
+
         sorted_results = sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)
         return sorted_results[:top_k]
     
@@ -407,8 +536,9 @@ class HybridSearchEngine:
             "bm25": self.bm25_index.get_statistics(),
             "vector_store": self.vector_store.get_statistics(),
             "fusion_config": {
-                "bm25_weight": self.bm25_weight,
-                "vector_weight": self.vector_weight,
-                "rrf_k": self.rrf_k
+                "default_bm25_weight": self.bm25_weight,
+                "default_vector_weight": self.vector_weight,
+                "rrf_k": self.rrf_k,
+                "use_dynamic_weights": self.use_dynamic_weights
             }
         }
