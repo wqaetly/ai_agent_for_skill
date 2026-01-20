@@ -60,6 +60,11 @@ namespace RAG.BuffSystem
         // Filter options
         private List<string> allCategories = new List<string> { "全部" };
 
+        // Resizable columns helper for main list
+        private ResizableColumnHelper mainColumnHelper;
+        // Resizable columns helper for parameter panels
+        private ParamPanelColumnHelper paramColumnHelper;
+
         // Root element - can be set externally for embedding
         private VisualElement _root;
         private VisualElement Root => _root ?? rootVisualElement;
@@ -231,6 +236,40 @@ namespace RAG.BuffSystem
 
             // List view
             buffListView = Root.Q<ListView>("buffListView");
+
+            // Setup resizable columns
+            SetupResizableColumns();
+        }
+
+        private void SetupResizableColumns()
+        {
+            var headerRow = Root.Q<VisualElement>("headerRow");
+            if (headerRow == null || buffListView == null) return;
+
+            // Define main list columns configuration
+            var mainColumns = new List<ResizableColumnHelper.ColumnConfig>
+            {
+                new ResizableColumnHelper.ColumnConfig { HeaderCellName = "headerCell_2", ItemCellClass = "type-label", MinWidth = 80, MaxWidth = 400, InitialWidth = 140 },
+                new ResizableColumnHelper.ColumnConfig { HeaderCellName = "headerCell_3", ItemCellClass = "displayname-field", MinWidth = 50, MaxWidth = 200, InitialWidth = 90 },
+                new ResizableColumnHelper.ColumnConfig { HeaderCellName = "headerCell_4", ItemCellClass = "category-field", MinWidth = 40, MaxWidth = 150, InitialWidth = 60 },
+                new ResizableColumnHelper.ColumnConfig { HeaderCellName = "headerCell_5", ItemCellClass = "param-count-label", MinWidth = 30, MaxWidth = 80, InitialWidth = 45 },
+                new ResizableColumnHelper.ColumnConfig { HeaderCellName = "headerCell_6", ItemCellClass = "description-field", MinWidth = 100, MaxWidth = 600, InitialWidth = 300 },
+            };
+
+            mainColumnHelper = new ResizableColumnHelper(headerRow, buffListView, mainColumns);
+            mainColumnHelper.SetupResizeHandles();
+            mainColumnHelper.OnColumnResized += () => buffListView?.RefreshItems();
+
+            // Setup parameter panel column helper
+            var paramColumns = new List<ParamPanelColumnHelper.ParamColumnConfig>
+            {
+                new ParamPanelColumnHelper.ParamColumnConfig { ClassName = "param-header-name", MinWidth = 60, MaxWidth = 250, CurrentWidth = 100 },
+                new ParamPanelColumnHelper.ParamColumnConfig { ClassName = "param-header-type", MinWidth = 50, MaxWidth = 200, CurrentWidth = 80 },
+                new ParamPanelColumnHelper.ParamColumnConfig { ClassName = "param-header-default", MinWidth = 50, MaxWidth = 200, CurrentWidth = 80 },
+                new ParamPanelColumnHelper.ParamColumnConfig { ClassName = "param-header-label-col", MinWidth = 50, MaxWidth = 200, CurrentWidth = 80 },
+                new ParamPanelColumnHelper.ParamColumnConfig { ClassName = "param-header-desc", MinWidth = 100, MaxWidth = 500, CurrentWidth = 200 },
+            };
+            paramColumnHelper = new ParamPanelColumnHelper(buffListView, paramColumns);
         }
 
         private void SetupEventHandlers()
@@ -328,11 +367,19 @@ namespace RAG.BuffSystem
 
         private VisualElement MakeBuffItem()
         {
+            VisualElement item;
             if (buffItemTemplate != null)
             {
-                return buffItemTemplate.CloneTree();
+                item = buffItemTemplate.CloneTree();
             }
-            return CreateBuffItemProgrammatically();
+            else
+            {
+                item = CreateBuffItemProgrammatically();
+            }
+
+            // Apply current column widths
+            mainColumnHelper?.ApplyWidthsToItem(item);
+            return item;
         }
 
         private VisualElement CreateBuffItemProgrammatically()
@@ -596,8 +643,10 @@ namespace RAG.BuffSystem
         private void BindAILabel(Label label, bool isAIGenerated, string aiGeneratedTime)
         {
             if (label == null) return;
-            label.text = isAIGenerated ? "Y" : "";
-            label.tooltip = isAIGenerated ? $"AI生成于: {aiGeneratedTime}" : "";
+            label.text = isAIGenerated ? "✓ AI" : "手动";
+            label.tooltip = isAIGenerated
+                ? $"描述由 AI 自动生成\n生成时间: {aiGeneratedTime}"
+                : "描述为手动填写或尚未填写";
             label.RemoveFromClassList("ai-label-yes");
             label.RemoveFromClassList("ai-label-no");
             label.AddToClassList(isAIGenerated ? "ai-label-yes" : "ai-label-no");
@@ -646,6 +695,9 @@ namespace RAG.BuffSystem
             headerRow.Add(CreateParamHeaderLabel("描述", "param-header-desc"));
             paramPanel.Add(headerRow);
 
+            // Setup resize handles for parameter header
+            paramColumnHelper?.SetupHeaderResizeHandles(headerRow);
+
             foreach (var param in parameters)
             {
                 var paramRow = new VisualElement();
@@ -674,6 +726,9 @@ namespace RAG.BuffSystem
                 descField.SetValueWithoutNotify(param.description ?? "");
                 descField.RegisterValueChangedCallback(evt => param.description = evt.newValue);
                 paramRow.Add(descField);
+
+                // Apply current column widths to parameter row
+                paramColumnHelper?.ApplyWidthsToRow(paramRow);
 
                 paramPanel.Add(paramRow);
             }

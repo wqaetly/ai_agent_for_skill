@@ -178,9 +178,10 @@ Button {
 .header-row {
     flex-direction: row;
     background-color: rgb(71, 71, 71);
-    padding: 3px 3px 3px 3px;
+    padding: 3px 17px 3px 3px; /* 左侧与 action-item 一致，右侧留出滚动条宽度 */
     border-bottom-width: 1px;
     border-bottom-color: rgb(102, 102, 102);
+    align-items: center;
 }
 
 .header-cell {
@@ -198,11 +199,13 @@ Button {
 }
 
 .header-select {
-    width: 25px;
+    width: 20px;
+    min-width: 20px;
 }
 
 .header-expand {
     width: 25px;
+    min-width: 25px;
 }
 
 .header-type {
@@ -226,7 +229,7 @@ Button {
 }
 
 .header-ai {
-    width: 30px;
+    width: 40px;
 }
 
 /* List View Styles */
@@ -237,7 +240,7 @@ Button {
 
 /* Action Item Styles */
 .action-item {
-    padding: 2px 3px;
+    padding: 2px 3px 2px 3px;
     border-bottom-width: 1px;
     border-bottom-color: rgb(77, 77, 77);
 }
@@ -256,14 +259,17 @@ Button {
 }
 
 .select-toggle {
-    width: 25px;
+    width: 20px;
+    min-width: 20px;
+    margin: 0;
 }
 
 .expand-button {
-    width: 22px;
+    width: 25px;
+    min-width: 25px;
     height: 18px;
     font-size: 9px;
-    margin-right: 3px;
+    margin: 0;
 }
 
 .type-label {
@@ -314,17 +320,21 @@ Button {
 }
 
 .ai-label {
-    width: 30px;
+    width: 40px;
     font-size: 10px;
     -unity-text-align: middle-center;
+    border-radius: 3px;
+    padding: 2px 4px;
 }
 
 .ai-label-yes {
-    color: rgb(102, 204, 102);
+    color: rgb(255, 255, 255);
+    background-color: rgb(46, 139, 87);
 }
 
 .ai-label-no {
-    color: rgb(128, 128, 128);
+    color: rgb(160, 160, 160);
+    background-color: rgb(60, 60, 60);
 }
 
 /* Parameter Panel Styles */
@@ -437,4 +447,18 @@ Button {
     height: 100px;
     font-size: 10px;
     white-space: normal;
+}
+
+/* Column Resize Handle Styles */
+.column-resize-handle {
+    cursor: col-resize;
+    background-color: transparent;
+}
+
+.column-resize-handle:hover {
+    background-color: rgba(100, 149, 237, 0.5);
+}
+
+.column-resize-handle:active {
+    background-color: rgba(100, 149, 237, 0.8);
 }

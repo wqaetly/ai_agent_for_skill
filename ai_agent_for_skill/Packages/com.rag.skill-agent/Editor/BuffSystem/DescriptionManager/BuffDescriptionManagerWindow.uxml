@@ -98,9 +98,7 @@
             <!-- Header Row -->
             <ui:VisualElement name="headerRow" class="header-row">
                 <ui:VisualElement name="headerCell_0" class="header-cell header-select"/>
-                <ui:VisualElement name="headerCell_1" class="header-cell header-expand">
-                    <ui:Label text="▼" class="header-label"/>
-                </ui:VisualElement>
+                <ui:VisualElement name="headerCell_1" class="header-cell header-expand"/>
                 <ui:VisualElement name="headerCell_2" class="header-cell header-type">
                     <ui:Label text="类型" class="header-label"/>
                 </ui:VisualElement>
