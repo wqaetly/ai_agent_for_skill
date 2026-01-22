@@ -68,19 +68,16 @@ namespace RAG
             
             // Header
             CreateHeader(mainContainer);
-            
+
             // Tab bar
             CreateTabBar(mainContainer);
-            
+
             // Tab content area
             tabContent = new VisualElement();
             tabContent.style.flexGrow = 1;
             tabContent.style.marginTop = 10;
             mainContainer.Add(tabContent);
-            
-            // Footer with buttons
-            CreateFooter(mainContainer);
-            
+
             // Show first tab
             SwitchTab(0);
         }
@@ -91,8 +88,8 @@ namespace RAG
             header.style.flexDirection = FlexDirection.Row;
             header.style.alignItems = Align.Center;
             header.style.backgroundColor = HeaderColor;
-            header.style.paddingTop = 15;
-            header.style.paddingBottom = 15;
+            header.style.paddingTop = 10;
+            header.style.paddingBottom = 10;
             header.style.paddingLeft = 15;
             header.style.paddingRight = 15;
             header.style.borderBottomLeftRadius = 8;
@@ -100,55 +97,68 @@ namespace RAG
             header.style.borderTopLeftRadius = 8;
             header.style.borderTopRightRadius = 8;
             header.style.marginBottom = 10;
-            
+
             // Icon - using Unity built-in icon
             var icon = new VisualElement();
-            icon.style.width = 28;
-            icon.style.height = 28;
+            icon.style.width = 24;
+            icon.style.height = 24;
             icon.style.marginRight = 10;
             icon.style.backgroundImage = Background.FromTexture2D(EditorGUIUtility.IconContent("Settings").image as Texture2D);
             header.Add(icon);
-            
+
             // Title section
             var titleSection = new VisualElement();
             titleSection.style.flexGrow = 1;
-            
+
             var title = new Label("RAG 系统配置中心");
-            title.style.fontSize = 18;
+            title.style.fontSize = 16;
             title.style.unityFontStyleAndWeight = FontStyle.Bold;
             title.style.color = Color.white;
             titleSection.Add(title);
-            
-            var subtitle = new Label("集中管理 DeepSeek API、服务器、路径和 Prompt 模板配置");
-            subtitle.style.fontSize = 11;
-            subtitle.style.color = new Color(0.7f, 0.7f, 0.7f);
-            subtitle.style.marginTop = 3;
-            titleSection.Add(subtitle);
-            
+
             header.Add(titleSection);
-            
+
+            // Action buttons
+            var actionButtons = new VisualElement();
+            actionButtons.style.flexDirection = FlexDirection.Row;
+            actionButtons.style.alignItems = Align.Center;
+
+            var resetBtn = new Button(() => ResetToDefaults());
+            resetBtn.text = "重置";
+            resetBtn.style.height = 24;
+            resetBtn.style.marginRight = 5;
+            actionButtons.Add(resetBtn);
+
+            var openAssetBtn = new Button(() =>
+            {
+                Selection.activeObject = config;
+                EditorGUIUtility.PingObject(config);
+            });
+            openAssetBtn.text = "定位";
+            openAssetBtn.style.height = 24;
+            openAssetBtn.style.marginRight = 5;
+            actionButtons.Add(openAssetBtn);
+
+            var saveBtn = new Button(() => SaveConfig());
+            saveBtn.text = "保存";
+            saveBtn.style.height = 24;
+            saveBtn.style.backgroundColor = new Color(0.2f, 0.5f, 0.3f);
+            actionButtons.Add(saveBtn);
+
+            header.Add(actionButtons);
+
             // Status indicator
-            var statusContainer = new VisualElement();
-            statusContainer.style.flexDirection = FlexDirection.Row;
-            statusContainer.style.alignItems = Align.Center;
-            
             var statusDot = new VisualElement();
-            statusDot.style.width = 10;
-            statusDot.style.height = 10;
-            statusDot.style.borderTopLeftRadius = 5;
-            statusDot.style.borderTopRightRadius = 5;
-            statusDot.style.borderBottomLeftRadius = 5;
-            statusDot.style.borderBottomRightRadius = 5;
+            statusDot.style.width = 8;
+            statusDot.style.height = 8;
+            statusDot.style.borderTopLeftRadius = 4;
+            statusDot.style.borderTopRightRadius = 4;
+            statusDot.style.borderBottomLeftRadius = 4;
+            statusDot.style.borderBottomRightRadius = 4;
             statusDot.style.backgroundColor = config != null ? Color.green : Color.red;
-            statusDot.style.marginRight = 5;
-            statusContainer.Add(statusDot);
-            
-            var statusLabel = new Label(config != null ? "配置已加载" : "配置未找到");
-            statusLabel.style.fontSize = 11;
-            statusLabel.style.color = new Color(0.7f, 0.7f, 0.7f);
-            statusContainer.Add(statusLabel);
-            
-            header.Add(statusContainer);
+            statusDot.style.marginLeft = 10;
+            header.Add(statusDot);
+
             parent.Add(header);
         }
 
@@ -158,7 +168,7 @@ namespace RAG
             tabBar.style.flexDirection = FlexDirection.Row;
             tabBar.style.marginBottom = 5;
 
-            string[] tabNames = { "[Skill] 技能系统", "[Buff] Buff系统", "[AI] DeepSeek API", "[Server] 服务器", "[Path] 路径", "[Prompt] 模板", "[Test] 测试" };
+            string[] tabNames = { "架构分析", "技能系统", "Buff系统", "DeepSeek", "服务器", "路径", "模板", "测试" };
             tabButtons = new Button[tabNames.Length];
 
             for (int i = 0; i < tabNames.Length; i++)
@@ -185,45 +195,48 @@ namespace RAG
         private void SwitchTab(int index)
         {
             currentTab = index;
-            
+
             // Update tab button styles
             for (int i = 0; i < tabButtons.Length; i++)
             {
                 tabButtons[i].style.backgroundColor = i == index ? TabActiveColor : TabInactiveColor;
                 tabButtons[i].style.color = i == index ? Color.white : new Color(0.7f, 0.7f, 0.7f);
             }
-            
+
             // Clear and rebuild content
             tabContent.Clear();
-            
+
             var scrollView = new ScrollView(ScrollViewMode.Vertical);
             scrollView.style.flexGrow = 1;
-            
+
             switch (index)
             {
                 case 0:
-                    CreateSkillSystemTab(scrollView);
+                    CreateArchitectureAnalysisTab(scrollView);
                     break;
                 case 1:
-                    CreateBuffSystemTab(scrollView);
+                    CreateSkillSystemTab(scrollView);
                     break;
                 case 2:
-                    CreateDeepSeekTab(scrollView);
+                    CreateBuffSystemTab(scrollView);
                     break;
                 case 3:
-                    CreateServerTab(scrollView);
+                    CreateDeepSeekTab(scrollView);
                     break;
                 case 4:
-                    CreatePathsTab(scrollView);
+                    CreateServerTab(scrollView);
                     break;
                 case 5:
-                    CreatePromptTab(scrollView);
+                    CreatePathsTab(scrollView);
                     break;
                 case 6:
+                    CreatePromptTab(scrollView);
+                    break;
+                case 7:
                     CreatePreviewTab(scrollView);
                     break;
             }
-            
+
             tabContent.Add(scrollView);
         }
 
@@ -425,6 +438,438 @@ namespace RAG
             container.Add(actionSection);
 
             parent.Add(container);
+        }
+
+        /// <summary>
+        /// 创建架构分析配置Tab
+        /// </summary>
+        private void CreateArchitectureAnalysisTab(VisualElement parent)
+        {
+            var container = CreateSectionContainer("架构分析 Prompt 配置", "配置 AI 分析源码时使用的 Prompt 模板和参数");
+
+            var config = RAGConfig.Instance;
+            if (config == null)
+            {
+                container.Add(new Label("无法加载配置"));
+                parent.Add(container);
+                return;
+            }
+
+            // === 源码路径配置 ===
+            var sourcePathsSection = CreateSubSection("源码路径配置（用于 AI 分析）");
+
+            var pathsHint = new Label("配置源码路径让 AI 分析系统架构，生成的架构 Prompt 将用于辅助 Action 描述生成");
+            pathsHint.style.fontSize = 11;
+            pathsHint.style.color = new Color(0.6f, 0.6f, 0.6f);
+            pathsHint.style.marginBottom = 10;
+            sourcePathsSection.Add(pathsHint);
+
+            // 技能系统源码路径
+            var skillPathsLabel = new Label("技能系统源码路径:");
+            skillPathsLabel.style.marginTop = 5;
+            skillPathsLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            sourcePathsSection.Add(skillPathsLabel);
+
+            var skillPathsHint = new Label("添加包含技能 Action 基类和核心类的目录路径");
+            skillPathsHint.style.fontSize = 10;
+            skillPathsHint.style.color = new Color(0.5f, 0.5f, 0.5f);
+            skillPathsHint.style.marginBottom = 5;
+            sourcePathsSection.Add(skillPathsHint);
+
+            var skillPathsContainer = new VisualElement();
+            skillPathsContainer.style.marginLeft = 10;
+            skillPathsContainer.style.marginBottom = 10;
+            CreatePathListUI(skillPathsContainer, config.skillSystemSourcePaths, (paths) => {
+                config.skillSystemSourcePaths = paths;
+                config.Save();
+            });
+            sourcePathsSection.Add(skillPathsContainer);
+
+            // Buff 系统源码路径
+            var buffPathsLabel = new Label("Buff 系统源码路径:");
+            buffPathsLabel.style.marginTop = 10;
+            buffPathsLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            sourcePathsSection.Add(buffPathsLabel);
+
+            var buffPathsHint = new Label("添加包含 Buff 效果基类和核心类的目录路径");
+            buffPathsHint.style.fontSize = 10;
+            buffPathsHint.style.color = new Color(0.5f, 0.5f, 0.5f);
+            buffPathsHint.style.marginBottom = 5;
+            sourcePathsSection.Add(buffPathsHint);
+
+            var buffPathsContainer = new VisualElement();
+            buffPathsContainer.style.marginLeft = 10;
+            buffPathsContainer.style.marginBottom = 10;
+            CreatePathListUI(buffPathsContainer, config.buffSystemSourcePaths, (paths) => {
+                config.buffSystemSourcePaths = paths;
+                config.Save();
+            });
+            sourcePathsSection.Add(buffPathsContainer);
+
+            container.Add(sourcePathsSection);
+
+            // === 自定义 Prompt 文件配置 ===
+            var customPromptSection = CreateSubSection("自定义架构 Prompt 文件（可选，优先级高于 AI 分析）");
+
+            var customHint = new Label("直接指定预先编写的架构 Prompt 文件，跳过 AI 分析步骤");
+            customHint.style.fontSize = 11;
+            customHint.style.color = new Color(0.6f, 0.6f, 0.6f);
+            customHint.style.marginBottom = 10;
+            customPromptSection.Add(customHint);
+
+            // 技能系统自定义 Prompt
+            var skillCustomRow = new VisualElement();
+            skillCustomRow.style.flexDirection = FlexDirection.Row;
+            skillCustomRow.style.marginTop = 5;
+            skillCustomRow.style.marginBottom = 5;
+
+            var skillCustomLabel = new Label("技能系统:");
+            skillCustomLabel.style.width = 80;
+            skillCustomLabel.style.color = new Color(0.7f, 0.7f, 0.7f);
+            skillCustomRow.Add(skillCustomLabel);
+
+            var skillCustomField = new TextField();
+            skillCustomField.value = config.customSkillArchitecturePromptPath ?? "";
+            skillCustomField.style.flexGrow = 1;
+            skillCustomField.RegisterValueChangedCallback(evt => {
+                config.customSkillArchitecturePromptPath = evt.newValue;
+                config.Save();
+            });
+            skillCustomRow.Add(skillCustomField);
+
+            var skillCustomBrowseBtn = new Button(() => {
+                string path = EditorUtility.OpenFilePanel("选择技能系统架构 Prompt 文件", "Assets", "md,txt");
+                if (!string.IsNullOrEmpty(path)) {
+                    if (path.StartsWith(Application.dataPath)) {
+                        path = "Assets" + path.Substring(Application.dataPath.Length);
+                    }
+                    skillCustomField.value = path;
+                }
+            });
+            skillCustomBrowseBtn.text = "...";
+            skillCustomBrowseBtn.style.width = 30;
+            skillCustomRow.Add(skillCustomBrowseBtn);
+
+            customPromptSection.Add(skillCustomRow);
+
+            // Buff 系统自定义 Prompt
+            var buffCustomRow = new VisualElement();
+            buffCustomRow.style.flexDirection = FlexDirection.Row;
+            buffCustomRow.style.marginBottom = 10;
+
+            var buffCustomLabel = new Label("Buff 系统:");
+            buffCustomLabel.style.width = 80;
+            buffCustomLabel.style.color = new Color(0.7f, 0.7f, 0.7f);
+            buffCustomRow.Add(buffCustomLabel);
+
+            var buffCustomField = new TextField();
+            buffCustomField.value = config.customBuffArchitecturePromptPath ?? "";
+            buffCustomField.style.flexGrow = 1;
+            buffCustomField.RegisterValueChangedCallback(evt => {
+                config.customBuffArchitecturePromptPath = evt.newValue;
+                config.Save();
+            });
+            buffCustomRow.Add(buffCustomField);
+
+            var buffCustomBrowseBtn = new Button(() => {
+                string path = EditorUtility.OpenFilePanel("选择 Buff 系统架构 Prompt 文件", "Assets", "md,txt");
+                if (!string.IsNullOrEmpty(path)) {
+                    if (path.StartsWith(Application.dataPath)) {
+                        path = "Assets" + path.Substring(Application.dataPath.Length);
+                    }
+                    buffCustomField.value = path;
+                }
+            });
+            buffCustomBrowseBtn.text = "...";
+            buffCustomBrowseBtn.style.width = 30;
+            buffCustomRow.Add(buffCustomBrowseBtn);
+
+            customPromptSection.Add(buffCustomRow);
+
+            container.Add(customPromptSection);
+
+            // === AI 参数配置 ===
+            var aiParamsSection = CreateSubSection("AI 分析参数");
+
+            var tempHint = new Label("架构分析时使用的 AI 参数（与描述生成参数独立）");
+            tempHint.style.fontSize = 11;
+            tempHint.style.color = new Color(0.6f, 0.6f, 0.6f);
+            tempHint.style.marginBottom = 10;
+            aiParamsSection.Add(tempHint);
+
+            AddSliderField(aiParamsSection, "分析温度 (Temperature)", "architectureAnalysisTemperature", 0f, 1f,
+                "建议使用较低值以获得稳定的架构分析结果");
+            AddIntField(aiParamsSection, "最大 Token 数", "architectureAnalysisMaxTokens",
+                "架构分析需要较长输出，建议 4000 以上");
+
+            container.Add(aiParamsSection);
+
+            // === 技能系统分析 Prompt 模板 ===
+            var skillPromptSection = CreateSubSection("技能系统架构分析 Prompt 模板");
+
+            var skillPromptHint = new Label("用于 AI 分析技能系统源码生成架构说明。使用 {0} 作为源代码占位符。");
+            skillPromptHint.style.fontSize = 11;
+            skillPromptHint.style.color = new Color(0.6f, 0.6f, 0.6f);
+            skillPromptHint.style.marginBottom = 10;
+            skillPromptSection.Add(skillPromptHint);
+
+            AddTextAreaField(skillPromptSection, "", "skillArchitectureAnalysisPromptTemplate", 15,
+                "技能系统架构分析 Prompt 模板");
+
+            // 字符统计
+            var skillCharCount = new Label($"字符数: {config.skillArchitectureAnalysisPromptTemplate?.Length ?? 0}");
+            skillCharCount.style.fontSize = 10;
+            skillCharCount.style.color = new Color(0.5f, 0.5f, 0.5f);
+            skillCharCount.style.marginTop = 5;
+            skillPromptSection.Add(skillCharCount);
+
+            container.Add(skillPromptSection);
+
+            // === Buff 系统分析 Prompt 模板 ===
+            var buffPromptSection = CreateSubSection("Buff 系统架构分析 Prompt 模板");
+
+            var buffPromptHint = new Label("用于 AI 分析 Buff 系统源码生成架构说明。使用 {0} 作为源代码占位符。");
+            buffPromptHint.style.fontSize = 11;
+            buffPromptHint.style.color = new Color(0.6f, 0.6f, 0.6f);
+            buffPromptHint.style.marginBottom = 10;
+            buffPromptSection.Add(buffPromptHint);
+
+            AddTextAreaField(buffPromptSection, "", "buffArchitectureAnalysisPromptTemplate", 15,
+                "Buff 系统架构分析 Prompt 模板");
+
+            // 字符统计
+            var buffCharCount = new Label($"字符数: {config.buffArchitectureAnalysisPromptTemplate?.Length ?? 0}");
+            buffCharCount.style.fontSize = 10;
+            buffCharCount.style.color = new Color(0.5f, 0.5f, 0.5f);
+            buffCharCount.style.marginTop = 5;
+            buffPromptSection.Add(buffCharCount);
+
+            container.Add(buffPromptSection);
+
+            // === 生成结果预览 ===
+            var resultSection = CreateSubSection("架构分析结果");
+
+            // 状态信息
+            var statusContainer = new VisualElement();
+            statusContainer.style.backgroundColor = new Color(0.12f, 0.12f, 0.12f);
+            statusContainer.style.paddingTop = 10;
+            statusContainer.style.paddingBottom = 10;
+            statusContainer.style.paddingLeft = 10;
+            statusContainer.style.paddingRight = 10;
+            statusContainer.style.borderTopLeftRadius = 4;
+            statusContainer.style.borderTopRightRadius = 4;
+            statusContainer.style.borderBottomLeftRadius = 4;
+            statusContainer.style.borderBottomRightRadius = 4;
+            statusContainer.style.marginBottom = 10;
+
+            var genTimeRow = new VisualElement();
+            genTimeRow.style.flexDirection = FlexDirection.Row;
+            genTimeRow.style.marginBottom = 5;
+
+            var genTimeLabel = new Label("上次生成: ");
+            genTimeLabel.style.color = new Color(0.6f, 0.6f, 0.6f);
+            genTimeRow.Add(genTimeLabel);
+
+            var genTimeValue = new Label(string.IsNullOrEmpty(config.architecturePromptGeneratedTime)
+                ? "尚未生成" : config.architecturePromptGeneratedTime);
+            genTimeValue.style.color = string.IsNullOrEmpty(config.architecturePromptGeneratedTime)
+                ? new Color(1f, 0.6f, 0.3f) : new Color(0.5f, 0.9f, 0.5f);
+            genTimeRow.Add(genTimeValue);
+
+            statusContainer.Add(genTimeRow);
+
+            var sourceRow = new VisualElement();
+            sourceRow.style.flexDirection = FlexDirection.Row;
+            sourceRow.style.marginBottom = 5;
+
+            var sourceLabel = new Label("来源: ");
+            sourceLabel.style.color = new Color(0.6f, 0.6f, 0.6f);
+            sourceRow.Add(sourceLabel);
+
+            var sourceValue = new Label(string.IsNullOrEmpty(config.architecturePromptSource)
+                ? "未知" : config.architecturePromptSource);
+            sourceValue.style.color = new Color(0.6f, 0.7f, 0.9f);
+            sourceRow.Add(sourceValue);
+
+            statusContainer.Add(sourceRow);
+
+            var promptLengthRow = new VisualElement();
+            promptLengthRow.style.flexDirection = FlexDirection.Row;
+
+            var skillLenLabel = new Label($"技能 Prompt: {config.skillSystemArchitecturePrompt?.Length ?? 0} 字符");
+            skillLenLabel.style.color = new Color(0.6f, 0.6f, 0.6f);
+            skillLenLabel.style.marginRight = 20;
+            promptLengthRow.Add(skillLenLabel);
+
+            var buffLenLabel = new Label($"Buff Prompt: {config.buffSystemArchitecturePrompt?.Length ?? 0} 字符");
+            buffLenLabel.style.color = new Color(0.6f, 0.6f, 0.6f);
+            promptLengthRow.Add(buffLenLabel);
+
+            statusContainer.Add(promptLengthRow);
+            resultSection.Add(statusContainer);
+
+            // 启用开关
+            var useArchToggle = new Toggle("生成描述时使用架构 Prompt");
+            useArchToggle.value = config.useArchitecturePromptInGeneration;
+            useArchToggle.RegisterValueChangedCallback(evt => {
+                config.useArchitecturePromptInGeneration = evt.newValue;
+                config.Save();
+            });
+            useArchToggle.style.marginBottom = 10;
+            resultSection.Add(useArchToggle);
+
+            container.Add(resultSection);
+
+            // === 操作按钮 ===
+            var actionSection = new VisualElement();
+            actionSection.style.marginTop = 15;
+            actionSection.style.flexDirection = FlexDirection.Row;
+            actionSection.style.flexWrap = Wrap.Wrap;
+
+            var analyzeBtn = new Button(async () => {
+                try {
+                    await SystemArchitectureAnalyzer.GenerateAndSaveArchitecturePromptsAsync(config);
+                    SwitchTab(0); // 刷新当前标签页
+                    EditorUtility.DisplayDialog("完成",
+                        $"系统架构分析完成！\n\n" +
+                        $"来源: {config.architecturePromptSource}\n" +
+                        $"生成时间: {config.architecturePromptGeneratedTime}\n" +
+                        $"技能系统 Prompt: {config.skillSystemArchitecturePrompt?.Length ?? 0} 字符\n" +
+                        $"Buff 系统 Prompt: {config.buffSystemArchitecturePrompt?.Length ?? 0} 字符",
+                        "确定");
+                } catch (System.Exception e) {
+                    EditorUtility.DisplayDialog("分析失败", e.Message, "确定");
+                }
+            });
+            analyzeBtn.text = "🤖 AI 分析系统架构";
+            analyzeBtn.style.height = 32;
+            analyzeBtn.style.backgroundColor = new Color(0.3f, 0.5f, 0.7f);
+            analyzeBtn.style.marginRight = 10;
+            analyzeBtn.style.marginBottom = 5;
+            actionSection.Add(analyzeBtn);
+
+            var previewSkillBtn = new Button(() => ShowArchitecturePromptPreview(false));
+            previewSkillBtn.text = "📄 预览技能 Prompt";
+            previewSkillBtn.style.height = 32;
+            previewSkillBtn.style.marginRight = 10;
+            previewSkillBtn.style.marginBottom = 5;
+            actionSection.Add(previewSkillBtn);
+
+            var previewBuffBtn = new Button(() => ShowArchitecturePromptPreview(true));
+            previewBuffBtn.text = "📄 预览 Buff Prompt";
+            previewBuffBtn.style.height = 32;
+            previewBuffBtn.style.marginRight = 10;
+            previewBuffBtn.style.marginBottom = 5;
+            actionSection.Add(previewBuffBtn);
+
+            var resetBtn = new Button(() => {
+                if (EditorUtility.DisplayDialog("重置确认",
+                    "确定要重置架构分析 Prompt 模板为默认值吗？\n\n这将覆盖当前的模板配置。",
+                    "重置", "取消"))
+                {
+                    ResetArchitecturePromptTemplates();
+                    SwitchTab(0); // 刷新当前标签页
+                }
+            });
+            resetBtn.text = "🔄 重置为默认模板";
+            resetBtn.style.height = 32;
+            resetBtn.style.marginBottom = 5;
+            actionSection.Add(resetBtn);
+
+            container.Add(actionSection);
+
+            parent.Add(container);
+        }
+
+        /// <summary>
+        /// 重置架构分析 Prompt 模板为默认值
+        /// </summary>
+        private void ResetArchitecturePromptTemplates()
+        {
+            var config = RAGConfig.Instance;
+            if (config == null) return;
+
+            config.skillArchitectureAnalysisPromptTemplate = @"你是一个 Unity 游戏技能系统架构专家。请分析以下技能系统的 C# 源代码，生成一份结构化的系统架构说明文档。
+
+这份文档将用于帮助 AI 理解项目的技能系统运行机制，从而更准确地分析技能 Action 类的参数含义。
+
+## 分析要求
+
+请从以下维度分析代码：
+
+1. **核心基类/接口**
+   - 技能 Action 的基类名称和职责
+   - 继承层次结构
+
+2. **生命周期方法**
+   - 每个生命周期方法的调用时机
+   - 方法的用途和典型使用场景
+   - 帧判断逻辑（如何判断 Action 是否激活）
+
+3. **参数命名规范**
+   - 从代码中发现的命名模式
+   - 常见后缀/前缀的含义（如 Duration、Radius、Prefab 等）
+
+4. **参数语义推断规则**
+   - 不同类型 Action（伤害、移动、控制、Buff）的参数特点
+   - 参数在不同生命周期阶段的使用模式
+
+5. **运行时上下文**
+   - 可用的上下文对象（如技能施放者、目标等）
+   - 如何获取游戏世界信息
+
+## 源代码
+
+```csharp
+{0}
+```
+
+## 输出格式
+
+请直接输出 Markdown 格式的架构说明文档，不需要额外的解释。文档应该简洁、结构清晰，便于作为 System Prompt 使用。";
+
+            config.buffArchitectureAnalysisPromptTemplate = @"你是一个 Unity 游戏 Buff 系统架构专家。请分析以下 Buff 系统的 C# 源代码，生成一份结构化的系统架构说明文档。
+
+这份文档将用于帮助 AI 理解项目的 Buff 系统运行机制，从而更准确地分析 Buff 效果类的参数含义。
+
+## 分析要求
+
+请从以下维度分析代码：
+
+1. **核心基类/接口**
+   - Buff 效果的基类名称和职责
+   - Buff 模板和运行时 Buff 的关系
+
+2. **生命周期方法**
+   - OnApply、OnTick、OnStackChange、OnRemove 等方法的调用时机
+   - 每个方法的典型使用场景
+
+3. **Buff 上下文**
+   - BuffContext 包含哪些信息
+   - 如何访问施加者、承受者、层数等
+
+4. **参数命名规范**
+   - Buff 相关的命名模式（如 xxxPerStack、tickInterval 等）
+   - 叠加机制相关参数
+
+5. **Buff 类型分类**
+   - 持续伤害、属性修改、状态控制等不同类型的参数特点
+
+## 源代码
+
+```csharp
+{0}
+```
+
+## 输出格式
+
+请直接输出 Markdown 格式的架构说明文档，不需要额外的解释。文档应该简洁、结构清晰，便于作为 System Prompt 使用。";
+
+            config.architectureAnalysisTemperature = 0.3f;
+            config.architectureAnalysisMaxTokens = 4000;
+
+            config.Save();
+            Debug.Log("[RAGConfig] 架构分析 Prompt 模板已重置为默认值");
         }
 
         private void CreateDeepSeekTab(VisualElement parent)
@@ -898,53 +1343,75 @@ namespace RAG
             parent.Add(field);
         }
 
-        #endregion
-
-        #region Footer
-
-        private void CreateFooter(VisualElement parent)
+        /// <summary>
+        /// 创建路径列表编辑 UI
+        /// </summary>
+        private void CreatePathListUI(VisualElement parent, System.Collections.Generic.List<string> paths, System.Action<System.Collections.Generic.List<string>> onChanged)
         {
-            var footer = new VisualElement();
-            footer.style.flexDirection = FlexDirection.Row;
-            footer.style.justifyContent = Justify.SpaceBetween;
-            footer.style.marginTop = 10;
-            footer.style.paddingTop = 10;
-            footer.style.borderTopWidth = 1;
-            footer.style.borderTopColor = new Color(0.3f, 0.3f, 0.3f);
-            
-            // Left buttons
-            var leftButtons = new VisualElement();
-            leftButtons.style.flexDirection = FlexDirection.Row;
-            
-            var resetBtn = new Button(() => ResetToDefaults());
-            resetBtn.text = "重置为默认值";
-            resetBtn.style.height = 30;
-            leftButtons.Add(resetBtn);
-            
-            var openAssetBtn = new Button(() => 
+            var pathList = paths ?? new System.Collections.Generic.List<string>();
+
+            void RebuildList()
             {
-                Selection.activeObject = config;
-                EditorGUIUtility.PingObject(config);
-            });
-            openAssetBtn.text = "定位配置文件";
-            openAssetBtn.style.height = 30;
-            openAssetBtn.style.marginLeft = 10;
-            leftButtons.Add(openAssetBtn);
-            
-            footer.Add(leftButtons);
-            
-            // Right buttons
-            var rightButtons = new VisualElement();
-            rightButtons.style.flexDirection = FlexDirection.Row;
-            
-            var saveBtn = new Button(() => SaveConfig());
-            saveBtn.text = "保存配置";
-            saveBtn.style.height = 30;
-            saveBtn.style.backgroundColor = new Color(0.2f, 0.5f, 0.3f);
-            rightButtons.Add(saveBtn);
-            
-            footer.Add(rightButtons);
-            parent.Add(footer);
+                parent.Clear();
+
+                for (int i = 0; i < pathList.Count; i++)
+                {
+                    int index = i; // 捕获闭包
+                    var row = new VisualElement();
+                    row.style.flexDirection = FlexDirection.Row;
+                    row.style.marginBottom = 3;
+
+                    var pathField = new TextField();
+                    pathField.value = pathList[index];
+                    pathField.style.flexGrow = 1;
+                    pathField.RegisterValueChangedCallback(evt => {
+                        pathList[index] = evt.newValue;
+                        onChanged?.Invoke(pathList);
+                    });
+                    row.Add(pathField);
+
+                    var browseBtn = new Button(() => {
+                        string selectedPath = EditorUtility.OpenFolderPanel("选择源码目录", "Assets", "");
+                        if (!string.IsNullOrEmpty(selectedPath)) {
+                            if (selectedPath.StartsWith(Application.dataPath)) {
+                                selectedPath = "Assets" + selectedPath.Substring(Application.dataPath.Length);
+                            }
+                            pathField.value = selectedPath;
+                        }
+                    });
+                    browseBtn.text = "📁";
+                    browseBtn.style.width = 28;
+                    browseBtn.tooltip = "浏览目录";
+                    row.Add(browseBtn);
+
+                    var removeBtn = new Button(() => {
+                        pathList.RemoveAt(index);
+                        onChanged?.Invoke(pathList);
+                        RebuildList();
+                    });
+                    removeBtn.text = "✕";
+                    removeBtn.style.width = 24;
+                    removeBtn.style.color = new Color(1f, 0.4f, 0.4f);
+                    removeBtn.tooltip = "移除此路径";
+                    row.Add(removeBtn);
+
+                    parent.Add(row);
+                }
+
+                // 添加按钮
+                var addBtn = new Button(() => {
+                    pathList.Add("");
+                    onChanged?.Invoke(pathList);
+                    RebuildList();
+                });
+                addBtn.text = "+ 添加路径";
+                addBtn.style.marginTop = 5;
+                addBtn.style.height = 22;
+                addBtn.style.backgroundColor = new Color(0.25f, 0.4f, 0.25f);
+                parent.Add(addBtn);
+            }
+
+            RebuildList();
         }
 
         #endregion
@@ -1043,6 +1510,24 @@ namespace RAG
             {
                 EditorUtility.DisplayDialog("导出失败", $"导出配置时出错:\n{e.Message}", "确定");
             }
+        }
+
+        private void ShowArchitecturePromptPreview(bool isBuffSystem)
+        {
+            if (config == null) return;
+
+            string prompt = isBuffSystem ? config.buffSystemArchitecturePrompt : config.skillSystemArchitecturePrompt;
+            string title = isBuffSystem ? "Buff系统架构Prompt预览" : "技能系统架构Prompt预览";
+
+            if (string.IsNullOrEmpty(prompt))
+            {
+                EditorUtility.DisplayDialog(title,
+                    "尚未生成架构Prompt。\n\n请先点击\"分析系统架构\"按钮生成。", "确定");
+                return;
+            }
+
+            // 使用可滚动的预览窗口
+            ArchitecturePromptPreviewWindow.ShowWindow(title, prompt);
         }
 
         private void ValidateSkillSystemConfig()
@@ -1203,5 +1688,45 @@ namespace RAG
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// 架构Prompt预览窗口
+    /// </summary>
+    public class ArchitecturePromptPreviewWindow : EditorWindow
+    {
+        private string content;
+        private Vector2 scrollPosition;
+
+        public static void ShowWindow(string title, string content)
+        {
+            var window = GetWindow<ArchitecturePromptPreviewWindow>(true, title);
+            window.content = content;
+            window.minSize = new Vector2(600, 400);
+            window.Show();
+        }
+
+        private void OnGUI()
+        {
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+
+            EditorGUILayout.TextArea(content, GUILayout.ExpandHeight(true));
+
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.Space(10);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("复制到剪贴板", GUILayout.Height(30)))
+            {
+                EditorGUIUtility.systemCopyBuffer = content;
+                ShowNotification(new GUIContent("已复制到剪贴板"));
+            }
+            if (GUILayout.Button("关闭", GUILayout.Height(30)))
+            {
+                Close();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
     }
 }

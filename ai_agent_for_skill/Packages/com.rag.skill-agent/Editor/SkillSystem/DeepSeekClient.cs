@@ -36,14 +36,38 @@ namespace RAG
             string existingDisplayName = null,
             string existingCategory = null)
         {
-            // 使用配置中的Prompt模板构建提示词
-            string prompt = config.BuildPrompt(actionTypeName, actionCode, existingDisplayName, existingCategory);
+            // 使用配置中的Prompt模板构建提示词（Action使用技能系统架构Prompt）
+            string prompt = config.BuildPrompt(actionTypeName, actionCode, existingDisplayName, existingCategory, isBuffEffect: false);
 
             // 调用API
             string response = await CallDeepSeekAPI(prompt);
 
             // 解析响应
             return ParseResponse(response, actionTypeName);
+        }
+
+        /// <summary>
+        /// 生成Buff效果描述
+        /// </summary>
+        /// <param name="buffTypeName">Buff效果类型名</param>
+        /// <param name="buffCode">Buff效果源代码</param>
+        /// <param name="existingDisplayName">现有的显示名称（如果有）</param>
+        /// <param name="existingCategory">现有的分类（如果有）</param>
+        /// <returns>生成的描述数据</returns>
+        public async Task<ActionDescriptionResult> GenerateBuffDescriptionAsync(
+            string buffTypeName,
+            string buffCode,
+            string existingDisplayName = null,
+            string existingCategory = null)
+        {
+            // 使用配置中的Prompt模板构建提示词（Buff使用Buff系统架构Prompt）
+            string prompt = config.BuildPrompt(buffTypeName, buffCode, existingDisplayName, existingCategory, isBuffEffect: true);
+
+            // 调用API
+            string response = await CallDeepSeekAPI(prompt);
+
+            // 解析响应
+            return ParseResponse(response, buffTypeName);
         }
 
         private async Task<string> CallDeepSeekAPI(string prompt)

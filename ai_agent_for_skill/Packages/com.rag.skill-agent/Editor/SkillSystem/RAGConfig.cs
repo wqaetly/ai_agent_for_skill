@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 namespace RAG
 {
@@ -417,11 +418,212 @@ namespace RAG
 - 使用中文为主，关键术语中英混合
 - 请直接输出JSON，不要包含其他解释文字。";
 
+        // ==================== 系统架构理解 ====================
+        [Header("系统架构分析 - 源码路径配置")]
+        [Tooltip("技能系统核心源码路径列表（相对于Assets目录），用于AI分析生成架构Prompt")]
+        [FolderPath]
+        public List<string> skillSystemSourcePaths = new List<string>();
+
+        [Tooltip("Buff系统核心源码路径列表（相对于Assets目录），用于AI分析生成架构Prompt")]
+        [FolderPath]
+        public List<string> buffSystemSourcePaths = new List<string>();
+
+        [Header("系统架构分析 - 自定义Prompt配置")]
+        [Tooltip("自定义技能系统架构Prompt文件路径（.md或.txt），如果设置则优先使用此文件内容")]
+        [Sirenix.OdinInspector.FilePath(Extensions = "md,txt")]
+        public string customSkillArchitecturePromptPath = "";
+
+        [Tooltip("自定义Buff系统架构Prompt文件路径（.md或.txt），如果设置则优先使用此文件内容")]
+        [Sirenix.OdinInspector.FilePath(Extensions = "md,txt")]
+        public string customBuffArchitecturePromptPath = "";
+
+        [Header("系统架构理解 (生成结果)")]
+        [TextArea(10, 25)]
+        [Tooltip("技能系统架构Prompt - 由AI分析源码自动生成，或从自定义文件加载")]
+        public string skillSystemArchitecturePrompt = "";
+
+        [TextArea(10, 25)]
+        [Tooltip("Buff系统架构Prompt - 由AI分析源码自动生成，或从自定义文件加载")]
+        public string buffSystemArchitecturePrompt = "";
+
+        [Tooltip("架构Prompt最后生成时间")]
+        [ReadOnly]
+        public string architecturePromptGeneratedTime = "";
+
+        [Tooltip("架构Prompt来源：AI分析 / 自定义文件")]
+        [ReadOnly]
+        public string architecturePromptSource = "";
+
+        [Tooltip("是否在生成描述时使用架构Prompt")]
+        public bool useArchitecturePromptInGeneration = true;
+
+        // ==================== 架构分析 Prompt 模板 ====================
+        [Header("架构分析 Prompt 模板")]
+        [TextArea(20, 40)]
+        [Tooltip("技能系统架构分析 Prompt 模板，用于 AI 分析技能系统源码生成架构说明。使用 {0} 作为源代码占位符。")]
+        public string skillArchitectureAnalysisPromptTemplate = @"你是一个 Unity 游戏技能系统架构专家。请分析以下技能系统的 C# 源代码，生成一份结构化的系统架构说明文档。
+
+这份文档将用于帮助 AI 理解项目的技能系统运行机制，从而更准确地分析技能 Action 类的参数含义。
+
+## 分析要求
+
+请从以下维度分析代码：
+
+1. **核心基类/接口**
+   - 技能 Action 的基类名称和职责
+   - 继承层次结构
+
+2. **生命周期方法**
+   - 每个生命周期方法的调用时机
+   - 方法的用途和典型使用场景
+   - 帧判断逻辑（如何判断 Action 是否激活）
+
+3. **参数命名规范**
+   - 从代码中发现的命名模式
+   - 常见后缀/前缀的含义（如 Duration、Radius、Prefab 等）
+
+4. **参数语义推断规则**
+   - 不同类型 Action（伤害、移动、控制、Buff）的参数特点
+   - 参数在不同生命周期阶段的使用模式
+
+5. **运行时上下文**
+   - 可用的上下文对象（如技能施放者、目标等）
+   - 如何获取游戏世界信息
+
+## 源代码
+
+```csharp
+{0}
+```
+
+## 输出格式
+
+请直接输出 Markdown 格式的架构说明文档，不需要额外的解释。文档应该简洁、结构清晰，便于作为 System Prompt 使用。";
+
+        [TextArea(20, 40)]
+        [Tooltip("Buff 系统架构分析 Prompt 模板，用于 AI 分析 Buff 系统源码生成架构说明。使用 {0} 作为源代码占位符。")]
+        public string buffArchitectureAnalysisPromptTemplate = @"你是一个 Unity 游戏 Buff 系统架构专家。请分析以下 Buff 系统的 C# 源代码，生成一份结构化的系统架构说明文档。
+
+这份文档将用于帮助 AI 理解项目的 Buff 系统运行机制，从而更准确地分析 Buff 效果类的参数含义。
+
+## 分析要求
+
+请从以下维度分析代码：
+
+1. **核心基类/接口**
+   - Buff 效果的基类名称和职责
+   - Buff 模板和运行时 Buff 的关系
+
+2. **生命周期方法**
+   - OnApply、OnTick、OnStackChange、OnRemove 等方法的调用时机
+   - 每个方法的典型使用场景
+
+3. **Buff 上下文**
+   - BuffContext 包含哪些信息
+   - 如何访问施加者、承受者、层数等
+
+4. **参数命名规范**
+   - Buff 相关的命名模式（如 xxxPerStack、tickInterval 等）
+   - 叠加机制相关参数
+
+5. **Buff 类型分类**
+   - 持续伤害、属性修改、状态控制等不同类型的参数特点
+
+## 源代码
+
+```csharp
+{0}
+```
+
+## 输出格式
+
+请直接输出 Markdown 格式的架构说明文档，不需要额外的解释。文档应该简洁、结构清晰，便于作为 System Prompt 使用。";
+
+        [Tooltip("架构分析时使用的 AI 温度参数（建议较低值以获得稳定输出）")]
+        [Range(0f, 1f)]
+        public float architectureAnalysisTemperature = 0.3f;
+
+        [Tooltip("架构分析时最大 Token 数（架构分析需要较长输出）")]
+        public int architectureAnalysisMaxTokens = 4000;
+
+        /// <summary>
+        /// 获取技能系统架构Prompt（优先使用自定义文件）
+        /// </summary>
+        public string GetSkillSystemArchitecturePrompt()
+        {
+            // 优先检查自定义文件
+            if (!string.IsNullOrEmpty(customSkillArchitecturePromptPath))
+            {
+                string fullPath = Path.Combine(Application.dataPath, customSkillArchitecturePromptPath.Replace("Assets/", ""));
+                if (File.Exists(fullPath))
+                {
+                    return File.ReadAllText(fullPath);
+                }
+            }
+            return skillSystemArchitecturePrompt;
+        }
+
+        /// <summary>
+        /// 获取Buff系统架构Prompt（优先使用自定义文件）
+        /// </summary>
+        public string GetBuffSystemArchitecturePrompt()
+        {
+            // 优先检查自定义文件
+            if (!string.IsNullOrEmpty(customBuffArchitecturePromptPath))
+            {
+                string fullPath = Path.Combine(Application.dataPath, customBuffArchitecturePromptPath.Replace("Assets/", ""));
+                if (File.Exists(fullPath))
+                {
+                    return File.ReadAllText(fullPath);
+                }
+            }
+            return buffSystemArchitecturePrompt;
+        }
+
+        /// <summary>
+        /// 收集指定路径下的所有C#源码文件内容
+        /// </summary>
+        public string CollectSourceCode(List<string> sourcePaths)
+        {
+            if (sourcePaths == null || sourcePaths.Count == 0)
+                return "";
+
+            var sb = new System.Text.StringBuilder();
+
+            foreach (var relativePath in sourcePaths)
+            {
+                string fullPath = Path.Combine(Application.dataPath, relativePath.Replace("Assets/", ""));
+
+                if (Directory.Exists(fullPath))
+                {
+                    // 是目录，收集所有.cs文件
+                    var csFiles = Directory.GetFiles(fullPath, "*.cs", SearchOption.AllDirectories);
+                    foreach (var file in csFiles)
+                    {
+                        string fileName = Path.GetFileName(file);
+                        sb.AppendLine($"// ========== {fileName} ==========");
+                        sb.AppendLine(File.ReadAllText(file));
+                        sb.AppendLine();
+                    }
+                }
+                else if (File.Exists(fullPath) && fullPath.EndsWith(".cs"))
+                {
+                    // 是单个文件
+                    string fileName = Path.GetFileName(fullPath);
+                    sb.AppendLine($"// ========== {fileName} ==========");
+                    sb.AppendLine(File.ReadAllText(fullPath));
+                    sb.AppendLine();
+                }
+            }
+
+            return sb.ToString();
+        }
+
         // ==================== 其他配置 ====================
         [Header("其他配置")]
         [Tooltip("导出后自动通知服务器重建索引")]
         public bool autoNotifyRebuild = true;
-        
+
         [Tooltip("AI生成请求间隔时间（毫秒），用于限流")]
         public int aiRequestInterval = 1000;
 
@@ -432,17 +634,34 @@ namespace RAG
         /// <param name="code">源代码</param>
         /// <param name="existingDisplayName">现有显示名称</param>
         /// <param name="existingCategory">现有分类</param>
+        /// <param name="isBuffEffect">是否为Buff效果类型</param>
         /// <returns>完整的prompt字符串</returns>
-        public string BuildPrompt(string typeName, string code, string existingDisplayName = null, string existingCategory = null)
+        public string BuildPrompt(string typeName, string code, string existingDisplayName = null, string existingCategory = null, bool isBuffEffect = false)
         {
             var sb = new System.Text.StringBuilder();
-            
+
             sb.AppendLine(promptSystemRole);
             sb.AppendLine();
+
+            // 注入系统架构理解（如果启用且已生成，优先使用自定义文件）
+            if (useArchitecturePromptInGeneration)
+            {
+                string architecturePrompt = isBuffEffect ? GetBuffSystemArchitecturePrompt() : GetSkillSystemArchitecturePrompt();
+                if (!string.IsNullOrEmpty(architecturePrompt))
+                {
+                    sb.AppendLine("# 项目系统架构理解");
+                    sb.AppendLine("以下是项目技能/Buff系统的运行机制，请基于此理解来分析参数含义：");
+                    sb.AppendLine();
+                    sb.AppendLine(architecturePrompt);
+                    sb.AppendLine();
+                }
+            }
+
             sb.AppendLine("# 任务");
-            sb.AppendLine($"分析以下Action类的源代码，生成结构化的描述信息：");
+            string typeDesc = isBuffEffect ? "Buff效果类" : "Action类";
+            sb.AppendLine($"分析以下{typeDesc}的源代码，生成结构化的描述信息：");
             sb.AppendLine();
-            sb.AppendLine("# Action源代码");
+            sb.AppendLine($"# {typeDesc}源代码");
             sb.AppendLine("```csharp");
             sb.AppendLine(code);
             sb.AppendLine("```");
@@ -456,7 +675,7 @@ namespace RAG
             sb.AppendLine();
             sb.AppendLine(promptParameterDescSpec);
             sb.AppendLine();
-            
+
             if (!string.IsNullOrEmpty(existingDisplayName))
             {
                 sb.AppendLine("# 现有信息（可参考但不强制使用）");
@@ -467,9 +686,9 @@ namespace RAG
                 }
                 sb.AppendLine();
             }
-            
+
             sb.AppendLine(promptNotes);
-            
+
             return sb.ToString();
         }
 
@@ -785,7 +1004,87 @@ namespace RAG
 - 强调Action的独特性，避免与其他Action混淆
 - 使用中文为主，关键术语中英混合
 - 请直接输出JSON，不要包含其他解释文字。";
-            
+
+            // Reset architecture analysis prompts
+            skillArchitectureAnalysisPromptTemplate = @"你是一个 Unity 游戏技能系统架构专家。请分析以下技能系统的 C# 源代码，生成一份结构化的系统架构说明文档。
+
+这份文档将用于帮助 AI 理解项目的技能系统运行机制，从而更准确地分析技能 Action 类的参数含义。
+
+## 分析要求
+
+请从以下维度分析代码：
+
+1. **核心基类/接口**
+   - 技能 Action 的基类名称和职责
+   - 继承层次结构
+
+2. **生命周期方法**
+   - 每个生命周期方法的调用时机
+   - 方法的用途和典型使用场景
+   - 帧判断逻辑（如何判断 Action 是否激活）
+
+3. **参数命名规范**
+   - 从代码中发现的命名模式
+   - 常见后缀/前缀的含义（如 Duration、Radius、Prefab 等）
+
+4. **参数语义推断规则**
+   - 不同类型 Action（伤害、移动、控制、Buff）的参数特点
+   - 参数在不同生命周期阶段的使用模式
+
+5. **运行时上下文**
+   - 可用的上下文对象（如技能施放者、目标等）
+   - 如何获取游戏世界信息
+
+## 源代码
+
+```csharp
+{0}
+```
+
+## 输出格式
+
+请直接输出 Markdown 格式的架构说明文档，不需要额外的解释。文档应该简洁、结构清晰，便于作为 System Prompt 使用。";
+
+            buffArchitectureAnalysisPromptTemplate = @"你是一个 Unity 游戏 Buff 系统架构专家。请分析以下 Buff 系统的 C# 源代码，生成一份结构化的系统架构说明文档。
+
+这份文档将用于帮助 AI 理解项目的 Buff 系统运行机制，从而更准确地分析 Buff 效果类的参数含义。
+
+## 分析要求
+
+请从以下维度分析代码：
+
+1. **核心基类/接口**
+   - Buff 效果的基类名称和职责
+   - Buff 模板和运行时 Buff 的关系
+
+2. **生命周期方法**
+   - OnApply、OnTick、OnStackChange、OnRemove 等方法的调用时机
+   - 每个方法的典型使用场景
+
+3. **Buff 上下文**
+   - BuffContext 包含哪些信息
+   - 如何访问施加者、承受者、层数等
+
+4. **参数命名规范**
+   - Buff 相关的命名模式（如 xxxPerStack、tickInterval 等）
+   - 叠加机制相关参数
+
+5. **Buff 类型分类**
+   - 持续伤害、属性修改、状态控制等不同类型的参数特点
+
+## 源代码
+
+```csharp
+{0}
+```
+
+## 输出格式
+
+请直接输出 Markdown 格式的架构说明文档，不需要额外的解释。文档应该简洁、结构清晰，便于作为 System Prompt 使用。";
+
+            architectureAnalysisTemperature = 0.3f;
+            architectureAnalysisMaxTokens = 4000;
+
             Save();
             Debug.Log("[RAGConfig] 已重置为默认值");
         }

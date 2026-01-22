@@ -6,77 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/AIDescriptionGenerator.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/AIDescriptionGenerator.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionDatabaseManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionDatabaseManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionEntry.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionEntry.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionExportModels.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionExportModels.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionJSONExporter.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionJSONExporter.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionScanner.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionScanner.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionData.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionData.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionDatabase.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionDatabase.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DeepSeekClient.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DeepSeekClient.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/ActionItemTemplate.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/ActionItemTemplate.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/DescriptionManagerWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/DescriptionManagerWindow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/DescriptionManagerWindow.uss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/DescriptionManagerWindow.uss.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/DescriptionManagerWindow.uxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/DescriptionManager/DescriptionManagerWindow.uxml.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfig.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfig.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfigEditorWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/RAGConfigEditorWindow.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerClient.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerClient.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerManager.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerManager.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/README.md.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Models.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Models/ExportModels.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Models/ExportModels.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinJsonStandardizer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinJsonStandardizer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinRPCSerializer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinRPCSerializer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCBridge.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCBridge.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCClient.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCClient.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Utils.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Utils/JsonStandardizer.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Utils/JsonStandardizer.cs.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/ActionSemanticConfig.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/RAGBuilderIntegration.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/SampleActionProvider.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/SampleImplementations.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/SkillSystemActionProvider.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/core/embeddings.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core/embeddings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/core/hybrid_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core/hybrid_search.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/core/odin_json_parser.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core/odin_json_parser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/core/rag_engine.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core/rag_engine.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/core/reranker.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core/reranker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/core_config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/core_config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../skill_agent/orchestration/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/../skill_agent/orchestration/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Data/RAGConfig.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Data/RAGConfig.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common/ResizableColumnHelper.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common/ResizableColumnHelper.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/DeepSeekClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/DeepSeekClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfigEditorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfigEditorWindow.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,18 +27,6 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/1e/2de7bb0f/Serializer`1.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/37c74670e65c4ad6a7c53e50e9e498ad64a00/95/0eb67528/SerializationUtility.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.claude/settings.local.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/ActionExportModels.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionData.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/Data/ActionDescriptionDatabase.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/SkillSystem/SkillAgentServerManager.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Editor/UnifiedExport/UnifiedRAGExportWindow.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinJsonStandardizer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/OdinRPCSerializer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCBridge.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/SkillSystem/UnityRPCClient.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Runtime/Utils/JsonStandardizer.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/ActionSemanticConfig.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/RAG/Samples~/SkillSystemAdapter/RAGBuilderIntegration.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/AreaOfEffectAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/BuffAction.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Actions/ControlAction.cs" root0="FORCE_HIGHLIGHTING" />
@@ -117,7 +40,7 @@
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Runtime/SkillPlayer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/SkillSystem/Runtime/SkillSystemEvents.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Skills/FlameShockwave.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.render-pipelines.universal@14.1.0/Runtime/Data/UniversalRenderPipelineAsset.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/SystemArchitectureAnalyzer.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -228,7 +151,8 @@
       <workItem from="1767774521275" duration="1830000" />
       <workItem from="1768826810139" duration="1540000" />
       <workItem from="1768828371104" duration="4054000" />
-      <workItem from="1768914148936" duration="1673000" />
+      <workItem from="1768914148936" duration="3657000" />
+      <workItem from="1769049499319" duration="6278000" />
     </task>
     <servers />
   </component>
