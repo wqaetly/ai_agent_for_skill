@@ -2,7 +2,9 @@
 
 > **🎉 v2.1.0 更新**: 渐进式生成流式输出优化！支持三阶段生成 + 实时思考过程展示
 
-<img width="3019" height="1484" alt="image" src="https://github.com/user-attachments/assets/e8393a5b-e5bc-47f4-ad4e-6c0417d8a905" />
+<img width="2833" height="1881" alt="技能生成示例" src="https://github.com/user-attachments/assets/fb6c4fe1-3d8a-40c7-865f-27eba050462e" />
+<img width="1932" height="1646" alt="RAG展示" src="https://github.com/user-attachments/assets/8d24bbf9-0bd2-40af-913e-e52d1b32bea9" />
+
 
 ## 📖 项目简介
 
