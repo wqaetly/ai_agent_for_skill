@@ -1,0 +1,198 @@
+{
+  "$id": 0,
+  "$type": "0|SkillSystem.Data.SkillData, Assembly-CSharp",
+  "skillName": "迟缓剑光斩",
+  "skillDescription": "蓄力后向前方快速斩出一道凌厉的剑光，对命中的敌人造成伤害并施加减速效果。",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "tracks": {
+    "$id": 20,
+    "$type": "10|System.Collections.Generic.List`1[[SkillSystem.Data.SkillTrack, Assembly-CSharp]], mscorlib",
+    "$rlength": 4,
+    "$rcontent": [
+      {
+        "$id": 1,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Animation Track",
+        "enabled": true,
+        "actions": {
+          "$id": 5,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 2,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 40,
+              "enabled": true,
+              "animationClipName": "ChargeSword",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 3,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 40,
+              "duration": 40,
+              "enabled": true,
+              "animationClipName": "SwingSword",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            },
+            {
+              "$id": 4,
+              "$type": "2|SkillSystem.Actions.AnimationAction, Assembly-CSharp",
+              "frame": 80,
+              "duration": 40,
+              "enabled": true,
+              "animationClipName": "RecoverSword",
+              "normalizedTime": 0.0,
+              "crossFadeDuration": 0.1,
+              "animationLayer": 0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 6,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track 1",
+        "enabled": true,
+        "actions": {
+          "$id": 10,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 7,
+              "$type": "4|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 0,
+              "duration": 60,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 2.5,
+              "innerRadius": 0.0,
+              "areaAngle": 360.0,
+              "centerPosition": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                1.0,
+                0.0
+              }
+            },
+            {
+              "$id": 8,
+              "$type": "6|SkillSystem.Actions.ProjectileAction, Assembly-CSharp",
+              "frame": 30,
+              "duration": 40,
+              "enabled": true,
+              "projectileType": "Linear",
+              "projectileSpeed": 15.0,
+              "maxRange": 10.0,
+              "projectilePrefab": null,
+              "projectileSize": 1.0
+            },
+            {
+              "$id": 9,
+              "$type": "4|SkillSystem.Actions.AreaOfEffectAction, Assembly-CSharp",
+              "frame": 70,
+              "duration": 5,
+              "enabled": true,
+              "areaShape": "Circle",
+              "areaSize": 4.0,
+              "innerRadius": 0.0,
+              "areaAngle": 360.0,
+              "centerPosition": {
+                "$type": "5|UnityEngine.Vector3, UnityEngine.CoreModule",
+                0.0,
+                1.0,
+                8.0
+              }
+            }
+          ]
+        }
+      },
+      {
+        "$id": 11,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Effect Track 2",
+        "enabled": true,
+        "actions": {
+          "$id": 14,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 2,
+          "$rcontent": [
+            {
+              "$id": 12,
+              "$type": "7|SkillSystem.Actions.AttributeScaledDamageAction, Assembly-CSharp",
+              "frame": 15,
+              "duration": 5,
+              "enabled": true,
+              "baseDamage": 80.0,
+              "damageType": "Physical",
+              "damageVariance": 0.1,
+              "criticalChance": 0.15,
+              "criticalMultiplier": 1.5
+            },
+            {
+              "$id": 13,
+              "$type": "8|SkillSystem.Actions.BuffAction, Assembly-CSharp",
+              "frame": 20,
+              "duration": 90,
+              "enabled": true,
+              "buffType": "Debuff",
+              "buffId": "slow_debuff",
+              "stackType": "Refresh",
+              "maxStacks": 1,
+              "buffDuration": 3.0
+            }
+          ]
+        }
+      },
+      {
+        "$id": 15,
+        "$type": "1|SkillSystem.Data.SkillTrack, Assembly-CSharp",
+        "trackName": "Audio Track",
+        "enabled": true,
+        "actions": {
+          "$id": 19,
+          "$type": "3|System.Collections.Generic.List`1[[SkillSystem.Actions.ISkillAction, Assembly-CSharp]], mscorlib",
+          "$rlength": 3,
+          "$rcontent": [
+            {
+              "$id": 16,
+              "$type": "9|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 5,
+              "duration": 20,
+              "enabled": true,
+              "audioClipName": "Skill_Charge_Hum",
+              "volume": 0.8
+            },
+            {
+              "$id": 17,
+              "$type": "9|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 30,
+              "duration": 15,
+              "enabled": true,
+              "audioClipName": "Sword_Slash_Air",
+              "volume": 1.0
+            },
+            {
+              "$id": 18,
+              "$type": "9|SkillSystem.Actions.AudioAction, Assembly-CSharp",
+              "frame": 60,
+              "duration": 25,
+              "enabled": true,
+              "audioClipName": "Sword_Hit_Impact",
+              "volume": 1.2
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "skillId": "slowing-sword-light"
+}

@@ -1,0 +1,39 @@
+{
+  "skillName": "迟缓剑光斩",
+  "skillId": "slowing-sword-light",
+  "skillDescription": "蓄力后向前方快速斩出一道凌厉的剑光，对命中的敌人造成伤害并施加减速效果。",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放蓄力举剑、挥剑斩击以及收招的完整角色动画序列。",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Effect Track 1",
+      "purpose": "生成蓄力能量聚集特效、挥出的弧形剑光轨迹特效以及命中时的光效。",
+      "estimatedActions": 3,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track 2",
+      "purpose": "计算剑光的伤害，并对命中的目标施加一个持续数秒的减速debuff。",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放蓄力嗡鸣声、锋利的剑刃破空声以及命中目标的打击音效。",
+      "estimatedActions": 3,
+      "priority": 4
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制角色在挥剑斩击时，伴随一个短距离的快速前冲，增强攻击的突进感。",
+      "estimatedActions": 1,
+      "priority": 5
+    }
+  ]
+}

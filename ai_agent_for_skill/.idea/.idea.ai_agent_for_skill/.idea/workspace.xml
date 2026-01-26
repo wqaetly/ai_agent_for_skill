@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="91c6e46a-af3a-4f72-af1f-93693829cecf" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ai_agent_for_skill/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Data/RAGConfig.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Data/RAGConfig.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common/ResizableColumnHelper.cs.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/Common/ResizableColumnHelper.cs.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/DeepSeekClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/DeepSeekClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfigEditorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/Editor/SkillSystem/RAGConfigEditorWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/com.rag.skill-agent/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/com.rag.skill-agent/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +147,7 @@
       <workItem from="1768826810139" duration="1540000" />
       <workItem from="1768828371104" duration="4054000" />
       <workItem from="1768914148936" duration="3657000" />
-      <workItem from="1769049499319" duration="6278000" />
+      <workItem from="1769049499319" duration="8140000" />
     </task>
     <servers />
   </component>

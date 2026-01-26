@@ -1,520 +1,357 @@
-# RAG Builder System
+# RAG Skill Agent - Unity 技能配置智能助手
 
-一个可配置的 RAG（检索增强生成）构建系统 Unity 包。该包提供了为 AI 技能生成构建 Action/Skill 索引的工具。
+基于 RAG（检索增强生成）技术的 Unity 技能配置智能助手系统。通过 AI 分析游戏技能系统源码，自动生成高质量的技能配置 JSON。
+
+## 🎯 系统概述
+
+本系统解决的核心问题：**让 AI 理解你的技能系统，自动生成符合项目规范的技能配置**。
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         整体架构                                     │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│   Unity Editor                        Python RAG Server             │
+│   ┌─────────────────┐                ┌─────────────────┐            │
+│   │ 1. 源码分析      │                │ 4. 向量索引      │            │
+│   │ 2. 类型扫描      │ ──── JSON ──→ │ 5. 语义检索      │            │
+│   │ 3. AI描述生成    │                │ 6. LLM 生成      │            │
+│   └─────────────────┘                └─────────────────┘            │
+│          ↑                                    │                     │
+│          └──────────── 技能配置 JSON ←────────┘                     │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## 🔄 工作原理
+
+### 阶段一：数据准备（Unity 端）
+
+```
+源码 → AI 架构分析 → 类型扫描 → AI 描述生成 → JSON 导出
+```
+
+1. **架构分析**：使用 DeepSeek API 分析技能系统源码，理解基类、生命周期、参数语义
+2. **类型扫描**：通过反射扫描所有 Action/Buff 类型，提取参数信息
+3. **描述生成**：AI 基于架构理解，为每个 Action 生成语义描述
+4. **JSON 导出**：将所有元数据导出为结构化 JSON 文件
+
+### 阶段二：索引构建（Python 端）
+
+```
+JSON 文件 → 文本嵌入 → 向量索引 → LanceDB 存储
+```
+
+1. **加载 JSON**：读取 Unity 导出的 Action/Buff/Skill JSON 文件
+2. **文本嵌入**：使用 Qwen3-Embedding 模型将描述转为向量
+3. **索引存储**：将向量存入 LanceDB，支持高效语义检索
+
+### 阶段三：技能生成（运行时）
+
+```
+用户需求 → 语义检索 → RAG 增强 → LLM 生成 → 技能 JSON
+```
+
+1. **需求理解**：解析用户自然语言描述的技能需求
+2. **RAG 检索**：从向量库检索相似技能和相关 Action
+3. **上下文增强**：将检索结果作为 LLM 参考上下文
+4. **配置生成**：LLM 生成符合项目规范的技能配置 JSON
 
 ## 📋 目录
 
 - [功能特性](#功能特性)
-- [包结构](#包结构)
-- [安装方法](#安装方法)
+- [工作原理详解](#工作原理详解)
 - [快速开始](#快速开始)
-- [核心接口](#核心接口)
 - [配置说明](#配置说明)
+- [核心接口](#核心接口)
 - [菜单功能](#菜单功能)
-- [迁移指南](#迁移指南)
-- [示例代码](#示例代码)
 - [依赖项](#依赖项)
-- [许可证](#许可证)
 
 ## 功能特性
 
-- **🔌 解耦架构**：使用接口适配任何技能/动作系统，与具体项目完全解耦
-- **⚙️ 配置驱动**：所有路径和设置均可通过 ScriptableObject 配置
-- **🖥️ 服务器管理**：直接从 Unity 启动/停止 Python RAG 服务器
-- **📤 导出系统**：将 Action 和 Skill 导出为 JSON 用于 RAG 索引
-- **🎛️ Unity 偏好设置集成**：通过 Unity Preferences 窗口配置一切
+- **🤖 AI 架构分析**：自动分析技能系统源码，理解项目特定的设计模式
+- **📊 智能描述生成**：基于源码上下文，为 Action 参数生成准确的语义描述
+- **🔍 语义检索**：基于向量相似度检索相关技能和 Action，非关键词匹配
+- **⚡ 一键导出**：扫描、生成描述、导出 JSON、通知重建索引一气呵成
+- **🎛️ 可视化配置**：通过 Editor Window 配置所有参数，无需修改代码
+- **🔌 解耦架构**：使用接口适配任何技能/动作系统
 
-## 包结构
+## 🔬 工作原理详解
 
-```
-com.wqaetly.rag-builder/
-├── package.json                    # 包配置文件
-├── README.md                       # 使用文档
-├── CHANGELOG.md                    # 变更日志
-├── LICENSE.md                      # MIT 许可证
-├── Runtime/                        # 运行时代码
-│   ├── RAGBuilder.Runtime.asmdef   # 程序集定义
-│   ├── Core/
-│   │   ├── Interfaces.cs           # 核心接口定义 (IActionInfo, ISkillInfo 等)
-│   │   ├── Providers.cs            # Provider 接口 (IActionProvider, ISkillProvider)
-│   │   └── RAGBuilderConfig.cs     # 配置 ScriptableObject
-│   ├── Client/
-│   │   └── RAGClient.cs            # RAG 服务 HTTP 客户端
-│   ├── Models/
-│   │   ├── SemanticModels.cs       # 语义模型定义
-│   │   └── ExportModels.cs         # 导出数据模型
-│   └── Utils/
-│       └── JsonStandardizer.cs     # JSON 标准化工具
-├── Editor/                         # 编辑器代码
-│   ├── RAGBuilder.Editor.asmdef    # 程序集定义
-│   ├── Core/
-│   │   ├── RAGBuilderService.cs    # 核心服务（管理配置和导出）
-│   │   └── RAGServerManager.cs     # Python 服务器管理
-│   └── UI/
-│       ├── RAGBuilderMenus.cs      # Unity 菜单项
-│       └── RAGBuilderSettingsProvider.cs  # Unity 偏好设置界面
-└── Samples~/                       # 示例代码
-    └── SkillSystemAdapter/
-        ├── README.md
-        ├── SampleImplementations.cs    # 接口实现示例
-        └── SampleActionProvider.cs     # Provider 实现示例
+### 1. AI 架构分析
+
+系统首先使用 DeepSeek API 分析你的技能系统源码：
+
+```csharp
+// SystemArchitectureAnalyzer.cs 核心逻辑
+1. 收集源码文件 → config.skillSystemSourcePaths
+2. 构建分析 Prompt → 包含源码 + 分析指令
+3. 调用 DeepSeek API → 获取架构理解文档
+4. 保存到 RAGConfig → skillSystemArchitecturePrompt
 ```
 
-## 安装方法
+**分析输出示例**：
+```markdown
+## 核心基类
+- ActionBase: 所有技能行为的基类，通过帧判断控制执行时机
 
-### 方式一：通过 Package Manager（Git URL）
+## 生命周期方法
+- OnEnter(): Action 开始时调用
+- OnUpdate(): 每帧调用，activeFrame 内有效
+- OnExit(): Action 结束时调用
 
-1. 打开 Unity Package Manager（Window > Package Manager）
-2. 点击 "+" 选择 "Add package from git URL..."
-3. 输入：`https://github.com/wqaetly/rag-builder.git`
+## 参数命名规范
+- xxxDuration: 持续时间（帧）
+- xxxRadius: 作用半径
+- xxxPrefab: 特效/投射物预制体
+```
 
-### 方式二：本地包安装
+### 2. 类型扫描与反射
 
-1. 将 `com.wqaetly.rag-builder` 文件夹复制到目标项目的 `Packages` 目录
-2. Unity 会自动检测并导入该包
+扫描程序集中所有符合条件的类型：
 
-### 方式三：通过 manifest.json
+```csharp
+// ActionScanner.cs 扫描逻辑
+var actionTypes = AppDomain.CurrentDomain.GetAssemblies()
+    .SelectMany(a => a.GetTypes())
+    .Where(t => !t.IsAbstract && typeof(ISkillAction).IsAssignableFrom(t));
 
-在项目的 `Packages/manifest.json` 中添加：
+foreach (var type in actionTypes)
+{
+    var entry = new ActionEntry
+    {
+        typeName = type.Name,
+        parameters = ExtractSerializedFields(type),  // 提取 [SerializeField] 字段
+        // ...
+    };
+}
+```
+
+### 3. AI 描述生成
+
+结合架构理解，为每个 Action 生成语义描述：
+
+```
+输入：
+- Action 类型名：DamageAreaAction
+- 参数列表：damage(float), radius(float), effectPrefab(GameObject)
+- 架构 Prompt：（包含生命周期、参数规范等）
+
+输出：
+- displayName: "范围伤害"
+- category: "伤害"
+- description: "在指定范围内对所有敌人造成伤害并播放特效"
+- parameterDescriptions: {
+    damage: "造成的伤害数值",
+    radius: "伤害作用半径（米）",
+    effectPrefab: "伤害特效预制体"
+  }
+```
+
+### 4. JSON 导出格式
 
 ```json
+// DamageAreaAction.json
 {
-  "dependencies": {
-    "com.wqaetly.rag-builder": "file:../path/to/com.wqaetly.rag-builder"
+  "version": "1.0",
+  "exportTime": "2024-01-15T10:30:00",
+  "action": {
+    "typeName": "DamageAreaAction",
+    "fullTypeName": "SkillSystem.Actions.DamageAreaAction",
+    "displayName": "范围伤害",
+    "category": "伤害",
+    "description": "在指定范围内对所有敌人造成伤害",
+    "searchText": "DamageAreaAction 范围伤害 伤害 AOE 群伤",
+    "parameters": [
+      {
+        "name": "damage",
+        "type": "Single",
+        "description": "造成的伤害数值",
+        "defaultValue": "100"
+      },
+      {
+        "name": "radius",
+        "type": "Single",
+        "description": "伤害作用半径（米）",
+        "defaultValue": "5"
+      }
+    ]
   }
 }
 ```
 
-## 快速开始
+### 5. 向量检索流程
 
-### 步骤 1：创建配置
+```python
+# Python 端检索逻辑
+def search_actions(query: str, top_k: int = 5):
+    # 1. 将查询文本向量化
+    query_embedding = embedding_model.encode(query)
 
-1. 打开 **Edit > Preferences > RAG Builder**
-2. 点击 "Create New Configuration" 创建配置文件
-3. 配置服务器地址、导出路径等参数
+    # 2. 从 LanceDB 检索相似向量
+    results = action_table.search(query_embedding).limit(top_k).to_list()
 
-或者通过菜单创建：**Tools > RAG Builder > Open Settings**
-
-### 步骤 2：实现适配器接口
-
-为你的技能系统创建适配器，实现 Provider 接口：
-
-```csharp
-using System.Collections.Generic;
-using RAGBuilder;
-
-/// <summary>
-/// Action 提供者实现示例
-/// </summary>
-public class MyActionProvider : IActionProvider
-{
-    private Dictionary<string, IActionInfo> actionCache;
-
-    public MyActionProvider()
-    {
-        // 扫描并缓存所有 Action 类型
-        ScanActions();
-    }
-
-    public IEnumerable<IActionInfo> GetAllActions()
-    {
-        return actionCache.Values;
-    }
-
-    public IActionInfo GetAction(string typeName)
-    {
-        return actionCache.TryGetValue(typeName, out var info) ? info : null;
-    }
-
-    public bool HasAction(string typeName)
-    {
-        return actionCache.ContainsKey(typeName);
-    }
-
-    private void ScanActions()
-    {
-        // 实现你的 Action 扫描逻辑
-    }
-}
+    # 3. 返回最相关的 Actions
+    return [ActionSchema.parse(r) for r in results]
 ```
 
-### 步骤 3：实现 IActionInfo 接口
+### 6. 技能生成流程
 
-```csharp
-using System.Collections.Generic;
-using RAGBuilder;
+```python
+# LangGraph 工作流
+@workflow
+def generate_skill(requirement: str):
+    # 1. 需求理解
+    parsed = understand_requirement(requirement)
 
-/// <summary>
-/// Action 信息适配器
-/// </summary>
-public class MyActionInfo : IActionInfo
-{
-    public string TypeName { get; private set; }
-    public string DisplayName { get; private set; }
-    public string Category { get; private set; }
-    public string Description { get; private set; }
-    public string SearchText => $"{TypeName} {DisplayName} {Description} {Category}";
-    public IReadOnlyList<IActionParameterInfo> Parameters { get; private set; }
+    # 2. RAG 检索
+    similar_skills = search_skills(parsed.keywords)
+    relevant_actions = search_actions(parsed.action_needs)
 
-    public MyActionInfo(System.Type actionType)
-    {
-        TypeName = actionType.Name;
-        DisplayName = GetDisplayName(actionType);
-        Category = GetCategory(actionType);
-        Description = GetDescription(actionType);
-        Parameters = ExtractParameters(actionType);
-    }
+    # 3. 构建 Prompt
+    prompt = build_generation_prompt(
+        requirement=requirement,
+        reference_skills=similar_skills,
+        available_actions=relevant_actions,
+        architecture_prompt=get_architecture_prompt()
+    )
 
-    // 实现具体的提取逻辑...
-}
+    # 4. LLM 生成
+    skill_json = llm.generate(prompt)
+
+    # 5. 验证 & 修复
+    validated = validate_and_fix(skill_json)
+
+    return validated
 ```
 
-### 步骤 4：注册适配器
+## 📁 包结构
 
-在编辑器启动时注册你的 Provider：
-
-```csharp
-using RAGBuilder;
-using RAGBuilder.Editor;
-using UnityEditor;
-using UnityEngine;
-
-/// <summary>
-/// RAG Builder 集成初始化
-/// </summary>
-[InitializeOnLoad]
-public static class RAGBuilderSetup
-{
-    private const string CONFIG_PATH = "Assets/Data/RAGBuilderConfig.asset";
-
-    static RAGBuilderSetup()
-    {
-        EditorApplication.delayCall += Initialize;
-    }
-
-    private static void Initialize()
-    {
-        // 加载配置
-        var config = AssetDatabase.LoadAssetAtPath<RAGBuilderConfig>(CONFIG_PATH);
-        if (config == null)
-        {
-            Debug.Log("[RAGBuilder] 未找到配置文件，请先创建配置");
-            return;
-        }
-
-        // 创建 Provider
-        var actionProvider = new MyActionProvider();
-        var skillProvider = new MySkillProvider(); // 可选
-
-        // 初始化服务
-        RAGBuilderService.Instance.Initialize(
-            config,
-            actionProvider: actionProvider,
-            skillProvider: skillProvider
-        );
-
-        Debug.Log("[RAGBuilder] 初始化完成");
-    }
-}
+```
+com.rag.skill-agent/
+├── Editor/
+│   ├── SkillSystem/              # 技能系统核心
+│   │   ├── RAGConfig.cs          # 配置 ScriptableObject
+│   │   ├── RAGConfigEditorWindow.cs  # 配置编辑器窗口
+│   │   ├── SystemArchitectureAnalyzer.cs  # AI 架构分析
+│   │   ├── ActionScanner.cs      # Action 类型扫描
+│   │   ├── ActionJSONExporter.cs # JSON 导出器
+│   │   ├── AIDescriptionGenerator.cs  # AI 描述生成
+│   │   └── DeepSeekClient.cs     # DeepSeek API 客户端
+│   ├── BuffSystem/               # Buff 系统支持
+│   │   ├── BuffScanner.cs        # Buff 类型扫描
+│   │   └── BuffJSONExporter.cs   # Buff JSON 导出
+│   ├── UnifiedExport/            # 统一导出中心
+│   │   └── UnifiedRAGExportWindow.cs
+│   └── Docs/                     # 文档
+│       └── RAG导出流程指南.md
+└── Runtime/                      # 运行时（接口定义）
 ```
 
-### 步骤 5：使用工具
+## 🚀 快速开始
 
-通过菜单或设置界面使用各种功能：
+### 步骤 1：配置 DeepSeek API
 
-- **Tools > RAG Builder > Start Server** - 启动 Python RAG 服务器
-- **Tools > RAG Builder > Export Actions** - 导出 Action 定义为 JSON
-- **Tools > RAG Builder > Export Skills** - 导出技能数据为 JSON
-- **Tools > RAG Builder > Rebuild Index** - 重建 RAG 索引
+1. 打开菜单 **Tools → RAG System → RAG Config 设置**
+2. 切换到 **DeepSeek** Tab
+3. 输入 API Key（获取：https://platform.deepseek.com）
+4. 点击 **测试连接** 验证
 
-## 核心接口
+### 步骤 2：配置类型扫描
 
-### IActionInfo
+在 **技能系统** Tab 中配置：
+- 程序集名称（如 `Assembly-CSharp`）
+- Action 基类全名（如 `SkillSystem.ActionBase`）
+- Action 接口全名（如 `SkillSystem.ISkillAction`）
 
-表示可被索引的 Action 类型：
+### 步骤 3：执行架构分析（推荐）
 
-```csharp
-public interface IActionInfo
-{
-    string TypeName { get; }        // 类型名，如 "DamageAction"
-    string DisplayName { get; }     // 显示名，如 "伤害"
-    string Category { get; }        // 分类，如 "Damage"
-    string Description { get; }     // 详细描述
-    string SearchText { get; }      // 用于语义搜索的文本
-    IReadOnlyList<IActionParameterInfo> Parameters { get; }  // 参数列表
-}
-```
+在 **架构分析** Tab 中：
+1. 配置技能系统源码路径
+2. 点击 **🤖 AI 分析系统架构**
+3. 等待分析完成
 
-### IActionParameterInfo
+### 步骤 4：导出数据
 
-表示 Action 的参数信息：
+1. 打开 **Tools → RAG System → 数据导出中心**
+2. 检查扫描到的 Actions
+3. 点击 **AI 生成描述**（为缺少描述的项生成）
+4. 点击 **导出全部**
 
-```csharp
-public interface IActionParameterInfo
-{
-    string Name { get; }            // 参数名
-    string Type { get; }            // 类型名
-    string DefaultValue { get; }    // 默认值
-    string Label { get; }           // 显示标签
-    string Description { get; }     // 参数描述
-    bool IsArray { get; }           // 是否为数组
-    bool IsEnum { get; }            // 是否为枚举
-    IReadOnlyList<string> EnumValues { get; }  // 枚举值列表
-    float? MinValue { get; }        // 最小值约束
-    float? MaxValue { get; }        // 最大值约束
-}
-```
-
-### ISkillInfo
-
-表示可被索引的技能数据：
-
-```csharp
-public interface ISkillInfo
-{
-    string SkillId { get; }         // 技能 ID
-    string SkillName { get; }       // 技能名称
-    string Description { get; }     // 技能描述
-    int TotalDuration { get; }      // 总时长（帧）
-    int FrameRate { get; }          // 帧率
-    IReadOnlyList<ISkillActionInstance> Actions { get; }  // Action 实例列表
-    IReadOnlyList<string> Tags { get; }  // 标签列表
-}
-```
-
-### IActionProvider / ISkillProvider
-
-数据提供者接口：
-
-```csharp
-public interface IActionProvider
-{
-    IEnumerable<IActionInfo> GetAllActions();   // 获取所有 Action
-    IActionInfo GetAction(string typeName);     // 按类型名获取
-    bool HasAction(string typeName);            // 检查是否存在
-}
-
-public interface ISkillProvider
-{
-    IEnumerable<ISkillInfo> GetAllSkills();     // 获取所有技能
-    ISkillInfo GetSkill(string skillId);        // 按 ID 获取
-    ISkillInfo GetSkillByName(string name);     // 按名称获取
-    IEnumerable<string> GetSkillFilePaths();    // 获取技能文件路径
-    ISkillInfo LoadSkillFromFile(string path);  // 从文件加载技能
-}
-```
-
-## 配置说明
-
-`RAGBuilderConfig` ScriptableObject 包含以下可配置项：
-
-| 配置项 | 说明 | 默认值 |
-|--------|------|--------|
-| Server Host | RAG 服务器地址 | `127.0.0.1` |
-| Server Port | RAG 服务器端口 | `2024` |
-| Request Timeout | HTTP 请求超时时间（秒） | `30` |
-| Action Export Directory | Action JSON 导出目录 | `../skill_agent/Data/Actions` |
-| Skill Export Directory | Skill JSON 导出目录 | `../skill_agent/Data/Skills` |
-| Server Script Path | Python 服务器脚本路径 | `../skill_agent/langgraph_server.py` |
-| WebUI URL | WebUI 访问地址 | `http://127.0.0.1:2024` |
-| Auto Rebuild Index | 导出后自动重建索引 | `true` |
-| Use Odin Inspector | 使用 Odin 增强 UI | `true` |
-
-> **注意**：相对路径是相对于 Unity 项目根目录计算的。
-
-## 菜单功能
-
-包提供了以下 Unity 菜单项（位于 `Tools > RAG Builder`）：
-
-| 菜单项 | 快捷键 | 说明 |
-|--------|--------|------|
-| Start Server | - | 启动 Python RAG 服务器 |
-| Stop Server | - | 停止服务器 |
-| Open WebUI | - | 在浏览器中打开 WebUI |
-| Check Status | - | 检查当前状态 |
-| Export Actions | - | 导出所有 Action 到 JSON |
-| Export Skills | - | 导出所有 Skill 到 JSON |
-| Rebuild Index | - | 触发服务器重建索引 |
-| Open Settings | - | 打开偏好设置界面 |
-
-## 迁移指南
-
-将 RAG Builder 迁移到新项目的步骤：
-
-### 1. 安装包
+### 步骤 5：启动 Python 服务
 
 ```bash
-# 复制包到新项目
-cp -r com.wqaetly.rag-builder /path/to/new-project/Packages/
+cd skill_agent
+python langgraph_server.py
 ```
 
-### 2. 创建配置文件
+访问 http://127.0.0.1:2024 使用 WebUI
 
-在新项目中通过 `Edit > Preferences > RAG Builder` 创建配置，并根据项目结构调整路径：
+## ⚙️ 配置说明
 
-```
-Action Export Directory: ../your-agent/Data/Actions
-Skill Export Directory: ../your-agent/Data/Skills
-Server Script Path: ../your-agent/server.py
-```
+通过 **RAG Config 设置** 窗口配置所有参数：
 
-### 3. 实现适配器
+| Tab | 主要配置项 |
+|-----|-----------|
+| **架构分析** | 源码路径、Prompt模板、AI分析参数 |
+| **技能系统** | 程序集名称、Action基类/接口、导出配置 |
+| **Buff系统** | Effect/Trigger基类、导出目录 |
+| **DeepSeek** | API Key、模型选择、温度参数 |
+| **服务器** | 服务器地址、端口、WebUI URL |
+| **路径** | 数据库路径、导出目录、自动通知设置 |
 
-根据你的 Action/Skill 系统实现相应的接口：
+## 🍔 菜单功能
 
-```csharp
-// 1. 实现 IActionInfo 包装你的 Action 类型
-public class YourActionInfo : IActionInfo { ... }
+**Tools → RAG System** 菜单：
 
-// 2. 实现 IActionProvider 提供 Action 数据
-public class YourActionProvider : IActionProvider { ... }
+| 菜单项 | 说明 |
+|--------|------|
+| RAG Config 设置 | 打开配置窗口 |
+| 数据导出中心 | 打开统一导出窗口 |
+| Action 描述管理 | 管理 Action 描述数据库 |
+| 启动服务器 | 启动 Python RAG 服务器 |
+| 打开 WebUI | 在浏览器中打开 WebUI |
 
-// 3. （可选）实现 ISkillProvider 提供 Skill 数据
-public class YourSkillProvider : ISkillProvider { ... }
-```
+## ❓ 常见问题
 
-### 4. 注册适配器
+### Q: 扫描不到 Action 类？
 
-创建初始化脚本：
+1. 检查程序集名称是否正确（技能系统 Tab）
+2. 确认 Action 基类/接口配置正确
+3. 确保类是 `public` 且非 `abstract`
 
-```csharp
-[InitializeOnLoad]
-public static class YourRAGSetup
-{
-    static YourRAGSetup()
-    {
-        EditorApplication.delayCall += () =>
-        {
-            var config = LoadYourConfig();
-            RAGBuilderService.Instance.Initialize(
-                config,
-                actionProvider: new YourActionProvider(),
-                skillProvider: new YourSkillProvider()
-            );
-        };
-    }
-}
-```
+### Q: AI 描述生成失败？
 
-### 5. 完成
+1. 检查 DeepSeek API Key 是否有效
+2. 点击 **测试连接** 验证
+3. 检查网络连接
 
-现在可以通过菜单使用 RAG Builder 的所有功能了！
+### Q: 架构分析结果不理想？
 
-## 示例代码
+1. 确保源码路径配置正确
+2. 可以编辑 Prompt 模板优化分析指令
+3. 或使用自定义 Prompt 文件覆盖
 
-完整的示例代码位于 `Samples~/SkillSystemAdapter` 目录：
+### Q: Python 端读取不到数据？
 
-- **SampleImplementations.cs** - `IActionInfo`、`ISkillInfo` 等接口的示例实现
-- **SampleActionProvider.cs** - `IActionProvider` 的完整示例，演示如何扫描 Action 类型
+1. 确认 JSON 文件已导出到 `skill_agent/Data/`
+2. 检查路径配置
+3. 重启 Python 服务器
 
-通过 Package Manager 导入示例：
-1. 打开 Package Manager
-2. 选择 "RAG Builder System"
-3. 在 "Samples" 下点击 "Import"
+## 📚 相关文档
 
-## 依赖项
+- [RAG导出流程指南](Editor/Docs/RAG导出流程指南.md) - 详细的导出流程说明
 
-### 必需依赖
+## 🔗 技术栈
 
-- **UniTask** (`com.cysharp.unitask >= 2.0.0`)：用于异步操作
+| 组件 | 技术 |
+|------|------|
+| AI 分析 | DeepSeek API |
+| 文本向量化 | Qwen3-Embedding-0.6B |
+| 向量数据库 | LanceDB |
+| 工作流编排 | LangGraph |
+| 后端服务 | FastAPI (Python) |
 
-### 可选依赖
+## 📄 许可证
 
-- **Odin Inspector**：提供增强的编辑器 UI（自动检测，如果存在则使用）
-
-## API 参考
-
-### RAGBuilderService
-
-核心服务类，提供导出和管理功能：
-
-```csharp
-// 获取单例
-var service = RAGBuilderService.Instance;
-
-// 初始化
-service.Initialize(config, actionProvider, skillProvider, descriptionStorage);
-
-// 导出 Action
-ExportResult result = service.ExportActions();
-
-// 导出 Skill
-ExportResult result = service.ExportSkills();
-
-// 创建 RAG 客户端
-RAGClient client = service.CreateClient();
-```
-
-### RAGServerManager
-
-服务器管理静态类：
-
-```csharp
-// 启动服务器
-bool success = RAGServerManager.StartServer(config);
-
-// 停止服务器
-RAGServerManager.StopServer();
-
-// 检查服务器状态
-bool running = RAGServerManager.IsServerRunning(config);
-
-// 打开 WebUI
-RAGServerManager.OpenWebUI(config);
-```
-
-### RAGClient
-
-HTTP 客户端，用于与 RAG 服务器通信：
-
-```csharp
-var client = new RAGClient(config);
-
-// 健康检查
-StartCoroutine(client.CheckHealth((success, message) => { }));
-
-// 搜索技能
-StartCoroutine(client.SearchSkills("火球术", topK: 5, callback: (success, response, error) => { }));
-
-// 推荐 Action
-StartCoroutine(client.RecommendActions("造成范围伤害", topK: 3, callback: (success, response, error) => { }));
-
-// 重建索引
-StartCoroutine(client.RebuildIndex((success, response, error) => { }));
-```
-
-## 常见问题
-
-### Q: 导出时提示 "Action provider not registered"
-
-确保在编辑器启动时正确注册了 Provider：
-
-```csharp
-RAGBuilderService.Instance.Initialize(config, actionProvider: yourProvider);
-```
-
-### Q: 服务器启动失败
-
-1. 检查 Python 环境是否正确配置
-2. 检查 `serverScriptPath` 路径是否正确
-3. 查看 Unity Console 中的错误日志
-
-### Q: 如何自定义 Action 分类？
-
-在你的 `IActionInfo` 实现中，根据 Action 类型名或自定义属性返回对应的分类：
-
-```csharp
-public string Category => GetCategoryFromType(actionType);
-
-private string GetCategoryFromType(Type type)
-{
-    // 你的分类逻辑
-    if (type.Name.Contains("Damage")) return "伤害";
-    if (type.Name.Contains("Heal")) return "治疗";
-    return "其他";
-}
-```
-
-## 许可证
-
-MIT License - 详见 [LICENSE.md](LICENSE.md)
+MIT License
