@@ -1,0 +1,4 @@
+[submodule "external/langflow"]
+	path = external/langflow
+	url = https://github.com/wqaetly/langflow.git
+	branch = dev
