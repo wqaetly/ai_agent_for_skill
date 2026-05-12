@@ -230,7 +230,7 @@ Debug.Log(result);
 
 ## 🔗 下一步
 
-- **WebUI使用**：查看 `WEBUI_GUIDE.md`
+- **前端使用**：使用 Lobe Chat **桌面版 exe**，从 [lobehub.com](https://lobehub.com/) 下载后手动启动，照仓库 [`README.md § Lobe Chat 桌面版配置指南`](../README.md) 一次性填入 OpenAI 供应商设置
 - **API参考**：查看 `Docs/API.md`
 - **技能模式**：查看 `Docs/SkillPatterns.md`
 

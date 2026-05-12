@@ -6,7 +6,7 @@
 import logging
 from typing import Any, Dict, Optional
 
-from langgraph.config import get_stream_writer
+from ..._compat import get_stream_writer
 
 from ...streaming import ProgressEventType, emit_progress
 

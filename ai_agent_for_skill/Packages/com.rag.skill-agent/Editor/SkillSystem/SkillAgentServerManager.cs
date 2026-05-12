@@ -20,9 +20,12 @@ namespace RAG
         
         private static string SERVER_SCRIPT_PATH => Config.serverScriptName;
         private static string INSTALL_DEPS_SCRIPT => Config.installDepsScriptName;
-        private static string WEB_UI_URL => Config.webUIUrl;
-        private static int WEB_UI_PORT => Config.serverPort;
-        private static int LANGGRAPH_PORT => Config.serverPort;
+
+        // v3.0: front end is Lobe Chat (3210), backend is OpenAI compat adapter (2024)
+        // bridging Langflow (7860). Unity RPC stays on 8766 (handled elsewhere).
+        private static string LOBE_CHAT_URL => Config.webUIUrl;
+        private const int ADAPTER_PORT = 2024;
+        private const int LANGFLOW_PORT = 7860;
         private const string PROCESS_ID_KEY = "SkillAgent_ServerProcessID";
 
         private static Process serverProcess;
@@ -37,9 +40,9 @@ namespace RAG
                 EditorUtility.DisplayDialog(
                     "SkillAgent服务器",
                     "服务器已在运行中！\n\n" +
-                    $"WebUI: {WEB_UI_URL}\n" +
-                    $"WebUI RAG查询: {WEB_UI_URL}/rag\n" +
-                    $"LangGraph API: http://127.0.0.1:{LANGGRAPH_PORT}",
+                    $"Lobe Chat: {LOBE_CHAT_URL}\n" +
+                    $"OpenAI Adapter: http://127.0.0.1:{ADAPTER_PORT}\n" +
+                    $"Langflow:        http://127.0.0.1:{LANGFLOW_PORT}",
                     "确定"
                 );
                 OpenWebUI();
@@ -153,9 +156,7 @@ namespace RAG
                         process.Kill();
                         process.WaitForExit(3000);
                         Debug.Log("[SkillAgent] 服务器已停止");
-
-                        // 同时杀掉可能的Python子进程
-                        KillPythonProcesses();
+                        // v3: 不再无差别 kill python/node 进程，由 launch.bat / stop_all.bat 统一管理。
                     }
                 }
 
@@ -177,28 +178,29 @@ namespace RAG
         [MenuItem("Tools/SkillAgent/打开Web UI (Open Web UI)", priority = 3)]
         public static void OpenWebUI()
         {
-            string ragUrl = $"{WEB_UI_URL}/rag";
-            Application.OpenURL(ragUrl);
-            Debug.Log($"[SkillAgent] 正在打开浏览器: {ragUrl}");
+            // v3.0: Lobe Chat is a single-page chat app, no `/rag` sub route.
+            Application.OpenURL(LOBE_CHAT_URL);
+            Debug.Log($"[SkillAgent] 正在打开浏览器: {LOBE_CHAT_URL}");
         }
 
         [MenuItem("Tools/SkillAgent/检查服务器状态 (Check Status)", priority = 4)]
         public static void CheckServerStatus()
         {
-            bool webUIRunning = IsPortOpen("127.0.0.1", WEB_UI_PORT);
-            bool langgraphRunning = IsPortOpen("127.0.0.1", LANGGRAPH_PORT);
+            bool adapterRunning  = IsPortOpen("127.0.0.1", ADAPTER_PORT);
+            bool langflowRunning = IsPortOpen("127.0.0.1", LANGFLOW_PORT);
 
-            string status = "SkillAgent服务器状态\n\n";
-            status += $"WebUI (端口 {WEB_UI_PORT}): {(webUIRunning ? "✓ 运行中" : "✗ 未运行")}\n";
-            status += $"LangGraph API (端口 {LANGGRAPH_PORT}): {(langgraphRunning ? "✓ 运行中" : "✗ 未运行")}\n";
+            string status = "SkillAgent服务器状态 (v3)\n\n";
+            status += $"OpenAI Adapter (端口 {ADAPTER_PORT}): {(adapterRunning  ? "✓ 运行中" : "✗ 未运行")}\n";
+            status += $"Langflow       (端口 {LANGFLOW_PORT}): {(langflowRunning ? "✓ 运行中" : "✗ 未运行")}\n";
 
-            if (webUIRunning && langgraphRunning)
+            if (adapterRunning && langflowRunning)
             {
                 status += $"\n✅ 所有服务运行正常！\n";
-                status += $"\nWebUI主页: {WEB_UI_URL}\n";
-                status += $"WebUI RAG查询: {WEB_UI_URL}/rag\n";
-                status += $"API文档: http://{Config.serverHost}:{LANGGRAPH_PORT}/docs";            }
-            else if (!webUIRunning && !langgraphRunning)
+                status += $"\nLobe Chat:        {LOBE_CHAT_URL}\n";
+                status += $"Adapter /v1:     http://127.0.0.1:{ADAPTER_PORT}/v1\n";
+                status += $"Langflow UI:     http://127.0.0.1:{LANGFLOW_PORT}";
+            }
+            else if (!adapterRunning && !langflowRunning)
             {
                 status += $"\n⚠️ 请先启动服务器！\n菜单: Tools → SkillAgent → 启动服务器";
             }
@@ -379,10 +381,11 @@ namespace RAG
 
         /// <summary>
         /// 检查服务器是否运行（通过端口检测）
+        /// v3: 任一关键后端端口（Adapter / Langflow）就绪即视为已启动。
         /// </summary>
         private static bool IsServerRunning()
         {
-            return IsPortOpen("127.0.0.1", WEB_UI_PORT) || IsPortOpen("127.0.0.1", LANGGRAPH_PORT);
+            return IsPortOpen("127.0.0.1", ADAPTER_PORT) || IsPortOpen("127.0.0.1", LANGFLOW_PORT);
         }
 
         /// <summary>
@@ -424,18 +427,19 @@ namespace RAG
             {
                 await System.Threading.Tasks.Task.Delay(1000);
 
-                if (IsPortOpen("127.0.0.1", WEB_UI_PORT))
+                // v3: 等 Adapter ready 即可，Lobe Chat 是浏览器端容器，单独由 launch.bat 拉起。
+                if (IsPortOpen("127.0.0.1", ADAPTER_PORT))
                 {
-                    Debug.Log("[SkillAgent] 服务器启动完成，正在打开浏览器...");
+                    Debug.Log("[SkillAgent] 后端就绪，正在打开 Lobe Chat...");
                     OpenWebUI();
 
                     EditorUtility.DisplayDialog(
                         "SkillAgent服务器",
-                        "服务器启动成功！\n\n" +
-                        $"WebUI: {WEB_UI_URL}\n" +
-                        $"RAG查询: {WEB_UI_URL}/rag\n" +
-                        $"LangGraph API: http://127.0.0.1:{LANGGRAPH_PORT}\n\n" +
-                        "浏览器将自动打开到RAG查询页面。",
+                        "后端服务启动成功！\n\n" +
+                        $"Lobe Chat:       {LOBE_CHAT_URL}\n" +
+                        $"OpenAI Adapter: http://127.0.0.1:{ADAPTER_PORT}\n" +
+                        $"Langflow:       http://127.0.0.1:{LANGFLOW_PORT}\n\n" +
+                        "浏览器将自动打开 Lobe Chat。",
                         "确定"
                     );
                     return;
@@ -457,58 +461,10 @@ namespace RAG
             );
         }
 
-        /// <summary>
-        /// 杀掉Python和Node.js进程（清理残留）
-        /// 注意：这会杀掉所有python.exe和node.exe进程，请谨慎使用
-        /// </summary>
-        private static void KillPythonProcesses()
-        {
-            try
-            {
-                // 杀掉 Python 进程（LangGraph服务器）
-                KillProcessByName("python");
-
-                // 杀掉 Node.js 进程（WebUI）
-                KillProcessByName("node");
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[SkillAgent] 清理进程时出错: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 通过进程名杀掉进程
-        /// </summary>
-        private static void KillProcessByName(string processName)
-        {
-            try
-            {
-                Process[] processes = Process.GetProcessesByName(processName);
-
-                foreach (Process process in processes)
-                {
-                    try
-                    {
-                        process.Kill();
-                        Debug.Log($"[SkillAgent] 已杀掉{processName}进程: {process.Id}");
-                    }
-                    catch
-                    {
-                        // 忽略无权限的进程
-                    }
-                }
-
-                if (processes.Length > 0)
-                {
-                    Debug.Log($"[SkillAgent] 共杀掉 {processes.Length} 个 {processName} 进程");
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning($"[SkillAgent] 杀掉{processName}进程时出错: {e.Message}");
-            }
-        }
+        // v3.0: removed KillPythonProcesses / KillProcessByName.
+        // 这两个方法会无差别 kill 所有 python.exe / node.exe，可能误杀
+        // 用户其它工具（IDE、Cursor、Copilot 后端、Node.js 服务等），
+        // 不属于 Unity 应当承担的职责。停止后端栈请使用 stop_all.bat。
 
         // ==================== Unity编辑器关闭时清理 ====================
 

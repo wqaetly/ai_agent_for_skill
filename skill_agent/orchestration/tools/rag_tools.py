@@ -12,15 +12,15 @@ _rag_engine_instance = None
 
 
 def get_rag_engine():
-    """获取 RAG Engine 单例"""
+    """获取 RAG Engine 单例（返回 EnhancedRAGEngine 以支持完整功能）"""
     global _rag_engine_instance
 
     if _rag_engine_instance is None:
-        from core import RAGEngine
+        from core import EnhancedRAGEngine
         from core.config import get_config
 
         config = get_config()
-        _rag_engine_instance = RAGEngine(config.to_dict())
+        _rag_engine_instance = EnhancedRAGEngine(config.to_dict())
 
     return _rag_engine_instance
 

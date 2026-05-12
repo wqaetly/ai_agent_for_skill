@@ -1,0 +1,39 @@
+{
+  "skillName": "奔雷斩",
+  "skillId": "thunder-dash-slash",
+  "skillDescription": "蓄积雷电之力后高速突进，对路径上的敌人造成雷电伤害，并在终点发动强力斩击",
+  "totalDuration": 120,
+  "frameRate": 30,
+  "trackPlan": [
+    {
+      "trackName": "Animation Track",
+      "purpose": "播放蓄力准备姿势、突进动作和斩击收招动画",
+      "estimatedActions": 3,
+      "priority": 1
+    },
+    {
+      "trackName": "Movement Track",
+      "purpose": "控制角色从起点向目标点的高速直线突进位移",
+      "estimatedActions": 2,
+      "priority": 2
+    },
+    {
+      "trackName": "Effect Track 1",
+      "purpose": "在突进路径上生成雷电轨迹特效，并对路径敌人造成持续伤害",
+      "estimatedActions": 2,
+      "priority": 3
+    },
+    {
+      "trackName": "Effect Track 2",
+      "purpose": "在技能终点生成大范围雷电斩击爆炸特效，并造成主要伤害",
+      "estimatedActions": 2,
+      "priority": 4
+    },
+    {
+      "trackName": "Audio Track",
+      "purpose": "播放蓄力电流声、突进破空声和斩击爆炸音效",
+      "estimatedActions": 3,
+      "priority": 5
+    }
+  ]
+}

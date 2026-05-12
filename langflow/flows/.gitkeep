@@ -1,0 +1,10 @@
+# Flow JSON exports placeholder
+# 任务 3.2 阶段在本目录写入由 Langflow UI Export 出来的 8 个 JSON 文件：
+#   skill_search.flow.json
+#   skill_detail.flow.json
+#   skill_validation.flow.json
+#   parameter_inference.flow.json
+#   skill_generation.flow.json
+#   progressive_skill_generation.flow.json
+#   action_batch_skill_generation.flow.json
+#   smart_skill_generation.flow.json

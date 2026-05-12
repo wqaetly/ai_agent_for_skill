@@ -27,7 +27,7 @@ namespace RAG
         private DescriptionManagerWindow actionWindow;
         private BuffDescriptionManagerWindow buffWindow;
 
-        [MenuItem("技能系统/RAG数据导出中心", priority = 99)]
+        [MenuItem("Tools/RAG System/RAG 数据导出中心", priority = 10)]
         public static void ShowWindow()
         {
             var window = GetWindow<UnifiedRAGExportWindow>("RAG数据导出中心");

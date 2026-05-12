@@ -5,11 +5,48 @@ LLM 初始化模块
 
 import logging
 import os
-from typing import Optional
+from typing import Optional, Dict, Any
 
 from langchain_openai import ChatOpenAI
 
 logger = logging.getLogger(__name__)
+
+# DeepSeek 模型是否支持 JSON Mode 的映射
+# deepseek-reasoner 不支持 response_format
+MODELS_SUPPORTING_JSON_MODE = {
+    "deepseek-chat": True,
+    "deepseek-coder": True,
+    "deepseek-reasoner": False,  # Reasoner 不支持 JSON Mode
+}
+
+
+def supports_json_mode(model_name: str) -> bool:
+    """
+    检查模型是否支持 JSON Mode（response_format）
+
+    Args:
+        model_name: 模型名称
+
+    Returns:
+        是否支持 JSON Mode
+    """
+    # 默认支持，除非明确标记为不支持
+    return MODELS_SUPPORTING_JSON_MODE.get(model_name, True)
+
+
+def get_json_mode_params(model_name: str) -> Dict[str, Any]:
+    """
+    获取 JSON Mode 参数（如果模型支持）
+
+    Args:
+        model_name: 模型名称
+
+    Returns:
+        JSON Mode 参数字典，如果不支持则返回空字典
+    """
+    if supports_json_mode(model_name):
+        return {"response_format": {"type": "json_object"}}
+    return {}
 
 
 def get_llm(

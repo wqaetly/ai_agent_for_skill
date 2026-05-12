@@ -9,11 +9,11 @@ import time
 from typing import Any, Dict, List, TypedDict, Annotated, Optional, Literal, Tuple
 
 from langchain_core.messages import AIMessage, AnyMessage
-from langgraph.graph.message import add_messages
-from langgraph.types import StreamWriter
+from .._compat import add_messages
+from .._compat import StreamWriter
 from pydantic import ValidationError
 
-from .base import get_llm, get_openai_client, prepare_payload_text
+from .base import get_llm, get_openai_client, prepare_payload_text, get_json_mode_params
 from .base.streaming import get_writer_safe, emit_track_progress
 from .json_utils import extract_json_from_markdown
 from .validators import extract_action_type_name, validate_track, validate_action_matches_track_type
@@ -172,7 +172,16 @@ def single_action_generator_node(state: SingleActionProgressiveState, writer: St
             openai_messages.append({"role": role, "content": msg.content})
         
         model_name = get_skill_gen_config().llm.model
-        response = client.chat.completions.create(model=model_name, messages=openai_messages, stream=True)
+
+        # 构建请求参数，如果模型支持则添加 JSON Mode
+        create_params = {
+            "model": model_name,
+            "messages": openai_messages,
+            "stream": True,
+        }
+        create_params.update(get_json_mode_params(model_name))
+
+        response = client.chat.completions.create(**create_params)
         
         for chunk in response:
             delta = chunk.choices[0].delta if chunk.choices else None

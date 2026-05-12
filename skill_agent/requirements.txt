@@ -1,5 +1,9 @@
 # SkillRAG 完整依赖
-# 包含所有服务：基础 RAG + MCP Server + LangGraph 编排
+# 包含所有服务：基础 RAG + MCP Server + OpenAI 兼容适配层
+#
+# 注意：自 v3.0 起本项目改用 Langflow + Lobe Chat 替代 LangGraph + 自研 WebUI。
+# Langflow 在独立的 Docker 容器中运行，本依赖文件**不再**安装 langgraph。
+# 业务编排逻辑由 skill_agent.orchestration.runners 提供（纯 Python 实现）。
 
 # ============================================================
 # Web 框架
@@ -28,12 +32,11 @@ torch>=2.0.0,<3.0.0                   # PyTorch CPU 版本
 transformers>=4.51.0                  # Qwen3 必需，否则报错 KeyError: 'qwen3'
 
 # ============================================================
-# LangChain 生态 - 编排层
+# LangChain 生态 - 仅保留 message 类型与 LLM 客户端，
+# LangGraph 编排已删除（v3.0 起改用 skill_agent.orchestration.runners）
 # ============================================================
 langchain>=0.3.7,<0.4.0
 langchain-core>=0.3.17,<0.4.0
-langgraph>=1.0.0,<2.0.0
-langgraph-checkpoint>=2.1.0,<4.0.0
 
 # LLM Providers
 langchain-openai>=0.2.8,<0.3.0      # OpenAI compatible (DeepSeek)
@@ -60,6 +63,10 @@ requests>=2.31.0
 # 日志和缓存
 python-json-logger>=2.0.7
 cachetools>=5.3.2
+structlog>=24.1.0                    # 结构化日志（OpenAI 兼容适配层使用）
 
 # 进度条
 tqdm>=4.66.1
+
+# JSON 解析增强
+json5>=0.9.0                         # 宽松 JSON 解析器（处理 LLM 输出格式问题）

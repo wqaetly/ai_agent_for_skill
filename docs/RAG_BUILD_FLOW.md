@@ -342,9 +342,9 @@ result = rag_engine.index_skills(force_rebuild=True)
 result = rag_engine.index_actions(force_rebuild=True)
 ```
 
-**方式三**: 通过 WebUI
-- 访问 `http://localhost:3000/rag`
-- 点击 "重建索引" 按钮
+**方式三**: 通过 Langflow Playground
+- 访问 `http://localhost:7860`
+- 打开任意 RAG 类 flow（如 `skill_search`），在节点 Playground 中重新触发索引重建
 
 ---
 

@@ -198,8 +198,7 @@ def search_actions(query: str, top_k: int = 5):
 ### 6. 技能生成流程
 
 ```python
-# LangGraph 工作流
-@workflow
+# Langflow 工作流（在项目仓库 langflow/components/ 下以 Custom Component 实现）
 def generate_skill(requirement: str):
     # 1. 需求理解
     parsed = understand_requirement(requirement)
@@ -278,14 +277,12 @@ com.rag.skill-agent/
 3. 点击 **AI 生成描述**（为缺少描述的项生成）
 4. 点击 **导出全部**
 
-### 步骤 5：启动 Python 服务
+### 步骤 5：启动后端服务
 
-```bash
-cd skill_agent
-python langgraph_server.py
-```
+在仓库根目录运行 `launch.bat`（菜单 `[1] Full System` 会拉起 Langflow @7860 + OpenAI 兼容适配层 @2024 + Lobe Chat @3210）。
 
-访问 http://127.0.0.1:2024 使用 WebUI
+- 策划使用：访问 http://127.0.0.1:3210 （Lobe Chat）
+- 调试/Flow 可视化：访问 http://127.0.0.1:7860 （Langflow Playground）
 
 ## ⚙️ 配置说明
 
@@ -297,7 +294,7 @@ python langgraph_server.py
 | **技能系统** | 程序集名称、Action基类/接口、导出配置 |
 | **Buff系统** | Effect/Trigger基类、导出目录 |
 | **DeepSeek** | API Key、模型选择、温度参数 |
-| **服务器** | 服务器地址、端口、WebUI URL |
+| **服务器** | OpenAI 兼容适配层地址、端口、Lobe Chat URL |
 | **路径** | 数据库路径、导出目录、自动通知设置 |
 
 ## 🍔 菜单功能
@@ -309,8 +306,8 @@ python langgraph_server.py
 | RAG Config 设置 | 打开配置窗口 |
 | 数据导出中心 | 打开统一导出窗口 |
 | Action 描述管理 | 管理 Action 描述数据库 |
-| 启动服务器 | 启动 Python RAG 服务器 |
-| 打开 WebUI | 在浏览器中打开 WebUI |
+| 启动服务器 | 启动 Python RAG 服务器【已废弃，请使用仓库根的 launch.bat】 |
+| 打开 Lobe Chat | 在浏览器中打开 Lobe Chat（默认 http://127.0.0.1:3210） |
 
 ## ❓ 常见问题
 
@@ -349,8 +346,9 @@ python langgraph_server.py
 | AI 分析 | DeepSeek API |
 | 文本向量化 | Qwen3-Embedding-0.6B |
 | 向量数据库 | LanceDB |
-| 工作流编排 | LangGraph |
-| 后端服务 | FastAPI (Python) |
+| 工作流编排 | Langflow（fork: wqaetly/langflow @ dev）|
+| 后端服务 | FastAPI（OpenAI 兼容适配层 @2024） |
+| 聊天前端 | Lobe Chat（官方镜像 @3210） |
 
 ## 📄 许可证
 

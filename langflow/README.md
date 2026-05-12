@@ -1,0 +1,122 @@
+# Langflow 集成（基于 fork: wqaetly/langflow @ dev）
+
+> 本目录承载本项目对 Langflow 的全部接入资产：自定义组件源码、flow JSON 导出文件、本地启动脚本与导入工具。  
+> **重要约束**：本项目**只**使用 [wqaetly/langflow @ dev](https://github.com/wqaetly/langflow/tree/dev) 这个 fork，**不得**使用 `pip install langflow` 或官方 `langflowai/langflow` Docker 镜像，以保证用户自有的魔改特性可用。  
+> **部署方式**：纯本地源码运行（`uv run langflow run`），**不再使用 Docker**——公司未购买 Docker 商用许可证。
+
+---
+
+## Fork 锁定信息
+
+| 项目 | 值 |
+|------|-----|
+| 仓库 | https://github.com/wqaetly/langflow |
+| 分支 | `dev` |
+| 锁定 commit SHA | `0a3f184750cf...` (`0a3f18475`) |
+| 锁定 commit 标题 | `docs: add upstream sync workflow as guideline 4` (2026-05-12) |
+| 引入方式 | `git submodule` → 本仓库路径 `external/langflow` |
+
+> 上一次锁定 SHA：`ee567b98c0f50065b0e270e06c47326e08913eb5`（`feat：优化flow dump功能`，2026-05-11）。本轮 fork bump 新增 3 个 commit：(1) `2e7782b7e` 引入 `restart_langflow.bat` / `LOCAL_DEV_GUIDELINES.md` / `setup_defender_exclusions.ps1` 等本地开发工具，刷新 starter projects、custom_proxy 与 frontend node-class normalization 测试；(2) `62babbc88` Auto-format（`langflow run`）；(3) `0a3f18475` 增补 upstream sync workflow 为指南条目 4。
+
+升级 fork 时：
+
+```bash
+git submodule update --remote external/langflow
+git -C external/langflow log -n 1
+# 在本 README 更新锁定 SHA 后再提交
+```
+
+---
+
+## 目录结构
+
+```
+langflow/
+├── README.md                # 本文件
+├── FORK_CHANGELOG.md        # fork 相对上游的关键改动列表（由维护者维护）
+├── components/              # 项目侧 Custom Components Python 源码（任务 3.1）
+├── flows/                   # 通过 Langflow UI 导出的 *.flow.json（任务 3.2）
+└── scripts/
+    ├── run_local.bat        # 无 Docker 本地启动脚本：uv sync + PYTHONPATH + uv run langflow run @7860
+    └── upload_flows.py      # Langflow ready 后批量导入 flows/*.json
+```
+
+---
+
+## 本地启动（无 Docker）
+
+首次启动前需要满足三个前置条件：
+
+1. fork 子模块已初始化：`git submodule update --init --recursive`
+2. 已安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)：`pip install uv` 或 `winget install astral-sh.uv`
+3. `skill_agent/.env` 中已配置 `DEEPSEEK_API_KEY`（可由 `launch.bat` 首次运行时引导生成）
+
+直接启动 Langflow Server @7860（仅后端，前端由 Lobe Chat 替代）：
+
+```bat
+langflow\scripts\run_local.bat
+```
+
+或通过项目顶层 [`launch.bat`](../launch.bat) 菜单 `[1] Full System` / `[2] Backend Only` 一键拉起。
+
+`run_local.bat` 内部依次执行：
+
+1. 检查 `external/langflow/pyproject.toml` 与 `uv` 工具链
+2. 在 `external/langflow/` 下执行 `uv sync`（首次 5–10 分钟，后续秒级）
+3. 设置 `PYTHONPATH=<repo_root>`，让 `langflow/components/*.py` 能 `from skill_agent.core.enhanced_rag_engine import ...`
+4. 调用 `uv run langflow run --host 127.0.0.1 --port 7860 --components-path langflow/components --env-file skill_agent/.env`
+
+复用 fork 自带的 `LFX_DEV` 环境变量切换组件加载策略：
+
+- 不设置 / `LFX_DEV=0`：索引模式，启动最快（默认）
+- `LFX_DEV=1`：全动态加载，启动慢但能立即反映任意组件改动
+- `LFX_DEV=custom_proxy,...`：部分动态加载，适合迭代少数组件
+
+首次 Langflow ready 后，运行一次 `python langflow/scripts/upload_flows.py` 把 `langflow/flows/*.json` 批量导入。
+
+---
+
+## 端口与服务编排
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| Langflow Server | 7860 | 由 `langflow/scripts/run_local.bat` 通过 `uv run langflow run` 启动（基于 fork 源码） |
+| OpenAI 兼容适配层 | 2024 | `skill_agent/openai_compat`（FastAPI），转发到 Langflow Run API |
+| Lobe Chat | 3210 | 官方镜像 `lobehub/lobe-chat`，前端 |
+| Unity RPC | 8766 | `skill_agent/Python/unity_rpc_server.py`，Unity Editor 使用 |
+
+完整启动入口：仓库根目录 `launch.bat`（菜单 `[1] Full System` / `[2] Backend Only` / `[3] Lobe Chat Only` / `[4] Stop All`）。
+
+---
+
+## Custom Components 与 RAG 复用约定
+
+- 所有需要 RAG 的 Component **必须** `from skill_agent.core.enhanced_rag_engine import ...` 复用现有引擎，**禁止**在 Component 内部重写 RAG 逻辑。
+- 所有需要 LLM 的 Component **必须**用 OpenAI 客户端（`base_url=https://api.deepseek.com`）直连 DeepSeek Reasoner，**不得**依赖 Langflow 内置 LLM 节点（避免与 fork 行为冲突）。
+- 复杂图（progressive / skill_generation / action_batch）以**粗粒度** Component 承载，内部直接调用 `skill_agent/orchestration/runners/*` 中的纯函数 runner（任务 2 输出）。
+- 简单图（skill_search）拆为细粒度节点流，每个节点可在 Langflow Playground 中单步调试。
+
+---
+
+## Flow 与 OpenAI Model ID 对照
+
+| Flow 名 | flows/ 文件名 | OpenAI model id | 类型 |
+|---------|---------------|-----------------|------|
+| Skill Search | `skill_search.flow.json` | `skill-search` | 细粒度 |
+| Skill Detail | `skill_detail.flow.json` | `skill-detail` | 细粒度 |
+| Skill Validation | `skill_validation.flow.json` | `skill-validation` | 细粒度 |
+| Parameter Inference | `parameter_inference.flow.json` | `parameter-inference` | 细粒度 |
+| Skill Generation | `skill_generation.flow.json` | `skill-generation` | 粗粒度 |
+| Progressive Skill Generation | `progressive_skill_generation.flow.json` | `progressive-skill-generation` | 粗粒度 |
+| Action Batch Skill Generation | `action_batch_skill_generation.flow.json` | `action-batch-skill-generation` | 粗粒度 |
+| Smart Skill Generation | `smart_skill_generation.flow.json` | `smart` | 路由 |
+
+每张 flow 的输入/输出 schema、关键 Component 与 fork 锁定 SHA 在任务 3.2 阶段补齐到本节末尾。
+
+---
+
+## 待补齐
+
+- [ ] 任务 3.1 完成后：列出 `components/` 下每个 Custom Component 的输入/输出 schema
+- [ ] 任务 3.2 完成后：补齐每张 flow 的输入/输出 schema 与节点拓扑示意
+- [x] Lobe Chat 已于 v3.0 定稿阶段改用桌面版 exe（仓库不再提供部署资产，详见 [`README.md § Lobe Chat 桌面版配置指南`](../README.md)）

@@ -189,6 +189,21 @@ namespace RAG
         [Tooltip("Buff数据导出目录（相对于Unity项目根目录）")]
         public string exportDirectory = "../skill_agent/Data/Buffs";
 
+        [Header("枚举导出配置")]
+        [Tooltip("需要导出的枚举类型完整名称列表")]
+        public List<string> enumTypeNames = new List<string>
+        {
+            "BuffSystem.Data.BuffType",
+            "BuffSystem.Data.BuffCategory",
+            "BuffSystem.Data.DurationType",
+            "BuffSystem.Data.StackingType",
+            "BuffSystem.Data.DispelType",
+            "BuffSystem.Data.TriggerEventType",
+            "BuffSystem.Effects.AttributeType",
+            "BuffSystem.Effects.DamageType",
+            "BuffSystem.Effects.SpecialStateFlags"
+        };
+
         /// <summary>
         /// 缓存的类型
         /// </summary>
@@ -340,8 +355,8 @@ namespace RAG
         [Tooltip("服务器端口")]
         public int serverPort = 2024;
         
-        [Tooltip("WebUI URL")]
-        public string webUIUrl = "http://127.0.0.1:2024";
+        [Tooltip("WebUI URL（Lobe Chat 默认 3210；自定义供应商 base url 由 .env / docker 注入）")]
+        public string webUIUrl = "http://127.0.0.1:3210";
         
         [Tooltip("服务器启动超时时间（秒）")]
         public int serverStartTimeout = 30;
@@ -901,6 +916,353 @@ namespace RAG
         }
 
         /// <summary>
+        /// 菜单项：导出架构Prompt文件
+        /// </summary>
+        [MenuItem("Tools/RAG System/导出架构Prompt (Export Architecture Prompts)", priority = 103)]
+        public static void ExportArchitecturePromptsMenu()
+        {
+            var result = Instance.ExportArchitecturePrompts();
+            if (result.success)
+            {
+                EditorUtility.DisplayDialog("导出成功",
+                    $"架构Prompt文件已导出:\n\n{result.message}", "确定");
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("导出失败", result.message, "确定");
+            }
+        }
+
+        /// <summary>
+        /// 导出架构Prompt到独立文件（供Python端使用）
+        /// </summary>
+        /// <returns>导出结果</returns>
+        public (bool success, string message) ExportArchitecturePrompts()
+        {
+            var results = new List<string>();
+            var errors = new List<string>();
+
+            // 获取导出基础目录
+            string baseDir = Path.GetFullPath(Path.Combine(exportDirectory, ".."));
+
+            // 导出技能系统架构Prompt
+            string skillPrompt = GetSkillSystemArchitecturePrompt();
+            if (!string.IsNullOrEmpty(skillPrompt))
+            {
+                try
+                {
+                    string skillPromptPath = Path.Combine(baseDir, "skill_architecture_prompt.md");
+                    EnsureDirectoryExists(skillPromptPath);
+                    File.WriteAllText(skillPromptPath, skillPrompt);
+                    results.Add($"技能系统: {skillPromptPath}");
+                    Debug.Log($"[RAGConfig] 已导出技能系统架构Prompt到: {skillPromptPath}");
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"技能系统架构Prompt导出失败: {e.Message}");
+                }
+            }
+            else
+            {
+                errors.Add("技能系统架构Prompt为空（请先运行AI分析或配置自定义Prompt文件）");
+            }
+
+            // 导出Buff系统架构Prompt
+            string buffPrompt = GetBuffSystemArchitecturePrompt();
+            if (!string.IsNullOrEmpty(buffPrompt))
+            {
+                try
+                {
+                    string buffPromptPath = Path.Combine(baseDir, "buff_architecture_prompt.md");
+                    EnsureDirectoryExists(buffPromptPath);
+                    File.WriteAllText(buffPromptPath, buffPrompt);
+                    results.Add($"Buff系统: {buffPromptPath}");
+                    Debug.Log($"[RAGConfig] 已导出Buff系统架构Prompt到: {buffPromptPath}");
+                }
+                catch (Exception e)
+                {
+                    errors.Add($"Buff系统架构Prompt导出失败: {e.Message}");
+                }
+            }
+            else
+            {
+                errors.Add("Buff系统架构Prompt为空（请先运行AI分析或配置自定义Prompt文件）");
+            }
+
+            // 构建返回消息
+            if (errors.Count == 0 && results.Count > 0)
+            {
+                return (true, string.Join("\n", results));
+            }
+            else if (results.Count > 0)
+            {
+                return (true, $"部分成功:\n{string.Join("\n", results)}\n\n警告:\n{string.Join("\n", errors)}");
+            }
+            else
+            {
+                return (false, string.Join("\n", errors));
+            }
+        }
+
+        /// <summary>
+        /// 确保目录存在
+        /// </summary>
+        private static void EnsureDirectoryExists(string filePath)
+        {
+            string directory = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+        }
+
+        /// <summary>
+        /// 菜单项：生成导出清单
+        /// </summary>
+        [MenuItem("Tools/RAG System/生成导出清单 (Generate Manifest)", priority = 104)]
+        public static void GenerateExportManifestMenu()
+        {
+            var result = Instance.GenerateExportManifest();
+            if (result.success)
+            {
+                EditorUtility.DisplayDialog("导出清单生成成功", result.message, "确定");
+            }
+            else
+            {
+                EditorUtility.DisplayDialog("导出清单生成失败", result.message, "确定");
+            }
+        }
+
+        /// <summary>
+        /// 生成导出清单manifest.json
+        /// </summary>
+        public (bool success, string message) GenerateExportManifest()
+        {
+            try
+            {
+                string baseDir = Path.GetFullPath(Path.Combine(exportDirectory, ".."));
+                string manifestPath = Path.Combine(baseDir, "manifest.json");
+
+                var manifest = new ExportManifest
+                {
+                    version = "1.0",
+                    exportTime = DateTime.Now.ToString("o"),
+                    projectName = Application.productName,
+                    unityVersion = Application.unityVersion,
+                    files = new List<ExportedFileInfo>()
+                };
+
+                // 收集 Action JSON 文件
+                string actionDir = Path.GetFullPath(exportDirectory);
+                if (Directory.Exists(actionDir))
+                {
+                    foreach (var file in Directory.GetFiles(actionDir, "*.json"))
+                    {
+                        manifest.files.Add(CreateFileInfo(file, "Action"));
+                    }
+                }
+
+                // 收集 Buff JSON 文件
+                string buffDir = Path.Combine(Application.dataPath,
+                    buffSystemConfig.exportDirectory ?? "../skill_agent/Data/Buffs");
+                buffDir = Path.GetFullPath(buffDir);
+
+                if (Directory.Exists(buffDir))
+                {
+                    string effectsDir = Path.Combine(buffDir, "Effects");
+                    string triggersDir = Path.Combine(buffDir, "Triggers");
+
+                    if (Directory.Exists(effectsDir))
+                    {
+                        foreach (var file in Directory.GetFiles(effectsDir, "*.json"))
+                        {
+                            manifest.files.Add(CreateFileInfo(file, "BuffEffect"));
+                        }
+                    }
+
+                    if (Directory.Exists(triggersDir))
+                    {
+                        foreach (var file in Directory.GetFiles(triggersDir, "*.json"))
+                        {
+                            manifest.files.Add(CreateFileInfo(file, "BuffTrigger"));
+                        }
+                    }
+
+                    string enumsFile = Path.Combine(buffDir, "BuffEnums.json");
+                    if (File.Exists(enumsFile))
+                    {
+                        manifest.files.Add(CreateFileInfo(enumsFile, "BuffEnums"));
+                    }
+                }
+
+                // 收集配置文件
+                string configFile = Path.Combine(baseDir, "skill_system_config.json");
+                if (File.Exists(configFile))
+                {
+                    manifest.files.Add(CreateFileInfo(configFile, "Config"));
+                }
+
+                // 收集架构 Prompt 文件
+                string skillPromptFile = Path.Combine(baseDir, "skill_architecture_prompt.md");
+                if (File.Exists(skillPromptFile))
+                {
+                    manifest.files.Add(CreateFileInfo(skillPromptFile, "ArchitecturePrompt"));
+                }
+
+                string buffPromptFile = Path.Combine(baseDir, "buff_architecture_prompt.md");
+                if (File.Exists(buffPromptFile))
+                {
+                    manifest.files.Add(CreateFileInfo(buffPromptFile, "ArchitecturePrompt"));
+                }
+
+                // 生成统计信息
+                manifest.summary = new ExportSummary
+                {
+                    totalFiles = manifest.files.Count,
+                    actionCount = manifest.files.Count(f => f.fileType == "Action"),
+                    buffEffectCount = manifest.files.Count(f => f.fileType == "BuffEffect"),
+                    buffTriggerCount = manifest.files.Count(f => f.fileType == "BuffTrigger"),
+                    hasConfig = manifest.files.Any(f => f.fileType == "Config"),
+                    hasArchitecturePrompts = manifest.files.Any(f => f.fileType == "ArchitecturePrompt")
+                };
+
+                // 写入 manifest 文件
+                string json = BuildManifestJson(manifest);
+                File.WriteAllText(manifestPath, json);
+
+                Debug.Log($"[RAGConfig] 已生成导出清单: {manifestPath}");
+                return (true, $"清单已生成: {manifestPath}\n\n" +
+                    $"Action: {manifest.summary.actionCount}\n" +
+                    $"Buff Effects: {manifest.summary.buffEffectCount}\n" +
+                    $"Buff Triggers: {manifest.summary.buffTriggerCount}\n" +
+                    $"总文件数: {manifest.summary.totalFiles}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[RAGConfig] 生成导出清单失败: {e.Message}");
+                return (false, e.Message);
+            }
+        }
+
+        private ExportedFileInfo CreateFileInfo(string filePath, string fileType)
+        {
+            var fileInfo = new FileInfo(filePath);
+            return new ExportedFileInfo
+            {
+                fileName = fileInfo.Name,
+                relativePath = GetRelativePath(filePath),
+                fileType = fileType,
+                size = fileInfo.Length,
+                lastModified = fileInfo.LastWriteTime.ToString("o"),
+                md5Hash = ComputeMD5Hash(filePath)
+            };
+        }
+
+        private string GetRelativePath(string fullPath)
+        {
+            string baseDir = Path.GetFullPath(Path.Combine(exportDirectory, ".."));
+            if (fullPath.StartsWith(baseDir))
+            {
+                return fullPath.Substring(baseDir.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            return Path.GetFileName(fullPath);
+        }
+
+        private string ComputeMD5Hash(string filePath)
+        {
+            using (var md5 = System.Security.Cryptography.MD5.Create())
+            {
+                using (var stream = File.OpenRead(filePath))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+        }
+
+        private string BuildManifestJson(ExportManifest manifest)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("{");
+            sb.AppendLine($"  \"version\": \"{manifest.version}\",");
+            sb.AppendLine($"  \"exportTime\": \"{manifest.exportTime}\",");
+            sb.AppendLine($"  \"projectName\": \"{manifest.projectName}\",");
+            sb.AppendLine($"  \"unityVersion\": \"{manifest.unityVersion}\",");
+
+            // Summary
+            sb.AppendLine("  \"summary\": {");
+            sb.AppendLine($"    \"totalFiles\": {manifest.summary.totalFiles},");
+            sb.AppendLine($"    \"actionCount\": {manifest.summary.actionCount},");
+            sb.AppendLine($"    \"buffEffectCount\": {manifest.summary.buffEffectCount},");
+            sb.AppendLine($"    \"buffTriggerCount\": {manifest.summary.buffTriggerCount},");
+            sb.AppendLine($"    \"hasConfig\": {manifest.summary.hasConfig.ToString().ToLower()},");
+            sb.AppendLine($"    \"hasArchitecturePrompts\": {manifest.summary.hasArchitecturePrompts.ToString().ToLower()}");
+            sb.AppendLine("  },");
+
+            // Files
+            sb.AppendLine("  \"files\": [");
+            for (int i = 0; i < manifest.files.Count; i++)
+            {
+                var f = manifest.files[i];
+                sb.AppendLine("    {");
+                sb.AppendLine($"      \"fileName\": \"{EscapeJson(f.fileName)}\",");
+                sb.AppendLine($"      \"relativePath\": \"{EscapeJson(f.relativePath.Replace("\\", "/"))}\",");
+                sb.AppendLine($"      \"fileType\": \"{f.fileType}\",");
+                sb.AppendLine($"      \"size\": {f.size},");
+                sb.AppendLine($"      \"lastModified\": \"{f.lastModified}\",");
+                sb.AppendLine($"      \"md5Hash\": \"{f.md5Hash}\"");
+                sb.Append("    }");
+                if (i < manifest.files.Count - 1) sb.Append(",");
+                sb.AppendLine();
+            }
+            sb.AppendLine("  ]");
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+        private string EscapeJson(string str)
+        {
+            return str.Replace("\\", "\\\\").Replace("\"", "\\\"");
+        }
+
+        #region Manifest Data Classes
+
+        [Serializable]
+        private class ExportManifest
+        {
+            public string version;
+            public string exportTime;
+            public string projectName;
+            public string unityVersion;
+            public ExportSummary summary;
+            public List<ExportedFileInfo> files;
+        }
+
+        [Serializable]
+        private class ExportSummary
+        {
+            public int totalFiles;
+            public int actionCount;
+            public int buffEffectCount;
+            public int buffTriggerCount;
+            public bool hasConfig;
+            public bool hasArchitecturePrompts;
+        }
+
+        [Serializable]
+        private class ExportedFileInfo
+        {
+            public string fileName;
+            public string relativePath;
+            public string fileType;
+            public long size;
+            public string lastModified;
+            public string md5Hash;
+        }
+
+        #endregion
+
+        /// <summary>
         /// 打开配置编辑器窗口
         /// </summary>
         [MenuItem("Tools/RAG System/打开配置 (Open Config)", priority = 100)]
@@ -949,7 +1311,7 @@ namespace RAG
 
             serverHost = "127.0.0.1";
             serverPort = 2024;
-            webUIUrl = "http://127.0.0.1:2024";
+            webUIUrl = "http://127.0.0.1:3210";
             serverStartTimeout = 30;
 
             actionDatabasePath = "Assets/Data/ActionDescriptionDatabase.asset";
