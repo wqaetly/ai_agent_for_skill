@@ -134,8 +134,9 @@ namespace SkillSystem.Editor
             if (track == null)
                 return;
 
-            // RAG功能已迁移到WebUI，使用菜单: Tools → SkillAgent → 打开Web UI
-            // 或访问 http://localhost:3000/rag 进行技能推荐
+            // RAG / 智能技能生成入口已迁移到 Lobe Chat（前端）+ Langflow（后端编排）。
+            // 使用方式：启动 Lobe Chat 桌面版 exe（用户自行下载安装），在已配置好的 OpenAI 自定义供应商下
+            // 选择 model = progressive-skill-generation / smart 等并描述需求即可。
 
             // 注释掉原有的SmartActionInspector（已废弃，依赖已删除的EditorRAGClient）
             /*

@@ -11,7 +11,7 @@ from typing import Any, Dict, List, TypedDict, Annotated
 from langchain_core.messages import HumanMessage, AIMessage
 from pydantic import ValidationError
 
-from .base import get_llm, get_openai_client, prepare_payload_text, safe_int
+from .base import get_llm, get_openai_client, prepare_payload_text, safe_int, get_json_mode_params
 from .json_utils import extract_json_from_markdown
 from ..config import get_skill_gen_config
 
@@ -285,9 +285,16 @@ def generator_node(state: SkillGenerationState, writer: Any = None) -> Dict[str,
             openai_messages.append({"role": role, "content": msg.content})
 
         model_name = get_skill_gen_config().llm.model
-        response = client.chat.completions.create(
-            model=model_name, messages=openai_messages, stream=True
-        )
+
+        # 构建请求参数，如果模型支持则添加 JSON Mode
+        create_params = {
+            "model": model_name,
+            "messages": openai_messages,
+            "stream": True,
+        }
+        create_params.update(get_json_mode_params(model_name))
+
+        response = client.chat.completions.create(**create_params)
 
         for chunk in response:
             delta = chunk.choices[0].delta if chunk.choices else None

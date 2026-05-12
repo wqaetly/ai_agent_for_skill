@@ -1,6 +1,7 @@
 """
 增强版RAG引擎
 整合：混合检索、查询理解、重排序、增量索引、上下文感知
+新增：检索轨迹、分层上下文、用户偏好（借鉴 OpenViking）
 """
 
 import logging
@@ -26,6 +27,11 @@ from .reranker import (
 from .extended_query_parser import ExtendedQueryParser, ExtendedQueryEvaluator
 from .incremental_indexer import IncrementalIndexer, FileChangeType
 from .context_aware_retriever import ContextAwareRetriever, EditContext
+
+# OpenViking 启发的模块
+from .retrieval_trace import RetrievalTracer, RetrievalStage, TraceStorage
+from .layered_context import LayeredContextCache, SkillContextGenerator
+from .user_preference import PreferenceMemory
 
 logger = logging.getLogger(__name__)
 
@@ -146,6 +152,32 @@ class EnhancedRAGEngine:
         else:
             self._query_cache = None
 
+        # ============ OpenViking 启发的组件 ============
+        # 13. 检索轨迹存储
+        self.trace_storage = TraceStorage(
+            storage_path=config.get('rag', {}).get(
+                'trace_storage_path', 'Data/traces'
+            ),
+            max_traces=1000
+        )
+        self._enable_tracing = self.rag_config.get('enable_tracing', True)
+
+        # 14. 分层上下文缓存
+        self.context_cache = LayeredContextCache(
+            cache_dir=config.get('rag', {}).get(
+                'context_cache_dir', 'Data/context_cache'
+            )
+        )
+        self.context_generator = SkillContextGenerator()
+
+        # 15. 用户偏好记忆
+        self.preference_memory = PreferenceMemory(
+            storage_path=config.get('rag', {}).get(
+                'preference_storage_path', 'Data/user_preferences'
+            ),
+            user_id=config.get('rag', {}).get('user_id', 'default')
+        )
+
         # ============ 统计 ============
         self._stats = {
             'total_queries': 0,
@@ -153,10 +185,11 @@ class EnhancedRAGEngine:
             'hybrid_searches': 0,
             'reranked_queries': 0,
             'total_indexed': 0,
-            'last_index_time': None
+            'last_index_time': None,
+            'traced_queries': 0
         }
 
-        logger.info("Enhanced RAG Engine initialized successfully")
+        logger.info("Enhanced RAG Engine initialized successfully (with OpenViking features)")
 
     def _setup_incremental_callbacks(self):
         """设置增量索引回调"""
@@ -337,7 +370,8 @@ class EnhancedRAGEngine:
         use_hybrid: bool = True,
         use_rerank: bool = True,
         use_query_expansion: bool = True,
-        return_details: bool = False
+        return_details: bool = False,
+        enable_trace: Optional[bool] = None
     ) -> List[Dict[str, Any]]:
         """
         增强版技能搜索
@@ -350,9 +384,14 @@ class EnhancedRAGEngine:
             use_rerank: 是否使用重排序
             use_query_expansion: 是否使用查询扩展
             return_details: 是否返回详细信息
+            enable_trace: 是否启用检索轨迹（None=使用默认配置）
         """
         self._stats['total_queries'] += 1
         top_k = top_k or self.top_k
+
+        # 初始化检索轨迹
+        should_trace = enable_trace if enable_trace is not None else self._enable_tracing
+        tracer = RetrievalTracer(query=query) if should_trace else None
 
         # 检查缓存
         cache_key = self._get_cache_key(query, top_k, filters)
@@ -361,10 +400,17 @@ class EnhancedRAGEngine:
             return self._query_cache[cache_key]
 
         # 1. 查询理解
+        if tracer:
+            tracer.start_stage(RetrievalStage.QUERY_UNDERSTANDING, {'query': query})
         understanding = self.query_understanding.understand(query)
         search_queries = [query]
         if use_query_expansion:
             search_queries = understanding.expanded_queries or [query]
+        if tracer:
+            tracer.end_stage(
+                output_data={'expanded_queries': search_queries},
+                metadata={'intent': understanding.intent.value if understanding.intent else None}
+            )
 
         # 2. 检索
         all_results = []
@@ -373,6 +419,8 @@ class EnhancedRAGEngine:
         for search_query in search_queries[:3]:  # 最多3个扩展查询
             if use_hybrid:
                 self._stats['hybrid_searches'] += 1
+                if tracer:
+                    tracer.start_stage(RetrievalStage.HYBRID_FUSION, {'search_query': search_query})
                 results = self.hybrid_search.search(
                     query=search_query,
                     top_k=candidate_k,
@@ -380,9 +428,16 @@ class EnhancedRAGEngine:
                     filters=filters,
                     return_scores=True
                 )
+                if tracer:
+                    tracer.end_stage(
+                        output_data={'results': [r.get('doc_id') for r in results[:5]]},
+                        metadata={'result_count': len(results)}
+                    )
                 all_results.extend(results)
             else:
                 # 纯向量检索
+                if tracer:
+                    tracer.start_stage(RetrievalStage.VECTOR_SEARCH, {'search_query': search_query})
                 query_embedding = self.embedding_generator.encode(
                     search_query, prompt_name="query"
                 )
@@ -400,6 +455,11 @@ class EnhancedRAGEngine:
                             'metadata': results['metadatas'][0][i],
                             'score': 1.0 - results['distances'][0][i]
                         })
+                if tracer:
+                    tracer.end_stage(
+                        output_data={'results': [r.get('doc_id') for r in all_results[:5]]},
+                        metadata={'result_count': len(all_results)}
+                    )
 
         # 去重
         seen_ids = set()
@@ -413,18 +473,41 @@ class EnhancedRAGEngine:
         # 3. 重排序
         if use_rerank and unique_results:
             self._stats['reranked_queries'] += 1
+            if tracer:
+                tracer.start_stage(RetrievalStage.RERANK, {'input_count': len(unique_results)})
             reranked = self.skill_reranker.rerank(query, unique_results, top_k=top_k)
             final_results = self._convert_rerank_results(reranked, return_details)
+            if tracer:
+                tracer.end_stage(
+                    output_data={'results': [r.get('skill_id') for r in final_results[:5]]},
+                    metadata={'output_count': len(final_results)}
+                )
         else:
             final_results = self._convert_search_results(
                 unique_results[:top_k], return_details
             )
 
-        # 过滤低分结果
+        # 4. 过滤低分结果
+        if tracer:
+            tracer.start_stage(RetrievalStage.FILTER, {'before_count': len(final_results)})
         final_results = [
             r for r in final_results
             if r.get('similarity', r.get('score', 0)) >= self.similarity_threshold
         ]
+        if tracer:
+            tracer.end_stage(
+                output_data={'results': [r.get('skill_id') for r in final_results]},
+                metadata={'after_count': len(final_results), 'threshold': self.similarity_threshold}
+            )
+
+        # 完成轨迹并存储
+        if tracer:
+            trace = tracer.finalize(results_count=len(final_results))
+            self.trace_storage.save(trace)
+            self._stats['traced_queries'] += 1
+            # 将轨迹ID附加到结果（如果需要）
+            if return_details and final_results:
+                final_results[0]['_trace_id'] = trace.trace_id
 
         # 缓存结果
         if self._query_cache:
@@ -666,7 +749,9 @@ class EnhancedRAGEngine:
             'action_hybrid_search': self.action_hybrid_search.get_statistics(),
             'incremental_indexer': self.incremental_indexer.get_status(),
             'context_retriever': self.context_retriever.get_statistics(),
-            'query_cache_size': len(self._query_cache) if self._query_cache else 0
+            'query_cache_size': len(self._query_cache) if self._query_cache else 0,
+            'trace_statistics': self.trace_storage.get_statistics(),
+            'user_preference': self.preference_memory.get_preference_summary()
         }
 
     def clear_cache(self):
@@ -675,3 +760,79 @@ class EnhancedRAGEngine:
             self._query_cache.clear()
         self.structured_query_engine.clear_cache()
         self.embedding_generator.clear_cache()
+
+    # ============ OpenViking 启发的方法 ============
+
+    def get_retrieval_trace(self, trace_id: str) -> Optional[Dict[str, Any]]:
+        """获取检索轨迹详情"""
+        for trace in self.trace_storage._recent_traces:
+            if trace.trace_id == trace_id:
+                return trace.to_dict()
+        return None
+
+    def get_recent_traces(self, count: int = 10) -> List[Dict[str, Any]]:
+        """获取最近的检索轨迹"""
+        return self.trace_storage.get_recent(count)
+
+    def get_slow_queries(self, threshold_ms: float = 500) -> List[Dict[str, Any]]:
+        """获取慢查询列表"""
+        return self.trace_storage.get_slow_queries(threshold_ms)
+
+    def get_trace_mermaid(self, trace_id: str) -> Optional[str]:
+        """获取检索轨迹的 Mermaid 流程图"""
+        for trace in self.trace_storage._recent_traces:
+            if trace.trace_id == trace_id:
+                return trace.to_mermaid()
+        return None
+
+    def record_action_usage(
+        self,
+        action_type: str,
+        params: Optional[Dict[str, Any]] = None,
+        context: Optional[str] = None
+    ):
+        """记录 Action 使用（用于偏好学习）"""
+        self.preference_memory.record_action_usage(action_type, params, context)
+
+    def get_recommended_actions(
+        self,
+        context: Optional[str] = None,
+        top_k: int = 5
+    ) -> List[tuple]:
+        """获取推荐的 Action（基于历史偏好）"""
+        return self.preference_memory.get_recommended_actions(context, top_k)
+
+    def get_param_suggestions(
+        self,
+        action_type: str
+    ) -> Dict[str, List[Any]]:
+        """获取 Action 参数建议"""
+        return self.preference_memory.get_param_suggestions(action_type)
+
+    def get_next_action_prediction(
+        self,
+        current_actions: List[str]
+    ) -> List[tuple]:
+        """预测下一个 Action"""
+        return self.preference_memory.get_next_action_prediction(current_actions)
+
+    def get_skill_context(
+        self,
+        skill_id: str,
+        level: int = 1
+    ) -> Optional[Dict[str, Any]]:
+        """
+        获取技能的分层上下文
+
+        Args:
+            skill_id: 技能 ID
+            level: 上下文层级 (0=摘要, 1=概览, 2=详情)
+
+        Returns:
+            对应层级的上下文数据
+        """
+        return self.context_cache.get(skill_id, level)
+
+    def get_all_skill_abstracts(self) -> List[Dict[str, Any]]:
+        """获取所有技能的 L0 摘要（用于快速浏览）"""
+        return self.context_cache.get_all_l0()

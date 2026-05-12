@@ -14,19 +14,31 @@ namespace RAG.BuffSystem
     /// </summary>
     public static class BuffJSONExporter
     {
-        // 枚举类型名称配置（可在RAGConfig中配置，这里是默认值）
-        private static readonly string[] DefaultEnumTypeNames = new[]
+        /// <summary>
+        /// 获取需要导出的枚举类型名称列表（从RAGConfig配置获取）
+        /// </summary>
+        private static List<string> GetEnumTypeNames()
         {
-            "BuffSystem.Data.BuffType",
-            "BuffSystem.Data.BuffCategory",
-            "BuffSystem.Data.DurationType",
-            "BuffSystem.Data.StackingType",
-            "BuffSystem.Data.DispelType",
-            "BuffSystem.Data.TriggerEventType",
-            "BuffSystem.Effects.AttributeType",
-            "BuffSystem.Effects.DamageType",
-            "BuffSystem.Effects.SpecialStateFlags"
-        };
+            var config = RAGConfig.Instance;
+            if (config?.buffSystemConfig?.enumTypeNames != null && config.buffSystemConfig.enumTypeNames.Count > 0)
+            {
+                return config.buffSystemConfig.enumTypeNames;
+            }
+
+            // 如果配置为空，返回默认值
+            return new List<string>
+            {
+                "BuffSystem.Data.BuffType",
+                "BuffSystem.Data.BuffCategory",
+                "BuffSystem.Data.DurationType",
+                "BuffSystem.Data.StackingType",
+                "BuffSystem.Data.DispelType",
+                "BuffSystem.Data.TriggerEventType",
+                "BuffSystem.Effects.AttributeType",
+                "BuffSystem.Effects.DamageType",
+                "BuffSystem.Effects.SpecialStateFlags"
+            };
+        }
 
         /// <summary>
         /// 导出 Buff 枚举数据（配置驱动，通过反射获取枚举类型）
@@ -38,6 +50,10 @@ namespace RAG.BuffSystem
             string directory = Path.Combine(Application.dataPath, exportDir);
             Directory.CreateDirectory(directory);
 
+            // 获取配置的枚举类型列表
+            var enumTypeNames = GetEnumTypeNames();
+
+            // 构建枚举数据（保持向后兼容，同时支持动态配置）
             var enumData = new BuffEnumData
             {
                 version = "1.0",
@@ -53,11 +69,94 @@ namespace RAG.BuffSystem
                 specialStateFlags = GetEnumInfoByTypeName("BuffSystem.Effects.SpecialStateFlags")
             };
 
-            string json = JsonUtility.ToJson(enumData, true);
+            // 导出配置中所有额外的枚举类型到customEnums字典
+            enumData.customEnums = new Dictionary<string, List<EnumValueInfo>>();
+            foreach (var typeName in enumTypeNames)
+            {
+                // 跳过已经在默认字段中导出的枚举
+                if (IsDefaultEnumType(typeName)) continue;
+
+                var enumValues = GetEnumInfoByTypeName(typeName);
+                if (enumValues.Count > 0)
+                {
+                    // 使用类型简名作为key
+                    string keyName = typeName.Contains(".") ? typeName.Substring(typeName.LastIndexOf('.') + 1) : typeName;
+                    enumData.customEnums[keyName] = enumValues;
+                }
+            }
+
+            // 使用Newtonsoft.Json以支持Dictionary序列化
+            string json = SerializeEnumData(enumData);
             string filePath = Path.Combine(directory, "BuffEnums.json");
             File.WriteAllText(filePath, json);
 
-            Debug.Log($"[BuffJSONExporter] Exported buff enums to {filePath}");
+            int totalEnums = 9 + enumData.customEnums.Count; // 9个默认枚举 + 自定义枚举
+            Debug.Log($"[BuffJSONExporter] Exported {totalEnums} enum types to {filePath}");
+        }
+
+        /// <summary>
+        /// 检查是否为默认枚举类型（已有专用字段）
+        /// </summary>
+        private static bool IsDefaultEnumType(string typeName)
+        {
+            return typeName == "BuffSystem.Data.BuffType" ||
+                   typeName == "BuffSystem.Data.BuffCategory" ||
+                   typeName == "BuffSystem.Data.DurationType" ||
+                   typeName == "BuffSystem.Data.StackingType" ||
+                   typeName == "BuffSystem.Data.DispelType" ||
+                   typeName == "BuffSystem.Data.TriggerEventType" ||
+                   typeName == "BuffSystem.Effects.AttributeType" ||
+                   typeName == "BuffSystem.Effects.DamageType" ||
+                   typeName == "BuffSystem.Effects.SpecialStateFlags";
+        }
+
+        /// <summary>
+        /// 序列化枚举数据（手动构建JSON以支持Dictionary）
+        /// </summary>
+        private static string SerializeEnumData(BuffEnumData data)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("{");
+            sb.AppendLine($"    \"version\": \"{data.version}\",");
+            sb.AppendLine($"    \"exportTime\": \"{data.exportTime}\",");
+            sb.AppendLine($"    \"buffTypes\": {SerializeEnumList(data.buffTypes)},");
+            sb.AppendLine($"    \"buffCategories\": {SerializeEnumList(data.buffCategories)},");
+            sb.AppendLine($"    \"durationTypes\": {SerializeEnumList(data.durationTypes)},");
+            sb.AppendLine($"    \"stackingTypes\": {SerializeEnumList(data.stackingTypes)},");
+            sb.AppendLine($"    \"dispelTypes\": {SerializeEnumList(data.dispelTypes)},");
+            sb.AppendLine($"    \"triggerEventTypes\": {SerializeEnumList(data.triggerEventTypes)},");
+            sb.AppendLine($"    \"attributeTypes\": {SerializeEnumList(data.attributeTypes)},");
+            sb.AppendLine($"    \"damageTypes\": {SerializeEnumList(data.damageTypes)},");
+            sb.AppendLine($"    \"specialStateFlags\": {SerializeEnumList(data.specialStateFlags)},");
+
+            // 序列化自定义枚举
+            sb.AppendLine($"    \"customEnums\": {{");
+            int i = 0;
+            foreach (var kv in data.customEnums)
+            {
+                sb.Append($"        \"{kv.Key}\": {SerializeEnumList(kv.Value)}");
+                sb.AppendLine(i < data.customEnums.Count - 1 ? "," : "");
+                i++;
+            }
+            sb.AppendLine("    }");
+            sb.AppendLine("}");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 序列化枚举值列表
+        /// </summary>
+        private static string SerializeEnumList(List<EnumValueInfo> list)
+        {
+            if (list == null || list.Count == 0) return "[]";
+
+            var items = new List<string>();
+            foreach (var item in list)
+            {
+                string escapedLabel = item.label?.Replace("\"", "\\\"") ?? "";
+                items.Add($"{{\"name\": \"{item.name}\", \"value\": {item.value}, \"label\": \"{escapedLabel}\"}}");
+            }
+            return "[" + string.Join(", ", items) + "]";
         }
 
         /// <summary>
@@ -377,6 +476,13 @@ namespace RAG.BuffSystem
         public List<EnumValueInfo> attributeTypes;
         public List<EnumValueInfo> damageTypes;
         public List<EnumValueInfo> specialStateFlags;
+
+        /// <summary>
+        /// 自定义枚举类型（从RAGConfig配置中额外添加的枚举）
+        /// Key: 枚举类型简名, Value: 枚举值列表
+        /// </summary>
+        [NonSerialized]
+        public Dictionary<string, List<EnumValueInfo>> customEnums;
     }
 
     [Serializable]

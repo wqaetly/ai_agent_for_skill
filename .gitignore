@@ -506,22 +506,30 @@ skill_agent/Data/*.log
 *.log
 
 # ===========================
-# WebUI (Next.js)
+# Langflow + Lobe Chat (v3.0)
 # ===========================
-# LangGraph server logs
-skill_agent/langgraph_server.log
+# Langflow fork submodule's local virtualenv (created by `uv sync`)
+external/langflow/.venv/
 
-# Process ID files
-skill_agent/.langgraph.pid
-skill_agent/.webui.pid
+# Langflow runtime artifacts (when langflow is run with the project root as CWD)
+.langflow/
 
-# Next.js
-webui/.next/
-webui/out/
-webui/node_modules/
-webui/.env*.local
-webui/next-env.d.ts
-webui/.vercel
+# OpenAI compat adapter logs / pid files
+skill_agent/openai_compat.log
+skill_agent/.openai_compat.pid
 
-# Exception for webui lib directory
-!webui/src/lib/
+# Adapter Python cache
+skill_agent/openai_compat/__pycache__/
+
+# ===========================
+# IDE / Tooling private dirs
+# ===========================
+# CodeBuddy (this repo's pair-programming IDE) local config
+.codebuddy/
+
+# JetBrains
+.idea/
+
+# VS Code workspace settings (keep .vscode/extensions.json if you want to share)
+.vscode/*
+!.vscode/extensions.json

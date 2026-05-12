@@ -1,88 +1,84 @@
 """
-SkillRAG Orchestration Layer
-LangGraph 编排层，提供链式调用和循环优化能力
+SkillRAG Orchestration Layer (v3.0 — Langflow + framework-agnostic runners)
 
-模块：
-- graphs/：LangGraph 图定义（skill_generation, validation_loop 等）
-- nodes/：Graph 节点实现（generator, validator, fixer 等）
-- prompts/：Prompt 模板管理
-- tools/：RAG Core 工具封装
+This module used to wire LangGraph `StateGraph` instances; from v3.0 onward
+the public surface is the `runners` package (pure Python while-loops that
+internally reuse the existing `nodes/` functions) plus the legacy
+`smart_router` helpers and `tools.rag_tools`.
+
+Sub-packages
+------------
+- ``runners/``  — Framework-agnostic execution entry points used by Langflow
+                  Custom Components, the OpenAI compat adapter and the
+                  Unity RPC server.
+- ``nodes/``    — Stateful node functions reused by every runner.
+- ``prompts/``  — Prompt manager.
+- ``tools/``    — RAG core helpers.
+- ``smart_router`` — Requirement-text → graph_id classifier.
 """
 
-__version__ = "1.0.0"
+__version__ = "3.0.0"
 
-# 导出核心图
-from .graphs.skill_generation import (
-    get_skill_generation_graph,
-    generate_skill,
-    generate_skill_sync,
+# Public runners (preferred entry point)
+from .runners import (
+    run_skill_generation,
+    stream_skill_generation,
+    run_progressive_skill_generation,
+    stream_progressive_skill_generation,
+    run_action_batch_skill_generation,
+    stream_action_batch_skill_generation,
+    run_skill_search,
+    stream_skill_search,
+    run_skill_detail,
+    stream_skill_detail,
+    run_skill_validation,
+    stream_skill_validation,
+    run_parameter_inference,
+    stream_parameter_inference,
+    route_to_runner_name,
+    RUNNER_NAME_TO_RUN,
+    RUNNER_NAME_TO_STREAM,
 )
 
-from .graphs.other_graphs import (
-    get_skill_search_graph,
-    get_skill_detail_graph,
-    get_skill_validation_graph,
-    get_parameter_inference_graph,
+# Legacy smart-router helpers (still used by callers that want the raw
+# graph_id, e.g. observability layers).
+from .smart_router import (
+    smart_route,
+    analyze_complexity,
+    get_available_graphs,
 )
 
-# 导出渐进式生成图
-from .graphs.progressive_skill_generation import (
-    get_progressive_skill_generation_graph,
-    generate_skill_progressive,
-    generate_skill_progressive_sync,
-)
-
-# 导出批量式生成图
-from .graphs.action_batch_skill_generation import (
-    get_action_batch_skill_generation_graph,
-    generate_skill_action_batch,
-    generate_skill_action_batch_sync,
-)
-
-# 导出并行渐进式生成图
-from .graphs.parallel_progressive_skill_generation import (
-    get_parallel_progressive_graph,
-    generate_skill_parallel,
-    generate_skill_parallel_sync,
-)
-
-# 导出 RAG ReAct Agent
-from .agents.rag_react_agent import (
-    get_rag_agent,
-    analyze_requirement_with_rag,
-    analyze_requirement_with_rag_sync,
-)
-
-# 导出工具
+# Tool surface (RAG)
 from .tools.rag_tools import RAG_TOOLS
 
-# 导出 Prompt 管理器
+# Prompt manager
 from .prompts.prompt_manager import get_prompt_manager
 
+
 __all__ = [
-    # 图实例获取函数
-    "get_skill_generation_graph",
-    "get_progressive_skill_generation_graph",
-    "get_action_batch_skill_generation_graph",
-    "get_parallel_progressive_graph",
-    "get_skill_search_graph",
-    "get_skill_detail_graph",
-    "get_skill_validation_graph",
-    "get_parameter_inference_graph",
-    # 便捷接口
-    "generate_skill",
-    "generate_skill_sync",
-    "generate_skill_progressive",
-    "generate_skill_progressive_sync",
-    "generate_skill_action_batch",
-    "generate_skill_action_batch_sync",
-    "generate_skill_parallel",
-    "generate_skill_parallel_sync",
-    # RAG Agent
-    "get_rag_agent",
-    "analyze_requirement_with_rag",
-    "analyze_requirement_with_rag_sync",
-    # 工具和管理器
+    # Runners (framework-agnostic, recommended)
+    "run_skill_generation",
+    "stream_skill_generation",
+    "run_progressive_skill_generation",
+    "stream_progressive_skill_generation",
+    "run_action_batch_skill_generation",
+    "stream_action_batch_skill_generation",
+    "run_skill_search",
+    "stream_skill_search",
+    "run_skill_detail",
+    "stream_skill_detail",
+    "run_skill_validation",
+    "stream_skill_validation",
+    "run_parameter_inference",
+    "stream_parameter_inference",
+    "route_to_runner_name",
+    "RUNNER_NAME_TO_RUN",
+    "RUNNER_NAME_TO_STREAM",
+    # Smart router
+    "smart_route",
+    "analyze_complexity",
+    "get_available_graphs",
+    # Tools / managers
     "RAG_TOOLS",
     "get_prompt_manager",
 ]

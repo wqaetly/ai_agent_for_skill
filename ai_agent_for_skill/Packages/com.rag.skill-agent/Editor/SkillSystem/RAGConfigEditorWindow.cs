@@ -923,9 +923,9 @@ namespace RAG
         {
             var container = CreateSectionContainer("SkillAgent 服务器配置", "配置 Python 后端服务器连接参数");
             
-            AddConfigField(container, "服务器地址", "serverHost", "服务器 IP 或域名");
-            AddIntField(container, "服务器端口", "serverPort", "服务器监听端口");
-            AddConfigField(container, "WebUI URL", "webUIUrl", "Web 管理界面地址");
+            AddConfigField(container, "服务器地址", "serverHost", "OpenAI 兼容适配层 IP 或域名（默认 127.0.0.1）");
+            AddIntField(container, "服务器端口", "serverPort", "OpenAI 兼容适配层监听端口（默认 2024）");
+            AddConfigField(container, "Lobe Chat URL", "webUIUrl", "Lobe Chat 前端 deep link 或可执行路径（默认 http://127.0.0.1:3210；当前架构使用 Lobe Chat 桌面版 exe，由用户自行启动，本字段仅用于 \"Open Web UI\" 按钮的跳转目标）");
             AddIntField(container, "启动超时 (秒)", "serverStartTimeout", "等待服务器启动的最长时间");
             
             // Server status section
@@ -949,9 +949,9 @@ namespace RAG
             var linksContainer = new VisualElement();
             linksContainer.style.flexDirection = FlexDirection.Row;
             
-            AddLinkButton(linksContainer, "打开 WebUI", () => Application.OpenURL(config.webUIUrl));
-            AddLinkButton(linksContainer, "打开 RAG 查询", () => Application.OpenURL($"{config.webUIUrl}/rag"));
-            AddLinkButton(linksContainer, "API 文档", () => Application.OpenURL($"http://{config.serverHost}:{config.serverPort}/docs"));
+            AddLinkButton(linksContainer, "打开 Lobe Chat", () => Application.OpenURL(config.webUIUrl));
+            AddLinkButton(linksContainer, "打开 Langflow Playground", () => Application.OpenURL("http://localhost:7860"));
+            AddLinkButton(linksContainer, "OpenAI 适配层", () => Application.OpenURL($"http://{config.serverHost}:{config.serverPort}/v1/models"));
             
             statusSection.Add(linksContainer);
             container.Add(statusSection);

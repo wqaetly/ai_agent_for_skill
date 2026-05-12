@@ -55,7 +55,7 @@ MonoBehaviour:
   deepSeekMaxTokens: 1000
   serverHost: 127.0.0.1
   serverPort: 2024
-  webUIUrl: http://127.0.0.1:2024
+  webUIUrl: http://127.0.0.1:3210
   serverStartTimeout: 30
   actionDatabasePath: Assets/Data/ActionDescriptionDatabase.asset
   exportDirectory: ../skill_agent/Data/Actions

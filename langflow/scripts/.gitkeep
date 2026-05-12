@@ -1,0 +1,4 @@
+# scripts placeholder
+# 任务 4 阶段在本目录写入：
+#   build_image.sh   - 强制重建 fork 镜像（含 git submodule update --remote）
+#   upload_flows.py  - Langflow ready 后批量导入 ../flows/*.json

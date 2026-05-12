@@ -21,7 +21,7 @@ SkillRAG Core Library
     results = rag.search_skills("治疗技能", top_k=5, use_hybrid=True)
 """
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __all__ = [
     # 原有模块
     "RAGEngine",
@@ -44,6 +44,15 @@ __all__ = [
     "IncrementalIndexer",
     "ContextAwareRetriever",
     "EditContext",
+    # OpenViking 启发的新模块
+    "LayeredContext",
+    "SkillContextGenerator",
+    "LayeredContextCache",
+    "RetrievalTracer",
+    "RetrievalTrace",
+    "TraceStorage",
+    "PreferenceMemory",
+    "UserPreference",
 ]
 
 # 延迟导入，避免循环依赖
@@ -106,4 +115,29 @@ def __getattr__(name):
     elif name == "EditContext":
         from .context_aware_retriever import EditContext
         return EditContext
+    # OpenViking 启发的新模块
+    elif name == "LayeredContext":
+        from .layered_context import LayeredContext
+        return LayeredContext
+    elif name == "SkillContextGenerator":
+        from .layered_context import SkillContextGenerator
+        return SkillContextGenerator
+    elif name == "LayeredContextCache":
+        from .layered_context import LayeredContextCache
+        return LayeredContextCache
+    elif name == "RetrievalTracer":
+        from .retrieval_trace import RetrievalTracer
+        return RetrievalTracer
+    elif name == "RetrievalTrace":
+        from .retrieval_trace import RetrievalTrace
+        return RetrievalTrace
+    elif name == "TraceStorage":
+        from .retrieval_trace import TraceStorage
+        return TraceStorage
+    elif name == "PreferenceMemory":
+        from .user_preference import PreferenceMemory
+        return PreferenceMemory
+    elif name == "UserPreference":
+        from .user_preference import UserPreference
+        return UserPreference
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")

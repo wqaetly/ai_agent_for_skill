@@ -1004,8 +1004,8 @@ namespace RAG
         {
             bool autoNotifyRebuild = Config.autoNotifyRebuild;
             string stepInfo = autoNotifyRebuild
-                ? "1. 扫描所有Action\n2. 导出JSON文件\n3. 启动skill_agent服务器（如未运行）\n4. 通知服务器重建索引"
-                : "1. 扫描所有Action\n2. 导出JSON文件";
+                ? "1. 扫描所有Action\n2. 导出JSON文件\n3. 导出系统配置\n4. 导出架构Prompt\n5. 启动skill_agent服务器（如未运行）\n6. 通知服务器重建索引"
+                : "1. 扫描所有Action\n2. 导出JSON文件\n3. 导出系统配置\n4. 导出架构Prompt";
 
             if (!EditorUtility.DisplayDialog(
                 "确认导出",
@@ -1016,7 +1016,7 @@ namespace RAG
                 return;
             }
 
-            int totalSteps = autoNotifyRebuild ? 4 : 2;
+            int totalSteps = autoNotifyRebuild ? 6 : 4;
             Log($"\n{new string('=', 60)}\n[一键导出] 开始自动化流程...\n{new string('=', 60)}");
 
             // Step 1: Scan
@@ -1030,18 +1030,51 @@ namespace RAG
             jsonExporter.ExportActionsToJSONSilent(actionEntries);
             await UniTask.Delay(500);
 
-            // Step 3-4: Start server and notify rebuild
+            // Step 3: Export skill system config
+            Log($"\n[步骤3/{totalSteps}] 导出系统配置文件...");
+            try
+            {
+                Config.ExportSkillSystemConfig();
+                Log("  ✅ skill_system_config.json 导出成功");
+            }
+            catch (System.Exception ex)
+            {
+                Log($"  ⚠️ 配置导出失败: {ex.Message}");
+            }
+            await UniTask.Delay(300);
+
+            // Step 4: Export architecture prompts
+            Log($"\n[步骤4/{totalSteps}] 导出架构Prompt文件...");
+            try
+            {
+                var promptResult = Config.ExportArchitecturePrompts();
+                if (promptResult.success)
+                {
+                    Log("  ✅ 架构Prompt导出成功");
+                }
+                else
+                {
+                    Log($"  ⚠️ 架构Prompt导出警告: {promptResult.message}");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Log($"  ⚠️ 架构Prompt导出失败: {ex.Message}");
+            }
+            await UniTask.Delay(300);
+
+            // Step 5-6: Start server and notify rebuild
             bool notifySuccess = false;
             string notifyMessage = "";
 
             if (autoNotifyRebuild)
             {
-                Log($"\n[步骤3/{totalSteps}] 检查skill_agent服务器状态...");
+                Log($"\n[步骤5/{totalSteps}] 检查skill_agent服务器状态...");
                 bool serverReady = await serverClient.EnsureServerRunningAsync();
 
                 if (serverReady)
                 {
-                    Log($"\n[步骤4/{totalSteps}] 通知服务器重建索引...");
+                    Log($"\n[步骤6/{totalSteps}] 通知服务器重建索引...");
                     (notifySuccess, notifyMessage) = await serverClient.SendRebuildNotificationAsync();
                 }
                 else
@@ -1061,6 +1094,8 @@ namespace RAG
                     $"所有操作已完成!\n\n" +
                     $"✅ Action总数: {actionEntries.Count}\n" +
                     $"✅ JSON已导出\n" +
+                    $"✅ 系统配置已导出\n" +
+                    $"✅ 架构Prompt已导出\n" +
                     $"✅ 已通知服务器重建索引\n\n" +
                     $"{notifyMessage}",
                     "确定"
@@ -1073,6 +1108,8 @@ namespace RAG
                     $"导出操作已完成，但通知服务器失败!\n\n" +
                     $"✅ Action总数: {actionEntries.Count}\n" +
                     $"✅ JSON已导出\n" +
+                    $"✅ 系统配置已导出\n" +
+                    $"✅ 架构Prompt已导出\n" +
                     $"❌ 通知服务器失败: {notifyMessage}\n\n" +
                     $"请确保skill_agent服务器已启动 (http://{Config.serverHost}:{Config.serverPort})",
                     "确定"
@@ -1084,7 +1121,9 @@ namespace RAG
                     "导出完成",
                     $"导出操作已完成!\n\n" +
                     $"✅ Action总数: {actionEntries.Count}\n" +
-                    $"✅ JSON已导出",
+                    $"✅ JSON已导出\n" +
+                    $"✅ 系统配置已导出\n" +
+                    $"✅ 架构Prompt已导出",
                     "确定"
                 );
             }

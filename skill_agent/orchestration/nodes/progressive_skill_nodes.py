@@ -11,11 +11,11 @@ from pathlib import Path
 from typing import Any, Dict, List, TypedDict, Annotated, Optional, Literal, Tuple
 
 from langchain_core.messages import AIMessage, AnyMessage
-from langgraph.graph.message import add_messages
-from langgraph.types import StreamWriter
+from .._compat import add_messages
+from .._compat import StreamWriter
 from pydantic import ValidationError
 
-from .base import get_llm, get_openai_client, prepare_payload_text, safe_int
+from .base import get_llm, get_openai_client, prepare_payload_text, safe_int, get_json_mode_params
 from .base.streaming import (
     get_writer_safe, emit_skeleton_progress, emit_track_progress, emit_finalize_progress
 )
@@ -211,7 +211,16 @@ def skeleton_generator_node(state: ProgressiveSkillGenerationState, writer: Stre
             openai_messages.append({"role": role, "content": msg.content})
 
         model_name = get_skill_gen_config().llm.model
-        response = client.chat.completions.create(model=model_name, messages=openai_messages, stream=True)
+
+        # 构建请求参数，如果模型支持则添加 JSON Mode
+        create_params = {
+            "model": model_name,
+            "messages": openai_messages,
+            "stream": True,
+        }
+        create_params.update(get_json_mode_params(model_name))
+
+        response = client.chat.completions.create(**create_params)
 
         for chunk in response:
             delta = chunk.choices[0].delta if chunk.choices else None
@@ -393,7 +402,16 @@ def track_generator_node(state: ProgressiveSkillGenerationState, writer: StreamW
             openai_messages.append({"role": role, "content": msg.content})
 
         model_name = get_skill_gen_config().llm.model
-        response = client.chat.completions.create(model=model_name, messages=openai_messages, stream=True)
+
+        # 构建请求参数，如果模型支持则添加 JSON Mode
+        create_params = {
+            "model": model_name,
+            "messages": openai_messages,
+            "stream": True,
+        }
+        create_params.update(get_json_mode_params(model_name))
+
+        response = client.chat.completions.create(**create_params)
 
         for chunk in response:
             delta = chunk.choices[0].delta if chunk.choices else None

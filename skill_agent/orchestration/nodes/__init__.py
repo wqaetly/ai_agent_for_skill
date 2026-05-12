@@ -1,5 +1,10 @@
 """
-Nodes module - LangGraph workflow nodes for skill generation
+Nodes module - state-mutating helpers reused by every framework-agnostic
+runner in :mod:`skill_agent.orchestration.runners`.
+
+Historically these were called "LangGraph workflow nodes"; from v3.0 they
+are plain ``(state: dict) -> dict`` functions consumed by while-loops in
+the runners.
 """
 
 # Base utilities
@@ -77,14 +82,8 @@ from .single_action_skill_nodes import (
     should_continue_track_loop as single_should_continue_track_loop
 )
 
-# Agentic RAG nodes
-from .agentic_rag_nodes import (
-    get_skill_retriever_tool,
-    generate_query_or_respond,
-    grade_documents,
-    rewrite_question,
-    generate_answer
-)
+# Note: `agentic_rag_nodes` was removed in v3.0 along with its companion
+# graph file; nothing in the new runners or Custom Components needs it.
 
 __all__ = [
     # Base
@@ -119,7 +118,4 @@ __all__ = [
     "SingleActionProgressiveState", "action_planner_node", "single_action_generator_node",
     "action_accumulator_node", "single_track_assembler_node", "should_continue_action_loop",
     "single_should_continue_track_loop",
-    # Agentic RAG
-    "get_skill_retriever_tool", "generate_query_or_respond", "grade_documents",
-    "rewrite_question", "generate_answer",
 ]

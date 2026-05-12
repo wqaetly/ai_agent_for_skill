@@ -1,0 +1,7 @@
+# Custom Components placeholder
+# 任务 3.1 阶段在本目录写入：
+#   InputComponent.py / OutputComponent.py
+#   ProgressiveGeneratorComponent.py / SkillGenerationComponent.py / ActionBatchGeneratorComponent.py
+#   SkillSearchEmbeddingComponent.py / SkillSearchVectorComponent.py
+#   SkillDetailComponent.py / SkillValidationComponent.py / ParameterInferenceComponent.py
+#   SmartRouterComponent.py

@@ -12,15 +12,19 @@ echo   停止 Skill Agent 所有服务
 echo ========================================
 echo.
 
-REM 停止 LangGraph Server (端口 2024)
-call :stop_service 2024 "LangGraph Server"
+REM 停止 Langflow 原生进程（端口 7860）
+REM v3.0 Langflow 已不再走 Docker，走 `uv run langflow run`。
+taskkill /F /FI "WINDOWTITLE eq Langflow-Backend*" >nul 2>&1
+echo [停止] Langflow 窗口 (Langflow-Backend)
+call :stop_service 7860 "Langflow Server"
 
-REM 停止 LangGraph Dev Server (端口 8123)
-call :stop_service 8123 "LangGraph Dev Server"
+REM 停止 OpenAI 兼容适配层 (端口 2024)
+call :stop_service 2024 "OpenAI Compat Adapter"
 
-REM 停止 WebUI (端口 3000, 3001)
-call :stop_service 3000 "WebUI"
-call :stop_service 3001 "WebUI Dev"
+REM Lobe Chat 桌面版 exe 请自行关闭，此脚本不介入。
+
+REM 停止 Unity RPC (端口 8766)
+call :stop_service 8766 "Unity RPC Server"
 
 REM 可选：清理特定进程名（更彻底的清理）
 REM call :stop_process "node.exe" "Node.js"

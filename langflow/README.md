@@ -1,7 +1,8 @@
 # Langflow 集成（基于 fork: wqaetly/langflow @ dev）
 
-> 本目录承载本项目对 Langflow 的全部接入资产：自定义组件源码、flow JSON 导出文件、本地 docker-compose 与构建脚本。  
-> **重要约束**：本项目**只**使用 [wqaetly/langflow @ dev](https://github.com/wqaetly/langflow/tree/dev) 这个 fork，**不得**使用 `pip install langflow` 或官方 `langflowai/langflow` Docker 镜像，以保证用户自有的魔改特性可用。
+> 本目录承载本项目对 Langflow 的全部接入资产：自定义组件源码、flow JSON 导出文件、本地启动脚本与导入工具。  
+> **重要约束**：本项目**只**使用 [wqaetly/langflow @ dev](https://github.com/wqaetly/langflow/tree/dev) 这个 fork，**不得**使用 `pip install langflow` 或官方 `langflowai/langflow` Docker 镜像，以保证用户自有的魔改特性可用。  
+> **部署方式**：纯本地源码运行（`uv run langflow run`），**不再使用 Docker**——公司未购买 Docker 商用许可证。
 
 ---
 
@@ -33,13 +34,45 @@ git -C external/langflow log -n 1
 langflow/
 ├── README.md                # 本文件
 ├── FORK_CHANGELOG.md        # fork 相对上游的关键改动列表（由维护者维护）
-├── docker-compose.yml       # 基于 ../external/langflow 源码本地构建并启动 Langflow @7860
 ├── components/              # 项目侧 Custom Components Python 源码（任务 3.1）
 ├── flows/                   # 通过 Langflow UI 导出的 *.flow.json（任务 3.2）
 └── scripts/
-    ├── build_image.sh       # 强制重建 fork 镜像（含 git submodule update）
+    ├── run_local.bat        # 无 Docker 本地启动脚本：uv sync + PYTHONPATH + uv run langflow run @7860
     └── upload_flows.py      # Langflow ready 后批量导入 flows/*.json
 ```
+
+---
+
+## 本地启动（无 Docker）
+
+首次启动前需要满足三个前置条件：
+
+1. fork 子模块已初始化：`git submodule update --init --recursive`
+2. 已安装 [uv](https://docs.astral.sh/uv/getting-started/installation/)：`pip install uv` 或 `winget install astral-sh.uv`
+3. `skill_agent/.env` 中已配置 `DEEPSEEK_API_KEY`（可由 `launch.bat` 首次运行时引导生成）
+
+直接启动 Langflow Server @7860（仅后端，前端由 Lobe Chat 替代）：
+
+```bat
+langflow\scripts\run_local.bat
+```
+
+或通过项目顶层 [`launch.bat`](../launch.bat) 菜单 `[1] Full System` / `[2] Backend Only` 一键拉起。
+
+`run_local.bat` 内部依次执行：
+
+1. 检查 `external/langflow/pyproject.toml` 与 `uv` 工具链
+2. 在 `external/langflow/` 下执行 `uv sync`（首次 5–10 分钟，后续秒级）
+3. 设置 `PYTHONPATH=<repo_root>`，让 `langflow/components/*.py` 能 `from skill_agent.core.enhanced_rag_engine import ...`
+4. 调用 `uv run langflow run --host 127.0.0.1 --port 7860 --components-path langflow/components --env-file skill_agent/.env`
+
+复用 fork 自带的 `LFX_DEV` 环境变量切换组件加载策略：
+
+- 不设置 / `LFX_DEV=0`：索引模式，启动最快（默认）
+- `LFX_DEV=1`：全动态加载，启动慢但能立即反映任意组件改动
+- `LFX_DEV=custom_proxy,...`：部分动态加载，适合迭代少数组件
+
+首次 Langflow ready 后，运行一次 `python langflow/scripts/upload_flows.py` 把 `langflow/flows/*.json` 批量导入。
 
 ---
 
@@ -47,12 +80,12 @@ langflow/
 
 | 服务 | 端口 | 说明 |
 |------|------|------|
-| Langflow Server | 7860 | 基于 fork 源码本地构建的 `skill-agent/langflow:dev` 镜像 |
+| Langflow Server | 7860 | 由 `langflow/scripts/run_local.bat` 通过 `uv run langflow run` 启动（基于 fork 源码） |
 | OpenAI 兼容适配层 | 2024 | `skill_agent/openai_compat`（FastAPI），转发到 Langflow Run API |
 | Lobe Chat | 3210 | 官方镜像 `lobehub/lobe-chat`，前端 |
 | Unity RPC | 8766 | `skill_agent/Python/unity_rpc_server.py`，Unity Editor 使用 |
 
-完整启动入口：仓库根目录 `launch.bat`（任务 7 重写）。
+完整启动入口：仓库根目录 `launch.bat`（菜单 `[1] Full System` / `[2] Backend Only` / `[3] Lobe Chat Only` / `[4] Stop All`）。
 
 ---
 
@@ -86,4 +119,4 @@ langflow/
 
 - [ ] 任务 3.1 完成后：列出 `components/` 下每个 Custom Component 的输入/输出 schema
 - [ ] 任务 3.2 完成后：补齐每张 flow 的输入/输出 schema 与节点拓扑示意
-- [ ] 任务 4 完成后：补齐 docker-compose 关键 volume 挂载点说明
+- [x] Lobe Chat 已于 v3.0 定稿阶段改用桌面版 exe（仓库不再提供部署资产，详见 [`README.md § Lobe Chat 桌面版配置指南`](../README.md)）

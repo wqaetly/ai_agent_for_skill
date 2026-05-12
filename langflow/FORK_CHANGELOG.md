@@ -63,6 +63,6 @@
 
 1. 升级前先在本文件登记目标 SHA 与上游对照基准
 2. `git submodule update --remote external/langflow` 拉取最新 dev 分支
-3. 运行 `langflow/scripts/build_image.sh` 重建镜像
-4. 跑一遍 8 张 flow 的 smoke test（`lobechat/smoke-test.md`）
+3. 下一次 `launch.bat → [1]` 会自动重跑 `uv sync`（首次 5–10 分钟）
+4. 在 Lobe Chat 桌面端上手动跑一轮 8 张 flow 的验收用例（火球术 / 技能搜索 / 智能路由），验收要点见 [`MIGRATION.md § 待维护者补齐`](../MIGRATION.md)
 5. 若发现破坏性变更，回滚到上一个锁定 SHA 并在本文件记录已知问题
