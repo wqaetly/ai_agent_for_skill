@@ -1,18 +1,14 @@
 {
   "mcpServers": {
     "mcp-router": {
-      "command": "cmd",
+      "command": "npx",
       "args": [
-        "/c",
-        "npx",
         "-y",
         "@mcp_router/cli@latest",
         "connect"
       ],
       "env": {
-        "MCPR_TOKEN": "mcpr_DinXYOJY7txetz6zK8ouRlfL8WmW4v6k",
-        "NPM_CONFIG_LOGLEVEL": "error",
-        "NPM_CONFIG_UPDATE_NOTIFIER": "false"
+        "MCPR_TOKEN": "mcpr_MIKVA9Ezgx0NPxBOLqq3BFVqZYoWhj5l"
       }
     }
   }

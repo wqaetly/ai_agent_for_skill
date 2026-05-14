@@ -60,6 +60,12 @@ logger = logging.getLogger("skill_agent.openai_compat")
 # in `langflow/flows/<flow>.flow.json` — Langflow accepts either id *or*
 # name on `/api/v1/run/{flow_id_or_name}`).
 MODEL_TO_FLOW: Dict[str, str] = {
+    # Bring-up smoke test. Source: langflow/flows/hello_lobe.py
+    # (Graph.dump produces langflow/flows/hello_lobe.flow.json, which
+    # Langflow loads as flow name `hello_lobe`.) Used to verify the
+    # Lobe Chat -> OpenAI Compat -> Langflow -> DeepSeek path before
+    # exercising the eight production flows below.
+    "hello-lobe": "hello_lobe",
     "skill-search": "skill_search",
     "skill-detail": "skill_detail",
     "skill-validation": "skill_validation",

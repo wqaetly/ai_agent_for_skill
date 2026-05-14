@@ -343,5 +343,31 @@ exit /b 0
 
 REM =====================================================================
 REM  Common error handler
+REM  Reached when a preflight check or service launcher returned a
+REM  non-zero errorlevel from one of the `goto fatal_exit` jumps in
+REM  :mode_full. Prints a clear failure message, pauses so the user
+REM  can read the log scrolled above, then exits with errorlevel 1.
 REM =====================================================================
 :fatal_exit
+echo.
+echo ========================================
+echo [FATAL] Startup aborted.
+echo.
+echo One of the preflight checks or service launchers above failed.
+echo Scroll up to read the [Error] line(s) for the root cause.
+echo.
+echo Common fixes:
+echo   - external\langflow submodule missing
+echo       =^> git submodule update --init --recursive
+echo   - `uv` not on PATH
+echo       =^> pip install uv   (or)   winget install astral-sh.uv
+echo   - Python venv / dependencies install failed
+echo       =^> delete skill_agent\venv and re-run this script
+echo   - DEEPSEEK_API_KEY missing or placeholder
+echo       =^> edit skill_agent\.env, set DEEPSEEK_API_KEY=...
+echo   - Embedding model download failed
+echo       =^> manual: https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+echo ========================================
+echo.
+if "%1"=="" pause
+exit /b 1

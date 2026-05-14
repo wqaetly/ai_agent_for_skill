@@ -102,6 +102,7 @@ langflow\scripts\run_local.bat
 
 | Flow 名 | flows/ 文件名 | OpenAI model id | 类型 |
 |---------|---------------|-----------------|------|
+| Hello Lobe (bring-up smoke test) | `hello_lobe.flow.json`（由 `hello_lobe.py` dump） | `hello-lobe` | 测试 |
 | Skill Search | `skill_search.flow.json` | `skill-search` | 细粒度 |
 | Skill Detail | `skill_detail.flow.json` | `skill-detail` | 细粒度 |
 | Skill Validation | `skill_validation.flow.json` | `skill-validation` | 细粒度 |
